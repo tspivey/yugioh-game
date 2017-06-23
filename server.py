@@ -47,6 +47,9 @@ class MyDuel(dm.Duel):
 	def __init__(self):
 		super(MyDuel, self).__init__()
 		self.keep_processing = False
+		self.to_ep = False
+		self.to_m2 = False
+		self.current_phase = 0
 		self.cm.register_callback('draw', self.draw)
 		self.cm.register_callback('phase', self.phase)
 		self.cm.register_callback('new_turn', self.new_turn)
@@ -84,9 +87,10 @@ class MyDuel(dm.Duel):
 			0x100: 'main2',
 			0x200: 'end',
 		}
-		phase = phases.get(phase, str(phase))
+		phase_str = phases.get(phase, str(phase))
 		for pl in self.players:
-			pl.notify('entering %s phase.' % phase)
+			pl.notify('entering %s phase.' % phase_str)
+		self.current_phase = phase
 
 	def new_turn(self, tp):
 		self.tp = tp
@@ -114,8 +118,8 @@ class MyDuel(dm.Duel):
 		self.idle_activate = idle_activate
 		if idle_activate:
 			self.pcl("idle activate", idle_activate)
-		self.to_bp = to_bp
-		self.to_ep = to_ep
+		self.to_bp = bool(to_bp)
+		self.to_ep = bool(to_ep)
 
 	def pcl(self, name, cards):
 		self.players[self.tp].notify(name+":")
@@ -142,8 +146,8 @@ class MyDuel(dm.Duel):
 		self.state = "battle"
 		self.activatable = activatable
 		self.attackable = attackable
-		self.to_m2 = to_m2
-		self.to_ep = to_ep
+		self.to_m2 = bool(to_m2)
+		self.to_ep = bool(to_ep)
 		pl = self.players[player]
 		self.pcl("activatable", activatable)
 		self.pcl("attackable", attackable)
@@ -260,7 +264,20 @@ def ep(caller):
 	if not duel.to_ep:
 		caller.connection.notify("Unable to enter end phase.")
 		return
-	duel.set_responsei(7)
+	if duel.current_phase == 8:
+		duel.set_responsei(3)
+	else:
+		duel.set_responsei(7)
+	procduel(duel)
+
+@server.command(r'^m2$')
+@check_tp
+def m2(caller):
+	duel = caller.connection.duel
+	if not duel.to_m2 or duel.current_phase != 8:
+		caller.connection.notify("Unable to enter main2 phase.")
+		return
+	duel.set_responsei(2)
 	procduel(duel)
 
 @server.command('^tab$')
