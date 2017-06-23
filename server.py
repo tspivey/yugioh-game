@@ -1,4 +1,5 @@
 import gsb
+from gsb.intercept import Reader
 import duel as dm
 
 active_duel = None
@@ -64,6 +65,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('battle', self.battle)
 		self.cm.register_callback('damage', self.damage)
 		self.cm.register_callback('hint', self.hint)
+		self.cm.register_callback('select_card', self.select_card)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -189,6 +191,21 @@ class MyDuel(dm.Duel):
 	def hint(self, msg, player, data):
 		if msg == 3 and data == 501:
 			self.players[player].notify("Select a card to discard:")
+
+	def select_card(self, player, cancelable, min, max, cards):
+		con = self.players[player]
+		con.notify("Select %d to %d cards separated by spaces:" % (min, max))
+		for i, c in enumerate(cards):
+			con.notify("%d: %s" % (i+1, c.name))
+		def f(caller):
+			cds = caller.text.split()
+			buf = bytes([len(cds)])
+			for i in cds:
+				i = int(i) - 1
+				buf += bytes([i])
+			self.set_responseb(buf)
+			procduel(self)
+		con.notify(Reader, f)
 
 @server.command('^h(and)?$')
 def hand(caller):

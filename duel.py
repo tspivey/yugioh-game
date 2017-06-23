@@ -105,6 +105,7 @@ class Duel:
 		114: self.msg_end_damage,
 		111: self.msg_battle,
 		91: self.msg_damage,
+		15: self.msg_select_card,
 		}
 		self.state = ''
 
@@ -243,6 +244,23 @@ class Duel:
 		dd = self.read_u32(data)
 		bd1 = self.read_u8(data)
 		self.cm.call_callbacks('battle', attacker, aa, ad, bd0, tloc, da, dd, bd1)
+		return b''
+
+	def msg_select_card(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		cancelable = self.read_u8(data)
+		min = self.read_u8(data)
+		max = self.read_u8(data)
+		size = self.read_u8(data)
+		cards = []
+		for i in range(size):
+			code = self.read_u32(data)
+			loc = self.read_u32(data)
+			card = Card.from_code(code)
+			card.set_location(loc)
+			cards.append(card)
+		self.cm.call_callbacks('select_card', player, cancelable, min, max, cards)
 		return b''
 
 	def msg_damage(self, data):
