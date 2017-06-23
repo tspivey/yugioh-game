@@ -133,7 +133,6 @@ class MyDuel(dm.Duel):
 		if size == 0 and spe_count == 0:
 			self.keep_processing = True
 			self.set_responsei(-1)
-			self.players[player].notify("select chain skipped because nothing to do.")
 		else:
 			self.players[player].notify("select chain")
 
