@@ -63,6 +63,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('end_damage', self.end_damage)
 		self.cm.register_callback('battle', self.battle)
 		self.cm.register_callback('damage', self.damage)
+		self.cm.register_callback('hint', self.hint)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -184,6 +185,10 @@ class MyDuel(dm.Duel):
 	def notify_all(self, s):
 		for pl in self.players:
 			pl.notify(s)
+
+	def hint(self, msg, player, data):
+		if msg == 3 and data == 501:
+			self.players[player].notify("Select a card to discard:")
 
 @server.command('^h(and)?$')
 def hand(caller):

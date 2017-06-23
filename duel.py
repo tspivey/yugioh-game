@@ -186,8 +186,11 @@ class Duel:
 		return ''
 
 	def msg_hint(self, data):
-		data = io.BytesIO(data)
-		print(repr(data.read()))
+		data = io.BytesIO(data[1:])
+		msg = self.read_u8(data)
+		player = self.read_u8(data)
+		value = self.read_u32(data)
+		self.cm.call_callbacks('hint', msg, player, value)
 		return b''
 
 	def msg_select_place(self, data):
