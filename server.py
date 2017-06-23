@@ -197,9 +197,8 @@ def hand(caller):
 	if not h:
 		con.notify("Your hand is empty.")
 		return
-	for pos, c in h:
-		seq = (pos >> 16) & 0xff
-		con.notify("h%d: %s" % (seq+1, c.name))
+	for c in h:
+		con.notify("h%d: %s" % (c.sequence + 1, c.name))
 
 def check_tp(f):
 	def wraps(caller):
@@ -225,11 +224,11 @@ def idle_action(caller, name, list_name, add):
 	duel = caller.connection.duel
 	hand = duel.get_cards_in_location(caller.connection.duel_player, dm.LOCATION_HAND)
 	seq = n - 1
-	hc = [card for card in hand if (card[0] >> 16) & 0xff == seq]
+	hc = [card for card in hand if card.sequence == seq]
 	summonable = getattr(duel, list_name)
 	summonable = [t for t in summonable if t[3] == seq]
 	if not summonable:
-		caller.connection.notify("Cannot %s %s." % (name, hc[0][1].name))
+		caller.connection.notify("Cannot %s %s." % (name, hc[0].name))
 		return
 	card, controller, location, sequence = summonable[0]
 	i = (sequence << 16) + add
@@ -291,9 +290,8 @@ def m2(caller):
 def tab(caller):
 	duel = caller.connection.duel
 	mz = duel.get_cards_in_location(caller.connection.duel_player, dm.LOCATION_MZONE)
-	for pos, card in mz:
-		seq = (pos >> 16) & 0xff
-		caller.connection.notify("m%d: %s (%d/%d)" % (seq+1, card.name, card.attack, card.defense))
+	for card in mz:
+		caller.connection.notify("m%d: %s (%d/%d)" % (card.sequence+1, card.name, card.attack, card.defense))
 
 @server.command(r'^attack (\d+)$')
 def attack(caller):

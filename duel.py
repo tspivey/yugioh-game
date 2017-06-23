@@ -73,6 +73,12 @@ class Card(object):
 		cd.desc = row['desc']
 		return cd
 
+	def set_location(self, location):
+		self.controller = location & 0xff
+		self.location = (location >> 8) & 0xff;
+		self.sequence = (location >> 16) & 0xff
+		self.position = (location >> 24) & 0xff
+
 class Duel:
 	def __init__(self):
 		self.buf = ffi.new('char[]', 4096)
@@ -310,9 +316,10 @@ class Duel:
 			code = self.read_u32(buf)
 			card = Card.from_code(code)
 			position = self.read_u32(buf)
+			card.set_location(position)
 			card.attack = self.read_u32(buf)
 			card.defense = self.read_u32(buf)
-			cards.append((position, card))
+			cards.append(card)
 		return cards
 
 	def get_card(self, player, loc, seq):
