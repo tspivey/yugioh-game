@@ -175,17 +175,16 @@ class Duel:
 		for i in range(size):
 			code = self.read_u32(data)
 			card = Card.from_code(code)
-			controller = self.read_u8(data)
-			location = self.read_u8(data)
-			sequence = self.read_u8(data)
+			card.controller = self.read_u8(data)
+			card.location = self.read_u8(data)
+			card.sequence = self.read_u8(data)
+			card.extra = 0
 			if extra:
 				if extra8:
-					x = self.read_u8(data)
+					card.extra = self.read_u8(data)
 				else:
-					x = self.read_u32(data)
-				res.append((card, controller, location, sequence, x))
-			else:
-				res.append((card, controller, location, sequence))
+					card.extra = self.read_u32(data)
+			res.append(card)
 		return res
 
 	def msg_retry(self, buf):

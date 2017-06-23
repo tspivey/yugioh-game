@@ -127,7 +127,7 @@ class MyDuel(dm.Duel):
 	def pcl(self, name, cards):
 		self.players[self.tp].notify(name+":")
 		for card in cards:
-			self.players[self.tp].notify(card[0].name)
+			self.players[self.tp].notify(card.name)
 
 	def select_place(self):
 		self.players[self.tp].notify("Select place for card")
