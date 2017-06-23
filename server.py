@@ -62,6 +62,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('damage', self.damage)
 
 		self.players = [None, None]
+		self.lp = [8000, 8000]
 
 	def draw(self, player, cards):
 		pl = self.players[player]
@@ -174,7 +175,8 @@ class MyDuel(dm.Duel):
 		self.notify_all(s)
 
 	def damage(self, player, amount):
-		self.notify_all("Player %d's lp decreased by %d" % (player, amount))
+		self.notify_all("Player %d's lp decreased by %d, now %d" % (player, amount, self.lp[player]-amount))
+		self.lp[player] -= amount
 
 	def notify_all(self, s):
 		for pl in self.players:
