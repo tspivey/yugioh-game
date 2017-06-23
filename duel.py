@@ -18,6 +18,7 @@ LOCATION_SZONE = 8
 POS_FACEUP_ATTACK = 1
 POS_FACEDOWN_DEFENSE = 8
 QUERY_CODE = 1
+QUERY_POSITION = 0x2
 QUERY_ATTACK = 0x100
 QUERY_DEFENSE = 0x200
 
@@ -291,33 +292,24 @@ class Duel:
 		buf = ffi.new('char[64]', r)
 		lib.set_responseb(self.duel, ffi.cast('byte *', buf))
 
-	def hand(self, player):
+	def get_cards_in_location(self, player, location):
 		cards = []
-		ncards = lib.query_field_count(self.duel, player, LOCATION_HAND)
-		for i in range(ncards):
-			flags = QUERY_CODE
-			bl = lib.query_card(self.duel, player, LOCATION_HAND, i, flags, ffi.cast('byte *', self.buf), False)
-			buf = io.BytesIO(ffi.unpack(self.buf, bl))
-			f = self.read_u32(buf)
-			f = self.read_u32(buf)
-			code = self.read_u32(buf)
-			cards.append(Card.from_code(code))
-		return cards
-
-	def mzone(self, player):
-		cards = []
-		ncards = lib.query_field_count(self.duel, player, LOCATION_MZONE)
-		for i in range(ncards):
-			flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE
-			bl = lib.query_card(self.duel, player, LOCATION_HAND, i, flags, ffi.cast('byte *', self.buf), False)
-			buf = io.BytesIO(ffi.unpack(self.buf, bl))
-			f = self.read_u32(buf)
+		flags = QUERY_CODE | QUERY_POSITION | QUERY_ATTACK | QUERY_DEFENSE
+		bl = lib.query_field_card(self.duel, player, location, flags, ffi.cast('byte *', self.buf), False)
+		buf = io.BytesIO(ffi.unpack(self.buf, bl))
+		while True:
+			if buf.tell() == bl:
+				break
+			length = self.read_u32(buf)
+			if length == 4:
+				continue #No card here
 			f = self.read_u32(buf)
 			code = self.read_u32(buf)
 			card = Card.from_code(code)
+			position = self.read_u32(buf)
 			card.attack = self.read_u32(buf)
 			card.defense = self.read_u32(buf)
-			cards.append(card)
+			cards.append((position, card))
 		return cards
 
 	def get_card(self, player, loc, seq):

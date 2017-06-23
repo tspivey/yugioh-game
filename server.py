@@ -188,12 +188,13 @@ class MyDuel(dm.Duel):
 @server.command('^h(and)?$')
 def hand(caller):
 	con = caller.connection
-	h = con.duel.hand(con.duel_player)
+	h = con.duel.get_cards_in_location(con.duel_player, dm.LOCATION_HAND)
 	if not h:
 		con.notify("Your hand is empty.")
 		return
-	for i, c in enumerate(h):
-		con.notify("%d: %s" % (i+1, c.name))
+	for pos, c in h:
+		seq = (pos >> 16) & 0xff
+		con.notify("h%d: %s" % (seq+1, c.name))
 
 def check_tp(f):
 	def wraps(caller):
@@ -217,11 +218,13 @@ def idle_action(caller, name, list_name, add):
 	loc, n = caller.args
 	n = int(n)
 	duel = caller.connection.duel
-	hand = duel.hand(caller.connection.duel_player)
+	hand = duel.get_cards_in_location(caller.connection.duel_player, dm.LOCATION_HAND)
+	seq = n - 1
+	hc = [card for card in hand if (card[0] >> 16) & 0xff == seq]
 	summonable = getattr(duel, list_name)
-	summonable = [t for t in summonable if t[0].code == hand[n].code]
+	summonable = [t for t in summonable if t[3] == seq]
 	if not summonable:
-		caller.connection.notify("Cannot %s %s." % (name, hand[n].name))
+		caller.connection.notify("Cannot %s %s." % (name, hc[0][1].name))
 		return
 	card, controller, location, sequence = summonable[0]
 	i = (sequence << 16) + add
@@ -282,9 +285,10 @@ def m2(caller):
 @server.command('^tab$')
 def tab(caller):
 	duel = caller.connection.duel
-	mz = duel.mzone(caller.connection.duel_player)
-	for i, c in enumerate(mz):
-		caller.connection.notify("m%d: %s (%d/%d)" % (i+1, c.name, c.attack, c.defense))
+	mz = duel.get_cards_in_location(caller.connection.duel_player, dm.LOCATION_MZONE)
+	for pos, card in mz:
+		seq = (pos >> 16) & 0xff
+		caller.connection.notify("m%d: %s (%d/%d)" % (seq+1, card.name, card.attack, card.defense))
 
 @server.command(r'^attack (\d+)$')
 def attack(caller):
