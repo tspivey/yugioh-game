@@ -59,6 +59,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('begin_damage', self.begin_damage)
 		self.cm.register_callback('end_damage', self.end_damage)
 		self.cm.register_callback('battle', self.battle)
+		self.cm.register_callback('damage', self.damage)
 
 		self.players = [None, None]
 
@@ -171,6 +172,9 @@ class MyDuel(dm.Duel):
 		if target:
 			s += " %s (%d/%d)" % (target.name, da, dd)
 		self.notify_all(s)
+
+	def damage(self, player, amount):
+		self.notify_all("Player %d's lp decreased by %d" % (player, amount))
 
 	def notify_all(self, s):
 		for pl in self.players:

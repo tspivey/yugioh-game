@@ -97,6 +97,7 @@ class Duel:
 		113: self.msg_begin_damage,
 		114: self.msg_end_damage,
 		111: self.msg_battle,
+		91: self.msg_damage,
 		}
 		self.state = ''
 
@@ -218,8 +219,9 @@ class Duel:
 		print("%r", data)
 		self.cm.call_callbacks('begin_damage')
 
-	def msg_end_damage(self):
+	def msg_end_damage(self, data):
 		self.cm.call_callbacks('end_damage')
+
 	def msg_battle(self, data):
 		data = io.BytesIO(data[1:])
 		attacker = self.read_u32(data)
@@ -232,6 +234,12 @@ class Duel:
 		bd1 = self.read_u8(data)
 		self.cm.call_callbacks('battle', attacker, aa, ad, bd0, tloc, da, dd, bd1)
 		return b''
+
+	def msg_damage(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		amount = self.read_u32(data)
+		self.cm.call_callbacks('damage', player, amount)
 
 	def msg_move(self, data):
 		data = io.BytesIO(data[1:])
