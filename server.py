@@ -189,9 +189,7 @@ class MyDuel(dm.Duel):
 			elif caller.text == 'v' and card in self.idle_activate:
 				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
 			elif caller.text == 'i':
-				pl.notify(card.name)
-				pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
-				pl.notify(card.desc)
+				self.show_info(card, pl)
 				pl.notify(Reader, action)
 				return
 			elif caller.text == 'z':
@@ -248,20 +246,34 @@ class MyDuel(dm.Duel):
 			self.set_responsei(-1)
 			return
 		pl = self.players[player]
-		pl.notify("select chain, from 0 to %d" % (size - 1))
-		pl.notify("%r" % chains)
+		pl.notify("Select chain:")
+		specs = {}
+		chain_cards = [c[1] for c in chains]
+		for et, card, desc in chains:
+			cs = self.card_to_spec(player, card)
+			specs[cs] = card
+			pl.notify("%s: %s" % (cs, card.name))
 		def r(caller):
-			try:
-				val = int(caller.text)
-			except ValueError:
-				pl.notify("Invalid value.")
+			if caller.text == 'c':
+				self.set_responsei(-1)
+				reactor.callLater(0, procduel, self)
+				return
+			if caller.text.startswith('i'):
+				info = True
+				caller.text = caller.text[1:]
+			else:
+				info = False
+			if caller.text not in specs:
+				pl.notify("Invalid spec.")
 				pl.notify(Reader, r)
 				return
-			if val < -1 or val > size - 1:
-				pl.notify("Invalid value.")
+			card = specs[caller.text]
+			idx = chain_cards.index(card)
+			if info:
+				self.show_info(card, pl)
 				pl.notify(Reader, r)
 				return
-			self.set_responsei(val)
+			self.set_responsei(idx)
 			reactor.callLater(0, procduel, self)
 		pl.notify(Reader, r)
 
@@ -367,7 +379,12 @@ class MyDuel(dm.Duel):
 		s = ""
 		if card.controller != player:
 			s += "o"
-		s += "m"
+		if card.location == dm.LOCATION_HAND:
+			s += "h"
+		elif card.location == dm.LOCATION_MZONE:
+			s += "m"
+		elif card.location == dm.LOCATION_SZONE:
+			s += "s"
 		s += str(card.sequence + 1)
 		return s
 
@@ -477,6 +494,17 @@ class MyDuel(dm.Duel):
 		if reason & 0x01:
 			pl.notify("Card %s (%s) destroyed." % (plspec, card.name))
 			op.notify("Card %s (%s) destroyed." % (opspec, card.name))
+
+	def show_info(self, card, pl):
+		pln = pl.duel_player
+		cs = self.card_to_spec(pln, card)
+		if card.position in (0x8, 0xa) and card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE):
+			pos = self.position_name(card)
+			pl.notify("%s: %s card." % (cs, pos))
+			return
+		pl.notify(card.name)
+		pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
+		pl.notify(card.desc)
 
 @server.command('^h(and)?$')
 def hand(caller):

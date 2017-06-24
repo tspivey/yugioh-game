@@ -316,8 +316,10 @@ class Duel:
 			et = self.read_u8(data)
 			code = self.read_u32(data)
 			loc = self.read_u32(data)
+			card = Card.from_code(code)
+			card.set_location(loc)
 			desc = self.read_u32(data)
-			chains.append((et, code, loc, desc))
+			chains.append((et, card, desc))
 		self.cm.call_callbacks('select_chain', player, size, spe_count, chains)
 		return b''
 
