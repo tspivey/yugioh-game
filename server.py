@@ -252,8 +252,85 @@ class MyDuel(dm.Duel):
 		self.to_m2 = bool(to_m2)
 		self.to_ep = bool(to_ep)
 		pl = self.players[player]
-		self.pcl("activatable", activatable)
-		self.pcl("attackable", attackable)
+		self.display_battle_menu(pl)
+
+	def display_battle_menu(self, pl):
+		pl.notify("Battle menu:")
+		if self.attackable:
+			pl.notify("a: Attack.")
+		if self.activatable:
+			pl.notify("c: activate.")
+		def r(caller):
+			if caller.text == 'a' and self.attackable:
+				self.battle_attack(caller.connection)
+			elif caller.text == 'c' and self.activatable:
+				self.battle_activate(caller.connection)
+			elif caller.text == 'e' and self.to_ep:
+				self.set_responsei(3)
+				reactor.callLater(0, procduel, self)
+			elif caller.text == '2' and self.to_m2:
+				self.set_responsei(2)
+				reactor.callLater(0, procduel, self)
+			else:
+				pl.notify("Invalid option.")
+				pl.notify(Reader, r)
+		pl.notify(Reader, r)
+
+	def battle_attack(self, con):
+		pl = self.players[con.duel_player]
+		pln = con.duel_player
+		pl.notify("Select card to attack with:")
+		specs = {}
+		for c in self.attackable:
+			spec = self.card_to_spec(pln, c)
+			pl.notify("%s: %s (%d/%d)" % (spec, c.name, c.attack, c.defense))
+			specs[spec] = c
+		pl.notify("z: back.")
+		def r(caller):
+			if caller.text == 'z':
+				self.display_battle_menu(pl)
+				return
+			if caller.text not in specs:
+				pl.notify("Invalid cardspec. Retry.")
+				pl.notify(Reader, r)
+				return
+			card = specs[caller.text]
+			seq = self.attackable.index(card)
+			self.set_responsei((seq << 16) + 1)
+			reactor.callLater(0, procduel, self)
+		pl.notify(Reader, r)
+
+	def battle_activate(self, con):
+		pl = self.players[con.duel_player]
+		pln = con.duel_player
+		pl.notify("Select card to activate:")
+		specs = {}
+		for c in self.activatable:
+			spec = self.card_to_spec(pln, c)
+			pl.notify("%s: %s (%d/%d)" % (spec, c.name, c.attack, c.defense))
+			specs[spec] = c
+		pl.notify("z: back.")
+		def r(caller):
+			if caller.text == 'z':
+				self.display_battle_menu(pl)
+				return
+			if caller.text not in specs:
+				pl.notify("Invalid cardspec. Retry.")
+				pl.notify(Reader, r)
+				return
+			card = specs[caller.text]
+			seq = self.activatable.index(card)
+			self.set_responsei((seq << 16))
+			reactor.callLater(0, procduel, self)
+		pl.notify(Reader, r)
+
+	def card_to_spec(self, player, card):
+		s = ""
+		if card.controller != player:
+			s += "o"
+		s += "m"
+		s += str(card.sequence + 1)
+		return s
 
 	def attack(self, attacker, target):
 		self.players[self.tp].notify("Attack: attacker=%x target=%x" % (attacker, target))
