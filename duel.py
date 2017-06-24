@@ -79,6 +79,9 @@ class Card(object):
 		self.sequence = (location >> 16) & 0xff
 		self.position = (location >> 24) & 0xff
 
+	def __eq__(self, other):
+		return self.code == other.code and self.location == other.location and self.sequence == other.sequence
+
 class Duel:
 	def __init__(self):
 		self.buf = ffi.new('char[]', 4096)
@@ -340,13 +343,16 @@ class Duel:
 		return cards
 
 	def get_card(self, player, loc, seq):
-		flags = QUERY_CODE
+		flags = QUERY_CODE | QUERY_POSITION
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
 		f = self.read_u32(buf)
 		code = self.read_u32(buf)
-		return Card.from_code(code)
+		position = self.read_u32(buf)
+		card = Card.from_code(code)
+		card.set_location(position)
+		return card
 
 class TestDuel(Duel):
 	def __init__(self):

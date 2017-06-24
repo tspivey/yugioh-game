@@ -1,5 +1,7 @@
+import re
 import gsb
 from gsb.intercept import Reader
+from twisted.internet import reactor
 import duel as dm
 
 active_duel = None
@@ -104,25 +106,77 @@ class MyDuel(dm.Duel):
 		self.state = "idle"
 		pl = self.players[self.tp]
 		self.summonable = summonable
-		if summonable:
-			self.pcl("summonable", summonable)
 		self.spsummon = spsummon
-		if spsummon:
-			self.pcl("sp summon", spsummon)
 		self.repos = repos
-		if repos:
-			self.pcl("repos", repos)
 		self.idle_mset = idle_mset
-		if idle_mset:
-			self.pcl("idle_mset", idle_mset)
 		self.idle_set = idle_set
-		if idle_set:
-			self.pcl("Idle set", idle_set)
 		self.idle_activate = idle_activate
-		if idle_activate:
-			self.pcl("idle activate", idle_activate)
 		self.to_bp = bool(to_bp)
 		self.to_ep = bool(to_ep)
+
+		self.idle_action(pl)
+
+	def idle_action(self, caller):
+		pl = self.players[self.tp]
+		pl.notify("Select a card on which to perform an action.")
+		if self.to_bp:
+			pl.notify("b: Enter the battle phase.")
+		if self.to_ep:
+			pl.notify("e: End phase.")
+		def r(caller):
+			if caller.text == 'b' and self.to_bp:
+				self.set_responsei(6)
+				reactor.callLater(0, procduel, self)
+				return
+			elif caller.text == 'e' and self.to_ep:
+				self.set_responsei(7)
+				reactor.callLater(0, procduel, self)
+				return
+			loc, seq = self.cardspec_to_ls(caller.text)
+			if loc is None:
+				pl.notify("Invalid specifier. Retry.")
+				pl.notify(Reader, r)
+				return
+			card = self.get_card(self.tp, loc, seq)
+			self.act_on_card(caller, card)
+		pl.notify(Reader, r)
+
+	def act_on_card(self, caller, card):
+		pl = self.players[self.tp]
+		pl.notify(card.name)
+		if card in self.summonable:
+			pl.notify("s: Summon this card in face-up attack position.")
+		if card in self.idle_mset:
+			pl.notify("m: Summon this card in face-down defense position.")
+		if card in self.repos:
+			self.notify("r: reposition this card.")
+		def action(caller):
+			if caller.text == 's' and card in self.summonable:
+				self.set_responsei(card.sequence << 16)
+			elif caller.text == 'm' and card in self.idle_mset:
+				self.set_responsei((card.sequence << 16) + 3)
+			elif caller.text == 'r' and card in self.repos:
+				self.set_responsei((card.sequence << 16) + 2)
+			else:
+				pl.notify("Invalid action.")
+				pl.notify(Reader, action)
+				return
+			reactor.callLater(0, procduel, self)
+		pl.notify(Reader, action)
+
+	def cardspec_to_ls(self, text):
+		r = re.search(r'^([a-z]+)(\d+)', text)
+		if not r:
+			return (None, None)
+		if r.group(1) == 'h':
+			l = dm.LOCATION_HAND
+		elif r.group(1) == 'm':
+			l = dm.LOCATION_MZONE
+		elif r.group(1) == 's':
+			l = dm.LOCATION_SZONE
+		else:
+			return None, None
+		return l, int(r.group(2))
 
 	def pcl(self, name, cards):
 		self.players[self.tp].notify(name+":")
@@ -130,7 +184,18 @@ class MyDuel(dm.Duel):
 			self.players[self.tp].notify(card.name)
 
 	def select_place(self):
-		self.players[self.tp].notify("Select place for card")
+		pl = self.players[self.tp]
+		pl.notify("Select place for card")
+		def r(caller):
+			l, s = self.cardspec_to_ls(caller.text)
+			if l is None:
+				pl.notify("Invalid cardspec. Try again.")
+				pl.notify(Reader, r)
+				return
+			resp = bytes([self.tp, l, s])
+			self.set_responseb(resp)
+			reactor.callLater(0, procduel, self)
+		pl.notify(Reader, r)
 
 	def select_chain(self, player, size, spe_count):
 		if size == 0 and spe_count == 0:
