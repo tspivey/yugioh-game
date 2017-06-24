@@ -70,6 +70,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_card', self.select_card)
 		self.cm.register_callback('move', self.move)
 		self.cm.register_callback('select_option', self.select_option)
+		self.cm.register_callback('recover', self.recover)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -399,6 +400,10 @@ class MyDuel(dm.Duel):
 	def damage(self, player, amount):
 		self.notify_all("Player %d's lp decreased by %d, now %d" % (player, amount, self.lp[player]-amount))
 		self.lp[player] -= amount
+
+	def recover(self, player, amount):
+		self.notify_all("Player %d's lp increased by %d, now %d" % (player, amount, self.lp[player]-amount))
+		self.lp[player] += amount
 
 	def notify_all(self, s):
 		for pl in self.players:

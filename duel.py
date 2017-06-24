@@ -113,6 +113,7 @@ class Duel:
 		91: self.msg_damage,
 		15: self.msg_select_card,
 		14: self.msg_select_option,
+		92: self.msg_recover,
 		}
 		self.state = ''
 
@@ -278,6 +279,12 @@ class Duel:
 		player = self.read_u8(data)
 		amount = self.read_u32(data)
 		self.cm.call_callbacks('damage', player, amount)
+
+	def msg_recover(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		amount = self.read_u32(data)
+		self.cm.call_callbacks('recover', player, amount)
 
 	def msg_move(self, data):
 		data = io.BytesIO(data[1:])
