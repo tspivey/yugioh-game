@@ -1,6 +1,6 @@
 import re
 import gsb
-from gsb.intercept import Reader
+from gsb.intercept import Menu, Reader
 from twisted.internet import reactor
 import duel as dm
 
@@ -69,6 +69,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('hint', self.hint)
 		self.cm.register_callback('select_card', self.select_card)
 		self.cm.register_callback('move', self.move)
+		self.cm.register_callback('select_option', self.select_option)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -262,6 +263,20 @@ class MyDuel(dm.Duel):
 			self.set_responsei(val)
 			reactor.callLater(0, procduel, self)
 		pl.notify(Reader, r)
+
+	def select_option(self, player, options):
+		def select(caller, idx):
+			self.set_responsei(idx)
+			reactor.callLater(0, procduel, self)
+		opts = []
+		for opt in options:
+			code = opt >> 4
+			string = dm.Card.from_code(code).strings[opt & 0xf]
+			opts.append(string)
+		m = Menu("Select option:")
+		for idx, opt in enumerate(opts):
+			m.item(opt)(lambda caller, idx=idx: select(caller, idx))
+		self.players[player].notify(m)
 
 	def summoning(self, card, location):
 		pos = str(hex(location))

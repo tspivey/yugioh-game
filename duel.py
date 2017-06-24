@@ -71,6 +71,9 @@ class Card(object):
 		row = db.execute('select * from texts where id=?', (code,)).fetchone()
 		cd.name = row['name']
 		cd.desc = row['desc']
+		cd.strings = []
+		for i in range(1, 17):
+			cd.strings.append(row['str'+str(i)])
 		return cd
 
 	def set_location(self, location):
@@ -109,6 +112,7 @@ class Duel:
 		111: self.msg_battle,
 		91: self.msg_damage,
 		15: self.msg_select_card,
+		14: self.msg_select_option,
 		}
 		self.state = ''
 
@@ -320,6 +324,16 @@ class Duel:
 		code = self.read_u32(data)
 		loc = self.read_u32(data)
 		print("Set: code=%d loc=%d" % (code, loc))
+		return b''
+
+	def msg_select_option(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		size = self.read_u8(data)
+		options = []
+		for i in range(size):
+			options.append(self.read_u32(data))
+		self.cm.call_callbacks("select_option", player, options)
 		return b''
 
 	def read_u8(self, buf):
