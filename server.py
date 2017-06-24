@@ -240,12 +240,28 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		pl.notify(Reader, r)
 
-	def select_chain(self, player, size, spe_count):
+	def select_chain(self, player, size, spe_count, chains):
 		if size == 0 and spe_count == 0:
 			self.keep_processing = True
 			self.set_responsei(-1)
-		else:
-			self.players[player].notify("select chain")
+			return
+		pl = self.players[player]
+		pl.notify("select chain, from 0 to %d" % (size - 1))
+		pl.notify("%r" % chains)
+		def r(caller):
+			try:
+				val = int(caller.text)
+			except ValueError:
+				pl.notify("Invalid value.")
+				pl.notify(Reader, r)
+				return
+			if val < -1 or val > size - 1:
+				pl.notify("Invalid value.")
+				pl.notify(Reader, r)
+				return
+			self.set_responsei(val)
+			reactor.callLater(0, procduel, self)
+		pl.notify(Reader, r)
 
 	def summoning(self, card, location):
 		pos = str(hex(location))

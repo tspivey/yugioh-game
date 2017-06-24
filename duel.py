@@ -300,7 +300,14 @@ class Duel:
 		forced = self.read_u8(data)
 		hint_timing = self.read_u32(data)
 		other_timing = self.read_u32(data)
-		self.cm.call_callbacks('select_chain', player, size, spe_count)
+		chains = []
+		for i in range(size):
+			et = self.read_u8(data)
+			code = self.read_u32(data)
+			loc = self.read_u32(data)
+			desc = self.read_u32(data)
+			chains.append((et, code, loc, desc))
+		self.cm.call_callbacks('select_chain', player, size, spe_count, chains)
 		return b''
 
 	def msg_summoned(self, data):
