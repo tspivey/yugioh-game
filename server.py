@@ -68,6 +68,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('damage', self.damage)
 		self.cm.register_callback('hint', self.hint)
 		self.cm.register_callback('select_card', self.select_card)
+		self.cm.register_callback('move', self.move)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -424,6 +425,17 @@ class MyDuel(dm.Duel):
 		elif card.position == 0xa:
 			return "face down"
 		return str(card.position)
+
+	def move(self, code, location, newloc, reason):
+		card = dm.Card.from_code(code)
+		card.set_location(location)
+		pl = self.players[card.controller]
+		op = self.players[1 - card.controller]
+		plspec = self.card_to_spec(pl.duel_player, card)
+		opspec = self.card_to_spec(op.duel_player, card)
+		if reason & 0x01:
+			pl.notify("Card %s (%s) destroyed." % (plspec, card.name))
+			op.notify("Card %s (%s) destroyed." % (opspec, card.name))
 
 @server.command('^h(and)?$')
 def hand(caller):

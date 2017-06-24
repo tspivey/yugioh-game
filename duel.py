@@ -131,8 +131,12 @@ class Duel:
 #		print("received: %r" % data)
 		while data:
 			msg = int(data[0])
-			print(msg)
-			data = self.message_map[msg](data)
+			fn = self.message_map.get(msg)
+			if fn:
+				data = fn(data)
+			else:
+				print("msg %d unhandled" % msg)
+				data = b''
 
 	def msg_draw(self, data):
 		data = io.BytesIO(data[1:])
@@ -275,7 +279,10 @@ class Duel:
 		data = io.BytesIO(data[1:])
 		code = self.read_u32(data)
 		location = self.read_u32(data)
-		print("Move: code=%d loc=%d" % (code, location))
+		newloc = self.read_u32(data)
+		reason = self.read_u32(data)
+		self.cm.call_callbacks('move', code, location, newloc, reason)
+		print("Move: code=%d loc=%x newloc=%x reason=%x" % (code, location, newloc, reason))
 		return b''
 
 	def msg_summoning(self, data):
