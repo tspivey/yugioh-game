@@ -347,6 +347,8 @@ class Duel:
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
+		if f == 4:
+			return
 		f = self.read_u32(buf)
 		code = self.read_u32(buf)
 		position = self.read_u32(buf)

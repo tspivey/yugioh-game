@@ -113,11 +113,9 @@ class MyDuel(dm.Duel):
 		self.idle_activate = idle_activate
 		self.to_bp = bool(to_bp)
 		self.to_ep = bool(to_ep)
-
 		self.idle_action(pl)
 
-	def idle_action(self, caller):
-		pl = self.players[self.tp]
+	def idle_action(self, pl):
 		pl.notify("Select a card on which to perform an action.")
 		if self.to_bp:
 			pl.notify("b: Enter the battle phase.")
@@ -132,12 +130,28 @@ class MyDuel(dm.Duel):
 				self.set_responsei(7)
 				reactor.callLater(0, procduel, self)
 				return
+			elif caller.text == 'tab':
+				self.show_table(caller.connection, self.tp)
+				caller.connection.notify(Reader, r)
+				return
+			elif caller.text == 'tab2':
+				if self.tp == 0:
+					rtp = 1
+				else:
+					rtp = 0
+				self.show_table(caller.connection, rtp, True)
+				caller.connection.notify(Reader, r)
+				return
 			loc, seq = self.cardspec_to_ls(caller.text)
 			if loc is None:
 				pl.notify("Invalid specifier. Retry.")
 				pl.notify(Reader, r)
 				return
 			card = self.get_card(self.tp, loc, seq)
+			if not card:
+				pl.notify("There is no card in that position.")
+				pl.notify(Reader, r)
+				return
 			self.act_on_card(caller, card)
 		pl.notify(Reader, r)
 
@@ -146,17 +160,34 @@ class MyDuel(dm.Duel):
 		pl.notify(card.name)
 		if card in self.summonable:
 			pl.notify("s: Summon this card in face-up attack position.")
+		if card in self.idle_set:
+			pl.notify("t: Set this card.")
 		if card in self.idle_mset:
 			pl.notify("m: Summon this card in face-down defense position.")
 		if card in self.repos:
-			self.notify("r: reposition this card.")
+			pl.notify("r: reposition this card.")
+		pl.notify("i: Show card info.")
+		pl.notify("z: back.")
 		def action(caller):
 			if caller.text == 's' and card in self.summonable:
-				self.set_responsei(card.sequence << 16)
+				self.set_responsei(self.summonable.index(card) << 16)
+			elif caller.text == 't' and card in self.idle_set:
+				self.set_responsei((self.idle_set.index(card) << 16) + 4)
 			elif caller.text == 'm' and card in self.idle_mset:
-				self.set_responsei((card.sequence << 16) + 3)
+				self.set_responsei((self.idle_mset.index(card) << 16) + 3)
 			elif caller.text == 'r' and card in self.repos:
-				self.set_responsei((card.sequence << 16) + 2)
+				self.set_responsei((self.repos.index(card) << 16) + 2)
+			elif caller.text == 'c' and card in self.spsummon:
+				self.set_responsei((self.spsummon.index(card) << 16) + 1)
+			elif caller.text == 'i':
+				pl.notify(card.name)
+				pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
+				pl.notify(card.desc)
+				pl.notify(Reader, action)
+				return
+			elif caller.text == 'z':
+				reactor.callLater(0, self.idle_action, pl)
+				return
 			else:
 				pl.notify("Invalid action.")
 				pl.notify(Reader, action)
@@ -176,7 +207,7 @@ class MyDuel(dm.Duel):
 			l = dm.LOCATION_SZONE
 		else:
 			return None, None
-		return l, int(r.group(2))
+		return l, int(r.group(2)) - 1
 
 	def pcl(self, name, cards):
 		self.players[self.tp].notify(name+":")
@@ -190,6 +221,11 @@ class MyDuel(dm.Duel):
 			l, s = self.cardspec_to_ls(caller.text)
 			if l is None:
 				pl.notify("Invalid cardspec. Try again.")
+				pl.notify(Reader, r)
+				return
+			card = self.get_card(self.tp, l, s)
+			if card is not None:
+				pl.notify("That position is already in use.")
 				pl.notify(Reader, r)
 				return
 			resp = bytes([self.tp, l, s])
@@ -271,6 +307,40 @@ class MyDuel(dm.Duel):
 			self.set_responseb(buf)
 			procduel(self)
 		con.notify(Reader, f)
+
+	def show_table(self, con, player, hide_facedown=False):
+		mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
+		for card in mz:
+			s = "m%d: " % (card.sequence + 1)
+			if hide_facedown and card.position in (0x8, 0xa):
+				s += self.position_name(card)
+			else:
+				s += card.name + " "
+				s += "(%d/%d) " % (card.attack, card.defense)
+				s += self.position_name(card)
+			con.notify(s)
+		sz = self.get_cards_in_location(player, dm.LOCATION_SZONE)
+		for card in sz:
+			s = "s%d: " % (card.sequence + 1)
+			if hide_facedown and card.position in (0x8, 0xa):
+				s += self.position_name(card)
+			else:
+				s += card.name + " "
+				s += self.position_name(card)
+			con.notify(s)
+
+	def position_name(self, card):
+		if card.position == 0x1:
+			return "face-up attack"
+		elif card.position == 0x2:
+			return "face-down attack"
+		elif card.position == 0x4:
+			return "face-up defense"
+		elif card.position == 0x8:
+			return "face-down defense"
+		elif card.position == 0xa:
+			return "face down"
+		return str(card.position)
 
 @server.command('^h(and)?$')
 def hand(caller):
@@ -371,9 +441,6 @@ def m2(caller):
 @server.command('^tab$')
 def tab(caller):
 	duel = caller.connection.duel
-	mz = duel.get_cards_in_location(caller.connection.duel_player, dm.LOCATION_MZONE)
-	for card in mz:
-		caller.connection.notify("m%d: %s (%d/%d)" % (card.sequence+1, card.name, card.attack, card.defense))
 
 @server.command(r'^attack (\d+)$')
 def attack(caller):
