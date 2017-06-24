@@ -221,24 +221,38 @@ class MyDuel(dm.Duel):
 		for card in cards:
 			self.players[self.tp].notify(card.name)
 
-	def select_place(self):
-		pl = self.players[self.tp]
-		pl.notify("Select place for card")
+	def select_place(self, player, count, flag):
+		pl = self.players[player]
+		specs = self.flag_to_usable_cardspecs(flag)
+		pl.notify("Select place for card, one of %s." % ", ".join(specs))
 		def r(caller):
-			l, s = self.cardspec_to_ls(caller.text)
-			if l is None:
+			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Try again.")
 				pl.notify(Reader, r)
 				return
-			card = self.get_card(self.tp, l, s)
-			if card is not None:
-				pl.notify("That position is already in use.")
-				pl.notify(Reader, r)
-				return
-			resp = bytes([self.tp, l, s])
+			l, s = self.cardspec_to_ls(caller.text)
+			if caller.text.startswith('o'):
+				plr = 1 - player
+			else:
+				plr = player
+			resp = bytes([plr, l, s])
 			self.set_responseb(resp)
 			reactor.callLater(0, procduel, self)
 		pl.notify(Reader, r)
+
+	def flag_to_usable_cardspecs(self, flag):
+		pm = flag & 0xff
+		ps = (flag >> 8) & 0xff
+		om = (flag >> 16) & 0xff
+		os = (flag >> 24) & 0xff
+		zone_names = ('m', 's', 'om', 'os')
+		specs = []
+		for zn, val in zip(zone_names, (pm, ps, om, os)):
+			for i in range(8):
+				avail = val & (1 << i) == 0
+				if avail:
+					specs.append(zn + str(i + 1))
+		return specs
 
 	def select_chain(self, player, size, spe_count, chains):
 		if size == 0 and spe_count == 0:

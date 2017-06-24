@@ -217,7 +217,7 @@ class Duel:
 		player = self.read_u8(data)
 		count = self.read_u8(data)
 		flag = self.read_u32(data)
-		self.cm.call_callbacks('select_place')
+		self.cm.call_callbacks('select_place', player, count, flag)
 		return b''
 
 	def msg_select_battlecmd(self, data):
