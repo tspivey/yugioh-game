@@ -166,6 +166,10 @@ class MyDuel(dm.Duel):
 			pl.notify("m: Summon this card in face-down defense position.")
 		if card in self.repos:
 			pl.notify("r: reposition this card.")
+		if card in self.spsummon:
+			pl.notify("c: Special summon this card.")
+		if card in self.idle_activate:
+			pl.notify("v: Idle activate this card.")
 		pl.notify("i: Show card info.")
 		pl.notify("z: back.")
 		def action(caller):
@@ -179,6 +183,8 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.repos.index(card) << 16) + 2)
 			elif caller.text == 'c' and card in self.spsummon:
 				self.set_responsei((self.spsummon.index(card) << 16) + 1)
+			elif caller.text == 'v' and card in self.idle_activate:
+				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
 			elif caller.text == 'i':
 				pl.notify(card.name)
 				pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
