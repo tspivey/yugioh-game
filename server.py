@@ -386,7 +386,12 @@ class MyDuel(dm.Duel):
 			cds = caller.text.split()
 			buf = bytes([len(cds)])
 			for i in cds:
-				i = int(i) - 1
+				try:
+					i = int(i) - 1
+				except ValueError:
+					con.notify("Invalid value.")
+					con.notify(Reader, f)
+					return
 				buf += bytes([i])
 			self.set_responseb(buf)
 			procduel(self)
