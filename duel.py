@@ -401,6 +401,7 @@ class Duel:
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		code = self.read_u32(data)
+		card = Card.from_code(code)
 		positions = self.read_u8(data)
 		self.cm.call_callbacks('select_position', player, card, positions)
 		return b''
