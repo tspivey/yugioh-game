@@ -430,7 +430,7 @@ class MyDuel(dm.Duel):
 		self.lp[player] -= amount
 
 	def recover(self, player, amount):
-		self.notify_all("Player %d's lp increased by %d, now %d" % (player, amount, self.lp[player]-amount))
+		self.notify_all("Player %d's lp increased by %d, now %d" % (player, amount, self.lp[player] + amount))
 		self.lp[player] += amount
 
 	def notify_all(self, s):
