@@ -73,6 +73,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_option', self.select_option)
 		self.cm.register_callback('recover', self.recover)
 		self.cm.register_callback('select_tribute', partial(self.select_card, is_tribute=True))
+		self.cm.register_callback('pos_change', self.pos_change)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -526,6 +527,13 @@ class MyDuel(dm.Duel):
 		pl.notify(card.name)
 		pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
 		pl.notify(card.desc)
+
+	def pos_change(self, card, prevpos):
+		cs = self.card_to_spec(card.controller, card)
+		cso = self.card_to_spec(1 - card.controller, card)
+		newpos = self.position_name(card)
+		self.players[card.controller].notify("The position of card %s (%s) was changed to %s." % (cs, card.name, newpos))
+		self.players[1 - card.controller].notify("The position of card %s (%s) was changed to %s." % (cso, card.name, newpos))
 
 class DuelReader(Reader):
 	def feed(self, caller):

@@ -115,6 +115,7 @@ class Duel:
 		14: self.msg_select_option,
 		92: self.msg_recover,
 		20: self.msg_select_tribute,
+		53: self.msg_pos_change,
 		}
 		self.state = ''
 
@@ -363,6 +364,18 @@ class Duel:
 		for i in range(size):
 			options.append(self.read_u32(data))
 		self.cm.call_callbacks("select_option", player, options)
+		return b''
+
+	def msg_pos_change(self, data):
+		data = io.BytesIO(data[1:])
+		code = self.read_u32(data)
+		card = Card.from_code(code)
+		card.controller = self.read_u8(data)
+		card.location = self.read_u8(data)
+		card.sequence = self.read_u8(data)
+		prevpos = self.read_u8(data)
+		card.position = self.read_u8(data)
+		self.cm.call_callbacks('pos_change', card, prevpos)
 		return b''
 
 	def read_u8(self, buf):
