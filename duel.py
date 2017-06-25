@@ -322,8 +322,9 @@ class Duel:
 	def msg_summoning(self, data):
 		data = io.BytesIO(data[1:])
 		code = self.read_u32(data)
-		location = self.read_u32(data)
-		self.cm.call_callbacks('summoning', Card.from_code(code), location)
+		card = Card.from_code(code)
+		card.set_location(self.read_u32(data))
+		self.cm.call_callbacks('summoning', card)
 		return b''
 
 	def msg_select_chain(self, data):
