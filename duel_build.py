@@ -9,6 +9,7 @@ libraries = ['ygo'],
 library_dirs=['.'],
 source_extension='.cpp',
 include_dirs=['../ygopro-core'],
+extra_compile_args=['-std=c++0x'],
 extra_link_args=['-Wl,-rpath,.'],
 )
 ffibuilder.cdef("""
