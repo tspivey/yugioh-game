@@ -600,7 +600,10 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		def no(caller):
 			self.set_responsei(0)
-		pl.notify(YesOrNo, str(desc), yes, no=no)
+			reactor.callLater(0, procduel, self)
+		code = desc >> 4
+		opt = dm.Card.from_code(code).strings[desc & 0xf]
+		pl.notify(YesOrNo, opt, yes, no=no)
 
 class DuelReader(Reader):
 	def feed(self, caller):
