@@ -410,7 +410,7 @@ class Duel:
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		desc = self.read_u32(data)
-		self.call_callbacks('yesno', player, desc)
+		self.cm.call_callbacks('yesno', player, desc)
 		return b''
 
 	def read_u8(self, buf):
