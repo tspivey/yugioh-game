@@ -130,7 +130,7 @@ class MyDuel(dm.Duel):
 		def r(caller):
 			if caller.text == 'h':
 				self.show_hand(caller.connection, self.tp)
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			if caller.text == 'b' and self.to_bp:
 				self.set_responsei(6)
@@ -140,30 +140,18 @@ class MyDuel(dm.Duel):
 				self.set_responsei(7)
 				reactor.callLater(0, procduel, self)
 				return
-			elif caller.text == 'tab':
-				self.show_table(caller.connection, self.tp)
-				caller.connection.notify(Reader, r)
-				return
-			elif caller.text == 'tab2':
-				if self.tp == 0:
-					rtp = 1
-				else:
-					rtp = 0
-				self.show_table(caller.connection, rtp, True)
-				caller.connection.notify(Reader, r)
-				return
 			loc, seq = self.cardspec_to_ls(caller.text)
 			if loc is None:
 				pl.notify("Invalid specifier. Retry.")
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			card = self.get_card(self.tp, loc, seq)
 			if not card:
 				pl.notify("There is no card in that position.")
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			self.act_on_card(caller, card)
-		pl.notify(Reader, r)
+		pl.notify(DuelReader, r, no_abort=True)
 
 	def act_on_card(self, caller, card):
 		pl = self.players[self.tp]
@@ -197,17 +185,17 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
 			elif caller.text == 'i':
 				self.show_info(card, pl)
-				pl.notify(Reader, action)
+				pl.notify(DuelReader, action, no_abort=True)
 				return
 			elif caller.text == 'z':
 				reactor.callLater(0, self.idle_action, pl)
 				return
 			else:
 				pl.notify("Invalid action.")
-				pl.notify(Reader, action)
+				pl.notify(DuelReader, action, no_abort=True)
 				return
 			reactor.callLater(0, procduel, self)
-		pl.notify(Reader, action)
+		pl.notify(DuelReader, action, no_abort=True)
 
 	def cardspec_to_ls(self, text):
 		r = re.search(r'^([a-z]+)(\d+)', text)
@@ -235,7 +223,7 @@ class MyDuel(dm.Duel):
 		def r(caller):
 			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Try again.")
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			l, s = self.cardspec_to_ls(caller.text)
 			if caller.text.startswith('o'):
@@ -245,7 +233,7 @@ class MyDuel(dm.Duel):
 			resp = bytes([plr, l, s])
 			self.set_responseb(resp)
 			reactor.callLater(0, procduel, self)
-		pl.notify(Reader, r)
+		pl.notify(DuelReader, r, no_abort=True)
 
 	def flag_to_usable_cardspecs(self, flag):
 		pm = flag & 0xff
@@ -286,17 +274,17 @@ class MyDuel(dm.Duel):
 				info = False
 			if caller.text not in specs:
 				pl.notify("Invalid spec.")
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			card = specs[caller.text]
 			idx = chain_cards.index(card)
 			if info:
 				self.show_info(card, pl)
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			self.set_responsei(idx)
 			reactor.callLater(0, procduel, self)
-		pl.notify(Reader, r)
+		pl.notify(DuelReader, r, no_abort=True)
 
 	def select_option(self, player, options):
 		def select(caller, idx):
@@ -345,8 +333,8 @@ class MyDuel(dm.Duel):
 				reactor.callLater(0, procduel, self)
 			else:
 				pl.notify("Invalid option.")
-				pl.notify(Reader, r)
-		pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
+		pl.notify(DuelReader, r, no_abort=True)
 
 	def battle_attack(self, con):
 		pl = self.players[con.duel_player]
@@ -364,13 +352,13 @@ class MyDuel(dm.Duel):
 				return
 			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Retry.")
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			card = specs[caller.text]
 			seq = self.attackable.index(card)
 			self.set_responsei((seq << 16) + 1)
 			reactor.callLater(0, procduel, self)
-		pl.notify(Reader, r)
+		pl.notify(DuelReader, r, no_abort=True)
 
 	def battle_activate(self, con):
 		pl = self.players[con.duel_player]
@@ -388,13 +376,13 @@ class MyDuel(dm.Duel):
 				return
 			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Retry.")
-				pl.notify(Reader, r)
+				pl.notify(DuelReader, r, no_abort=True)
 				return
 			card = specs[caller.text]
 			seq = self.activatable.index(card)
 			self.set_responsei((seq << 16))
 			reactor.callLater(0, procduel, self)
-		pl.notify(Reader, r)
+		pl.notify(DuelReader, r, no_abort=True)
 
 	def card_to_spec(self, player, card):
 		s = ""
@@ -468,12 +456,12 @@ class MyDuel(dm.Duel):
 					i = int(i) - 1
 				except ValueError:
 					con.notify("Invalid value.")
-					con.notify(Reader, f)
+					con.notify(DuelReader, f, no_abort=True)
 					return
 				buf += bytes([i])
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
-		con.notify(Reader, f)
+		con.notify(DuelReader, f, no_abort=True)
 
 	def show_table(self, con, player, hide_facedown=False):
 		mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
@@ -538,6 +526,21 @@ class MyDuel(dm.Duel):
 		pl.notify(card.name)
 		pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
 		pl.notify(card.desc)
+
+class DuelReader(Reader):
+	def feed(self, caller):
+		con = caller.connection
+		text = caller.text
+		if text == 'h':
+			con.duel.show_hand(con, con.duel_player)
+		elif text == 'tab':
+			con.duel.show_table(con, con.duel_player)
+		elif text == 'tab2':
+			con.duel.show_table(con, 1 - con.duel_player)
+		if text in ('h', 'tab', 'tab2'):
+			caller.connection.notify(self, self.done)
+			return
+		super(DuelReader, self).feed(caller)
 
 @server.command('^h(and)?$')
 def hand(caller):
@@ -644,6 +647,12 @@ def attack(caller):
 	c = duel.attackable[n - 1]
 	duel.set_responsei((c[3] << 16) + 1)
 	procduel(duel)
+
+@server.command("^t$")
+def t(caller):
+	def r(caller):
+		pass
+	caller.connection.notify(DuelReader, r, no_abort=True)
 
 if __name__ == '__main__':
 	server.run()
