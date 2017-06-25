@@ -538,7 +538,14 @@ class MyDuel(dm.Duel):
 			pl.notify("%s: %s card." % (cs, pos))
 			return
 		pl.notify(card.name)
-		pl.notify("type: %d attack: %d defense: %d" % (card.type, card.attack, card.defense))
+		t = str(card.type)
+		if card.type & 1:
+			t = "Monster"
+		elif card.type & 2:
+			t = "Spell"
+		elif card.type & 4:
+			t = "Trap"
+		pl.notify("type: %s attack: %d defense: %d level: %d" % (t, card.attack, card.defense, card.level))
 		pl.notify(card.desc)
 
 	def pos_change(self, card, prevpos):
