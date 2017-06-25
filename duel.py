@@ -93,6 +93,7 @@ class Duel:
 		lib.set_player_info(self.duel, 0, 8000, 5, 1)
 		lib.set_player_info(self.duel, 1, 8000, 5, 1)
 		self.cm = callback_manager.CallbackManager()
+		self.started = False
 		self.message_map = {
 			90: self.msg_draw,
 			40: self.msg_new_turn,
@@ -122,6 +123,7 @@ class Duel:
 		13: self.msg_yesno,
 		62: partial(self.msg_summoning, special=True),
 		12: self.msg_select_effectyn,
+		5: self.msg_win,
 		}
 		self.state = ''
 
@@ -132,6 +134,11 @@ class Duel:
 
 	def start(self):
 		lib.start_duel(self.duel, 0)
+		self.started = True
+
+	def end(self):
+		lib.end_duel(self.duel)
+		self.started = False
 
 	def process(self):
 		res = lib.process(self.duel)
@@ -422,6 +429,13 @@ class Duel:
 		card = Card.from_code(self.read_u32(data))
 		card.set_location(self.read_u32(data))
 		self.cm.call_callbacks('select_effectyn', player, card)
+		return b''
+
+	def msg_win(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		reason = self.read_u8(data)
+		self.cm.call_callbacks('win', player, reason)
 		return b''
 
 	def read_u8(self, buf):

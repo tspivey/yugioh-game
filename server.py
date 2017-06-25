@@ -39,9 +39,11 @@ def duel(caller):
 		procduel(active_duel)
 
 def procduel(d):
-	while True:
+	while d.started:
 		res = d.process()
-		if res & 0x10000:
+		if res & 0x20000:
+			break
+		elif res & 0x10000:
 			if d.keep_processing:
 				d.keep_processing = False
 				continue
@@ -79,9 +81,11 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_position', self.select_position)
 		self.cm.register_callback('yesno', self.yesno)
 		self.cm.register_callback('select_effectyn', self.select_effectyn)
+		self.cm.register_callback('win', self.win)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
+		self.started = False
 
 	def draw(self, player, cards):
 		pl = self.players[player]
@@ -616,6 +620,17 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		question = "Do you want to use the effect from %s in %s?" % (card.name, self.card_to_spec(player, card))
 		pl.notify(YesOrNo, question, yes, no=no)
+
+	def win(self, player, reason):
+		if player == 2:
+			self.notify_all("The duel was a draw.")
+			self.end()
+			return
+		winner = self.players[player]
+		loser = self.players[1 - player]
+		winner.notify("You won.")
+		loser.notify("You lost.")
+		self.end()
 
 class DuelReader(Reader):
 	def feed(self, caller):
