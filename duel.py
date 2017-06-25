@@ -353,7 +353,9 @@ class Duel:
 		data = io.BytesIO(data[1:])
 		code = self.read_u32(data)
 		loc = self.read_u32(data)
-		print("Set: code=%d loc=%d" % (code, loc))
+		card = Card.from_code(code)
+		card.set_location(loc)
+		self.cm.call_callbacks('set', card)
 		return b''
 
 	def msg_select_option(self, data):

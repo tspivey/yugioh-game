@@ -74,6 +74,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('recover', self.recover)
 		self.cm.register_callback('select_tribute', partial(self.select_card, is_tribute=True))
 		self.cm.register_callback('pos_change', self.pos_change)
+		self.cm.register_callback('set', self.set)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -540,6 +541,15 @@ class MyDuel(dm.Duel):
 		newpos = self.position_name(card)
 		self.players[card.controller].notify("The position of card %s (%s) was changed to %s." % (cs, card.name, newpos))
 		self.players[1 - card.controller].notify("The position of card %s (%s) was changed to %s." % (cso, card.name, newpos))
+
+	def set(self, card):
+		c = card.controller
+		self.players[c].notify("You set %s (%s) in %s position." %
+		(self.card_to_spec(c, card), card.name, self.position_name(card)))
+		op = 1 - c
+		on = "Player %d" % c
+		self.players[op].notify("%s sets %s in %s position." %
+		(on, self.card_to_spec(op, card), self.position_name(card)))
 
 class DuelReader(Reader):
 	def feed(self, caller):
