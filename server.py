@@ -585,7 +585,7 @@ class DuelReader(Reader):
 		elif text == 'tab':
 			con.duel.show_table(con, con.duel_player)
 		elif text == 'tab2':
-			con.duel.show_table(con, 1 - con.duel_player)
+			con.duel.show_table(con, 1 - con.duel_player, True)
 		if text in ('h', 'tab', 'tab2'):
 			caller.connection.notify(self, self.done)
 			return
