@@ -117,6 +117,7 @@ class Duel:
 		20: self.msg_select_tribute,
 		53: self.msg_pos_change,
 		70: self.msg_chaining,
+		19: self.msg_select_position,
 		}
 		self.state = ''
 
@@ -392,6 +393,14 @@ class Duel:
 		desc = self.read_u32(data)
 		cs = self.read_u8(data)
 		self.cm.call_callbacks('chaining', card, tc, tl, ts, desc, cs)
+		return b''
+
+	def msg_select_position(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		code = self.read_u32(data)
+		positions = self.read_u8(data)
+		self.cm.call_callbacks('select_position', player, card, positions)
 		return b''
 
 	def read_u8(self, buf):

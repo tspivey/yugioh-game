@@ -76,6 +76,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('pos_change', self.pos_change)
 		self.cm.register_callback('set', self.set)
 		self.cm.register_callback("chaining", self.chaining)
+		self.cm.register_callback('select_position', self.select_position)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -558,6 +559,22 @@ class MyDuel(dm.Duel):
 		n = "Player %d" % c
 		self.players[c].notify("Activating %s" % card.name)
 		self.players[o].notify("%s activating %s" % (n, card.name))
+
+	def select_position(self, player, card, positions):
+		pl = self.players[player]
+		m = Menu("Select position for %s:" % (card.name,), no_abort=True)
+		def set(caller, pos=None):
+			self.set_responsei(pos)
+			reactor.callLater(0, procduel, self)
+		if positions & 1:
+			m.item("Face-up attack")(lambda caller: set(caller, 1))
+		if positions & 2:
+			m.item("Face-down attack")(lambda caller: set(caller, 1))
+		if positions & 4:
+			m.item("Face-up defense")(lambda caller: set(caller, 1))
+		if positions & 8:
+			m.item("Face-down defense")(lambda caller: set(caller, 1))
+		pl.notify(m)
 
 class DuelReader(Reader):
 	def feed(self, caller):
