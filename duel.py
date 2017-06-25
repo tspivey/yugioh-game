@@ -6,6 +6,7 @@ import struct
 import random
 import binascii
 import callback_manager
+from functools import partial
 
 deck = [int(l.strip()) for l in open('deck.ydk')]
 db = sqlite3.connect('cards.cdb')
@@ -119,6 +120,7 @@ class Duel:
 		70: self.msg_chaining,
 		19: self.msg_select_position,
 		13: self.msg_yesno,
+		62: partial(self.msg_summoning, special=True),
 		}
 		self.state = ''
 
@@ -320,12 +322,12 @@ class Duel:
 		print("Move: code=%d loc=%x newloc=%x reason=%x" % (code, location, newloc, reason))
 		return b''
 
-	def msg_summoning(self, data):
+	def msg_summoning(self, data, special=False):
 		data = io.BytesIO(data[1:])
 		code = self.read_u32(data)
 		card = Card.from_code(code)
 		card.set_location(self.read_u32(data))
-		self.cm.call_callbacks('summoning', card)
+		self.cm.call_callbacks('summoning', card, special=special)
 		return b''
 
 	def msg_select_chain(self, data):

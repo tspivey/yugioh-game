@@ -305,10 +305,14 @@ class MyDuel(dm.Duel):
 			m.item(opt)(lambda caller, idx=idx: select(caller, idx))
 		self.players[player].notify(m)
 
-	def summoning(self, card):
+	def summoning(self, card, special=False):
+		if special:
+			action = "Special summoning"
+		else:
+			action = "Summoning"
 		pos = self.position_name(card)
 		for pl in self.players:
-			pl.notify("Player %d summoning %s in %s position." % (self.tp, card.name, pos))
+			pl.notify("Player %d %s %s in %s position." % (self.tp, action, card.name, pos))
 
 	def select_battlecmd(self, player, activatable, attackable, to_m2, to_ep):
 		self.state = "battle"
