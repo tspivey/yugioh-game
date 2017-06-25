@@ -78,6 +78,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback("chaining", self.chaining)
 		self.cm.register_callback('select_position', self.select_position)
 		self.cm.register_callback('yesno', self.yesno)
+		self.cm.register_callback('select_effectyn', self.select_effectyn)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -604,6 +605,17 @@ class MyDuel(dm.Duel):
 		code = desc >> 4
 		opt = dm.Card.from_code(code).strings[desc & 0xf]
 		pl.notify(YesOrNo, opt, yes, no=no)
+
+	def select_effectyn(self, player, card):
+		pl = self.players[player]
+		def yes(caller):
+			self.set_responsei(1)
+			reactor.callLater(0, procduel, self)
+		def no(caller):
+			self.set_responsei(0)
+			reactor.callLater(0, procduel, self)
+		question = "Do you want to use the effect from %s in %s?" % (card.name, self.card_to_spec(player, card))
+		pl.notify(YesOrNo, question, yes, no=no)
 
 class DuelReader(Reader):
 	def feed(self, caller):

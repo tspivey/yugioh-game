@@ -121,6 +121,7 @@ class Duel:
 		19: self.msg_select_position,
 		13: self.msg_yesno,
 		62: partial(self.msg_summoning, special=True),
+		12: self.msg_select_effectyn,
 		}
 		self.state = ''
 
@@ -413,6 +414,14 @@ class Duel:
 		player = self.read_u8(data)
 		desc = self.read_u32(data)
 		self.cm.call_callbacks('yesno', player, desc)
+		return b''
+
+	def msg_select_effectyn(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		card = Card.from_code(self.read_u32(data))
+		card.set_location(self.read_u32(data))
+		self.cm.call_callbacks('select_effectyn', player, card)
 		return b''
 
 	def read_u8(self, buf):
