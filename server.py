@@ -122,11 +122,16 @@ class MyDuel(dm.Duel):
 
 	def idle_action(self, pl):
 		pl.notify("Select a card on which to perform an action.")
+		pl.notify("h shows your hand, tab and tab2 shows your or the opponent's table.")
 		if self.to_bp:
 			pl.notify("b: Enter the battle phase.")
 		if self.to_ep:
 			pl.notify("e: End phase.")
 		def r(caller):
+			if caller.text == 'h':
+				self.show_hand(caller.connection, self.tp)
+				pl.notify(Reader, r)
+				return
 			if caller.text == 'b' and self.to_bp:
 				self.set_responsei(6)
 				reactor.callLater(0, procduel, self)
@@ -491,6 +496,14 @@ class MyDuel(dm.Duel):
 				s += self.position_name(card)
 			con.notify(s)
 
+	def show_hand(self, con, player):
+		h = self.get_cards_in_location(player, dm.LOCATION_HAND)
+		if not h:
+			con.notify("Your hand is empty.")
+			return
+		for c in h:
+			con.notify("h%d: %s" % (c.sequence + 1, c.name))
+
 	def position_name(self, card):
 		if card.position == 0x1:
 			return "face-up attack"
@@ -529,12 +542,7 @@ class MyDuel(dm.Duel):
 @server.command('^h(and)?$')
 def hand(caller):
 	con = caller.connection
-	h = con.duel.get_cards_in_location(con.duel_player, dm.LOCATION_HAND)
-	if not h:
-		con.notify("Your hand is empty.")
-		return
-	for c in h:
-		con.notify("h%d: %s" % (c.sequence + 1, c.name))
+	con.duel.show_hand(con, con.duel_player)
 
 def check_tp(f):
 	def wraps(caller):
