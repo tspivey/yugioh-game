@@ -1,4 +1,5 @@
 import re
+from functools import partial
 import gsb
 from gsb.intercept import Menu, Reader
 from twisted.internet import reactor
@@ -71,6 +72,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('move', self.move)
 		self.cm.register_callback('select_option', self.select_option)
 		self.cm.register_callback('recover', self.recover)
+		self.cm.register_callback('select_tribute', partial(self.select_card, is_tribute=True))
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -444,9 +446,13 @@ class MyDuel(dm.Duel):
 		if msg == 3 and data == 501:
 			self.players[player].notify("Select a card to discard:")
 
-	def select_card(self, player, cancelable, min, max, cards):
+	def select_card(self, player, cancelable, min, max, cards, is_tribute=False):
 		con = self.players[player]
-		con.notify("Select %d to %d cards separated by spaces:" % (min, max))
+		if is_tribute:
+			s = " to tribute"
+		else:
+			s = ""
+		con.notify("Select %d to %d cards%s separated by spaces:" % (min, max, s))
 		for i, c in enumerate(cards):
 			con.notify("%d: %s" % (i+1, c.name))
 		def f(caller):
@@ -461,7 +467,7 @@ class MyDuel(dm.Duel):
 					return
 				buf += bytes([i])
 			self.set_responseb(buf)
-			procduel(self)
+			reactor.callLater(0, procduel, self)
 		con.notify(Reader, f)
 
 	def show_table(self, con, player, hide_facedown=False):
