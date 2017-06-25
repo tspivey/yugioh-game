@@ -75,6 +75,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_tribute', partial(self.select_card, is_tribute=True))
 		self.cm.register_callback('pos_change', self.pos_change)
 		self.cm.register_callback('set', self.set)
+		self.cm.register_callback("chaining", self.chaining)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -550,6 +551,13 @@ class MyDuel(dm.Duel):
 		on = "Player %d" % c
 		self.players[op].notify("%s sets %s in %s position." %
 		(on, self.card_to_spec(op, card), self.position_name(card)))
+
+	def chaining(self, card, tc, tl, ts, desc, cs):
+		c = card.controller
+		o = 1 - c
+		n = "Player %d" % c
+		self.players[c].notify("Activating %s" % card.name)
+		self.players[o].notify("%s activating %s" % (n, card.name))
 
 class DuelReader(Reader):
 	def feed(self, caller):
