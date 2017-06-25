@@ -1,7 +1,7 @@
 import re
 from functools import partial
 import gsb
-from gsb.intercept import Menu, Reader
+from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
 import duel as dm
 
@@ -77,6 +77,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('set', self.set)
 		self.cm.register_callback("chaining", self.chaining)
 		self.cm.register_callback('select_position', self.select_position)
+		self.cm.register_callback('yesno', self.yesno)
 
 		self.players = [None, None]
 		self.lp = [8000, 8000]
@@ -575,6 +576,15 @@ class MyDuel(dm.Duel):
 		if positions & 8:
 			m.item("Face-down defense")(lambda caller: set(caller, 1))
 		pl.notify(m)
+
+	def yesno(self, player, desc):
+		pl = self.players[player]
+		def yes(caller):
+			self.set_responsei(1)
+			reactor.callLater(0, procduel, self)
+		def no(caller):
+			self.set_responsei(0)
+		pl.notify(YesOrNo, str(desc), yes, no=no)
 
 class DuelReader(Reader):
 	def feed(self, caller):
