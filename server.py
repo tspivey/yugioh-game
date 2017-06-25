@@ -517,6 +517,8 @@ class MyDuel(dm.Duel):
 			return "face-down attack"
 		elif card.position == 0x4:
 			return "face-up defense"
+		elif card.position == 0x5:
+			return "face-up"
 		elif card.position == 0x8:
 			return "face-down defense"
 		elif card.position == 0xa:
