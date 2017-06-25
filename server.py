@@ -451,10 +451,16 @@ class MyDuel(dm.Duel):
 			con.notify("%d: %s" % (i+1, c.name))
 		def f(caller):
 			cds = caller.text.split()
+			if len(cds) < min or len(cds) > max:
+				con.notify("Please enter between %d and %d cards." % (min, max))
+				con.notify(DuelReader, f, no_abort=True)
+				return
 			buf = bytes([len(cds)])
 			for i in cds:
 				try:
 					i = int(i) - 1
+					if i < 0 or i > len(cards) - 1:
+						raise ValueError
 				except ValueError:
 					con.notify("Invalid value.")
 					con.notify(DuelReader, f, no_abort=True)
