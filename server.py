@@ -476,6 +476,10 @@ class MyDuel(dm.Duel):
 
 	def show_table(self, con, player, hide_facedown=False):
 		mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
+		sz = self.get_cards_in_location(player, dm.LOCATION_SZONE)
+		if len(mz+sz) == 0:
+			con.notify("Table is empty.")
+			return
 		for card in mz:
 			s = "m%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
@@ -485,7 +489,6 @@ class MyDuel(dm.Duel):
 				s += "(%d/%d) " % (card.attack, card.defense)
 				s += self.position_name(card)
 			con.notify(s)
-		sz = self.get_cards_in_location(player, dm.LOCATION_SZONE)
 		for card in sz:
 			s = "s%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
