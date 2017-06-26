@@ -384,7 +384,7 @@ class Duel:
 			card.set_location(loc)
 			desc = self.read_u32(data)
 			chains.append((et, card, desc))
-		self.cm.call_callbacks('select_chain', player, size, spe_count, chains)
+		self.cm.call_callbacks('select_chain', player, size, spe_count, forced, chains)
 		return b''
 
 	def msg_summoned(self, data):

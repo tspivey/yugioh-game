@@ -321,13 +321,17 @@ class MyDuel(dm.Duel):
 					specs.append(zn + str(i + 1))
 		return specs
 
-	def select_chain(self, player, size, spe_count, chains):
+	def select_chain(self, player, size, spe_count, forced, chains):
 		if size == 0 and spe_count == 0:
 			self.keep_processing = True
 			self.set_responsei(-1)
 			return
 		pl = self.players[player]
-		pl.notify("Select chain:")
+		if forced:
+			s = ""
+		else:
+			s = " (c to cancel)"
+		pl.notify("Select chain%s:" % s)
 		specs = {}
 		chain_cards = [c[1] for c in chains]
 		for et, card, desc in chains:
@@ -335,7 +339,7 @@ class MyDuel(dm.Duel):
 			specs[cs] = card
 			pl.notify("%s: %s" % (cs, card.name))
 		def r(caller):
-			if caller.text == 'c':
+			if caller.text == 'c' and not forced:
 				self.set_responsei(-1)
 				reactor.callLater(0, procduel, self)
 				return
