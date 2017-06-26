@@ -37,6 +37,9 @@ class MyServer(gsb.Server):
 			players[caller.text.lower()] = caller.connection
 			caller.connection.nickname = caller.text
 			caller.connection.notify("Logged in.")
+			if os.path.exists("motd.txt"):
+				with open('motd.txt', 'r') as fp:
+					caller.connection.notify(fp.read())
 		prompt()
 
 	def on_disconnect(self, caller):
