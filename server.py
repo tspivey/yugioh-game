@@ -380,8 +380,9 @@ class MyDuel(dm.Duel):
 		else:
 			action = "Summoning"
 		pos = card.position_name()
+		nick = self.players[card.controller].nickname
 		for pl in self.players:
-			pl.notify("Player %d %s %s in %s position." % (self.tp, action, card.name, pos))
+			pl.notify("%s %s %s (%d/%d) in %s position." % (nick, action, card.name, card.attack, card.defense, pos))
 
 	def select_battlecmd(self, player, activatable, attackable, to_m2, to_ep):
 		self.state = "battle"
