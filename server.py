@@ -174,8 +174,8 @@ class MyDuel(dm.Duel):
 
 	def new_turn(self, tp):
 		self.tp = tp
-		for pl in self.players:
-			pl.notify("Player %d is tp." % tp)
+		self.players[tp].notify("Your turn.")
+		self.players[1 - tp].notify("%s's turn." % self.players[tp].nickname)
 
 	def idle(self, summonable, spsummon, repos, idle_mset, idle_set, idle_activate, to_bp, to_ep, cs):
 		self.state = "idle"
