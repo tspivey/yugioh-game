@@ -396,6 +396,10 @@ class MyDuel(dm.Duel):
 			pl.notify("a: Attack.")
 		if self.activatable:
 			pl.notify("c: activate.")
+		if self.to_m2:
+			pl.notify("m: Main phase 2.")
+		if self.to_ep:
+			pl.notify("e: End phase.")
 		def r(caller):
 			if caller.text == 'a' and self.attackable:
 				self.battle_attack(caller.connection)
