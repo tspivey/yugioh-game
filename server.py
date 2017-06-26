@@ -824,5 +824,14 @@ def say(caller):
 	for pl in players.values():
 		pl.notify("%s: %s" % (caller.connection.nickname, caller.args[0]))
 
+@server.command('^who$')
+def who(caller):
+	caller.connection.notify("Online players:")
+	for pl in players.values():
+		s = pl.nickname
+		if pl.duel:
+			s += ' (dueling)'
+		caller.connection.notify(s)
+
 if __name__ == '__main__':
 	server.run()
