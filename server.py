@@ -53,9 +53,6 @@ class MyServer(gsb.Server):
 		if con.duel:
 			con.duel.notify_all("Your opponent disconnected, the duel is over.")
 			con.duel.end()
-			for pl in con.duel.players:
-				pl.duel = None
-				pl.intercept = None
 
 server = MyServer(port=4000)
 
@@ -684,6 +681,12 @@ class MyDuel(dm.Duel):
 		winner.notify("You won.")
 		loser.notify("You lost.")
 		self.end()
+
+	def end(self):
+		super(MyDuel, self).end()
+		for pl in self.players:
+			pl.duel = None
+			pl.intercept = None
 
 class DuelReader(Reader):
 	def feed(self, caller):
