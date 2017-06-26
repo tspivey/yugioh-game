@@ -86,6 +86,35 @@ class Card(object):
 	def __eq__(self, other):
 		return self.code == other.code and self.location == other.location and self.sequence == other.sequence
 
+	def position_name(self):
+		if self.position == 0x1:
+			return "face-up attack"
+		elif self.position == 0x2:
+			return "face-down attack"
+		elif self.position == 0x4:
+			return "face-up defense"
+		elif self.position == 0x5:
+			return "face-up"
+		elif self.position == 0x8:
+			return "face-down defense"
+		elif self.position == 0xa:
+			return "face down"
+		return str(self.position)
+
+	def info(self):
+		lst = []
+		lst.append(self.name)
+		t = str(self.type)
+		if self.type & 1:
+			t = "Monster"
+		elif self.type & 2:
+			t = "Spell"
+		elif self.type & 4:
+			t = "Trap"
+		lst.append("type: %s attack: %d defense: %d level: %d" % (t, self.attack, self.defense, self.level))
+		lst.append(self.desc)
+		return "\n".join(lst)
+
 class Duel:
 	def __init__(self):
 		self.buf = ffi.new('char[]', 4096)

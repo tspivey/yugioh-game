@@ -315,7 +315,7 @@ class MyDuel(dm.Duel):
 			action = "Special summoning"
 		else:
 			action = "Summoning"
-		pos = self.position_name(card)
+		pos = card.position_name()
 		for pl in self.players:
 			pl.notify("Player %d %s %s in %s position." % (self.tp, action, card.name, pos))
 
@@ -492,19 +492,19 @@ class MyDuel(dm.Duel):
 		for card in mz:
 			s = "m%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
-				s += self.position_name(card)
+				s += card.position_name()
 			else:
 				s += card.name + " "
 				s += "(%d/%d) " % (card.attack, card.defense)
-				s += self.position_name(card)
+				s += card.position_name()
 			con.notify(s)
 		for card in sz:
 			s = "s%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
-				s += self.position_name(card)
+				s += card.position_name()
 			else:
 				s += card.name + " "
-				s += self.position_name(card)
+				s += card.position_name()
 			con.notify(s)
 
 	def show_hand(self, con, player):
@@ -514,21 +514,6 @@ class MyDuel(dm.Duel):
 			return
 		for c in h:
 			con.notify("h%d: %s" % (c.sequence + 1, c.name))
-
-	def position_name(self, card):
-		if card.position == 0x1:
-			return "face-up attack"
-		elif card.position == 0x2:
-			return "face-down attack"
-		elif card.position == 0x4:
-			return "face-up defense"
-		elif card.position == 0x5:
-			return "face-up"
-		elif card.position == 0x8:
-			return "face-down defense"
-		elif card.position == 0xa:
-			return "face down"
-		return str(card.position)
 
 	def move(self, code, location, newloc, reason):
 		card = dm.Card.from_code(code)
@@ -545,35 +530,26 @@ class MyDuel(dm.Duel):
 		pln = pl.duel_player
 		cs = self.card_to_spec(pln, card)
 		if card.position in (0x8, 0xa) and card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE):
-			pos = self.position_name(card)
+			pos = card.position_name()
 			pl.notify("%s: %s card." % (cs, pos))
 			return
-		pl.notify(card.name)
-		t = str(card.type)
-		if card.type & 1:
-			t = "Monster"
-		elif card.type & 2:
-			t = "Spell"
-		elif card.type & 4:
-			t = "Trap"
-		pl.notify("type: %s attack: %d defense: %d level: %d" % (t, card.attack, card.defense, card.level))
-		pl.notify(card.desc)
+		pl.notify(card.info())
 
 	def pos_change(self, card, prevpos):
 		cs = self.card_to_spec(card.controller, card)
 		cso = self.card_to_spec(1 - card.controller, card)
-		newpos = self.position_name(card)
+		newpos = card.position_name()
 		self.players[card.controller].notify("The position of card %s (%s) was changed to %s." % (cs, card.name, newpos))
 		self.players[1 - card.controller].notify("The position of card %s (%s) was changed to %s." % (cso, card.name, newpos))
 
 	def set(self, card):
 		c = card.controller
 		self.players[c].notify("You set %s (%s) in %s position." %
-		(self.card_to_spec(c, card), card.name, self.position_name(card)))
+		(self.card_to_spec(c, card), card.name, card.position_name()))
 		op = 1 - c
 		on = "Player %d" % c
 		self.players[op].notify("%s sets %s in %s position." %
-		(on, self.card_to_spec(op, card), self.position_name(card)))
+		(on, self.card_to_spec(op, card), card.position_name()))
 
 	def chaining(self, card, tc, tl, ts, desc, cs):
 		c = card.controller
