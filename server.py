@@ -1,5 +1,6 @@
 import os
 import re
+import random
 from functools import partial
 import json
 import gsb
@@ -7,42 +8,94 @@ from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
 import duel as dm
 
-active_duel = None
-duelp0 = None
-duelp1 = None
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
+players = {}
 class MyServer(gsb.Server):
+	nickname_re = re.compile(r'^[a-zA-Z0-9]+$')
 	def on_connect(self, caller):
 		caller.connection.deck = {'cards': []}
 		caller.connection.deck_edit_pos = 0
+		caller.connection.duel = None
+		caller.connection.requested_opponent = None
 		self.notify(caller.connection, "Connected!")
+		def prompt():
+			caller.connection.notify(Reader, r, prompt="Nickname:")
+		def r(caller):
+			m = self.nickname_re.match(caller.text)
+			if not m:
+				caller.connection.notify("Invalid nickname, try again.")
+				prompt()
+				return
+			elif get_player(caller.text):
+				caller.connection.notify("That player is already logged in.")
+				prompt()
+				return
+			for pl in players.values():
+				pl.notify("%s logged in." % caller.text)
+			players[caller.text.lower()] = caller.connection
+			caller.connection.nickname = caller.text
+			caller.connection.notify("Logged in.")
+		prompt()
+
+	def on_disconnect(self, caller):
+		con = caller.connection
+		if not con.nickname:
+			return
+		del players[con.nickname.lower()]
+		for pl in players.values():
+			pl.notify("%s logged out." % con.nickname)
+		if con.duel:
+			con.duel.notify_all("Your opponent disconnected, the duel is over.")
+			con.duel.end()
+			for pl in con.duel.players:
+				pl.duel = None
+				pl.intercept = None
 
 server = MyServer(port=4000)
-# Map of duels to tuple of players
-duels = {}
-@server.command(r'^duel *$')
+
+@server.command(r'^duel (.+)+$')
 def duel(caller):
-	global active_duel, duelp0, duelp1
-	if active_duel is None:
-		active_duel = MyDuel()
-		active_duel.load_deck(0, caller.connection.deck['cards'])
-		caller.connection.notify('Duel created. You are player 0.')
-		active_duel.players[0] = caller.connection
-		caller.connection.duel_player = 0
-		duelp0 = caller.connection
-		caller.connection.duel = active_duel
+	con = caller.connection
+	nick = caller.args[0]
+	player = get_player(nick)
+	if con.duel:
+		con.notify("You are already in a duel.")
+		return
+	elif not player:
+		con.notify("That player is not online.")
+		return
+	elif player.duel:
+		con.notify("That player is already in a duel.")
+		return
+	elif player is con:
+		con.notify("You can't duel yourself.")
+		return
+	elif not con.deck['cards']:
+		con.notify("You can't duel without a deck. Try deck load starter.")
+		return
+	if player.requested_opponent == con.nickname:
+		player.notify("Duel request accepted, dueling with %s." % con.nickname)
+		start_duel(con, player)
 	else:
-		caller.connection.notify("Joining duel as player 1 and starting.")
-		active_duel.load_deck(1, caller.connection.deck['cards'])
-		caller.connection.duel_player = 1
-		duelp1 = caller.connection
-		active_duel.players[1] = caller.connection
-		duels[active_duel] = (duelp0, duelp1)
-		caller.connection.duel = active_duel
-		active_duel.start()
-		procduel(active_duel)
+		player.notify("%s wants to duel. Type duel %s to accept." % (con.nickname, con.nickname))
+		con.requested_opponent = player.nickname
+		con.notify("Duel request sent to %s." % player.nickname)
+
+def start_duel(*players):
+	players = list(players)
+	random.shuffle(players)
+	duel = MyDuel()
+	duel.load_deck(0, players[0].deck['cards'])
+	duel.load_deck(1, players[1].deck['cards'])
+	for i, pl in enumerate(players):
+		pl.notify("Duel created. You are player %d." % i)
+		pl.duel = duel
+		pl.duel_player = i
+	duel.players = players
+	duel.start()
+	reactor.callLater(0, procduel, duel)
 
 def procduel(d):
 	while d.started:
@@ -750,6 +803,9 @@ def load_deck(fn):
 def save_deck(deck, filename):
 	with open(os.path.join('decks', filename), 'w') as fp:
 		fp.write(json.dumps(deck))
+
+def get_player(name):
+	return players.get(name.lower())
 
 if __name__ == '__main__':
 	server.run()
