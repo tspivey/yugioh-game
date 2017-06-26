@@ -411,7 +411,7 @@ class MyDuel(dm.Duel):
 			elif caller.text == 'e' and self.to_ep:
 				self.set_responsei(3)
 				reactor.callLater(0, procduel, self)
-			elif caller.text == '2' and self.to_m2:
+			elif caller.text == 'm' and self.to_m2:
 				self.set_responsei(2)
 				reactor.callLater(0, procduel, self)
 			else:
