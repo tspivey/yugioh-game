@@ -656,8 +656,11 @@ class MyDuel(dm.Duel):
 		def no(caller):
 			self.set_responsei(0)
 			reactor.callLater(0, procduel, self)
-		code = desc >> 4
-		opt = dm.Card.from_code(code).strings[desc & 0xf]
+		if desc > 10000:
+			code = desc >> 4
+			opt = dm.Card.from_code(code).strings[desc & 0xf]
+		else:
+			opt = "String %d" % desc
 		pl.notify(YesOrNo, opt, yes, no=no)
 
 	def select_effectyn(self, player, card):
