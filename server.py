@@ -810,5 +810,10 @@ def save_deck(deck, filename):
 def get_player(name):
 	return players.get(name.lower())
 
+@server.command(r"^(?:'|say ) *(.+)")
+def say(caller):
+	for pl in players.values():
+		pl.notify("%s: %s" % (caller.connection.nickname, caller.args[0]))
+
 if __name__ == '__main__':
 	server.run()
