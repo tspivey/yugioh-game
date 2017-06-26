@@ -474,7 +474,7 @@ class MyDuel(dm.Duel):
 		return s
 
 	def attack(self, attacker, target):
-		self.players[self.tp].notify("Attack: attacker=%x target=%x" % (attacker, target))
+		pass
 
 	def begin_damage(self):
 		self.notify_all("begin damage")
