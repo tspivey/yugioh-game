@@ -1,5 +1,7 @@
+import os
 import re
 from functools import partial
+import json
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
@@ -9,8 +11,12 @@ active_duel = None
 duelp0 = None
 duelp1 = None
 
+all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
+
 class MyServer(gsb.Server):
 	def on_connect(self, caller):
+		caller.connection.deck = {'cards': []}
+		caller.connection.deck_edit_pos = 0
 		self.notify(caller.connection, "Connected!")
 
 server = MyServer(port=4000)
@@ -21,7 +27,7 @@ def duel(caller):
 	global active_duel, duelp0, duelp1
 	if active_duel is None:
 		active_duel = MyDuel()
-		active_duel.load_deck(0, dm.deck)
+		active_duel.load_deck(0, caller.connection.deck['cards'])
 		caller.connection.notify('Duel created. You are player 0.')
 		active_duel.players[0] = caller.connection
 		caller.connection.duel_player = 0
@@ -29,7 +35,7 @@ def duel(caller):
 		caller.connection.duel = active_duel
 	else:
 		caller.connection.notify("Joining duel as player 1 and starting.")
-		active_duel.load_deck(1, dm.deck)
+		active_duel.load_deck(1, caller.connection.deck['cards'])
 		caller.connection.duel_player = 1
 		duelp1 = caller.connection
 		active_duel.players[1] = caller.connection
@@ -631,6 +637,116 @@ def hand(caller):
 @server.command('^tab$')
 def tab(caller):
 	duel = caller.connection.duel
+
+@server.command(r'^deck load ([a-zA-Z0-9]+)')
+def deck_load(caller):
+	fn = caller.args[0].replace('/', '_')
+	if not os.path.exists(os.path.join('decks', fn)):
+		caller.connection.notify("No deck with that name.")
+		return
+	caller.connection.deck = load_deck(fn)
+	caller.connection.notify("Deck loaded with %d cards." % len(caller.connection.deck['cards']))
+
+@server.command(r'^deck edit ([a-zA-z0-9]+)')
+def deck_edit(caller):
+	con = caller.connection
+	deck_name = caller.args[0].replace('/', '_')
+	if os.path.exists(os.path.join('decks', deck_name)):
+		con.notify("Deck exists, loading.")
+		con.deck = load_deck(deck_name)
+	cards = con.deck['cards']
+	def info():
+		show_deck_info(con)
+		con.notify("u: up d: down /: search t: top")
+		con.notify("s: send to deck r: remove from deck l: list deck q: quit")
+	def read():
+		info()
+		con.notify(Reader, r, prompt="Command (%d cards in deck):" % len(cards), no_abort=True)
+	def r(caller):
+		code = all_cards[con.deck_edit_pos]
+		if caller.text == 'd':
+			con.deck_edit_pos+= 1
+			if con.deck_edit_pos > len(all_cards) - 1:
+				con.deck_edit_pos = len(all_cards) - 1
+				con.notify("bottom of list.")
+			read()
+		elif caller.text == 'u':
+			if con.deck_edit_pos == 0:
+				con.notify("Top of list.")
+				read()
+				return
+			con.deck_edit_pos -= 1
+			read()
+		elif caller.text == 't':
+			con.notify("Top.")
+			con.deck_edit_pos = 0
+			read()
+		elif caller.text == 's':
+			if cards.count(code) == 3:
+				con.notify("You already have 3 of this card in your deck.")
+				read()
+				return
+			cards.append(code)
+			save_deck(con.deck, deck_name)
+			read()
+		elif caller.text.startswith('r'):
+			rm = re.search(r'^r(\d+)', caller.text)
+			if rm:
+				n = int(rm.group(1)) - 1
+				if n < 0 or n > len(cards) - 1:
+					con.notify("Invalid card.")
+					read()
+					return
+				code = cards[n]
+			if cards.count(code) == 0:
+				con.notify("This card isn't in your deck.")
+				read()
+				return
+			cards.remove(code)
+			save_deck(con.deck, deck_name)
+			read()
+		elif caller.text.startswith('/'):
+			pos = find_next(caller.text[1:], con.deck_edit_pos + 1)
+			if not pos:
+				con.notify("Not found.")
+			else:
+				con.deck_edit_pos = pos
+			read()
+		elif caller.text == 'l':
+			for i, code in enumerate(cards):
+				card = dm.Card.from_code(code)
+				con.notify("%d: %s" % (i+1, card.name))
+			read()
+		elif caller.text == 'q':
+			con.notify("Quit.")
+		else:
+			con.notify("Invalid command.")
+			read()
+	read()
+
+def show_deck_info(con):
+	cards = con.deck['cards']
+	pos = con.deck_edit_pos
+	code = all_cards[pos]
+	in_deck = cards.count(code)
+	if in_deck > 0:
+		con.notify("%d in deck." % in_deck)
+	card = dm.Card.from_code(code)
+	con.notify(card.info())
+
+def find_next(text, start):
+	for i, code in enumerate(all_cards[start:]):
+		card = dm.Card.from_code(code)
+		if text.lower() in card.name.lower():
+			return start+i
+
+def load_deck(fn):
+	with open(os.path.join('decks', fn)) as fp:
+		return json.load(fp)
+
+def save_deck(deck, filename):
+	with open(os.path.join('decks', filename), 'w') as fp:
+		fp.write(json.dumps(deck))
 
 if __name__ == '__main__':
 	server.run()
