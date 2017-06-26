@@ -19,6 +19,7 @@ class MyServer(gsb.Server):
 		caller.connection.deck_edit_pos = 0
 		caller.connection.duel = None
 		caller.connection.requested_opponent = None
+		caller.connection.nickname = None
 		self.notify(caller.connection, "Connected!")
 		def prompt():
 			caller.connection.notify(Reader, r, prompt="Nickname:")
