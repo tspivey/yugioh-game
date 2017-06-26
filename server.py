@@ -467,7 +467,10 @@ class MyDuel(dm.Duel):
 			s = ""
 		con.notify("Select %d to %d cards%s separated by spaces:" % (min, max, s))
 		for i, c in enumerate(cards):
-			con.notify("%d: %s" % (i+1, c.name))
+			name = c.name
+			if c.controller != player and c.position in (0x8, 0xa):
+				name = c.position_name() + " card"
+			con.notify("%d: %s" % (i+1, name))
 		def f(caller):
 			cds = caller.text.split()
 			if len(cds) < min or len(cds) > max:
