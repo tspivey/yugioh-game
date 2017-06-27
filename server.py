@@ -3,6 +3,7 @@ import re
 import random
 from functools import partial
 import json
+import datetime
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
@@ -95,6 +96,8 @@ def start_duel(*players):
 		pl.duel = duel
 		pl.duel_player = i
 	duel.players = players
+	if os.environ.get('DEBUG', 0):
+		duel.start_debug()
 	duel.start()
 	reactor.callLater(0, procduel, duel)
 
@@ -142,7 +145,8 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('yesno', self.yesno)
 		self.cm.register_callback('select_effectyn', self.select_effectyn)
 		self.cm.register_callback('win', self.win)
-
+		self.cm.register_callback('debug', self.debug)
+		self.debug_mode = False
 		self.players = [None, None]
 		self.lp = [8000, 8000]
 		self.started = False
@@ -691,6 +695,20 @@ class MyDuel(dm.Duel):
 		for pl in self.players:
 			pl.duel = None
 			pl.intercept = None
+
+	def start_debug(self):
+		self.debug_mode = True
+		lt = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+		fn = lt+"_"+self.players[0].nickname+"_"+self.players[1].nickname
+		self.debug_fp = open(os.path.join('duels', fn), 'w')
+		self.debug(event_type='start', player0=self.players[0].nickname, player1=self.players[1].nickname,
+		deck0=self.cards[0], deck1=self.cards[1])
+
+	def debug(self, **kwargs):
+		if not self.debug_mode:
+			return
+		s = json.dumps(kwargs)
+		self.debug_fp.write(s+'\n')
 
 class DuelReader(Reader):
 	def feed(self, caller):

@@ -115,6 +115,9 @@ class Card(object):
 		lst.append(self.desc)
 		return "\n".join(lst)
 
+	def __repr__(self):
+		return '<%s>' % self.name
+
 class Duel:
 	def __init__(self):
 		self.buf = ffi.new('char[]', 4096)
@@ -155,10 +158,13 @@ class Duel:
 		5: self.msg_win,
 		}
 		self.state = ''
+		self.cards = [None, None]
 
-	def load_deck(self, player, cards):
-		random.shuffle(cards)
-		for c in cards:
+	def load_deck(self, player, cards, shuffle=True):
+		self.cards[player] = cards[:]
+		if shuffle:
+			random.shuffle(self.cards[player])
+		for c in self.cards[player]:
 			lib.new_card(self.duel, c, player, player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
 
 	def start(self):
@@ -171,12 +177,13 @@ class Duel:
 
 	def process(self):
 		res = lib.process(self.duel)
-		self.process_messages()
+		data = self.process_messages()
+		self.cm.call_callbacks('debug', event_type='process', result=res, data=data.decode('latin1'))
 		return res
 
 	def process_messages(self):
 		l = lib.get_message(self.duel, ffi.cast('byte *', self.buf))
-		data = ffi.unpack(self.buf, l)
+		orig_data = data = ffi.unpack(self.buf, l)
 #		print("received: %r" % data)
 		while data:
 			msg = int(data[0])
@@ -186,6 +193,7 @@ class Duel:
 			else:
 				print("msg %d unhandled" % msg)
 				data = b''
+		return orig_data
 
 	def msg_draw(self, data):
 		data = io.BytesIO(data[1:])
@@ -475,10 +483,12 @@ class Duel:
 
 	def set_responsei(self, r):
 		lib.set_responsei(self.duel, r)
+		self.cm.call_callbacks('debug', event_type='set_responsei', response=r)
 
 	def set_responseb(self, r):
 		buf = ffi.new('char[64]', r)
 		lib.set_responseb(self.duel, ffi.cast('byte *', buf))
+		self.cm.call_callbacks('debug', event_type='set_responseb', response=r.decode('latin1'))
 
 	def get_cards_in_location(self, player, location):
 		cards = []
