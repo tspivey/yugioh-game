@@ -507,11 +507,11 @@ class MyDuel(dm.Duel):
 		self.notify_all(s)
 
 	def damage(self, player, amount):
-		self.notify_all("Player %d's lp decreased by %d, now %d" % (player, amount, self.lp[player]-amount))
+		self.notify_all("%s's lp decreased by %d, now %d" % (self.players[player].nickname, amount, self.lp[player]-amount))
 		self.lp[player] -= amount
 
 	def recover(self, player, amount):
-		self.notify_all("Player %d's lp increased by %d, now %d" % (player, amount, self.lp[player] + amount))
+		self.notify_all("%s's lp increased by %d, now %d" % (self.players[player].nickname, amount, self.lp[player] + amount))
 		self.lp[player] += amount
 
 	def notify_all(self, s):
@@ -619,14 +619,14 @@ class MyDuel(dm.Duel):
 		self.players[c].notify("You set %s (%s) in %s position." %
 		(self.card_to_spec(c, card), card.name, card.position_name()))
 		op = 1 - c
-		on = "Player %d" % c
+		on = self.players[c].nickname
 		self.players[op].notify("%s sets %s in %s position." %
 		(on, self.card_to_spec(op, card), card.position_name()))
 
 	def chaining(self, card, tc, tl, ts, desc, cs):
 		c = card.controller
 		o = 1 - c
-		n = "Player %d" % c
+		n = self.players[c].nickname
 		self.players[c].notify("Activating %s" % card.name)
 		self.players[o].notify("%s activating %s" % (n, card.name))
 
