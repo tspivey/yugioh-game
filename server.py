@@ -699,7 +699,10 @@ class DuelReader(Reader):
 			con.duel.show_table(con, con.duel_player)
 		elif text == 'tab2':
 			con.duel.show_table(con, 1 - con.duel_player, True)
-		if text in ('h', 'tab', 'tab2'):
+		elif text.startswith("'"):
+			for pl in players.values():
+				pl.notify("%s: %s" % (con.nickname, text[1:]))
+		if text in ('h', 'tab', 'tab2') or text.startswith("'"):
 			caller.connection.notify(self, self.done)
 			return
 		super(DuelReader, self).feed(caller)
