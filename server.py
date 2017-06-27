@@ -642,11 +642,11 @@ class MyDuel(dm.Duel):
 		if positions & 1:
 			m.item("Face-up attack")(lambda caller: set(caller, 1))
 		if positions & 2:
-			m.item("Face-down attack")(lambda caller: set(caller, 1))
+			m.item("Face-down attack")(lambda caller: set(caller, 2))
 		if positions & 4:
-			m.item("Face-up defense")(lambda caller: set(caller, 1))
+			m.item("Face-up defense")(lambda caller: set(caller, 4))
 		if positions & 8:
-			m.item("Face-down defense")(lambda caller: set(caller, 1))
+			m.item("Face-down defense")(lambda caller: set(caller, 8))
 		pl.notify(m)
 
 	def yesno(self, player, desc):
