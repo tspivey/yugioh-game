@@ -366,8 +366,11 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		opts = []
 		for opt in options:
-			code = opt >> 4
-			string = dm.Card.from_code(code).strings[opt & 0xf]
+			if opt > 10000:
+				code = opt >> 4
+				string = dm.Card.from_code(code).strings[opt & 0xf]
+			else:
+				string = "Unknown option %d" % opt
 			opts.append(string)
 		m = Menu("Select option:")
 		for idx, opt in enumerate(opts):
