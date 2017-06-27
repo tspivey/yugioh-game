@@ -710,11 +710,26 @@ class DuelReader(Reader):
 @server.command('^h(and)?$')
 def hand(caller):
 	con = caller.connection
+	if not con.duel:
+		con.notify("Not in a duel.")
+		return
 	con.duel.show_hand(con, con.duel_player)
 
 @server.command('^tab$')
 def tab(caller):
 	duel = caller.connection.duel
+	if not duel:
+		caller.connection.notify("Not in a duel.")
+		return
+	duel.show_table(caller.connection, caller.connection.duel_player)
+
+@server.command('^tab2$')
+def tab2(caller):
+	duel = caller.connection.duel
+	if not duel:
+		caller.connection.notify("Not in a duel.")
+		return
+	duel.show_table(caller.connection, 1 - caller.connection.duel_player, True)
 
 @server.command(r'^deck load ([a-zA-Z0-9]+)')
 def deck_load(caller):
