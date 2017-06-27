@@ -103,7 +103,7 @@ def procduel(d):
 		res = d.process()
 		if res & 0x20000:
 			break
-		elif res & 0x10000:
+		elif res & 0x10000 and res != 0x10000:
 			if d.keep_processing:
 				d.keep_processing = False
 				continue
