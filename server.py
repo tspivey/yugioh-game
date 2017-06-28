@@ -600,6 +600,23 @@ class MyDuel(dm.Duel):
 		for c in h:
 			con.notify("h%d: %s" % (c.sequence + 1, c.name))
 
+	def show_score(self, con):
+		player = con.duel_player
+		duel = con.duel
+		con.notify("Your LP: %d Opponent LP: %d" % (duel.lp[player], duel.lp[1 - player]))
+		deck = duel.get_cards_in_location(player, dm.LOCATION_DECK)
+		odeck = duel.get_cards_in_location(1 - player, dm.LOCATION_DECK)
+		grave = duel.get_cards_in_location(player, dm.LOCATION_GRAVE)
+		ograve = duel.get_cards_in_location(1 - player, dm.LOCATION_GRAVE)
+		hand = duel.get_cards_in_location(player, dm.LOCATION_HAND)
+		ohand = duel.get_cards_in_location(1 - player, dm.LOCATION_HAND)
+		removed = duel.get_cards_in_location(player, dm.LOCATION_REMOVED)
+		oremoved = duel.get_cards_in_location(1 - player, dm.LOCATION_REMOVED)
+		con.notify("Hand: You: %d Opponent: %d" % (len(hand), len(ohand)))
+		con.notify("Deck: You: %d Opponent: %d" % (len(deck), len(odeck)))
+		con.notify("Grave: You: %d Opponent: %d" % (len(grave), len(ograve)))
+		con.notify("Removed: You: %d Opponent: %d" % (len(removed), len(oremoved)))
+
 	def move(self, code, location, newloc, reason):
 		card = dm.Card.from_code(code)
 		card.set_location(location)
@@ -734,7 +751,9 @@ class DuelReader(Reader):
 		elif text.startswith("'"):
 			for pl in players.values():
 				pl.notify("%s: %s" % (con.nickname, text[1:]))
-		if text in ('h', 'tab', 'tab2') or text.startswith("'"):
+		elif text == 'sc' or text == 'score':
+			con.duel.show_score(con)
+		if text in ('h', 'tab', 'tab2') or text.startswith("'") or text.startswith('sc'):
 			caller.connection.notify(self, self.done)
 			return
 		super(DuelReader, self).feed(caller)
@@ -889,6 +908,13 @@ def who(caller):
 		if pl.duel:
 			s += ' (dueling)'
 		caller.connection.notify(s)
+
+@server.command(r'^sc(ore)?$')
+def score(caller):
+	if not caller.connection.duel:
+		caller.connection.notify("Not in a duel.")
+		return
+	caller.connection.duel.show_score(caller.connection)
 
 if __name__ == '__main__':
 	server.run()
