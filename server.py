@@ -377,7 +377,7 @@ class MyDuel(dm.Duel):
 			else:
 				string = "Unknown option %d" % opt
 			opts.append(string)
-		m = Menu("Select option:")
+		m = Menu("Select option:", no_abort=True, persistent=True)
 		for idx, opt in enumerate(opts):
 			m.item(opt)(lambda caller, idx=idx: select(caller, idx))
 		self.players[player].notify(m)
@@ -645,7 +645,7 @@ class MyDuel(dm.Duel):
 
 	def select_position(self, player, card, positions):
 		pl = self.players[player]
-		m = Menu("Select position for %s:" % (card.name,), no_abort=True)
+		m = Menu("Select position for %s:" % (card.name,), no_abort=True, persistent=True)
 		def set(caller, pos=None):
 			self.set_responsei(pos)
 			reactor.callLater(0, procduel, self)
