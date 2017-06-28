@@ -101,17 +101,44 @@ class Card(object):
 			return "face down"
 		return str(self.position)
 
+	RACES = ("Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie", "Machine",
+	"Aqua", "Pyro", "Rock", "Windbeast", "Plant", "Insect",
+	"Thunder", "Dragon", "Beast", "Beast Warrior", "Dinosaur", "Fish",
+	"Sea Serpent", "Reptile", "Psycho", "Divine", "Creator God", "Wyrm",
+	"Cybers")
 	def info(self):
 		lst = []
-		lst.append(self.name)
+		types = []
 		t = str(self.type)
 		if self.type & 1:
-			t = "Monster"
+			types.append("Monster")
 		elif self.type & 2:
-			t = "Spell"
+			types.append("Spell")
 		elif self.type & 4:
-			t = "Trap"
-		lst.append("type: %s attack: %d defense: %d level: %d" % (t, self.attack, self.defense, self.level))
+			types.append("Trap")
+		if self.type & 0x20:
+			types.append("Effect")
+		if self.type & 0x40:
+			types.append("Fusion")
+		if self.attribute & 1:
+			types.append("Earth")
+		elif self.attribute & 2:
+			types.append("Water")
+		elif self.attribute & 4:
+			types.append("Fire")
+		elif self.attribute & 8:
+			types.append("Wind")
+		elif self.attribute & 0x10:
+			types.append("Light")
+		elif self.attribute & 0x20:
+			types.append("Dark")
+		elif self.attribute & 0x40:
+			types.append("Divine")
+		for i, race in enumerate(self.RACES):
+			if self.race & (1 << i):
+				types.append(race)
+		lst.append("%s (%s)" % (self.name, ", ".join(types)))
+		lst.append("Attack: %d Defense: %d Level: %d" % (self.attack, self.defense, self.level))
 		lst.append(self.desc)
 		return "\n".join(lst)
 
