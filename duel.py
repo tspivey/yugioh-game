@@ -156,6 +156,7 @@ class Duel:
 		62: partial(self.msg_summoning, special=True),
 		12: self.msg_select_effectyn,
 		5: self.msg_win,
+		100: self.msg_pay_lpcost,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -473,6 +474,13 @@ class Duel:
 		player = self.read_u8(data)
 		reason = self.read_u8(data)
 		self.cm.call_callbacks('win', player, reason)
+		return b''
+
+	def msg_pay_lpcost(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		cost = self.read_u32(data)
+		self.cm.call_callbacks('pay_lpcost', player, cost)
 		return b''
 
 	def read_u8(self, buf):
