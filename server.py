@@ -529,35 +529,40 @@ class MyDuel(dm.Duel):
 		if msg == 3 and data == 501:
 			self.players[player].notify("Select a card to discard:")
 
-	def select_card(self, player, cancelable, min, max, cards, is_tribute=False):
+	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
 		con = self.players[player]
 		if is_tribute:
 			s = " to tribute"
 		else:
 			s = ""
-		con.notify("Select %d to %d cards%s separated by spaces:" % (min, max, s))
+		con.notify("Select %d to %d cards%s separated by spaces:" % (min_cards, max_cards, s))
 		for i, c in enumerate(cards):
 			name = c.name
 			if c.controller != player and c.position in (0x8, 0xa):
 				name = c.position_name() + " card"
 			con.notify("%d: %s" % (i+1, name))
+		def error(text):
+			con.notify(text)
+			con.notify(DuelReader, f, no_abort=True)
 		def f(caller):
 			cds = caller.text.split()
-			if len(cds) < min or len(cds) > max:
-				con.notify("Please enter between %d and %d cards." % (min, max))
-				con.notify(DuelReader, f, no_abort=True)
-				return
+			try:
+				cds = [int(i) - 1 for i in cds]
+			except ValueError:
+				return error("Invalid value.")
+			if len(cds) != len(set(cds)):
+				return error("Duplicate values not allowed.")
+			if (not is_tribute and len(cds) < min_cards) or len(cds) > max_cards:
+				return error("Please enter between %d and %d cards." % (min_cards, max_cards))
+			if min(cds) < 0 or max(cds) > len(cards) - 1:
+				return error("Invalid value.")
 			buf = bytes([len(cds)])
+			tribute_value = 0
 			for i in cds:
-				try:
-					i = int(i) - 1
-					if i < 0 or i > len(cards) - 1:
-						raise ValueError
-				except ValueError:
-					con.notify("Invalid value.")
-					con.notify(DuelReader, f, no_abort=True)
-					return
+				tribute_value += (cards[i].release_param if is_tribute else 0)
 				buf += bytes([i])
+			if is_tribute and tribute_value < min_cards:
+				return error("Not enough tributes.")
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
 		con.notify(DuelReader, f, no_abort=True)
