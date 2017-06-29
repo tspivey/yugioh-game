@@ -197,17 +197,20 @@ class MyDuel(dm.Duel):
 		self.idle_action(pl)
 
 	def idle_action(self, pl):
-		pl.notify("Select a card on which to perform an action.")
-		pl.notify("h shows your hand, tab and tab2 shows your or the opponent's table.")
-		if self.to_bp:
-			pl.notify("b: Enter the battle phase.")
-		if self.to_ep:
-			pl.notify("e: End phase.")
+		def prompt():
+			pl.notify("Select a card on which to perform an action.")
+			pl.notify("h shows your hand, tab and tab2 shows your or the opponent's table.")
+			if self.to_bp:
+				pl.notify("b: Enter the battle phase.")
+			if self.to_ep:
+				pl.notify("e: End phase.")
+			pl.notify(DuelReader, r, no_abort=True)
+		cards = []
+		for i in (0, 1):
+			for j in (dm.LOCATION_HAND, dm.LOCATION_MZONE, dm.LOCATION_SZONE):
+				cards.extend(self.get_cards_in_location(i, j))
+		specs = set(self.card_to_spec(self.tp, card) for card in cards)
 		def r(caller):
-			if caller.text == 'h':
-				self.show_hand(caller.connection, self.tp)
-				pl.notify(DuelReader, r, no_abort=True)
-				return
 			if caller.text == 'b' and self.to_bp:
 				self.set_responsei(6)
 				reactor.callLater(0, procduel, self)
@@ -216,18 +219,28 @@ class MyDuel(dm.Duel):
 				self.set_responsei(7)
 				reactor.callLater(0, procduel, self)
 				return
-			loc, seq = self.cardspec_to_ls(caller.text)
-			if loc is None:
+			if caller.text not in specs:
 				pl.notify("Invalid specifier. Retry.")
-				pl.notify(DuelReader, r, no_abort=True)
+				prompt()
 				return
-			card = self.get_card(self.tp, loc, seq)
+			loc, seq = self.cardspec_to_ls(caller.text)
+			if caller.text.startswith('o'):
+				plr = 1 - self.tp
+			else:
+				plr = self.tp
+			card = self.get_card(plr, loc, seq)
 			if not card:
 				pl.notify("There is no card in that position.")
 				pl.notify(DuelReader, r, no_abort=True)
 				return
+			if plr == 1 - self.tp:
+				if card.position in (0x8, 0xa):
+					pl.notify("Face-down card.")
+					return prompt()
+				pl.notify(card.info())
+				return prompt()
 			self.act_on_card(caller, card)
-		pl.notify(DuelReader, r, no_abort=True)
+		prompt()
 
 	def act_on_card(self, caller, card):
 		pl = self.players[self.tp]
@@ -274,6 +287,8 @@ class MyDuel(dm.Duel):
 		pl.notify(DuelReader, action, no_abort=True)
 
 	def cardspec_to_ls(self, text):
+		if text.startswith('o'):
+			text = text[1:]
 		r = re.search(r'^([a-z]+)(\d+)', text)
 		if not r:
 			return (None, None)
