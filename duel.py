@@ -186,6 +186,7 @@ class Duel:
 		12: self.msg_select_effectyn,
 		5: self.msg_win,
 		100: self.msg_pay_lpcost,
+		21: self.msg_sort_chain,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -510,6 +511,21 @@ class Duel:
 		player = self.read_u8(data)
 		cost = self.read_u32(data)
 		self.cm.call_callbacks('pay_lpcost', player, cost)
+		return b''
+
+	def msg_sort_chain(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		size = self.read_u8(data)
+		cards = []
+		for i in range(size):
+			code = self.read_u32(data)
+			card = Card.from_code(code)
+			card.controller = self.read_u8(data)
+			card.location = self.read_u8(data)
+			card.sequence = self.read_u8(data)
+			cards.append(card)
+		self.cm.call_callbacks('sort_chain', player, cards)
 		return b''
 
 	def read_u8(self, buf):

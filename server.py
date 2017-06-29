@@ -146,6 +146,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_effectyn', self.select_effectyn)
 		self.cm.register_callback('win', self.win)
 		self.cm.register_callback('pay_lpcost', self.pay_lpcost)
+		self.cm.register_callback('sort_chain', self.sort_chain)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -717,6 +718,10 @@ class MyDuel(dm.Duel):
 		self.lp[player] -= cost
 		self.players[player].notify("You pay %d LP. Your LP is now %d." % (cost, self.lp[player]))
 		self.players[1 - player].notify("%s pays %d LP. Their LP is now %d." % (self.players[player].nickname, cost, self.lp[player]))
+
+	def sort_chain(self, player, cards):
+		self.set_responsei(-1)
+		reactor.callLater(0, procduel, self)
 
 	def end(self):
 		super(MyDuel, self).end()
