@@ -757,6 +757,7 @@ class MyDuel(dm.Duel):
 			return
 		s = json.dumps(kwargs)
 		self.debug_fp.write(s+'\n')
+		self.debug_fp.flush()
 
 class DuelReader(Reader):
 	def feed(self, caller):
