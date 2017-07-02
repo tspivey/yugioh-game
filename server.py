@@ -207,7 +207,7 @@ class MyDuel(dm.Duel):
 			pl.notify(DuelReader, r, no_abort=True)
 		cards = []
 		for i in (0, 1):
-			for j in (dm.LOCATION_HAND, dm.LOCATION_MZONE, dm.LOCATION_SZONE):
+			for j in (dm.LOCATION_HAND, dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE):
 				cards.extend(self.get_cards_in_location(i, j))
 		specs = set(self.card_to_spec(self.tp, card) for card in cards)
 		def r(caller):
@@ -298,6 +298,8 @@ class MyDuel(dm.Duel):
 			l = dm.LOCATION_MZONE
 		elif r.group(1) == 's':
 			l = dm.LOCATION_SZONE
+		elif r.group(1) == 'g':
+			l = dm.LOCATION_GRAVE
 		else:
 			return None, None
 		return l, int(r.group(2)) - 1
@@ -501,6 +503,8 @@ class MyDuel(dm.Duel):
 			s += "m"
 		elif card.location == dm.LOCATION_SZONE:
 			s += "s"
+		elif card.location == dm.LOCATION_GRAVE:
+			s += "g"
 		s += str(card.sequence + 1)
 		return s
 
@@ -601,6 +605,20 @@ class MyDuel(dm.Duel):
 			con.notify(s)
 		for card in sz:
 			s = "s%d: " % (card.sequence + 1)
+			if hide_facedown and card.position in (0x8, 0xa):
+				s += card.position_name()
+			else:
+				s += card.name + " "
+				s += card.position_name()
+			con.notify(s)
+
+	def show_grave(self, con, player, hide_facedown=False):
+		grave = self.get_cards_in_location(player, dm.LOCATION_GRAVE)
+		if not grave:
+			con.notify("Table is empty.")
+			return
+		for card in grave:
+			s = "g%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
 				s += card.position_name()
 			else:
@@ -774,7 +792,11 @@ class DuelReader(Reader):
 				pl.notify("%s: %s" % (con.nickname, text[1:]))
 		elif text == 'sc' or text == 'score':
 			con.duel.show_score(con)
-		if text in ('h', 'tab', 'tab2') or text.startswith("'") or text.startswith('sc'):
+		elif text == 'grave':
+			con.duel.show_grave(con, con.duel_player)
+		elif text == 'grave2':
+			con.duel.show_grave(con, 1 - con.duel_player, True)
+		if text in ('h', 'tab', 'tab2', 'grave', 'grave2') or text.startswith("'") or text.startswith('sc'):
 			caller.connection.notify(self, self.done)
 			return
 		super(DuelReader, self).feed(caller)
@@ -802,6 +824,20 @@ def tab2(caller):
 		caller.connection.notify("Not in a duel.")
 		return
 	duel.show_table(caller.connection, 1 - caller.connection.duel_player, True)
+
+@server.command(r'^grave$')
+def grave(caller):
+	if not caller.connection.duel:
+		caller.connection.notify("Not in a duel.")
+		return
+	caller.connection.duel.show_grave(caller.connection, caller.connection.duel_player)
+
+@server.command(r'^grave2$')
+def grave2(caller):
+	if not caller.connection.duel:
+		caller.connection.notify("Not in a duel.")
+		return
+	caller.connection.duel.show_grave(caller.connection, 1 - caller.connection.duel_player, True)
 
 @server.command(r'^deck load ([a-zA-Z0-9]+)')
 def deck_load(caller):
