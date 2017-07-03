@@ -676,6 +676,19 @@ class MyDuel(dm.Duel):
 			return
 		pl.notify(card.info())
 
+	def show_info_cmd(self, con, spec):
+		cards = []
+		for i in (0, 1):
+			for j in (dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE):
+				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == con.duel_player or card.position not in (0x8, 0xa))
+		specs = {}
+		for card in cards:
+			specs[self.card_to_spec(con.duel_player, card)] = card
+		if spec not in specs:
+			con.notify("Invalid card.")
+			return
+		self.show_info(specs[spec], con)
+
 	def pos_change(self, card, prevpos):
 		cs = self.card_to_spec(card.controller, card)
 		cso = self.card_to_spec(1 - card.controller, card)
@@ -1055,6 +1068,13 @@ def procduel_replay(duel):
 	data = duel.process_messages()
 	duel.cm.callbacks = cb
 	return data
+
+@server.command(r'^info (.+)')
+def info(caller):
+	if not caller.connection.duel:
+		caller.connection.notify("No duel is in progress.")
+		return
+	caller.connection.duel.show_info_cmd(caller.connection, caller.args[0])
 
 if __name__ == '__main__':
 	server.run()
