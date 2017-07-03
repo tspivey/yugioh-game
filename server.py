@@ -360,6 +360,7 @@ class MyDuel(dm.Duel):
 			cs = self.card_to_spec(player, card)
 			specs[cs] = card
 			pl.notify("%s: %s" % (cs, card.name))
+			self.players[1 - player].notify("Waiting for opponent.")
 		def r(caller):
 			if caller.text == 'c' and not forced:
 				self.set_responsei(-1)
