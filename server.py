@@ -1089,5 +1089,9 @@ def help(caller):
 	with open(fn, encoding='utf-8') as fp:
 		caller.connection.notify(fp.read().rstrip('\n'))
 
+@server.command('^quit$')
+def quit(caller):
+	server.disconnect(caller.connection)
+
 if __name__ == '__main__':
 	server.run()
