@@ -1076,5 +1076,18 @@ def info(caller):
 		return
 	caller.connection.duel.show_info_cmd(caller.connection, caller.args[0])
 
+@server.command(r'^help( .+)?\s*$')
+def help(caller):
+	topic = caller.args[0]
+	if not topic:
+		topic = "start"
+	topic = topic.replace('/', '_').strip()
+	fn = os.path.join('help', topic)
+	if not os.path.isfile(fn):
+		caller.connection.notify("No help topic.")
+		return
+	with open(fn, encoding='utf-8') as fp:
+		caller.connection.notify(fp.read().rstrip('\n'))
+
 if __name__ == '__main__':
 	server.run()
