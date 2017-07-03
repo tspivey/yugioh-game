@@ -4,6 +4,7 @@ import random
 from functools import partial
 import json
 import datetime
+import collections
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
@@ -1005,6 +1006,55 @@ def score(caller):
 		caller.connection.notify("Not in a duel.")
 		return
 	caller.connection.duel.show_score(caller.connection)
+
+@server.command(r'^replay (.+)=(\d+)$')
+def replay(caller):
+	with open(os.path.join('duels', caller.args[0])) as fp:
+		lines = [json.loads(line) for line in fp]
+	limit = int(caller.args[1])
+	for line in lines[:limit]:
+		if line['event_type'] == 'start':
+			player0 = get_player(line['player0'])
+			player1 = get_player(line['player1'])
+			if not player0 or not player1:
+				con.notify("One of the players is not logged in.")
+				return
+			if player0.duel or player1.duel:
+				con.notify("One of the players is in a duel.")
+				return
+			duel = MyDuel()
+			duel.load_deck(0, line['deck0'], shuffle=False)
+			duel.load_deck(1, line['deck1'], shuffle=False)
+			duel.players = [player0, player1]
+			player0.duel = duel
+			player1.duel = duel
+			player0.duel_player = 0
+			player1.duel_player = 1
+			duel.start()
+		elif line['event_type'] == 'process':
+			procduel_replay(duel)
+		elif line['event_type'] == 'set_responsei':
+			duel.set_responsei(line['response'])
+		elif line['event_type'] == 'set_responseb':
+			duel.set_responseb(line['response'].encode('latin1'))
+	reactor.callLater(0, procduel, duel)
+
+def procduel_replay(duel):
+	res = dm.lib.process(duel.duel)
+	cb = duel.cm.callbacks
+	duel.cm.callbacks = collections.defaultdict(list)
+	def tp(t):
+		duel.tp = t
+	duel.cm.register_callback('new_turn', tp)
+	def recover(player, amount):
+		duel.lp[player] += amount
+	def damage(player, amount):
+		duel.lp[player] -= amount
+	duel.cm.register_callback('recover', recover)
+	duel.cm.register_callback('damage', damage)
+	data = duel.process_messages()
+	duel.cm.callbacks = cb
+	return data
 
 if __name__ == '__main__':
 	server.run()
