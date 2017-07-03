@@ -789,7 +789,7 @@ class DuelReader(Reader):
 			con.duel.show_table(con, 1 - con.duel_player, True)
 		elif text.startswith("'"):
 			for pl in players.values():
-				pl.notify("%s: %s" % (con.nickname, text[1:]))
+				pl.notify("%s chats: %s" % (con.nickname, text[1:]))
 		elif text == 'sc' or text == 'score':
 			con.duel.show_score(con)
 		elif text == 'grave':
@@ -952,10 +952,10 @@ def save_deck(deck, filename):
 def get_player(name):
 	return players.get(name.lower())
 
-@server.command(r"^(?:'|say ) *(.+)")
-def say(caller):
+@server.command(r"^(?:'|chat ) *(.+)")
+def chat(caller):
 	for pl in players.values():
-		pl.notify("%s: %s" % (caller.connection.nickname, caller.args[0]))
+		pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
 
 @server.command('^who$')
 def who(caller):
