@@ -147,6 +147,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('win', self.win)
 		self.cm.register_callback('pay_lpcost', self.pay_lpcost)
 		self.cm.register_callback('sort_chain', self.sort_chain)
+		self.cm.register_callback('announce_attrib', self.announce_attrib)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -549,6 +550,8 @@ class MyDuel(dm.Duel):
 	def hint(self, msg, player, data):
 		if msg == 3 and data == 501:
 			self.players[player].notify("Select a card to discard:")
+		elif msg == 7:
+			reactor.callLater(0, procduel, self)
 
 	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
 		con = self.players[player]
@@ -755,6 +758,35 @@ class MyDuel(dm.Duel):
 	def sort_chain(self, player, cards):
 		self.set_responsei(-1)
 		reactor.callLater(0, procduel, self)
+
+	def announce_attrib(self, player, count, avail):
+		attributes = ('Earth', 'Water', 'Fire', 'Wind', 'Light', 'Dark', 'Divine')
+		attrmap = {k: (1<<i) for i, k in enumerate(attributes)}
+		avail_attributes = {k: v for k, v in attrmap.items() if avail & v}
+		avail_attributes_keys = avail_attributes.keys()
+		avail_attributes_values = list(avail_attributes.values())
+		pl = self.players[player]
+		def prompt():
+			pl.notify("Type %d attributes separated by spaces." % count)
+			for i, attrib in enumerate(avail_attributes_keys):
+				pl.notify("%d. %s" % (i + 1, attrib))
+			pl.notify(DuelReader, r, no_abort=True)
+		def r(caller):
+			items = caller.text.split()
+			ints = []
+			try:
+				ints = [int(i) for i in items]
+			except ValueError:
+				pass
+			ints = [i for i in ints if i > 0 <= len(avail_attributes_keys)]
+			ints = set(ints)
+			if len(ints) != count:
+				pl.notify("Invalid attributes.")
+				return prompt()
+			value = sum(avail_attributes_values[i - 1] for i in ints)
+			self.set_responsei(value)
+			reactor.callLater(0, procduel, self)
+		return prompt()
 
 	def end(self):
 		super(MyDuel, self).end()
