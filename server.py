@@ -149,6 +149,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('pay_lpcost', self.pay_lpcost)
 		self.cm.register_callback('sort_chain', self.sort_chain)
 		self.cm.register_callback('announce_attrib', self.announce_attrib)
+		self.cm.register_callback('select_sum', self.select_sum)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -802,6 +803,38 @@ class MyDuel(dm.Duel):
 			self.set_responsei(value)
 			reactor.callLater(0, procduel, self)
 		return prompt()
+
+	def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
+		pl = self.players[player]
+		def prompt():
+			pl.notify("Select cards with a total value of at least %d, seperated by spaces." % val)
+			for i, card in enumerate(select_some):
+				pl.notify("%d: %s (%d)" % (i+1, card.name, card.param))
+			return pl.notify(DuelReader, r)
+		def error(t):
+			pl.notify(t)
+			return prompt()
+		def r(caller):
+			text = caller.text.split()
+			ints = []
+			try:
+				for i in text:
+					ints.append(int(i) - 1)
+			except ValueError:
+				return error("Invalid entry.")
+			if len(ints) != len(set(ints)):
+				return error("Duplicate values not allowed.")
+			if any(i for i in ints if i < 1 or i > len(select_some) - 1):
+				return error("Value out of range.")
+			s = sum(select_some[i].param for i in ints)
+			if s < val:
+				return error("%d is less than %d." % (s, val))
+			lst = [len(ints)]
+			lst.extend(ints)
+			b = bytes(lst)
+			self.set_responseb(b)
+			reactor.callLater(0, procduel, self)
+		prompt()
 
 	def end(self):
 		super(MyDuel, self).end()

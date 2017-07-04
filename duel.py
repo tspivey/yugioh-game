@@ -188,6 +188,7 @@ class Duel:
 		100: self.msg_pay_lpcost,
 		21: self.msg_sort_chain,
 		141: self.msg_announce_attrib,
+		23: self.msg_select_sum,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -535,6 +536,36 @@ class Duel:
 		count = self.read_u8(data)
 		avail = self.read_u32(data)
 		self.cm.call_callbacks('announce_attrib', player, count, avail)
+		return b''
+
+	def msg_select_sum(self, data):
+		data = io.BytesIO(data[1:])
+		mode = self.read_u8(data)
+		player = self.read_u8(data)
+		val = self.read_u32(data)
+		select_min = self.read_u8(data)
+		select_max = self.read_u8(data)
+		count = self.read_u8(data)
+		must_select = []
+		for i in range(count):
+			code = self.read_u32(data)
+			card = Card.from_code(code)
+			card.controller = self.read_u8(data)
+			card.location = self.read_u8(data)
+			card.sequence = self.read_u8(data)
+			card.param = self.read_u32(data)
+			must_select.append(card)
+		count = self.read_u8(data)
+		select_some = []
+		for i in range(count):
+			code = self.read_u32(data)
+			card = Card.from_code(code)
+			card.controller = self.read_u8(data)
+			card.location = self.read_u8(data)
+			card.sequence = self.read_u8(data)
+			card.param = self.read_u32(data)
+			select_some.append(card)
+		self.cm.call_callbacks('select_sum', mode, player, val, select_min, select_max, must_select, select_some)
 		return b''
 
 	def read_u8(self, buf):
