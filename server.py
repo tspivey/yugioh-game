@@ -81,6 +81,7 @@ def duel(caller):
 	if player.requested_opponent == con.nickname:
 		player.notify("Duel request accepted, dueling with %s." % con.nickname)
 		start_duel(con, player)
+		player.requested_opponent = None
 	else:
 		player.notify("%s wants to duel. Type duel %s to accept." % (con.nickname, con.nickname))
 		con.requested_opponent = player.nickname
