@@ -22,6 +22,7 @@ class MyServer(gsb.Server):
 		caller.connection.duel = None
 		caller.connection.requested_opponent = None
 		caller.connection.nickname = None
+		caller.connection.seen_waiting = False
 		self.notify(caller.connection, "Connected!")
 		def prompt():
 			caller.connection.notify(Reader, r, prompt="Nickname:")
@@ -365,7 +366,10 @@ class MyDuel(dm.Duel):
 			cs = self.card_to_spec(player, card)
 			specs[cs] = card
 			pl.notify("%s: %s" % (cs, card.name))
-			self.players[1 - player].notify("Waiting for opponent.")
+			op = self.players[1 - player]
+			if not op.seen_waiting:
+				op.notify("Waiting for opponent.")
+				op.seen_waiting = True
 		def r(caller):
 			if caller.text == 'c' and not forced:
 				self.set_responsei(-1)
@@ -866,6 +870,7 @@ class DuelReader(Reader):
 	def feed(self, caller):
 		con = caller.connection
 		text = caller.text
+		con.seen_waiting = False
 		if text == 'h':
 			con.duel.show_hand(con, con.duel_player)
 		elif text == 'tab':
