@@ -34,7 +34,9 @@ def card_reader_callback(code, data):
 	cd.alias = row['alias']
 	cd.setcode = row['setcode']
 	cd.type = row['type']
-	cd.level = row['level']
+	cd.level = row['level'] & 0xff
+	cd.lscale = (row['level'] >> 24) & 0xff
+	cd.rscale = (row['level'] >> 16) & 0xff
 	cd.attack = row['atk']
 	cd.defense = row['def']
 	cd.race = row['race']
@@ -67,11 +69,14 @@ class Card(object):
 		cd.alias = row['alias']
 		cd.setcode = row['setcode']
 		cd.type = row['type']
-		cd.level = row['level']
+		cd.level = row['level'] & 0xff
+		cd.lscale = (row['level'] >> 24) & 0xff
+		cd.rscale = (row['level'] >> 16) & 0xff
 		cd.attack = row['atk']
 		cd.defense = row['def']
 		cd.race = row['race']
 		cd.attribute = row['attribute']
+		cd.category = row['category']
 		row = db.execute('select * from texts where id=?', (code,)).fetchone()
 		cd.name = row['name']
 		cd.desc = row['desc']
@@ -236,7 +241,7 @@ class Duel:
 		cards = []
 		for i in range(drawed):
 			c = self.read_u32(data)
-			card = Card.from_code(c)
+			card = Card.from_code(c & 0x7fffffff)
 			cards.append(card)
 		self.cm.call_callbacks('draw', player, cards)
 		return data.read()
