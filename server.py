@@ -817,8 +817,11 @@ class MyDuel(dm.Duel):
 
 	def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
 		pl = self.players[player]
+		must_select_value = sum(c.param for c in must_select)
 		def prompt():
-			pl.notify("Select cards with a total value of at least %d, seperated by spaces." % val)
+			pl.notify("Select cards with a total value of at least %d, seperated by spaces." % (val - must_select_value))
+			for c in must_select:
+				pl.notify("%s must be selected, automatically selected." % c.name)
 			for i, card in enumerate(select_some):
 				pl.notify("%d: %s (%d)" % (i+1, card.name, card.param))
 			return pl.notify(DuelReader, r)
@@ -838,9 +841,10 @@ class MyDuel(dm.Duel):
 			if any(i for i in ints if i < 1 or i > len(select_some) - 1):
 				return error("Value out of range.")
 			s = sum(select_some[i].param for i in ints)
-			if s < val:
-				return error("%d is less than %d." % (s, val))
-			lst = [len(ints)]
+			if s < val - must_select_value:
+				return error("%d is less than %d." % (s, val - must_select_value))
+			lst = [len(ints) + len(must_select)]
+			lst.extend([0] * len(must_select))
 			lst.extend(ints)
 			b = bytes(lst)
 			self.set_responseb(b)
