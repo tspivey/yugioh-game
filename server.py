@@ -9,6 +9,7 @@ import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
 import duel as dm
+import strings
 
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
@@ -560,8 +561,8 @@ class MyDuel(dm.Duel):
 			pl.notify(s)
 
 	def hint(self, msg, player, data):
-		if msg == 3 and data == 501:
-			self.players[player].notify("Select a card to discard:")
+		if msg == 3 and data in strings.SYSTEM_STRINGS:
+			self.players[player].notify(strings.SYSTEM_STRINGS[data])
 		elif msg == 7:
 			reactor.callLater(0, procduel, self)
 
@@ -751,6 +752,7 @@ class MyDuel(dm.Duel):
 			opt = dm.Card.from_code(code).strings[desc & 0xf]
 		else:
 			opt = "String %d" % desc
+			opt = strings.SYSTEM_STRINGS.get(desc, opt)
 		pl.notify(YesOrNo, opt, yes, no=no)
 
 	def select_effectyn(self, player, card):
