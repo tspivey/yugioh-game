@@ -195,6 +195,7 @@ class Duel:
 		21: self.msg_sort_chain,
 		141: self.msg_announce_attrib,
 		23: self.msg_select_sum,
+		140: self.msg_announce_race,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -572,6 +573,14 @@ class Duel:
 			card.param = self.read_u32(data)
 			select_some.append(card)
 		self.cm.call_callbacks('select_sum', mode, player, val, select_min, select_max, must_select, select_some)
+		return b''
+
+	def msg_announce_race(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		count = self.read_u8(data)
+		avail = self.read_u32(data)
+		self.cm.call_callbacks('announce_race', player, count, avail)
 		return b''
 
 	def read_u8(self, buf):
