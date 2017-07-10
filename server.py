@@ -11,6 +11,14 @@ from twisted.internet import reactor
 import duel as dm
 import strings
 
+command_substitutions = {
+	"'": "chat",
+}
+
+class CustomParser(gsb.Parser):
+	pass
+parser = CustomParser(command_substitutions=command_substitutions)
+duel_parser = CustomParser(command_substitutions=command_substitutions)
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
@@ -58,9 +66,9 @@ class MyServer(gsb.Server):
 			con.duel.notify_all("Your opponent disconnected, the duel is over.")
 			con.duel.end()
 
-server = MyServer(port=4000)
+server = MyServer(port=4000, default_parser=parser)
 
-@server.command(r'^duel (.+)+$')
+@parser.command(names=['duel'], args_regexp=r'(.*)')
 def duel(caller):
 	con = caller.connection
 	nick = caller.args[0]
@@ -99,6 +107,7 @@ def start_duel(*players):
 		pl.notify("Duel created. You are player %d." % i)
 		pl.duel = duel
 		pl.duel_player = i
+		pl.parser = duel_parser
 	duel.players = players
 	if os.environ.get('DEBUG', 0):
 		duel.start_debug()
@@ -896,6 +905,7 @@ class MyDuel(dm.Duel):
 		for pl in self.players:
 			pl.duel = None
 			pl.intercept = None
+			pl.parser = parser
 
 	def start_debug(self):
 		self.debug_mode = True
@@ -913,35 +923,16 @@ class MyDuel(dm.Duel):
 		self.debug_fp.flush()
 
 class DuelReader(Reader):
-	def feed(self, caller):
-		con = caller.connection
-		text = caller.text
+	def handle_line(self, con, line):
 		con.seen_waiting = False
-		if text == 'h':
-			con.duel.show_hand(con, con.duel_player)
-		elif text == 'tab':
-			con.duel.show_table(con, con.duel_player)
-		elif text == 'tab2':
-			con.duel.show_table(con, 1 - con.duel_player, True)
-		elif text.startswith("'"):
-			for pl in players.values():
-				pl.notify("%s chats: %s" % (con.nickname, text[1:]))
-		elif text == 'sc' or text == 'score':
-			con.duel.show_score(con)
-		elif text == 'grave':
-			con.duel.show_cards_in_location(con, con.duel_player, dm.LOCATION_GRAVE)
-		elif text == 'grave2':
-			con.duel.show_cards_in_location(con, 1 - con.duel_player, dm.LOCATION_GRAVE, True)
-		elif text == 'extra':
-			con.duel.show_cards_in_location(con, con.duel_player, dm.LOCATION_EXTRA)
-		elif text == 'extra2':
-			con.duel.show_cards_in_location(con, 1 - con.duel_player, dm.LOCATION_EXTRA, True)
-		if text in ('h', 'tab', 'tab2', 'grave', 'grave2', 'extra', 'extra2') or text.startswith("'") or text.startswith('sc'):
-			caller.connection.notify(self, self.done)
-			return
-		super(DuelReader, self).feed(caller)
+		cmd, args = self.split(line)
+		if cmd in duel_parser.commands:
+			duel_parser.handle_line(con, line)
+			con.notify(self, self.done)
+		else:
+			super().handle_line(con, line)
 
-@server.command('^h(and)?$')
+@duel_parser.command(names=['h', 'hand'])
 def hand(caller):
 	con = caller.connection
 	if not con.duel:
@@ -949,7 +940,7 @@ def hand(caller):
 		return
 	con.duel.show_hand(con, con.duel_player)
 
-@server.command('^tab$')
+@duel_parser.command(names=['tab'])
 def tab(caller):
 	duel = caller.connection.duel
 	if not duel:
@@ -957,7 +948,7 @@ def tab(caller):
 		return
 	duel.show_table(caller.connection, caller.connection.duel_player)
 
-@server.command('^tab2$')
+@duel_parser.command(names=['tab2'])
 def tab2(caller):
 	duel = caller.connection.duel
 	if not duel:
@@ -965,35 +956,45 @@ def tab2(caller):
 		return
 	duel.show_table(caller.connection, 1 - caller.connection.duel_player, True)
 
-@server.command(r'^grave$')
+@duel_parser.command(names=['grave'])
 def grave(caller):
 	if not caller.connection.duel:
 		caller.connection.notify("Not in a duel.")
 		return
 	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_GRAVE)
 
-@server.command(r'^grave2$')
+@duel_parser.command(names=['grave2'])
 def grave2(caller):
 	if not caller.connection.duel:
 		caller.connection.notify("Not in a duel.")
 		return
 	caller.connection.duel.show_cards_in_location(caller.connection, 1 - caller.connection.duel_player, dm.LOCATION_GRAVE, True)
 
-@server.command(r'^extra$')
+@duel_parser.command(names=['extra'])
 def extra(caller):
 	if not caller.connection.duel:
 		caller.connection.notify("Not in a duel.")
 		return
 	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_EXTRA)
 
-@server.command(r'^extra2$')
+@duel_parser.command(names=['extra2'])
 def extra2(caller):
 	if not caller.connection.duel:
 		caller.connection.notify("Not in a duel.")
 		return
 	caller.connection.duel.show_cards_in_location(caller.connection, 1 - caller.connection.duel_player, dm.LOCATION_EXTRA, True)
 
-@server.command(r'^deck load ([a-zA-Z0-9]+)')
+@parser.command(names='deck', args_regexp=r'(.*)')
+def deck(caller):
+	cmd, args = caller.args[0].split(None, 1)
+	caller.args = (args,)
+	if cmd == 'load':
+		deck_load(caller)
+	elif cmd == 'edit':
+		deck_edit(caller)
+	else:
+		caller.connection.notify("Invalid deck command.")
+
 def deck_load(caller):
 	fn = caller.args[0].replace('/', '_')
 	if not os.path.exists(os.path.join('decks', fn)):
@@ -1002,7 +1003,7 @@ def deck_load(caller):
 	caller.connection.deck = load_deck(fn)
 	caller.connection.notify("Deck loaded with %d cards." % len(caller.connection.deck['cards']))
 
-@server.command(r'^deck edit ([a-zA-z0-9]+)')
+#@server.command(r'^deck edit ([a-zA-z0-9]+)')
 def deck_edit(caller):
 	con = caller.connection
 	deck_name = caller.args[0].replace('/', '_')
@@ -1106,12 +1107,16 @@ def save_deck(deck, filename):
 def get_player(name):
 	return players.get(name.lower())
 
-@server.command(r"^(?:'|chat ) *(.+)")
+@parser.command(names=["chat"], args_regexp=r'(.*)')
 def chat(caller):
+	text = caller.args[0]
+	if not text:
+		caller.connection.notify("Chat what?")
+		return
 	for pl in players.values():
 		pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
 
-@server.command('^who$')
+@parser.command(names=['who'])
 def who(caller):
 	caller.connection.notify("Online players:")
 	for pl in players.values():
@@ -1120,14 +1125,14 @@ def who(caller):
 			s += ' (dueling)'
 		caller.connection.notify(s)
 
-@server.command(r'^sc(ore)?$')
+@duel_parser.command(names=['sc', 'score'])
 def score(caller):
 	if not caller.connection.duel:
 		caller.connection.notify("Not in a duel.")
 		return
 	caller.connection.duel.show_score(caller.connection)
 
-@server.command(r'^replay (.+)=(\d+)$')
+@parser.command(names=['replay'], args_regexp=r'(.*)')
 def replay(caller):
 	with open(os.path.join('duels', caller.args[0])) as fp:
 		lines = [json.loads(line) for line in fp]
@@ -1176,14 +1181,11 @@ def procduel_replay(duel):
 	duel.cm.callbacks = cb
 	return data
 
-@server.command(r'^info (.+)')
+@duel_parser.command(names=['info'], args_regexp=r'(.*)')
 def info(caller):
-	if not caller.connection.duel:
-		caller.connection.notify("No duel is in progress.")
-		return
 	caller.connection.duel.show_info_cmd(caller.connection, caller.args[0])
 
-@server.command(r'^help( .+)?\s*$')
+@parser.command(names=['help'], args_regexp=r'(.*)')
 def help(caller):
 	topic = caller.args[0]
 	if not topic:
@@ -1196,11 +1198,11 @@ def help(caller):
 	with open(fn, encoding='utf-8') as fp:
 		caller.connection.notify(fp.read().rstrip('\n'))
 
-@server.command('^quit$')
+@parser.command(names=['quit'])
 def quit(caller):
 	server.disconnect(caller.connection)
 
-@server.command('^lookup (.+)$')
+@parser.command(names=['lookup'], args_regexp=r'(.*)')
 def lookup(caller):
 	name = caller.args[0]
 	r = re.compile(r'^(\d+)\.(.+)$')
@@ -1220,5 +1222,7 @@ def lookup(caller):
 	card = dm.Card.from_code(nr[0])
 	caller.connection.notify(card.info())
 
+for key in parser.commands.keys():
+	duel_parser.commands[key] = parser.commands[key]
 if __name__ == '__main__':
 	server.run()
