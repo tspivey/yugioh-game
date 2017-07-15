@@ -1200,6 +1200,7 @@ def help(caller):
 
 @parser.command(names=['quit'])
 def quit(caller):
+	caller.connection.notify("Goodbye.")
 	server.disconnect(caller.connection)
 
 @parser.command(names=['lookup'], args_regexp=r'(.*)')
