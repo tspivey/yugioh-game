@@ -1223,6 +1223,10 @@ def lookup(caller):
 	card = dm.Card.from_code(nr[0])
 	caller.connection.notify(card.info())
 
+@parser.command(names=['echo'], args_regexp=r'(.*)')
+def echo(caller):
+	caller.connection.notify(caller.args[0])
+
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 if __name__ == '__main__':
