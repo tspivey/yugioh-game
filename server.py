@@ -559,11 +559,15 @@ class MyDuel(dm.Duel):
 		self.notify_all(s)
 
 	def damage(self, player, amount):
-		self.notify_all("%s's lp decreased by %d, now %d" % (self.players[player].nickname, amount, self.lp[player]-amount))
+		new_lp = self.lp[player]-amount
+		self.players[player].notify("Your lp decreased by %d, now %d" % (amount, new_lp))
+		self.players[1 - player].notify("%s's lp decreased by %d, now %d" % (self.players[player].nickname, amount, new_lp))
 		self.lp[player] -= amount
 
 	def recover(self, player, amount):
-		self.notify_all("%s's lp increased by %d, now %d" % (self.players[player].nickname, amount, self.lp[player] + amount))
+		new_lp = self.lp[player] + amount
+		self.players[player].notify("Your lp increased by %d, now %d" % (amount, new_lp))
+		self.players[1 - player].notify("%s's lp increased by %d, now %d" % (self.players[player].nickname, amount, new_lp))
 		self.lp[player] += amount
 
 	def notify_all(self, s):
