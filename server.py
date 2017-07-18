@@ -34,6 +34,7 @@ class MyServer(gsb.Server):
 		caller.connection.requested_opponent = None
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
+		caller.connection.chat = True
 		self.notify(caller.connection, "Connected!")
 		def prompt():
 			caller.connection.notify(Reader, r, prompt="Nickname:")
@@ -1157,10 +1158,18 @@ def get_player(name):
 def chat(caller):
 	text = caller.args[0]
 	if not text:
-		caller.connection.notify("Chat what?")
+		caller.connection.chat = not caller.connection.chat
+		if caller.connection.chat:
+			caller.connection.notify("Chat on.")
+		else:
+			caller.connection.notify("Chat off.")
 		return
+	if not caller.connection.chat:
+		caller.connection.chat = True
+		caller.connection.notify("Chat on.")
 	for pl in players.values():
-		pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
+		if pl.chat:
+			pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=["say"], args_regexp=r'(.*)')
 def say(caller):
