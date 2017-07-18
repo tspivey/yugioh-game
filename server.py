@@ -1136,7 +1136,7 @@ def score(caller):
 		return
 	caller.connection.duel.show_score(caller.connection)
 
-@parser.command(names=['replay'], args_regexp=r'(.*)')
+@parser.command(names=['replay'], args_regexp=r'(.*)=(\d+)')
 def replay(caller):
 	with open(os.path.join('duels', caller.args[0])) as fp:
 		lines = [json.loads(line) for line in fp]
