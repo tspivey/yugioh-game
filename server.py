@@ -13,7 +13,8 @@ import duel as dm
 import strings
 
 command_substitutions = {
-	"'": "chat",
+	"'": "say",
+	".": "chat",
 }
 
 class CustomParser(gsb.Parser):
@@ -964,6 +965,10 @@ class MyDuel(dm.Duel):
 class DuelReader(Reader):
 	def handle_line(self, con, line):
 		con.seen_waiting = False
+		for s, c in duel_parser.command_substitutions.items():
+			if line.startswith(s):
+				line = c+" "+line[1:]
+				break
 		cmd, args = self.split(line)
 		if cmd in duel_parser.commands:
 			duel_parser.handle_line(con, line)
@@ -1156,6 +1161,18 @@ def chat(caller):
 		return
 	for pl in players.values():
 		pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
+
+@parser.command(names=["say"], args_regexp=r'(.*)')
+def say(caller):
+	text = caller.args[0]
+	if not text:
+		caller.connection.notify("Say what?")
+		return
+	if not caller.connection.duel:
+		caller.connection.notify("Not in a duel.")
+		return
+	for pl in caller.connection.duel.players:
+		pl.notify("%s says: %s" % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=['who'])
 def who(caller):
