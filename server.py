@@ -6,6 +6,7 @@ import json
 import datetime
 import collections
 import struct
+import argparse
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
@@ -1296,5 +1297,13 @@ def echo(caller):
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
-if __name__ == '__main__':
+
+def main():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
+	args = parser.parse_args()
+	server.port = args.port
 	server.run()
+
+if __name__ == '__main__':
+	main()
