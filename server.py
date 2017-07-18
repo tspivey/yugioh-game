@@ -5,6 +5,7 @@ from functools import partial
 import json
 import datetime
 import collections
+import struct
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
@@ -162,6 +163,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('sort_chain', self.sort_chain)
 		self.cm.register_callback('announce_attrib', self.announce_attrib)
 		self.cm.register_callback('select_sum', self.select_sum)
+		self.cm.register_callback('select_counter', self.select_counter)
 		self.cm.register_callback('announce_race', self.announce_race)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
@@ -864,6 +866,39 @@ class MyDuel(dm.Duel):
 			self.set_responseb(b)
 			reactor.callLater(0, procduel, self)
 		prompt()
+
+	def select_counter(self, player, countertype, count, cards):
+		pl = self.players[player]
+		def prompt():
+			pl.notify("Adjust counters for %d cards, separated by spaces." % len(cards))
+			for c in cards:
+				pl.notify("%s (%d)" % (c.name, c.counter))
+			pl.notify(DuelReader, r, no_abort=True)
+		def error(text):
+			pl.notify(text)
+			return prompt()
+		def r(caller):
+			ints = self.parse_ints(caller.text)
+			ints = [i & 0xffff for i in ints]
+			if len(ints) != len(cards):
+				return error("Please specify %d values." % len(cards))
+			if any(cards[i].counter < val for i, val in enumerate(ints)):
+				return error("Values cannot be greater than counter.")
+			if sum(ints) != count:
+				return error("Please specify %d values with a sum of %d." % (len(cards), count))
+			bytes = struct.pack('h' * count, *ints)
+			self.set_responseb(bytes)
+			reactor.callLater(0, procduel, self)
+		prompt()
+
+	def parse_ints(self, text):
+		ints = []
+		try:
+			for i in text.split():
+				ints.append(int(i))
+		except ValueError:
+			pass
+		return ints
 
 	def announce_race(self, player, count, avail):
 		races = (
