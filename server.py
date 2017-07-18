@@ -985,6 +985,7 @@ def tab(caller):
 	if not duel:
 		caller.connection.notify("Not in a duel.")
 		return
+	caller.connection.notify("Your table:")
 	duel.show_table(caller.connection, caller.connection.duel_player)
 
 @duel_parser.command(names=['tab2'])
@@ -993,6 +994,7 @@ def tab2(caller):
 	if not duel:
 		caller.connection.notify("Not in a duel.")
 		return
+	caller.connection.notify("Opponent's table:")
 	duel.show_table(caller.connection, 1 - caller.connection.duel_player, True)
 
 @duel_parser.command(names=['grave'])
