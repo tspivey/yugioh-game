@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import random
@@ -14,6 +15,9 @@ import gsb
 from gsb.intercept import Menu, Reader
 from parsers import YesOrNo
 from twisted.internet import reactor
+from twisted.internet import ssl
+from twisted.python import log
+from autobahn.twisted.websocket import listenWS
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import duel as dm
@@ -21,6 +25,7 @@ from parsers import parser, duel_parser, LoginParser
 import models
 import game
 import i18n
+import websockets
 
 __ = lambda s: s
 
@@ -46,6 +51,7 @@ class MyServer(gsb.Server):
 		caller.connection._ = gettext.NullTranslations().gettext
 		caller.connection.cdb = dm.db
 		caller.connection.language = 'en'
+		caller.connection.web = False
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -1722,6 +1728,19 @@ def encoding(caller):
 	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Encoding set."))
 
+@parser.command
+def restart_websockets(caller):
+	if not game.websocket_server:
+		caller.connection.notify("Websocket server not enabled.")
+		return
+	caller.connection.notify("Stopping server...")
+	d = game.websocket_server.stopListening()
+	def stopped(r):
+		caller.connection.notify("Done, restarting.")
+		start_websocket_server()
+	d.addCallback(stopped)
+	d.addErrback(log.err)
+
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
@@ -1737,9 +1756,29 @@ def main():
 		strings[i] = i18n.parse_strings(os.path.join('locale', i, 'strings.conf'))
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
+	parser.add_argument('-w', '--websocket-port', type=int)
+	parser.add_argument('--websocket-cert', '-c')
+	parser.add_argument('--websocket-key', '-k')
 	args = parser.parse_args()
+	game.args = args
 	server.port = args.port
+	if args.websocket_port:
+		start_websocket_server()
 	server.run()
+
+def start_websocket_server():
+	if game.args.websocket_cert:
+		context_factory = ssl.DefaultOpenSSLContextFactory(game.args.websocket_key, game.args.websocket_cert)
+		url = 'wss://0.0.0.0:%d' % game.args.websocket_port
+	else:
+		context_factory = None
+		url = 'ws://0.0.0.0:%d' % game.args.websocket_port
+	factory = websockets.WebSocketServerFactory(url)
+	factory.protocol = websockets.WSProtocol
+	if context_factory:
+		game.websocket_server = reactor.listenSSL(game.args.websocket_port, factory, context_factory)
+	else:
+		game.websocket_server = reactor.listenTCP(game.args.websocket_port, factory)
 
 if __name__ == '__main__':
 	main()

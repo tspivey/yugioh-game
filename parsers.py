@@ -20,32 +20,32 @@ class LoginParser(gsb.Parser):
 	nickname_re = re.compile(r'^[A-Za-z][a-zA-Z0-9]+$')
 
 	def on_attach(self, connection, old_parser=None):
-		connection.state = ("nickname", "Nickname (or new to create a new account):")
+		connection.login_state = ("nickname", "Nickname (or new to create a new account):")
 		self.prompt(gsb.Caller(connection=connection))
 
 	def huh(self, caller):
-		state_fn = getattr(self, "handle_"+caller.connection.state[0])
+		state_fn = getattr(self, "handle_"+caller.connection.login_state[0])
 		state_fn(caller)
 
 	def prompt(self, caller, text=None):
 		if text:
 			caller.connection.notify(text)
-		caller.connection.notify(caller.connection.state[1])
+		caller.connection.notify(caller.connection.login_state[1])
 
 	def handle_nickname(self, caller):
 		if caller.text == 'new':
 			caller.connection.notify("Plese enter a nickname. Your nickname is what you will be known by while playing.")
-			caller.connection.state = ("new", "Enter desired nickname:")
+			caller.connection.login_state = ("new", "Enter desired nickname:")
 			return self.prompt(caller)
 		nickname = caller.text.capitalize()
 		account = self.find_account(caller.connection.session, nickname)
 		if not account:
 			return self.prompt(caller, "That account doesn't exist. Type new to create a new account.")
-		caller.connection.state = ('password', "Password:", account)
+		caller.connection.login_state = ('password', "Password:", account)
 		return self.prompt(caller)
 
 	def handle_password(self, caller):
-		account = caller.connection.state[2]
+		account = caller.connection.login_state[2]
 		if account.check_password(caller.text):
 			self.login(caller.connection, account)
 		else:
@@ -65,7 +65,7 @@ class LoginParser(gsb.Parser):
 		if existing_account:
 			return self.prompt(caller, "An account with that name already exists.")
 		caller.connection.account = models.Account(name=nickname)
-		caller.connection.state = ("new_password", "Enter a password for the account:")
+		caller.connection.login_state = ("new_password", "Enter a password for the account:")
 		return self.prompt(caller)
 
 	def handle_new_password(self, caller):
@@ -73,18 +73,18 @@ class LoginParser(gsb.Parser):
 		if len(password) < 6:
 			return self.prompt(caller, "Passwords must be at least 6 characters.")
 		caller.connection.account.temp_password = password
-		caller.connection.state = ("confirm_password", "Please re-enter password:")
+		caller.connection.login_state = ("confirm_password", "Please re-enter password:")
 		return self.prompt(caller)
 
 	def handle_confirm_password(self, caller):
 		if caller.text != caller.connection.account.temp_password:
 			caller.connection.notify("Passwords do not match.")
-			caller.connection.state = ("new_password", "Enter a password for the account:")
+			caller.connection.login_state = ("new_password", "Enter a password for the account:")
 			return self.prompt(caller)
 		del caller.connection.account.temp_password
 		caller.connection.account.set_password(caller.text)
 		caller.connection.notify("Please enter your email address. An email address is required in case the game administrators need to contact you.")
-		caller.connection.state = ("email", "E-mail address:")
+		caller.connection.login_state = ("email", "E-mail address:")
 		self.prompt(caller)
 
 	def handle_email(self, caller):
