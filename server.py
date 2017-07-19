@@ -38,7 +38,7 @@ class MyServer(gsb.Server):
 		caller.connection.chat = True
 		self.notify(caller.connection, "Connected!")
 		def prompt():
-			caller.connection.notify(Reader, r, prompt="Nickname:")
+			caller.connection.notify(Reader, r, prompt="Nickname:", restore_parser=parser)
 		def r(caller):
 			m = self.nickname_re.match(caller.text)
 			if not m:
@@ -225,7 +225,7 @@ class MyDuel(dm.Duel):
 				pl.notify("b: Enter the battle phase.")
 			if self.to_ep:
 				pl.notify("e: End phase.")
-			pl.notify(DuelReader, r, no_abort=True)
+			pl.notify(DuelReader, r, no_abort="Invalid specifier. Retry.", restore_parser=duel_parser)
 		cards = []
 		for i in (0, 1):
 			for j in (dm.LOCATION_HAND, dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE, dm.LOCATION_EXTRA):
@@ -252,7 +252,7 @@ class MyDuel(dm.Duel):
 			card = self.get_card(plr, loc, seq)
 			if not card:
 				pl.notify("There is no card in that position.")
-				pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			if plr == 1 - self.tp:
 				if card.position in (0x8, 0xa):
@@ -295,17 +295,17 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
 			elif caller.text == 'i':
 				self.show_info(card, pl)
-				pl.notify(DuelReader, action, no_abort=True)
+				pl.notify(DuelReader, action, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			elif caller.text == 'z':
 				reactor.callLater(0, self.idle_action, pl)
 				return
 			else:
 				pl.notify("Invalid action.")
-				pl.notify(DuelReader, action, no_abort=True)
+				pl.notify(DuelReader, action, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			reactor.callLater(0, procduel, self)
-		pl.notify(DuelReader, action, no_abort=True)
+		pl.notify(DuelReader, action, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def cardspec_to_ls(self, text):
 		if text.startswith('o'):
@@ -339,7 +339,7 @@ class MyDuel(dm.Duel):
 		def r(caller):
 			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Try again.")
-				pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			l, s = self.cardspec_to_ls(caller.text)
 			if caller.text.startswith('o'):
@@ -349,7 +349,7 @@ class MyDuel(dm.Duel):
 			resp = bytes([plr, l, s])
 			self.set_responseb(resp)
 			reactor.callLater(0, procduel, self)
-		pl.notify(DuelReader, r, no_abort=True)
+		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def flag_to_usable_cardspecs(self, flag):
 		pm = flag & 0xff
@@ -398,17 +398,17 @@ class MyDuel(dm.Duel):
 				info = False
 			if caller.text not in specs:
 				pl.notify("Invalid spec.")
-				pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			card = specs[caller.text]
 			idx = chain_cards.index(card)
 			if info:
 				self.show_info(card, pl)
-				pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			self.set_responsei(idx)
 			reactor.callLater(0, procduel, self)
-		pl.notify(DuelReader, r, no_abort=True)
+		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def select_option(self, player, options):
 		def select(caller, idx):
@@ -422,7 +422,7 @@ class MyDuel(dm.Duel):
 			else:
 				string = "Unknown option %d" % opt
 			opts.append(string)
-		m = Menu("Select option:", no_abort=True, persistent=True)
+		m = Menu("Select option:", no_abort="Invalid option.", persistent=True, restore_parser=duel_parser)
 		for idx, opt in enumerate(opts):
 			m.item(opt)(lambda caller, idx=idx: select(caller, idx))
 		self.players[player].notify(m)
@@ -469,8 +469,8 @@ class MyDuel(dm.Duel):
 				reactor.callLater(0, procduel, self)
 			else:
 				pl.notify("Invalid option.")
-				pl.notify(DuelReader, r, no_abort=True)
-		pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
+		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def battle_attack(self, con):
 		pl = self.players[con.duel_player]
@@ -488,13 +488,13 @@ class MyDuel(dm.Duel):
 				return
 			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Retry.")
-				pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			card = specs[caller.text]
 			seq = self.attackable.index(card)
 			self.set_responsei((seq << 16) + 1)
 			reactor.callLater(0, procduel, self)
-		pl.notify(DuelReader, r, no_abort=True)
+		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def battle_activate(self, con):
 		pl = self.players[con.duel_player]
@@ -512,13 +512,13 @@ class MyDuel(dm.Duel):
 				return
 			if caller.text not in specs:
 				pl.notify("Invalid cardspec. Retry.")
-				pl.notify(DuelReader, r, no_abort=True)
+				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			card = specs[caller.text]
 			seq = self.activatable.index(card)
 			self.set_responsei((seq << 16))
 			reactor.callLater(0, procduel, self)
-		pl.notify(DuelReader, r, no_abort=True)
+		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def card_to_spec(self, player, card):
 		s = ""
@@ -599,7 +599,7 @@ class MyDuel(dm.Duel):
 			con.notify("%d: %s" % (i+1, name))
 		def error(text):
 			con.notify(text)
-			con.notify(DuelReader, f, no_abort=True)
+			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
 		def f(caller):
 			cds = caller.text.split()
 			try:
@@ -621,7 +621,7 @@ class MyDuel(dm.Duel):
 				return error("Not enough tributes.")
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
-		con.notify(DuelReader, f, no_abort=True)
+		con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def show_table(self, con, player, hide_facedown=False):
 		mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
@@ -744,7 +744,7 @@ class MyDuel(dm.Duel):
 
 	def select_position(self, player, card, positions):
 		pl = self.players[player]
-		m = Menu("Select position for %s:" % (card.name,), no_abort=True, persistent=True)
+		m = Menu("Select position for %s:" % (card.name,), no_abort="Invalid option.", persistent=True, restore_parser=duel_parser)
 		def set(caller, pos=None):
 			self.set_responsei(pos)
 			reactor.callLater(0, procduel, self)
@@ -816,7 +816,7 @@ class MyDuel(dm.Duel):
 			pl.notify("Type %d attributes separated by spaces." % count)
 			for i, attrib in enumerate(avail_attributes_keys):
 				pl.notify("%d. %s" % (i + 1, attrib))
-			pl.notify(DuelReader, r, no_abort=True)
+			pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 		def r(caller):
 			items = caller.text.split()
 			ints = []
@@ -843,7 +843,7 @@ class MyDuel(dm.Duel):
 				pl.notify("%s must be selected, automatically selected." % c.name)
 			for i, card in enumerate(select_some):
 				pl.notify("%d: %s (%d)" % (i+1, card.name, card.param))
-			return pl.notify(DuelReader, r)
+			return pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
 		def error(t):
 			pl.notify(t)
 			return prompt()
@@ -876,7 +876,7 @@ class MyDuel(dm.Duel):
 			pl.notify("Adjust counters for %d cards, separated by spaces." % len(cards))
 			for c in cards:
 				pl.notify("%s (%d)" % (c.name, c.counter))
-			pl.notify(DuelReader, r, no_abort=True)
+			pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 		def error(text):
 			pl.notify(text)
 			return prompt()
@@ -918,10 +918,10 @@ class MyDuel(dm.Duel):
 			pl.notify("Type %d races separated by spaces." % count)
 			for i, s in enumerate(avail_races.keys()):
 				pl.notify("%d: %s" % (i+1, s))
-			pl.notify(DuelReader, r)
+			pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
 		def error(text):
 			pl.notify(text)
-			pl.notify(DuelReader, r)
+			pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
 		def r(caller):
 			ints = []
 			try:
@@ -1065,7 +1065,7 @@ def deck_edit(caller):
 		con.notify("s: send to deck r: remove from deck l: list deck q: quit")
 	def read():
 		info()
-		con.notify(Reader, r, prompt="Command (%d cards in deck):" % len(cards), no_abort=True)
+		con.notify(Reader, r, prompt="Command (%d cards in deck):" % len(cards), no_abort="Invalid command", restore_parser=parser)
 	def r(caller):
 		code = all_cards[con.deck_edit_pos]
 		if caller.text == 'd':
