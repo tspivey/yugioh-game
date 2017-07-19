@@ -7,6 +7,9 @@ import datetime
 import collections
 import struct
 import argparse
+import gettext
+import sqlite3
+import codecs
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
@@ -17,6 +20,12 @@ import strings
 from parsers import parser, duel_parser, LoginParser
 import models
 import game
+
+__ = lambda s: s
+
+german_db = None
+japanese_db = None
+
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
@@ -35,6 +44,9 @@ class MyServer(gsb.Server):
 		caller.connection.seen_waiting = False
 		caller.connection.chat = True
 		caller.connection.session = Session()
+		caller.connection._ = gettext.NullTranslations().gettext
+		caller.connection.cdb = dm.db
+		caller.connection.language = 'en'
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -42,7 +54,7 @@ class MyServer(gsb.Server):
 			return
 		del game.players[con.nickname.lower()]
 		for pl in game.players.values():
-			pl.notify("%s logged out." % con.nickname)
+			pl.notify(pl._("%s logged out.") % con.nickname)
 		if con.duel:
 			con.duel.notify_all("Your opponent disconnected, the duel is over.")
 			con.duel.end()
@@ -57,28 +69,28 @@ def duel(caller):
 	nick = caller.args[0]
 	player = get_player(nick)
 	if con.duel:
-		con.notify("You are already in a duel.")
+		con.notify(con._("You are already in a duel."))
 		return
 	elif not player:
-		con.notify("That player is not online.")
+		con.notify(con._("That player is not online."))
 		return
 	elif player.duel:
-		con.notify("That player is already in a duel.")
+		con.notify(con._("That player is already in a duel."))
 		return
 	elif player is con:
-		con.notify("You can't duel yourself.")
+		con.notify(con._("You can't duel yourself."))
 		return
 	elif not con.deck['cards']:
-		con.notify("You can't duel without a deck. Try deck load starter.")
+		con.notify(con._("You can't duel without a deck. Try deck load starter."))
 		return
 	if player.requested_opponent == con.nickname:
-		player.notify("Duel request accepted, dueling with %s." % con.nickname)
+		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
 		start_duel(con, player)
 		player.requested_opponent = None
 	else:
-		player.notify("%s wants to duel. Type duel %s to accept." % (con.nickname, con.nickname))
+		player.notify(player._("%s wants to duel. Type duel %s to accept.") % (con.nickname, con.nickname))
 		con.requested_opponent = player.nickname
-		con.notify("Duel request sent to %s." % player.nickname)
+		con.notify(con._("Duel request sent to %s.") % player.nickname)
 
 def start_duel(*players):
 	players = list(players)
@@ -87,7 +99,7 @@ def start_duel(*players):
 	duel.load_deck(0, players[0].deck['cards'])
 	duel.load_deck(1, players[1].deck['cards'])
 	for i, pl in enumerate(players):
-		pl.notify("Duel created. You are player %d." % i)
+		pl.notify(pl._("Duel created. You are player %d.") % i)
 		pl.duel = duel
 		pl.duel_player = i
 		pl.parser = duel_parser
@@ -107,6 +119,72 @@ def procduel(d):
 				d.keep_processing = False
 				continue
 			break
+
+class CustomCard(dm.Card):
+
+	def get_name(self, con):
+		name = self.name
+		row = con.cdb.execute('select name from texts where id=?', (self.code,)).fetchone()
+		if row:
+			return row[0]
+		return name
+
+	def get_desc(self, con):
+		desc = self.desc
+		row = con.cdb.execute('select desc from texts where id=?', (self.code,)).fetchone()
+		if row:	
+			return row[0]
+		return desc
+
+	def get_info(self, pl):
+		lst = []
+		types = []
+		t = str(self.type)
+		if self.type & 1:
+			types.append(pl._("Monster"))
+		elif self.type & 2:
+			types.append(pl._("Spell"))
+		elif self.type & 4:
+			types.append(pl._("Trap"))
+		if self.type & 0x20:
+			types.append(pl._("Effect"))
+		if self.type & 0x40:
+			types.append(pl._("Fusion"))
+		if self.attribute & 1:
+			types.append(pl._("Earth"))
+		elif self.attribute & 2:
+			types.append(pl._("Water"))
+		elif self.attribute & 4:
+			types.append(pl._("Fire"))
+		elif self.attribute & 8:
+			types.append(pl._("Wind"))
+		elif self.attribute & 0x10:
+			types.append(pl._("Light"))
+		elif self.attribute & 0x20:
+			types.append(pl._("Dark"))
+		elif self.attribute & 0x40:
+			types.append(pl._("Divine"))
+		for i, race in enumerate(self.RACES):
+			if self.race & (1 << i):
+				types.append(pl._(race))
+		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
+		lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
+		lst.append(self.get_desc(pl))
+		return "\n".join(lst)
+
+	def get_position(self, con):
+		if self.position == 0x1:
+			return con._("face-up attack")
+		elif self.position == 0x2:
+			return con._("face-down attack")
+		elif self.position == 0x4:
+			return con._("face-up defense")
+		elif self.position == 0x5:
+			return con._("face-up")
+		elif self.position == 0x8:
+			return con._("face-down defense")
+		elif self.position == 0xa:
+			return con._("face down")
 
 class MyDuel(dm.Duel):
 	def __init__(self):
@@ -156,33 +234,35 @@ class MyDuel(dm.Duel):
 
 	def draw(self, player, cards):
 		pl = self.players[player]
-		pl.notify("Drew %d cards:" % len(cards))
+		pl.notify(pl._("Drew %d cards:") % len(cards))
 		for i, c in enumerate(cards):
-			pl.notify("%d: %s" % (i+1, c.name))
-		self.players[1 - player].notify("Opponent drew %d cards." % len(cards))
+			pl.notify("%d: %s" % (i+1, c.get_name(pl)))
+		op = self.players[1 - player]
+		op.notify(op._("Opponent drew %d cards.") % len(cards))
 
 	def phase(self, phase):
 		phases = {
-			1: 'draw',
-			2: 'standby',
-			4: 'main1',
-			8: 'battle start',
-			0x10: 'battle step',
-			0x20: 'damage',
-			0x40: 'damage calculation',
-			0x80: 'battle',
-			0x100: 'main2',
-			0x200: 'end',
+			1: __('draw phase'),
+			2: __('standby phase'),
+			4: __('main1 phase'),
+			8: __('battle start phase'),
+			0x10: __('battle step phase'),
+			0x20: __('damage phase'),
+			0x40: __('damage calculation phase'),
+			0x80: __('battle phase'),
+			0x100: __('main2 phase'),
+			0x200: __('end phase'),
 		}
 		phase_str = phases.get(phase, str(phase))
 		for pl in self.players:
-			pl.notify('entering %s phase.' % phase_str)
+			pl.notify(pl._('entering %s.') % pl._(phase_str))
 		self.current_phase = phase
 
 	def new_turn(self, tp):
 		self.tp = tp
-		self.players[tp].notify("Your turn.")
-		self.players[1 - tp].notify("%s's turn." % self.players[tp].nickname)
+		self.players[tp].notify(self.players[tp]._("Your turn."))
+		op = self.players[1 - tp]
+		op.notify(op._("%s's turn.") % self.players[tp].nickname)
 
 	def idle(self, summonable, spsummon, repos, idle_mset, idle_set, idle_activate, to_bp, to_ep, cs):
 		self.state = "idle"
@@ -199,12 +279,12 @@ class MyDuel(dm.Duel):
 
 	def idle_action(self, pl):
 		def prompt():
-			pl.notify("Select a card on which to perform an action.")
-			pl.notify("h shows your hand, tab and tab2 shows your or the opponent's table.")
+			pl.notify(pl._("Select a card on which to perform an action."))
+			pl.notify(pl._("h shows your hand, tab and tab2 shows your or the opponent's table."))
 			if self.to_bp:
-				pl.notify("b: Enter the battle phase.")
+				pl.notify(pl._("b: Enter the battle phase."))
 			if self.to_ep:
-				pl.notify("e: End phase.")
+				pl.notify(pl._("e: End phase."))
 			pl.notify(DuelReader, r, no_abort="Invalid specifier. Retry.", restore_parser=duel_parser)
 		cards = []
 		for i in (0, 1):
@@ -221,7 +301,7 @@ class MyDuel(dm.Duel):
 				reactor.callLater(0, procduel, self)
 				return
 			if caller.text not in specs:
-				pl.notify("Invalid specifier. Retry.")
+				pl.notify(pl._("Invalid specifier. Retry."))
 				prompt()
 				return
 			loc, seq = self.cardspec_to_ls(caller.text)
@@ -231,37 +311,37 @@ class MyDuel(dm.Duel):
 				plr = self.tp
 			card = self.get_card(plr, loc, seq)
 			if not card:
-				pl.notify("There is no card in that position.")
+				pl.notify(pl._("There is no card in that position."))
 				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			if plr == 1 - self.tp:
 				if card.position in (0x8, 0xa):
-					pl.notify("Face-down card.")
+					pl.notify(pl._("Face-down card."))
 					return prompt()
-				pl.notify(card.info())
+				pl.notify(card.get_info(pl))
 				return prompt()
 			self.act_on_card(caller, card)
 		prompt()
 
 	def act_on_card(self, caller, card):
 		pl = self.players[self.tp]
-		pl.notify(card.name)
+		pl.notify(card.get_name(pl))
 		if card in self.summonable:
-			pl.notify("s: Summon this card in face-up attack position.")
+			pl.notify(pl._("s: Summon this card in face-up attack position."))
 		if card in self.idle_set:
-			pl.notify("t: Set this card.")
+			pl.notify(pl._("t: Set this card."))
 		if card in self.idle_mset:
-			pl.notify("m: Summon this card in face-down defense position.")
+			pl.notify(pl._("m: Summon this card in face-down defense position."))
 		if card in self.repos:
-			pl.notify("r: reposition this card.")
+			pl.notify(pl._("r: reposition this card."))
 		if card in self.spsummon:
-			pl.notify("c: Special summon this card.")
+			pl.notify(pl._("c: Special summon this card."))
 		if card in self.idle_activate:
-			pl.notify("v: Idle activate this card.")
+			pl.notify(pl._("v: Idle activate this card."))
 		if self.idle_activate.count(card) == 2:
-			pl.notify("v2: Idle activate the second effect of this card.")
-		pl.notify("i: Show card info.")
-		pl.notify("z: back.")
+			pl.notify(pl._("v2: Idle activate the second effect of this card."))
+		pl.notify(pl._("i: Show card info."))
+		pl.notify(pl._("z: back."))
 		def action(caller):
 			if caller.text == 's' and card in self.summonable:
 				self.set_responsei(self.summonable.index(card) << 16)
@@ -285,7 +365,7 @@ class MyDuel(dm.Duel):
 				reactor.callLater(0, self.idle_action, pl)
 				return
 			else:
-				pl.notify("Invalid action.")
+				pl.notify(pl._("Invalid action."))
 				pl.notify(DuelReader, action, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			reactor.callLater(0, procduel, self)
@@ -319,10 +399,10 @@ class MyDuel(dm.Duel):
 	def select_place(self, player, count, flag):
 		pl = self.players[player]
 		specs = self.flag_to_usable_cardspecs(flag)
-		pl.notify("Select place for card, one of %s." % ", ".join(specs))
+		pl.notify(pl._("Select place for card, one of %s.") % ", ".join(specs))
 		def r(caller):
 			if caller.text not in specs:
-				pl.notify("Invalid cardspec. Try again.")
+				pl.notify(pl._("Invalid cardspec. Try again."))
 				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			l, s = self.cardspec_to_ls(caller.text)
@@ -356,19 +436,18 @@ class MyDuel(dm.Duel):
 			return
 		pl = self.players[player]
 		if forced:
-			s = ""
+			pl.notify(pl._("Select chain:"))
 		else:
-			s = " (c to cancel)"
-		pl.notify("Select chain%s:" % s)
+			pl.notify(pl._("Select chain (c to cancel):"))
 		specs = {}
 		chain_cards = [c[1] for c in chains]
 		for et, card, desc in chains:
 			cs = self.card_to_spec(player, card)
 			specs[cs] = card
-			pl.notify("%s: %s" % (cs, card.name))
+			pl.notify("%s: %s" % (cs, card.get_name(pl)))
 			op = self.players[1 - player]
 			if not op.seen_waiting:
-				op.notify("Waiting for opponent.")
+				op.notify(op._("Waiting for opponent."))
 				op.seen_waiting = True
 		def r(caller):
 			if caller.text == 'c' and not forced:
@@ -381,7 +460,7 @@ class MyDuel(dm.Duel):
 			else:
 				info = False
 			if caller.text not in specs:
-				pl.notify("Invalid spec.")
+				pl.notify(pl._("Invalid spec."))
 				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			card = specs[caller.text]
@@ -416,10 +495,13 @@ class MyDuel(dm.Duel):
 			action = "Special summoning"
 		else:
 			action = "Summoning"
-		pos = card.position_name()
 		nick = self.players[card.controller].nickname
 		for pl in self.players:
-			pl.notify("%s %s %s (%d/%d) in %s position." % (nick, action, card.name, card.attack, card.defense, pos))
+			pos = card.get_position(pl)
+			if special:
+				pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, action, card.name, card.attack, card.defense, pos))
+			else:
+				pl.notify(pl._("%s summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
 
 	def select_battlecmd(self, player, activatable, attackable, to_m2, to_ep):
 		self.state = "battle"
@@ -431,15 +513,15 @@ class MyDuel(dm.Duel):
 		self.display_battle_menu(pl)
 
 	def display_battle_menu(self, pl):
-		pl.notify("Battle menu:")
+		pl.notify(pl._("Battle menu:"))
 		if self.attackable:
-			pl.notify("a: Attack.")
+			pl.notify(pl._("a: Attack."))
 		if self.activatable:
-			pl.notify("c: activate.")
+			pl.notify(pl._("c: activate."))
 		if self.to_m2:
-			pl.notify("m: Main phase 2.")
+			pl.notify(pl._("m: Main phase 2."))
 		if self.to_ep:
-			pl.notify("e: End phase.")
+			pl.notify(pl._("e: End phase."))
 		def r(caller):
 			if caller.text == 'a' and self.attackable:
 				self.battle_attack(caller.connection)
@@ -459,19 +541,19 @@ class MyDuel(dm.Duel):
 	def battle_attack(self, con):
 		pl = self.players[con.duel_player]
 		pln = con.duel_player
-		pl.notify("Select card to attack with:")
+		pl.notify(pl._("Select card to attack with:"))
 		specs = {}
 		for c in self.attackable:
 			spec = self.card_to_spec(pln, c)
-			pl.notify("%s: %s (%d/%d)" % (spec, c.name, c.attack, c.defense))
+			pl.notify("%s: %s (%d/%d)" % (spec, c.get_name(pl), c.attack, c.defense))
 			specs[spec] = c
-		pl.notify("z: back.")
+		pl.notify(pl._("z: back."))
 		def r(caller):
 			if caller.text == 'z':
 				self.display_battle_menu(pl)
 				return
 			if caller.text not in specs:
-				pl.notify("Invalid cardspec. Retry.")
+				pl.notify(pl._("Invalid cardspec. Retry."))
 				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			card = specs[caller.text]
@@ -483,19 +565,19 @@ class MyDuel(dm.Duel):
 	def battle_activate(self, con):
 		pl = self.players[con.duel_player]
 		pln = con.duel_player
-		pl.notify("Select card to activate:")
+		pl.notify(pl._("Select card to activate:"))
 		specs = {}
 		for c in self.activatable:
 			spec = self.card_to_spec(pln, c)
-			pl.notify("%s: %s (%d/%d)" % (spec, c.name, c.attack, c.defense))
+			pl.notify("%s: %s (%d/%d)" % (spec, c.get_name(pl), c.attack, c.defense))
 			specs[spec] = c
-		pl.notify("z: back.")
+		pl.notify(pl._("z: back."))
 		def r(caller):
 			if caller.text == 'z':
 				self.display_battle_menu(pl)
 				return
 			if caller.text not in specs:
-				pl.notify("Invalid cardspec. Retry.")
+				pl.notify(pl._("Invalid cardspec. Retry."))
 				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 				return
 			card = specs[caller.text]
@@ -529,7 +611,7 @@ class MyDuel(dm.Duel):
 		if tc == 0 and tl == 0 and tseq == 0 and tpos == 0:
 			for pl in self.players:
 				aspec = self.card_to_spec(pl.duel_player, acard)
-				pl.notify("%s prepares to attack with %s (%s)" % (name, aspec, acard.name))
+				pl.notify("%s prepares to attack with %s (%s)" % (name, aspec, acard.get_name(pl)))
 			return
 		tcard = self.get_card(tc, tl, tseq)
 		if not tcard:
@@ -537,16 +619,18 @@ class MyDuel(dm.Duel):
 		for pl in self.players:
 			aspec = self.card_to_spec(pl.duel_player, acard)
 			tspec = self.card_to_spec(pl.duel_player, tcard)
-			tcname = tcard.name
+			tcname = tcard.get_name(pl)
 			if tcard.controller != pl.duel_player and tcard.position in (0x8, 0xa):
-				tcname = tcard.position_name() + " card"
-			pl.notify("%s prepares to attack %s (%s) with %s (%s)" % (name, tspec, tcname, aspec, acard.name))
+				tcname = pl._("%s card") % tcard.get_position(pl)
+			pl.notify("%s prepares to attack %s (%s) with %s (%s)" % (name, tspec, tcname, aspec, acard.get_name(pl)))
 
 	def begin_damage(self):
-		self.notify_all("begin damage")
+		for pl in self.players:
+			pl.notify(pl._("begin damage"))
 
 	def end_damage(self):
-		self.notify_all("end damage")
+		for pl in self.players:
+			pl.notify(pl._("end damage"))
 
 	def battle(self, attacker, aa, ad, bd0, tloc, da, dd, bd1):
 		loc = (attacker >> 8) & 0xff
@@ -560,21 +644,26 @@ class MyDuel(dm.Duel):
 			target = self.get_card(tc, tl, tseq)
 		else:
 			target = None
-		s = "%s (%d/%d) attacks" % (card.name, aa, ad)
-		if target:
-			s += " %s (%d/%d)" % (target.name, da, dd)
-		self.notify_all(s)
+		for pl in self.players:
+			if target:
+				pl.notify(pl._("%s (%d/%d) attacks %s (%d/%d)") % (card.get_name(pl), aa, ad, target.get_name(pl), da, dd))
+			else:
+				pl.notify(pl._("%s (%d/%d) attacks") % (card.get_name(pl), aa, ad))
 
 	def damage(self, player, amount):
 		new_lp = self.lp[player]-amount
-		self.players[player].notify("Your lp decreased by %d, now %d" % (amount, new_lp))
-		self.players[1 - player].notify("%s's lp decreased by %d, now %d" % (self.players[player].nickname, amount, new_lp))
+		pl = self.players[player]
+		op = self.players[1 - player]
+		pl.notify(pl._("Your lp decreased by %d, now %d") % (amount, new_lp))
+		op.notify(op._("%s's lp decreased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
 		self.lp[player] -= amount
 
 	def recover(self, player, amount):
 		new_lp = self.lp[player] + amount
-		self.players[player].notify("Your lp increased by %d, now %d" % (amount, new_lp))
-		self.players[1 - player].notify("%s's lp increased by %d, now %d" % (self.players[player].nickname, amount, new_lp))
+		pl = self.players[player]
+		op = self.players[1 - player]
+		pl.notify(pl._("Your lp increased by %d, now %d") % (amount, new_lp))
+		op.notify(op._("%s's lp increased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
 		self.lp[player] += amount
 
 	def notify_all(self, s):
@@ -593,11 +682,14 @@ class MyDuel(dm.Duel):
 			s = " to tribute"
 		else:
 			s = ""
-		con.notify("Select %d to %d cards%s separated by spaces:" % (min_cards, max_cards, s))
+		if is_tribute:
+			con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
+		else:
+			con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
 		for i, c in enumerate(cards):
-			name = c.name
+			name = c.get_name(con)
 			if c.controller != player and c.position in (0x8, 0xa):
-				name = c.position_name() + " card"
+				name = con._("%s card") % c.get_position(con)
 			con.notify("%d: %s" % (i+1, name))
 		def error(text):
 			con.notify(text)
@@ -607,20 +699,20 @@ class MyDuel(dm.Duel):
 			try:
 				cds = [int(i) - 1 for i in cds]
 			except ValueError:
-				return error("Invalid value.")
+				return error(con._("Invalid value."))
 			if len(cds) != len(set(cds)):
-				return error("Duplicate values not allowed.")
+				return error(con._("Duplicate values not allowed."))
 			if (not is_tribute and len(cds) < min_cards) or len(cds) > max_cards:
-				return error("Please enter between %d and %d cards." % (min_cards, max_cards))
+				return error(con._("Please enter between %d and %d cards.") % (min_cards, max_cards))
 			if min(cds) < 0 or max(cds) > len(cards) - 1:
-				return error("Invalid value.")
+				return error(con._("Invalid value."))
 			buf = bytes([len(cds)])
 			tribute_value = 0
 			for i in cds:
 				tribute_value += (cards[i].release_param if is_tribute else 0)
 				buf += bytes([i])
 			if is_tribute and tribute_value < min_cards:
-				return error("Not enough tributes.")
+				return error(con._("Not enough tributes."))
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
 		con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
@@ -629,14 +721,14 @@ class MyDuel(dm.Duel):
 		mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
 		sz = self.get_cards_in_location(player, dm.LOCATION_SZONE)
 		if len(mz+sz) == 0:
-			con.notify("Table is empty.")
+			con.notify(con._("Table is empty."))
 			return
 		for card in mz:
 			s = "m%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
 				s += card.position_name()
 			else:
-				s += card.name + " "
+				s += card.get_name(con) + " "
 				s += "(%d/%d) " % (card.attack, card.defense)
 				s += card.position_name()
 			con.notify(s)
@@ -645,31 +737,31 @@ class MyDuel(dm.Duel):
 			if hide_facedown and card.position in (0x8, 0xa):
 				s += card.position_name()
 			else:
-				s += card.name + " "
+				s += card.get_name(con) + " "
 				s += card.position_name()
 			con.notify(s)
 
 	def show_cards_in_location(self, con, player, location, hide_facedown=False):
 		cards = self.get_cards_in_location(player, location)
 		if not cards:
-			con.notify("Table is empty.")
+			con.notify(con._("Table is empty."))
 			return
 		for card in cards:
 			s = self.card_to_spec(player, card)
 			if hide_facedown and card.position in (0x8, 0xa):
 				s += card.position_name()
 			else:
-				s += card.name + " "
+				s += card.get_name(con) + " "
 				s += card.position_name()
 			con.notify(s)
 
 	def show_hand(self, con, player):
 		h = self.get_cards_in_location(player, dm.LOCATION_HAND)
 		if not h:
-			con.notify("Your hand is empty.")
+			con.notify(con._("Your hand is empty."))
 			return
 		for c in h:
-			con.notify("h%d: %s" % (c.sequence + 1, c.name))
+			con.notify("h%d: %s" % (c.sequence + 1, c.get_name(con)))
 
 	def show_score(self, con):
 		player = con.duel_player
@@ -696,8 +788,8 @@ class MyDuel(dm.Duel):
 		plspec = self.card_to_spec(pl.duel_player, card)
 		opspec = self.card_to_spec(op.duel_player, card)
 		if reason & 0x01:
-			pl.notify("Card %s (%s) destroyed." % (plspec, card.name))
-			op.notify("Card %s (%s) destroyed." % (opspec, card.name))
+			pl.notify(pl._("Card %s (%s) destroyed.") % (plspec, card.get_name(pl)))
+			op.notify(op._("Card %s (%s) destroyed.") % (opspec, card.get_name(op)))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
@@ -706,7 +798,7 @@ class MyDuel(dm.Duel):
 			pos = card.position_name()
 			pl.notify("%s: %s card." % (cs, pos))
 			return
-		pl.notify(card.info())
+		pl.notify(card.get_info(pl))
 
 	def show_info_cmd(self, con, spec):
 		cards = []
@@ -717,7 +809,7 @@ class MyDuel(dm.Duel):
 		for card in cards:
 			specs[self.card_to_spec(con.duel_player, card)] = card
 		if spec not in specs:
-			con.notify("Invalid card.")
+			con.notify(con._("Invalid card."))
 			return
 		self.show_info(specs[spec], con)
 
@@ -725,39 +817,43 @@ class MyDuel(dm.Duel):
 		cs = self.card_to_spec(card.controller, card)
 		cso = self.card_to_spec(1 - card.controller, card)
 		newpos = card.position_name()
-		self.players[card.controller].notify("The position of card %s (%s) was changed to %s." % (cs, card.name, newpos))
-		self.players[1 - card.controller].notify("The position of card %s (%s) was changed to %s." % (cso, card.name, newpos))
+		cpl = self.players[card.controller]
+		op = self.players[1 - card.controller]
+		cpl.notify(cpl._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(cpl), newpos))
+		op.notify(op._("The position of card %s (%s) was changed to %s.") % (cso, card.get_name(op), newpos))
 
 	def set(self, card):
 		c = card.controller
-		self.players[c].notify("You set %s (%s) in %s position." %
-		(self.card_to_spec(c, card), card.name, card.position_name()))
+		cpl = self.players[c]
+		opl = self.players[1 - c]
+		cpl.notify(cpl._("You set %s (%s) in %s position.") %
+		(self.card_to_spec(c, card), card.get_name(cpl), card.position_name()))
 		op = 1 - c
 		on = self.players[c].nickname
-		self.players[op].notify("%s sets %s in %s position." %
+		opl.notify(opl._("%s sets %s in %s position.") %
 		(on, self.card_to_spec(op, card), card.position_name()))
 
 	def chaining(self, card, tc, tl, ts, desc, cs):
 		c = card.controller
 		o = 1 - c
 		n = self.players[c].nickname
-		self.players[c].notify("Activating %s" % card.name)
-		self.players[o].notify("%s activating %s" % (n, card.name))
+		self.players[c].notify(self.players[c]._("Activating %s") % card.get_name(self.players[c]))
+		self.players[o].notify(self.players[o]._("%s activating %s") % (n, card.get_name(self.players[o])))
 
 	def select_position(self, player, card, positions):
 		pl = self.players[player]
-		m = Menu("Select position for %s:" % (card.name,), no_abort="Invalid option.", persistent=True, restore_parser=duel_parser)
+		m = Menu(pl._("Select position for %s:") % (card.get_name(pl),), no_abort="Invalid option.", persistent=True, restore_parser=duel_parser)
 		def set(caller, pos=None):
 			self.set_responsei(pos)
 			reactor.callLater(0, procduel, self)
 		if positions & 1:
-			m.item("Face-up attack")(lambda caller: set(caller, 1))
+			m.item(pl._("Face-up attack"))(lambda caller: set(caller, 1))
 		if positions & 2:
-			m.item("Face-down attack")(lambda caller: set(caller, 2))
+			m.item(pl._("Face-down attack"))(lambda caller: set(caller, 2))
 		if positions & 4:
-			m.item("Face-up defense")(lambda caller: set(caller, 4))
+			m.item(pl._("Face-up defense"))(lambda caller: set(caller, 4))
 		if positions & 8:
-			m.item("Face-down defense")(lambda caller: set(caller, 8))
+			m.item(pl._("Face-down defense"))(lambda caller: set(caller, 8))
 		pl.notify(m)
 
 	def yesno(self, player, desc):
@@ -786,7 +882,8 @@ class MyDuel(dm.Duel):
 		def no(caller):
 			self.set_responsei(0)
 			reactor.callLater(0, procduel, self)
-		question = "Do you want to use the effect from %s in %s?" % (card.name, self.card_to_spec(player, card))
+		spec = self.card_to_spec(player, card)
+		question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.name, spec=spec)
 		pl.notify(YesOrNo, question, yes, no=no, restore_parser=old_parser)
 
 	def win(self, player, reason):
@@ -796,8 +893,8 @@ class MyDuel(dm.Duel):
 			return
 		winner = self.players[player]
 		loser = self.players[1 - player]
-		winner.notify("You won.")
-		loser.notify("You lost.")
+		winner.notify(winner._("You won."))
+		loser.notify(loser._("You lost."))
 		self.end()
 
 	def pay_lpcost(self, player, cost):
@@ -914,10 +1011,10 @@ class MyDuel(dm.Duel):
 		name = self.players[self.tp].nickname
 		for pl in self.players:
 			spec = self.card_to_spec(pl.duel_player, card)
-			tcname = card.name
+			tcname = card.get_name(pl)
 			if card.controller != pl.duel_player and card.position in (0x8, 0xa):
-				tcname = card.position_name() + " card"
-			pl.notify("%s targets %s (%s)" % (name, spec, tcname))
+				tcname = pl._("%s card") % card.get_position(pl)
+			pl.notify(pl._("%s targets %s (%s)") % (name, spec, tcname))
 
 	def announce_race(self, player, count, avail):
 		races = (
@@ -997,55 +1094,34 @@ class DuelReader(Reader):
 @duel_parser.command(names=['h', 'hand'])
 def hand(caller):
 	con = caller.connection
-	if not con.duel:
-		con.notify("Not in a duel.")
-		return
 	con.duel.show_hand(con, con.duel_player)
 
 @duel_parser.command(names=['tab'])
 def tab(caller):
 	duel = caller.connection.duel
-	if not duel:
-		caller.connection.notify("Not in a duel.")
-		return
-	caller.connection.notify("Your table:")
+	caller.connection.notify(caller.connection._("Your table:"))
 	duel.show_table(caller.connection, caller.connection.duel_player)
 
 @duel_parser.command(names=['tab2'])
 def tab2(caller):
 	duel = caller.connection.duel
-	if not duel:
-		caller.connection.notify("Not in a duel.")
-		return
-	caller.connection.notify("Opponent's table:")
+	caller.connection.notify(caller.connection._("Opponent's table:"))
 	duel.show_table(caller.connection, 1 - caller.connection.duel_player, True)
 
 @duel_parser.command(names=['grave'])
 def grave(caller):
-	if not caller.connection.duel:
-		caller.connection.notify("Not in a duel.")
-		return
 	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_GRAVE)
 
 @duel_parser.command(names=['grave2'])
 def grave2(caller):
-	if not caller.connection.duel:
-		caller.connection.notify("Not in a duel.")
-		return
 	caller.connection.duel.show_cards_in_location(caller.connection, 1 - caller.connection.duel_player, dm.LOCATION_GRAVE, True)
 
 @duel_parser.command(names=['extra'])
 def extra(caller):
-	if not caller.connection.duel:
-		caller.connection.notify("Not in a duel.")
-		return
 	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_EXTRA)
 
 @duel_parser.command(names=['extra2'])
 def extra2(caller):
-	if not caller.connection.duel:
-		caller.connection.notify("Not in a duel.")
-		return
 	caller.connection.duel.show_cards_in_location(caller.connection, 1 - caller.connection.duel_player, dm.LOCATION_EXTRA, True)
 
 @parser.command(names='deck', args_regexp=r'(.*)')
@@ -1095,7 +1171,7 @@ def deck_load(caller):
 	content = json.loads(deck.content)
 	caller.connection.deck = content
 	session.commit()
-	caller.connection.notify("Deck loaded with %d cards." % len(content['cards']))
+	caller.connection.notify(caller.connection._("Deck loaded with %d cards.") % len(content['cards']))
 
 def deck_clear(caller):
 	if not caller.args:
@@ -1166,7 +1242,7 @@ def deck_edit(caller):
 			read()
 		elif caller.text == 's':
 			if cards.count(code) == 3:
-				con.notify("You already have 3 of this card in your deck.")
+				con.notify(con._("You already have 3 of this card in your deck."))
 				read()
 				return
 			cards.append(code)
@@ -1178,12 +1254,12 @@ def deck_edit(caller):
 			if rm:
 				n = int(rm.group(1)) - 1
 				if n < 0 or n > len(cards) - 1:
-					con.notify("Invalid card.")
+					con.notify(con._("Invalid card."))
 					read()
 					return
 				code = cards[n]
 			if cards.count(code) == 0:
-				con.notify("This card isn't in your deck.")
+				con.notify(con._("This card isn't in your deck."))
 				read()
 				return
 			cards.remove(code)
@@ -1193,19 +1269,19 @@ def deck_edit(caller):
 		elif caller.text.startswith('/'):
 			pos = find_next(caller.text[1:], con.deck_edit_pos + 1)
 			if not pos:
-				con.notify("Not found.")
+				con.notify(con._("Not found."))
 			else:
 				con.deck_edit_pos = pos
 			read()
 		elif caller.text == 'l':
 			for i, code in enumerate(cards):
 				card = dm.Card.from_code(code)
-				con.notify("%d: %s" % (i+1, card.name))
+				con.notify("%d: %s" % (i+1, card.get_name(con)))
 			read()
 		elif caller.text == 'q':
 			con.notify("Quit.")
 		else:
-			con.notify("Invalid command.")
+			con.notify(con._("Invalid command."))
 			read()
 	read()
 
@@ -1215,9 +1291,9 @@ def show_deck_info(con):
 	code = all_cards[pos]
 	in_deck = cards.count(code)
 	if in_deck > 0:
-		con.notify("%d in deck." % in_deck)
+		con.notify(con._("%d in deck.") % in_deck)
 	card = dm.Card.from_code(code)
-	con.notify(card.info())
+	con.notify(card.get_info(con))
 
 def find_next(text, start):
 	for i, code in enumerate(all_cards[start:]):
@@ -1441,10 +1517,46 @@ def passwd(caller):
 		caller.connection.notify("Password changed.")
 	caller.connection.notify(Reader, r, prompt="Current password:", no_abort="Invalid command.", restore_parser=old_parser)
 
+@parser.command(names=['language'], args_regexp=r'(.*)')
+def language(caller):
+	lang = caller.args[0]
+	if lang not in ('english', 'german', 'japanese'):
+		caller.connection.notify("Usage: language <english/german/japanese>")
+		return
+	if lang == 'english':
+		caller.connection.cdb = dm.db
+		caller.connection._ = gettext.NullTranslations().gettext
+		caller.connection.language = 'en'
+	elif lang == 'german':
+		caller.connection.cdb = german_db
+		caller.connection._ = gettext.translation('game', 'locale', languages=['de'], fallback=True).gettext
+		caller.connection.language = 'de'
+	elif lang == 'japanese':
+		caller.connection.cdb = japanese_db
+		caller.connection._ = gettext.translation('game', 'locale', languages=['ja'], fallback=True).gettext
+		caller.connection.language = 'ja'
+	caller.connection.notify(caller.connection._("Language set."))
+
+@parser.command(args_regexp=r'(.*)')
+def encoding(caller):
+	try:
+		codecs.lookup(caller.args[0])
+	except LookupError:
+		caller.connection.notify(caller.connection._("Unknown encoding."))
+		return
+	caller.connection.encoding = caller.args[0]
+	caller.connection.notify(caller.connection._("Encoding set."))
+
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
 def main():
+	global german_db, japanese_db
+	dm.Card = CustomCard
+	if os.path.exists('locale/de/cards.cdb'):
+		german_db = sqlite3.connect('locale/de/cards.cdb')
+	if os.path.exists('locale/ja/cards.cdb'):
+		japanese_db = sqlite3.connect('locale/ja/cards.cdb')
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
 	args = parser.parse_args()

@@ -110,7 +110,7 @@ class LoginParser(gsb.Parser):
 		account.last_logged_in = func.now()
 		connection.session.commit()
 		for pl in game.players.values():
-			pl.notify("%s logged in." % connection.nickname)
+			pl.notify(pl._("%s logged in.") % connection.nickname)
 		game.players[connection.nickname.lower()] = connection
 		if os.path.exists("motd.txt"):
 			with open('motd.txt', 'r') as fp:
