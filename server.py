@@ -10,24 +10,22 @@ import argparse
 import gsb
 from gsb.intercept import Menu, Reader, YesOrNo
 from twisted.internet import reactor
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import duel as dm
 import strings
-
-command_substitutions = {
-	"'": "say",
-	".": "chat",
-}
-
-class CustomParser(gsb.Parser):
-	pass
-parser = CustomParser(command_substitutions=command_substitutions)
-duel_parser = CustomParser(command_substitutions=command_substitutions)
+from parsers import parser, duel_parser, LoginParser
+import models
+import game
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
-players = {}
+engine = create_engine('sqlite:///game.db')
+models.Base.metadata.bind = engine
+Session = sessionmaker(bind=engine)
+models.Base.metadata.create_all()
+
 class MyServer(gsb.Server):
-	nickname_re = re.compile(r'^[a-zA-Z0-9]+$')
 	def on_connect(self, caller):
 		caller.connection.deck = {'cards': []}
 		caller.connection.deck_edit_pos = 0
@@ -36,41 +34,22 @@ class MyServer(gsb.Server):
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
 		caller.connection.chat = True
-		self.notify(caller.connection, "Connected!")
-		def prompt():
-			caller.connection.notify(Reader, r, prompt="Nickname:", restore_parser=parser)
-		def r(caller):
-			m = self.nickname_re.match(caller.text)
-			if not m:
-				caller.connection.notify("Invalid nickname, try again.")
-				prompt()
-				return
-			elif get_player(caller.text):
-				caller.connection.notify("That player is already logged in.")
-				prompt()
-				return
-			for pl in players.values():
-				pl.notify("%s logged in." % caller.text)
-			players[caller.text.lower()] = caller.connection
-			caller.connection.nickname = caller.text
-			caller.connection.notify("Logged in.")
-			if os.path.exists("motd.txt"):
-				with open('motd.txt', 'r') as fp:
-					caller.connection.notify(fp.read())
-		prompt()
+		caller.connection.session = Session()
 
 	def on_disconnect(self, caller):
 		con = caller.connection
 		if not con.nickname:
 			return
-		del players[con.nickname.lower()]
-		for pl in players.values():
+		del game.players[con.nickname.lower()]
+		for pl in game.players.values():
 			pl.notify("%s logged out." % con.nickname)
 		if con.duel:
 			con.duel.notify_all("Your opponent disconnected, the duel is over.")
 			con.duel.end()
+		con.nickname = None
 
-server = MyServer(port=4000, default_parser=parser)
+server = MyServer(port=4000, default_parser=LoginParser())
+game.server = server
 
 @parser.command(names=['duel'], args_regexp=r'(.*)')
 def duel(caller):
@@ -1184,7 +1163,7 @@ def save_deck(deck, filename):
 		fp.write(json.dumps(deck))
 
 def get_player(name):
-	return players.get(name.lower())
+	return game.players.get(name.lower())
 
 @parser.command(names=["chat"], args_regexp=r'(.*)')
 def chat(caller):
@@ -1199,7 +1178,7 @@ def chat(caller):
 	if not caller.connection.chat:
 		caller.connection.chat = True
 		caller.connection.notify("Chat on.")
-	for pl in players.values():
+	for pl in game.players.values():
 		if pl.chat:
 			pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
 
@@ -1218,7 +1197,7 @@ def say(caller):
 @parser.command(names=['who'])
 def who(caller):
 	caller.connection.notify("Online players:")
-	for pl in players.values():
+	for pl in game.players.values():
 		s = pl.nickname
 		if pl.duel:
 			s += ' (dueling)'
