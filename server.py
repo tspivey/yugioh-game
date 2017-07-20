@@ -537,8 +537,26 @@ class MyDuel(dm.Duel):
 		s += str(card.sequence + 1)
 		return s
 
-	def attack(self, attacker, target):
-		pass
+	def attack(self, ac, al, aseq, apos, tc, tl, tseq, tpos):
+		acard = self.get_card(ac, al, aseq)
+		if not acard:
+			return
+		name = self.players[ac].nickname
+		if tc == 0 and tl == 0 and tseq == 0 and tpos == 0:
+			for pl in self.players:
+				aspec = self.card_to_spec(pl.duel_player, acard)
+				pl.notify("%s prepares to attack with %s (%s)" % (name, aspec, acard.name))
+			return
+		tcard = self.get_card(tc, tl, tseq)
+		if not tcard:
+			return
+		for pl in self.players:
+			aspec = self.card_to_spec(pl.duel_player, acard)
+			tspec = self.card_to_spec(pl.duel_player, tcard)
+			tcname = tcard.name
+			if tcard.controller != pl.duel_player and tcard.position in (0x8, 0xa):
+				tcname = tcard.position_name() + " card"
+			pl.notify("%s prepares to attack %s (%s) with %s (%s)" % (name, tspec, tcname, aspec, acard.name))
 
 	def begin_damage(self):
 		self.notify_all("begin damage")
