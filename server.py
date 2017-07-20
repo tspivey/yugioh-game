@@ -168,6 +168,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_sum', self.select_sum)
 		self.cm.register_callback('select_counter', self.select_counter)
 		self.cm.register_callback('announce_race', self.announce_race)
+		self.cm.register_callback('become_target', self.become_target)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -920,6 +921,18 @@ class MyDuel(dm.Duel):
 		except ValueError:
 			pass
 		return ints
+
+	def become_target(self, tc, tl, tseq):
+		card = self.get_card(tc, tl, tseq)
+		if not card:
+			return
+		name = self.players[tc].nickname
+		for pl in self.players:
+			spec = self.card_to_spec(pl.duel_player, card)
+			tcname = card.name
+			if card.controller != pl.duel_player and card.position in (0x8, 0xa):
+				tcname = card.position_name() + " card"
+			pl.notify("%s targets %s (%s)" % (name, spec, tcname))
 
 	def announce_race(self, player, count, avail):
 		races = (

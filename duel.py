@@ -197,6 +197,7 @@ class Duel:
 		23: self.msg_select_sum,
 		140: self.msg_announce_race,
 		22: self.msg_select_counter,
+		83: self.msg_become_target,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -599,6 +600,17 @@ class Duel:
 			card.counter = self.read_u16(data)
 			cards.append(card)
 		self.cm.call_callbacks('select_counter', player, countertype, count, cards)
+		return b''
+
+	def msg_become_target(self, data):
+		data = io.BytesIO(data[1:])
+		u = self.read_u8(data)
+		target = self.read_u32(data)
+		tc = target & 0xff
+		tl = (target >> 8) & 0xff
+		tseq = (target >> 16) & 0xff
+		tpos = (target >> 24) & 0xff
+		self.cm.call_callbacks('become_target', tc, tl, tseq)
 		return b''
 
 	def msg_announce_race(self, data):
