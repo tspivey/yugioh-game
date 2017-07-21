@@ -499,7 +499,7 @@ class MyDuel(dm.Duel):
 		for pl in self.players:
 			pos = card.get_position(pl)
 			if special:
-				pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, action, card.name, card.attack, card.defense, pos))
+				pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
 			else:
 				pl.notify(pl._("%s summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
 
