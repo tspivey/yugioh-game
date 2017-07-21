@@ -758,6 +758,7 @@ class MyDuel(dm.Duel):
 
 	def yesno(self, player, desc):
 		pl = self.players[player]
+		old_parser = pl.parser
 		def yes(caller):
 			self.set_responsei(1)
 			reactor.callLater(0, procduel, self)
@@ -770,10 +771,11 @@ class MyDuel(dm.Duel):
 		else:
 			opt = "String %d" % desc
 			opt = strings.SYSTEM_STRINGS.get(desc, opt)
-		pl.notify(YesOrNo, opt, yes, no=no)
+		pl.notify(YesOrNo, opt, yes, no=no, restore_parser=old_parser)
 
 	def select_effectyn(self, player, card):
 		pl = self.players[player]
+		old_parser = pl.parser
 		def yes(caller):
 			self.set_responsei(1)
 			reactor.callLater(0, procduel, self)
@@ -781,7 +783,7 @@ class MyDuel(dm.Duel):
 			self.set_responsei(0)
 			reactor.callLater(0, procduel, self)
 		question = "Do you want to use the effect from %s in %s?" % (card.name, self.card_to_spec(player, card))
-		pl.notify(YesOrNo, question, yes, no=no)
+		pl.notify(YesOrNo, question, yes, no=no, restore_parser=old_parser)
 
 	def win(self, player, reason):
 		if player == 2:
