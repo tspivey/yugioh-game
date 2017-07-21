@@ -1059,6 +1059,8 @@ def deck(caller):
 		deck_delete(caller)
 	elif cmd == 'import':
 		deck_import(caller)
+	elif cmd == 'new':
+		deck_new(caller)
 	else:
 		caller.connection.notify("Invalid deck command.")
 
@@ -1241,6 +1243,24 @@ def deck_import(caller):
 	caller.connection.session.commit()
 	caller.connection.notify("Deck imported.")
 	os.remove(deck_fn)
+
+def deck_new(caller):
+	if not caller.args:
+		caller.connection.notify("Create which deck?")
+		return
+	name = caller.args[0]
+	account = caller.connection.account
+	session = caller.connection.session
+	deck = models.Deck.find(session, account, name)
+	if deck:
+		caller.connection.notify("That deck already exists.")
+		session.commit()
+		return
+	deck = models.Deck(account_id=account.id, name=name)
+	session.add(deck)
+	deck.content = json.dumps({'cards': []})
+	session.commit()
+	caller.connection.notify("Deck created.")
 
 def get_player(name):
 	return game.players.get(name.lower())
