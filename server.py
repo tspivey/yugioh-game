@@ -1385,6 +1385,36 @@ def lookup(caller):
 def echo(caller):
 	caller.connection.notify(caller.args[0])
 
+@parser.command(names='passwd')
+def passwd(caller):
+	session = caller.connection.session
+	account = caller.connection.account
+	new_password = ""
+	old_parser = caller.connection.parser
+	def r(caller):
+		if not account.check_password(caller.text):
+			caller.connection.notify("Incorrect password.")
+			session.commit()
+			return
+		caller.connection.notify(Reader, r2, prompt="New password:", no_abort="Invalid command.", restore_parser=old_parser)
+	def r2(caller):
+		nonlocal new_password
+		new_password = caller.text
+		if len(new_password) < 6:
+			caller.connection.notify("Passwords must be at least 6 characters.")
+			caller.connection.notify(Reader, r2, prompt="New password:", no_abort="Invalid command.", restore_parser=old_parser)
+			return
+		caller.connection.notify(Reader, r3, prompt="Confirm password:", no_abort="Invalid command.", restore_parser=old_parser)
+	def r3(caller):
+		if new_password != caller.text:
+			caller.connection.notify("Passwords don't match.")
+			session.commit()
+			return
+		account.set_password(caller.text)
+		session.commit()
+		caller.connection.notify("Password changed.")
+	caller.connection.notify(Reader, r, prompt="Current password:", no_abort="Invalid command.", restore_parser=old_parser)
+
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
