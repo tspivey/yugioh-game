@@ -258,6 +258,8 @@ class MyDuel(dm.Duel):
 			pl.notify("c: Special summon this card.")
 		if card in self.idle_activate:
 			pl.notify("v: Idle activate this card.")
+		if self.idle_activate.count(card) == 2:
+			pl.notify("v2: Idle activate the second effect of this card.")
 		pl.notify("i: Show card info.")
 		pl.notify("z: back.")
 		def action(caller):
@@ -273,6 +275,8 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.spsummon.index(card) << 16) + 1)
 			elif caller.text == 'v' and card in self.idle_activate:
 				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
+			elif caller.text == 'v2' and self.idle_activate.count(card) == 2:
+				self.set_responsei((self.idle_activate.index(card) + 1 << 16) + 5)
 			elif caller.text == 'i':
 				self.show_info(card, pl)
 				pl.notify(DuelReader, action, no_abort="Invalid command", restore_parser=duel_parser)
