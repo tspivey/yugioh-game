@@ -1044,30 +1044,91 @@ def extra2(caller):
 
 @parser.command(names='deck', args_regexp=r'(.*)')
 def deck(caller):
-	cmd, args = caller.args[0].split(None, 1)
-	caller.args = (args,)
+	lst = caller.args[0].split(None, 1)
+	cmd = lst[0]
+	caller.args = lst[1:]
 	if cmd == 'load':
 		deck_load(caller)
 	elif cmd == 'edit':
 		deck_edit(caller)
+	elif cmd == 'list':
+		deck_list(caller)
+	elif cmd == 'clear':
+		deck_clear(caller)
+	elif cmd == 'delete':
+		deck_delete(caller)
+	elif cmd == 'import':
+		deck_import(caller)
 	else:
 		caller.connection.notify("Invalid deck command.")
 
-def deck_load(caller):
-	fn = caller.args[0].replace('/', '_')
-	if not os.path.exists(os.path.join('decks', fn)):
-		caller.connection.notify("No deck with that name.")
+def deck_list(caller):
+	decks = caller.connection.account.decks
+	if not decks:
+		caller.connection.notify("No decks.")
+		caller.connection.session.commit()
 		return
-	caller.connection.deck = load_deck(fn)
-	caller.connection.notify("Deck loaded with %d cards." % len(caller.connection.deck['cards']))
+	for deck in decks:
+		caller.connection.notify(deck.name)
+	caller.connection.session.commit()
 
-#@server.command(r'^deck edit ([a-zA-z0-9]+)')
+def deck_load(caller):
+	session = caller.connection.session
+	name = caller.args[0]
+	account = caller.connection.account
+	if name.startswith('public/'):
+		account = session.query(models.Account).filter_by(name='Public').first()
+		name = name[7:]
+	deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
+	if not deck:
+		caller.connection.notify("Deck doesn't exist.")
+		session.commit()
+		return
+	content = json.loads(deck.content)
+	caller.connection.deck = content
+	session.commit()
+	caller.connection.notify("Deck loaded with %d cards." % len(content['cards']))
+
+def deck_clear(caller):
+	if not caller.args:
+		caller.connection.notify("Clear which deck?")
+		return
+	name = caller.args[0]
+	account = caller.connection.account
+	session = caller.connection.session
+	deck = models.Deck.find(session, account, name)
+	if not deck:
+		caller.connection.notify("Deck not found.")
+		session.commit()
+		return
+	deck.content = json.dumps({'cards': []})
+	session.commit()
+	caller.connection.notify("Deck cleared.")
+
+def deck_delete(caller):
+	if not caller.args:
+		caller.connection.notify("Delete which deck?")
+		return
+	name = caller.args[0]
+	account = caller.connection.account
+	session = caller.connection.session
+	deck = models.Deck.find(session, account, name)
+	if not deck:
+		caller.connection.notify("Deck not found.")
+		session.commit()
+		return
+	session.delete(deck)
+	session.commit()
+	caller.connection.notify("Deck deleted.")
+
 def deck_edit(caller):
 	con = caller.connection
-	deck_name = caller.args[0].replace('/', '_')
-	if os.path.exists(os.path.join('decks', deck_name)):
+	account = caller.connection.account
+	deck_name = caller.args[0]
+	deck = con.session.query(models.Deck).filter_by(account_id=con.account.id, name=deck_name).first()
+	if deck:
 		con.notify("Deck exists, loading.")
-		con.deck = load_deck(deck_name)
+		con.deck = json.loads(deck.content)
 	cards = con.deck['cards']
 	def info():
 		show_deck_info(con)
@@ -1101,7 +1162,8 @@ def deck_edit(caller):
 				read()
 				return
 			cards.append(code)
-			save_deck(con.deck, deck_name)
+			save_deck(con.deck, con.session, con.account, deck_name)
+			con.session.commit()
 			read()
 		elif caller.text.startswith('r'):
 			rm = re.search(r'^r(\d+)', caller.text)
@@ -1117,7 +1179,8 @@ def deck_edit(caller):
 				read()
 				return
 			cards.remove(code)
-			save_deck(con.deck, deck_name)
+			save_deck(con.deck, con.session, con.account, deck_name)
+			con.session.commit()
 			read()
 		elif caller.text.startswith('/'):
 			pos = find_next(caller.text[1:], con.deck_edit_pos + 1)
@@ -1154,13 +1217,30 @@ def find_next(text, start):
 		if text.lower() in card.name.lower():
 			return start+i
 
-def load_deck(fn):
-	with open(os.path.join('decks', fn)) as fp:
-		return json.load(fp)
+def save_deck(deck, session, account, name):
+	deck = json.dumps(deck)
+	existing_deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
+	if existing_deck:
+		new_deck = existing_deck
+	else:
+		new_deck = models.Deck(account_id=account.id, name=name)
+		session.add(new_deck)
+	new_deck.content = deck
 
-def save_deck(deck, filename):
-	with open(os.path.join('decks', filename), 'w') as fp:
-		fp.write(json.dumps(deck))
+def deck_import(caller):
+	if not caller.args:
+		caller.connection.notify("Import which deck?")
+		return 
+	deck_fn = os.path.join('decks', caller.args[0].replace('/', '_'))
+	if not os.path.exists(deck_fn):
+		caller.connection.notify("Deck not found.")
+		return
+	with open(deck_fn) as fp:
+		deck = json.load(fp)
+	save_deck(deck, caller.connection.session, caller.connection.account, caller.args[0].replace('/', '_'))
+	caller.connection.session.commit()
+	caller.connection.notify("Deck imported.")
+	os.remove(deck_fn)
 
 def get_player(name):
 	return game.players.get(name.lower())
