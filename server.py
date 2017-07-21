@@ -25,7 +25,7 @@ __ = lambda s: s
 
 german_db = None
 japanese_db = None
-
+spanish_db = None
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
@@ -1520,7 +1520,7 @@ def passwd(caller):
 @parser.command(names=['language'], args_regexp=r'(.*)')
 def language(caller):
 	lang = caller.args[0]
-	if lang not in ('english', 'german', 'japanese'):
+	if lang not in ('english', 'german', 'japanese', 'spanish'):
 		caller.connection.notify("Usage: language <english/german/japanese>")
 		return
 	if lang == 'english':
@@ -1535,6 +1535,10 @@ def language(caller):
 		caller.connection.cdb = japanese_db
 		caller.connection._ = gettext.translation('game', 'locale', languages=['ja'], fallback=True).gettext
 		caller.connection.language = 'ja'
+	elif lang == 'spanish':
+		caller.connection.cdb = spanish_db
+		caller.connection._ = gettext.translation('game', 'locale', languages=['es'], fallback=True).gettext
+		caller.connection.language = 'es'
 	caller.connection.notify(caller.connection._("Language set."))
 
 @parser.command(args_regexp=r'(.*)')
@@ -1551,12 +1555,14 @@ for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
 def main():
-	global german_db, japanese_db
+	global german_db, japanese_db, spanish_db
 	dm.Card = CustomCard
 	if os.path.exists('locale/de/cards.cdb'):
 		german_db = sqlite3.connect('locale/de/cards.cdb')
 	if os.path.exists('locale/ja/cards.cdb'):
 		japanese_db = sqlite3.connect('locale/ja/cards.cdb')
+	if os.path.exists('locale/es/cards.cdb'):
+		spanish_db = sqlite3.connect('locale/es/cards.cdb')
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
 	args = parser.parse_args()
