@@ -390,6 +390,7 @@ class Duel:
 			card.controller = self.read_u8(data)
 			card.location = self.read_u8(data)
 			card.sequence = self.read_u8(data)
+			card.position = self.get_card(card.controller, card.location, card.sequence).position
 			card.release_param = self.read_u8(data)
 			cards.append(card)
 		self.cm.call_callbacks('select_tribute', player, cancelable, min, max, cards)
