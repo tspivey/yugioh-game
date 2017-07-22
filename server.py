@@ -11,7 +11,8 @@ import gettext
 import sqlite3
 import codecs
 import gsb
-from gsb.intercept import Menu, Reader, YesOrNo
+from gsb.intercept import Menu, Reader
+from parsers import YesOrNo
 from twisted.internet import reactor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

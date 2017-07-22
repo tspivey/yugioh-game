@@ -1,6 +1,7 @@
 import os
 import re
 from sqlalchemy import func
+from attr import attrs, attrib
 import gsb
 import game
 import models
@@ -115,3 +116,26 @@ class LoginParser(gsb.Parser):
 		if os.path.exists("motd.txt"):
 			with open('motd.txt', 'r') as fp:
 				connection.notify(fp.read())
+
+class YesOrNo(gsb.Parser):
+
+	def __init__(self, question, yes=None, no=None, restore_parser=None, *args, **kwargs):
+		self.question = question
+		self.yes = yes
+		self.no = no
+		self.restore_parser = restore_parser
+		super().__init__(*args, **kwargs)
+
+	def on_attach(self, connection, old_parser):
+		connection.notify(self.question)
+
+	def huh(self, caller):
+		if caller.text.lower().startswith('y'):
+			self.yes(caller)
+		elif caller.text.lower().startswith('n'):
+			self.no(caller)
+		else:
+			caller.connection.notify(caller.connection._("Please enter y or n."))
+			caller.connection.notify(self.question)
+			return
+		caller.connection.parser = self.restore_parser
