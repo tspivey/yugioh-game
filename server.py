@@ -260,6 +260,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('pay_lpcost', self.pay_lpcost)
 		self.cm.register_callback('sort_chain', self.sort_chain)
 		self.cm.register_callback('announce_attrib', self.announce_attrib)
+		self.cm.register_callback('announce_card', self.announce_card)
 		self.cm.register_callback('select_sum', self.select_sum)
 		self.cm.register_callback('select_counter', self.select_counter)
 		self.cm.register_callback('announce_race', self.announce_race)
@@ -712,7 +713,7 @@ class MyDuel(dm.Duel):
 	def hint(self, msg, player, data):
 		if msg == 3 and data in strings.SYSTEM_STRINGS:
 			self.players[player].notify(strings.SYSTEM_STRINGS[data])
-		elif msg == 6 or msg == 7:
+		elif msg == 6 or msg == 7 or msg == 8:
 			reactor.callLater(0, procduel, self)
 
 	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
@@ -992,6 +993,24 @@ class MyDuel(dm.Duel):
 			self.set_responsei(value)
 			reactor.callLater(0, procduel, self)
 		return prompt()
+
+	def announce_card(self, player, type):
+		pl = self.players[player]
+		def prompt():
+			pl.notify(pl._("Enter the name of a card:"))
+			return pl.notify(Reader, r, no_abort=pl._("Invalid command."), restore_parser=duel_parser)
+		def error(text):
+			pl.notify(text)
+			return prompt()
+		def r(caller):
+			card = get_card_by_name(pl, caller.text)
+			if card is None:
+				return error(pl._("No results found."))
+			if not card.type & type:
+				return error(pl._("Wrong type."))
+			self.set_responsei(card.code)
+			reactor.callLater(0, procduel, self)
+		prompt()
 
 	def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
 		pl = self.players[player]
