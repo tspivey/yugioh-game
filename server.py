@@ -150,6 +150,44 @@ class CustomCard(dm.Card):
 			types.append(pl._("Effect"))
 		if self.type & 0x40:
 			types.append(pl._("Fusion"))
+		if self.type & 0x80:
+			types.append(pl._("Ritual"))
+		if self.type & 0x100:
+			types.append(pl._("Trapmonster"))
+		if self.type & 0x200:
+			types.append(pl._("Spirit"))
+		if self.type & 0x400:
+			types.append(pl._("Union"))
+		if self.type & 0x800:
+			types.append(pl._("Dual"))
+		if self.type & 0x1000:
+			types.append(pl._("Tuner"))
+		if self.type & 0x2000:
+			types.append(pl._("Synchro"))
+		if self.type & 0x4000:
+			types.append(pl._("Token"))
+		if self.type & 0x10000:
+			types.append(pl._("Quickplay"))
+		if self.type & 0x20000:
+			types.append(pl._("Continuous"))
+		if self.type & 0x40000:
+			types.append(pl._("Equip"))
+		if self.type & 0x80000:
+			types.append(pl._("Field"))
+		if self.type & 0x100000:
+			types.append(pl._("Counter"))
+		if self.type & 0x200000:
+			types.append(pl._("Flip"))
+		if self.type & 0x400000:
+			types.append(pl._("Toon"))
+		if self.type & 0x800000:
+			types.append(pl._("Xyz"))
+		if self.type & 0x1000000:
+			types.append(pl._("Pendulum"))
+		if self.type & 0x2000000:
+			types.append(pl._("Special summon"))
+		if self.type & 0x4000000:
+			types.append(pl._("Link"))
 		if self.attribute & 1:
 			types.append(pl._("Earth"))
 		elif self.attribute & 2:
