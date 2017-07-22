@@ -478,6 +478,7 @@ class MyDuel(dm.Duel):
 			self.set_responsei(-1)
 			return
 		pl = self.players[player]
+		self.chaining_player = player
 		if forced:
 			pl.notify(pl._("Select chain:"))
 		else:
@@ -1108,7 +1109,7 @@ class MyDuel(dm.Duel):
 		card = self.get_card(tc, tl, tseq)
 		if not card:
 			return
-		name = self.players[self.tp].nickname
+		name = self.players[self.chaining_player].nickname
 		for pl in self.players:
 			spec = self.card_to_spec(pl.duel_player, card)
 			tcname = card.get_name(pl)
