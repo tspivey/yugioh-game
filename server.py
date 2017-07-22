@@ -1550,6 +1550,13 @@ def quit(caller):
 @parser.command(names=['lookup'], args_regexp=r'(.*)')
 def lookup(caller):
 	name = caller.args[0]
+	card = get_card_by_name(caller.connection, name)
+	if not card:
+		caller.connection.notify(con.connection._("No results found."))
+		return
+	caller.connection.notify(card.get_info(caller.connection))
+
+def get_card_by_name(con, name):
 	r = re.compile(r'^(\d+)\.(.+)$')
 	r = r.search(name)
 	if r:
@@ -1559,13 +1566,12 @@ def lookup(caller):
 	if n == 0:
 		n = 1
 	name = '%'+name+'%'
-	rows = dm.db.execute('select id from texts where name like ? limit ?', (name, n)).fetchall()
+	rows = con.cdb.execute('select id from texts where name like ? limit ?', (name, n)).fetchall()
 	if not rows:
-		caller.connection.notify("No results found.")
 		return
 	nr = rows[min(n - 1, len(rows) - 1)]
 	card = dm.Card.from_code(nr[0])
-	caller.connection.notify(card.info())
+	return card
 
 @parser.command(names=['echo'], args_regexp=r'(.*)')
 def echo(caller):
