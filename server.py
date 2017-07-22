@@ -1603,7 +1603,7 @@ def lookup(caller):
 	name = caller.args[0]
 	card = get_card_by_name(caller.connection, name)
 	if not card:
-		caller.connection.notify(con.connection._("No results found."))
+		caller.connection.notify(caller.connection._("No results found."))
 		return
 	caller.connection.notify(card.get_info(caller.connection))
 
