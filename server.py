@@ -263,6 +263,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('sort_chain', self.sort_chain)
 		self.cm.register_callback('announce_attrib', self.announce_attrib)
 		self.cm.register_callback('announce_card', self.announce_card)
+		self.cm.register_callback('announce_card_filter', self.announce_card_filter)
 		self.cm.register_callback('select_sum', self.select_sum)
 		self.cm.register_callback('select_counter', self.select_counter)
 		self.cm.register_callback('announce_race', self.announce_race)
@@ -1009,6 +1010,26 @@ class MyDuel(dm.Duel):
 			if card is None:
 				return error(pl._("No results found."))
 			if not card.type & type:
+				return error(pl._("Wrong type."))
+			self.set_responsei(card.code)
+			reactor.callLater(0, procduel, self)
+		prompt()
+
+	def announce_card_filter(self, player, options):
+		pl = self.players[player]
+		def prompt():
+			pl.notify(pl._("Enter the name of a card:"))
+			return pl.notify(Reader, r, no_abort=pl._("Invalid command."), restore_parser=duel_parser)
+		def error(text):
+			pl.notify(text)
+			return prompt()
+		def r(caller):
+			card = get_card_by_name(pl, caller.text)
+			if card is None:
+				return error(pl._("No results found."))
+			cd = dm.ffi.new('struct card_data *')
+			dm.card_reader_callback(card.code, cd)
+			if not dm.lib.declarable(cd, len(options), options):
 				return error(pl._("Wrong type."))
 			self.set_responsei(card.code)
 			reactor.callLater(0, procduel, self)

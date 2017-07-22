@@ -4,6 +4,15 @@ ffibuilder.set_source("_duel",
 	r"""
 #include "ocgapi.h"
 #include "card.h"
+#include <vector>
+int32 is_declarable(card_data const& cd, const std::vector<uint32>& opcode);
+int32 declarable(card_data *cd, int32 size, uint32 *array) {
+	std::vector<uint32> v;
+	for (int i=0; i < size; i++) {
+	v.push_back(array[i]);
+	}
+	return is_declarable(*cd, v);
+}
 """,
 libraries = ['ygo'],
 library_dirs=['.'],
@@ -57,6 +66,7 @@ void set_responseb(ptr pduel, byte *value);
 int32 query_card(ptr pduel, uint8 playerid, uint8 location, uint8 sequence, int32 query_flag, byte* buf, int32 use_cache);
 int32 query_field_count(ptr pduel, uint8 playerid, uint8 location);
 int32 query_field_card(ptr pduel, uint8 playerid, uint8 location, int32 query_flag, byte* buf, int32 use_cache);
+int32 declarable(struct card_data *cd, int32 size, uint32 *array);
 """)
 
 if __name__ == "__main__":
