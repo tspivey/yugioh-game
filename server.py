@@ -100,6 +100,7 @@ def start_duel(*players):
 	duel.load_deck(1, players[1].deck['cards'])
 	for i, pl in enumerate(players):
 		pl.notify(pl._("Duel created. You are player %d.") % i)
+		pl.notify(pl._("Type help dueling for a list of usable commands."))
 		pl.duel = duel
 		pl.duel_player = i
 		pl.parser = duel_parser
