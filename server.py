@@ -838,6 +838,16 @@ class MyDuel(dm.Duel):
 				name = card.get_name(op)
 			op.notify(op._("{plname}'s card {spec} ({name}) returned to their hand.")
 				.format(plname=pl.nickname, spec=opspec, name=name))
+		if reason & 0x12:
+			name = card.get_name(pl)
+			pl.notify(pl._("You tribute {spec} ({name}).")
+				.format(spec=plspec, name=name))
+			if card.position in (0x8, 0xa):
+				name = op._("%s card") % card.get_position(op)
+			else:
+				name = card.get_name(op)
+			op.notify(op._("{plname} tributes {spec} ({name}).")
+				.format(plname=pl.nickname, spec=opspec, name=name))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
