@@ -198,6 +198,7 @@ class Duel:
 		140: self.msg_announce_race,
 		22: self.msg_select_counter,
 		83: self.msg_become_target,
+		25: self.msg_sort_card,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -620,6 +621,20 @@ class Duel:
 		count = self.read_u8(data)
 		avail = self.read_u32(data)
 		self.cm.call_callbacks('announce_race', player, count, avail)
+		return b''
+
+	def msg_sort_card(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		size = self.read_u8(data)
+		cards = []
+		for i in range(size):
+			card = Card.from_code(self.read_u32(data))
+			card.controller = self.read_u8(data)
+			card.location = self.read_u8(data)
+			card.sequence = self.read_u8(data)
+			cards.append(card)
+		self.cm.call_callbacks('sort_card', player, cards)
 		return b''
 
 	def read_u8(self, buf):
