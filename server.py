@@ -1219,6 +1219,14 @@ def grave(caller):
 def grave2(caller):
 	caller.connection.duel.show_cards_in_location(caller.connection, 1 - caller.connection.duel_player, dm.LOCATION_GRAVE, True)
 
+@duel_parser.command
+def removed(caller):
+	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_REMOVED)
+
+@duel_parser.command
+def removed2(caller):
+	caller.connection.duel.show_cards_in_location(caller.connection, 1 - caller.connection.duel_player, dm.LOCATION_REMOVED, True)
+
 @duel_parser.command(names=['extra'])
 def extra(caller):
 	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_EXTRA)
