@@ -828,6 +828,15 @@ class MyDuel(dm.Duel):
 		if reason & 0x01:
 			pl.notify(pl._("Card %s (%s) destroyed.") % (plspec, card.get_name(pl)))
 			op.notify(op._("Card %s (%s) destroyed.") % (opspec, card.get_name(op)))
+		if (newloc >> 8) & 0xff == 0x02 and reason & 0x40:
+			pl.notify(pl._("Card {spec} ({name}) returned to hand.")
+				.format(spec=plspec, name=card.get_name(pl)))
+			if card.position in (0x8, 0xa):
+				name = op._("Face-down card")
+			else:
+				name = card.get_name(op)
+			op.notify(op._("{plname}'s card {spec} ({name}) returned to their hand.")
+				.format(plname=pl.nickname, spec=opspec, name=name))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
