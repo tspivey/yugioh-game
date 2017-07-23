@@ -285,10 +285,10 @@ class Duel:
 		size = self.read_u8(data)
 		for i in range(size):
 			code = self.read_u32(data)
-			card = Card.from_code(code)
-			card.controller = self.read_u8(data)
-			card.location = self.read_u8(data)
-			card.sequence = self.read_u8(data)
+			controller = self.read_u8(data)
+			location = self.read_u8(data)
+			sequence = self.read_u8(data)
+			card = self.get_card(controller, location, sequence)
 			card.extra = 0
 			if extra:
 				if extra8:
@@ -375,6 +375,10 @@ class Duel:
 		for i in range(size):
 			code = self.read_u32(data)
 			loc = self.read_u32(data)
+			c = loc & 0xff
+			l = (loc >> 8) & 0xff;
+			s = (loc >> 16) & 0xff
+			card = self.get_card(c, l, s)
 			card = Card.from_code(code)
 			card.set_location(loc)
 			cards.append(card)
@@ -704,7 +708,7 @@ class Duel:
 		return cards
 
 	def get_card(self, player, loc, seq):
-		flags = QUERY_CODE | QUERY_POSITION
+		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
@@ -712,9 +716,11 @@ class Duel:
 			return
 		f = self.read_u32(buf)
 		code = self.read_u32(buf)
-		position = self.read_u32(buf)
 		card = Card.from_code(code)
+		position = self.read_u32(buf)
 		card.set_location(position)
+		card.attack = self.read_u32(buf)
+		card.defense = self.read_u32(buf)
 		return card
 
 class TestDuel(Duel):
