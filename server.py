@@ -17,7 +17,6 @@ from twisted.internet import reactor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import duel as dm
-import strings
 from parsers import parser, duel_parser, LoginParser
 import models
 import game
@@ -26,6 +25,8 @@ import i18n
 __ = lambda s: s
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
+
+strings = {}
 
 engine = create_engine('sqlite:///game.db')
 models.Base.metadata.bind = engine
@@ -139,71 +140,16 @@ class CustomCard(dm.Card):
 		lst = []
 		types = []
 		t = str(self.type)
-		if self.type & 1:
-			types.append(pl._("Monster"))
-		elif self.type & 2:
-			types.append(pl._("Spell"))
-		elif self.type & 4:
-			types.append(pl._("Trap"))
-		if self.type & 0x20:
-			types.append(pl._("Effect"))
-		if self.type & 0x40:
-			types.append(pl._("Fusion"))
-		if self.type & 0x80:
-			types.append(pl._("Ritual"))
-		if self.type & 0x100:
-			types.append(pl._("Trapmonster"))
-		if self.type & 0x200:
-			types.append(pl._("Spirit"))
-		if self.type & 0x400:
-			types.append(pl._("Union"))
-		if self.type & 0x800:
-			types.append(pl._("Dual"))
-		if self.type & 0x1000:
-			types.append(pl._("Tuner"))
-		if self.type & 0x2000:
-			types.append(pl._("Synchro"))
-		if self.type & 0x4000:
-			types.append(pl._("Token"))
-		if self.type & 0x10000:
-			types.append(pl._("Quickplay"))
-		if self.type & 0x20000:
-			types.append(pl._("Continuous"))
-		if self.type & 0x40000:
-			types.append(pl._("Equip"))
-		if self.type & 0x80000:
-			types.append(pl._("Field"))
-		if self.type & 0x100000:
-			types.append(pl._("Counter"))
-		if self.type & 0x200000:
-			types.append(pl._("Flip"))
-		if self.type & 0x400000:
-			types.append(pl._("Toon"))
-		if self.type & 0x800000:
-			types.append(pl._("Xyz"))
-		if self.type & 0x1000000:
-			types.append(pl._("Pendulum"))
-		if self.type & 0x2000000:
-			types.append(pl._("Special summon"))
-		if self.type & 0x4000000:
-			types.append(pl._("Link"))
-		if self.attribute & 1:
-			types.append(pl._("Earth"))
-		elif self.attribute & 2:
-			types.append(pl._("Water"))
-		elif self.attribute & 4:
-			types.append(pl._("Fire"))
-		elif self.attribute & 8:
-			types.append(pl._("Wind"))
-		elif self.attribute & 0x10:
-			types.append(pl._("Light"))
-		elif self.attribute & 0x20:
-			types.append(pl._("Dark"))
-		elif self.attribute & 0x40:
-			types.append(pl._("Divine"))
-		for i, race in enumerate(self.RACES):
+		for i in range(26):
+			if self.type & (1 << i):
+				types.append(strings[pl.language]['system'][1050+i])
+		for i in range(7):
+			if self.attribute & (1 << i):
+				types.append(strings[pl.language]['system'][1010+i])
+		for i in range(25):
 			if self.race & (1 << i):
-				types.append(pl._(race))
+				types.append(strings[pl.language]['system'][1020+i])
+
 		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
 		lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
 		lst.append(self.get_desc(pl))
@@ -728,8 +674,9 @@ class MyDuel(dm.Duel):
 			pl.notify(s)
 
 	def hint(self, msg, player, data):
-		if msg == 3 and data in strings.SYSTEM_STRINGS:
-			self.players[player].notify(strings.SYSTEM_STRINGS[data])
+		pl = self.players[player]
+		if msg == 3 and data in strings[pl.language]['system']:
+			self.players[player].notify(strings[pl.language]['system'][data])
 		elif msg == 6 or msg == 7 or msg == 8:
 			reactor.callLater(0, procduel, self)
 
@@ -946,7 +893,7 @@ class MyDuel(dm.Duel):
 			opt = dm.Card.from_code(code).strings[desc & 0xf]
 		else:
 			opt = "String %d" % desc
-			opt = strings.SYSTEM_STRINGS.get(desc, opt)
+			opt = strings[pl.language]['system'].get(desc, opt)
 		pl.notify(YesOrNo, opt, yes, no=no, restore_parser=old_parser)
 
 	def select_effectyn(self, player, card):
@@ -1764,6 +1711,8 @@ def main():
 		game.japanese_db = sqlite3.connect('locale/ja/cards.cdb')
 	if os.path.exists('locale/es/cards.cdb'):
 		game.spanish_db = sqlite3.connect('locale/es/cards.cdb')
+	for i in ('en', 'de', 'ja', 'es'):
+		strings[i] = i18n.parse_strings(os.path.join('locale', i, 'strings.conf'))
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
 	args = parser.parse_args()

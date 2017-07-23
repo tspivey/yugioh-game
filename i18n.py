@@ -1,4 +1,5 @@
 import gettext
+import re
 import duel as dm
 import game
 
@@ -19,3 +20,19 @@ def set_language(con, language):
 		con.cdb = game.spanish_db
 		con._ = gettext.translation('game', 'locale', languages=['es'], fallback=True).gettext
 		con.language = 'es'
+
+string_re = re.compile(r'^!(\w+) (\d+) (.+)$')
+def parse_strings(filename):
+	res = {}
+	with open(filename, 'r', encoding='utf-8') as fp:
+		for line in fp:
+			line = line.rstrip('\n')
+			r = string_re.search(line)
+			if not r:
+				continue
+			type, id, s = r.groups()
+			id = int(id)
+			if type not in res:
+				res[type] = {}
+			res[type][id] = s
+	return res
