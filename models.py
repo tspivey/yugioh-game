@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index
+from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index, collate
 from passlib.hash import pbkdf2_sha256
 
 Base = declarative_base()
@@ -27,7 +27,7 @@ class Deck(Base):
 	__tablename__ = 'decks'
 	id = Column(Integer, primary_key=True)
 	account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
-	name = Column(Unicode, nullable=False)
+	name = Column(Unicode(collation='NOCASE'), nullable=False)
 	content = Column(Unicode, nullable=False)
 	__table_args__ = (
 		Index('decks_account_name', 'account_id', 'name'),
