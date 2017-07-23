@@ -80,7 +80,7 @@ def duel(caller):
 		con.notify(con._("You can't duel yourself."))
 		return
 	elif not con.deck['cards']:
-		con.notify(con._("You can't duel without a deck. Try deck load starter."))
+		con.notify(con._("You can't duel without a deck. Try deck load public/starter."))
 		return
 	if player.requested_opponent == con.nickname:
 		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
