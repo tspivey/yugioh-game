@@ -34,5 +34,5 @@ def parse_strings(filename):
 			id = int(id)
 			if type not in res:
 				res[type] = {}
-			res[type][id] = s
+			res[type][id] = s.replace('\xa0', ' ')
 	return res
