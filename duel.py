@@ -169,7 +169,9 @@ class Duel:
 		1: self.msg_retry,
 		2: self.msg_hint,
 		18: self.msg_select_place,
+		24: self.msg_select_place,
 		50: self.msg_move,
+		56: self.msg_field_disabled,
 		60: self.msg_summoning,
 		16: self.msg_select_chain,
 		61: self.msg_summoned,
@@ -419,6 +421,12 @@ class Duel:
 		reason = self.read_u32(data)
 		self.cm.call_callbacks('move', code, location, newloc, reason)
 		print("Move: code=%d loc=%x newloc=%x reason=%x" % (code, location, newloc, reason))
+		return b''
+
+	def msg_field_disabled(self, data):
+		data = io.BytesIO(data[1:])
+		locations = self.read_u32(data)
+		self.cm.call_callbacks('field_disabled', locations)
 		return b''
 
 	def msg_summoning(self, data, special=False):

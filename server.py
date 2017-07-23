@@ -269,6 +269,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('announce_race', self.announce_race)
 		self.cm.register_callback('become_target', self.become_target)
 		self.cm.register_callback('sort_card', self.sort_card)
+		self.cm.register_callback('field_disabled', self.field_disabled)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -442,23 +443,35 @@ class MyDuel(dm.Duel):
 	def select_place(self, player, count, flag):
 		pl = self.players[player]
 		specs = self.flag_to_usable_cardspecs(flag)
-		pl.notify(pl._("Select place for card, one of %s.") % ", ".join(specs))
+		if count == 1:
+			pl.notify(pl._("Select place for card, one of %s.") % ", ".join(specs))
+		else:
+			pl.notify(pl._("Select %d places for card, from %s.") % (count, ", ".join(specs)))
 		def r(caller):
-			if caller.text not in specs:
+			values = caller.text.split()
+			if len(set(values)) != len(values):
+				pl.notify(pl._("Duplicate values not allowed."))
+				return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+			if len(values) != count:
+				pl.notify(pl._("Please enter %d values."))
+				return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+			if any(value not in specs for value in values):
 				pl.notify(pl._("Invalid cardspec. Try again."))
-				pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
+				pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
 				return
-			l, s = self.cardspec_to_ls(caller.text)
-			if caller.text.startswith('o'):
-				plr = 1 - player
-			else:
-				plr = player
-			resp = bytes([plr, l, s])
+			resp = b''
+			for value in values:
+				l, s = self.cardspec_to_ls(value)
+				if value.startswith('o'):
+					plr = 1 - player
+				else:
+					plr = player
+				resp += bytes([plr, l, s])
 			self.set_responseb(resp)
 			reactor.callLater(0, procduel, self)
-		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
+		pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
 
-	def flag_to_usable_cardspecs(self, flag):
+	def flag_to_usable_cardspecs(self, flag, reverse=False):
 		pm = flag & 0xff
 		ps = (flag >> 8) & 0xff
 		om = (flag >> 16) & 0xff
@@ -467,7 +480,10 @@ class MyDuel(dm.Duel):
 		specs = []
 		for zn, val in zip(zone_names, (pm, ps, om, os)):
 			for i in range(8):
-				avail = val & (1 << i) == 0
+				if reverse:
+					avail = val & (1 << i) != 0
+				else:
+					avail = val & (1 << i) == 0
 				if avail:
 					specs.append(zn + str(i + 1))
 		return specs
@@ -1181,6 +1197,17 @@ class MyDuel(dm.Duel):
 			self.set_responseb(bytes(ints))
 			reactor.callLater(0, procduel, self)
 		prompt()
+
+	def field_disabled(self, locations):
+		specs = self.flag_to_usable_cardspecs(locations, reverse=True)
+		opspecs = []
+		for spec in specs:
+			if spec.startswith('o'):
+				opspecs.append(spec[1:])
+			else:
+				opspecs.append('o'+spec)
+		self.players[0].notify(self.players[0]._("Field locations %s are disabled.") % ", ".join(specs))
+		self.players[1].notify(self.players[1]._("Field locations %s are disabled.") % ", ".join(opspecs))
 
 	def end(self):
 		super(MyDuel, self).end()
