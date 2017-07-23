@@ -1696,7 +1696,8 @@ def encoding(caller):
 	except LookupError:
 		caller.connection.notify(caller.connection._("Unknown encoding."))
 		return
-	caller.connection.encoding = caller.args[0]
+	caller.connection.encode_args = (caller.args[0], 'replace')
+	caller.connection.decode_args = (caller.args[0], 'ignore')
 	caller.connection.account.encoding = caller.args[0]
 	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Encoding set."))
