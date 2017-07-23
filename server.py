@@ -703,16 +703,12 @@ class MyDuel(dm.Duel):
 			con.notify(text)
 			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
 		def f(caller):
-			cds = caller.text.split()
-			try:
-				cds = [int(i) - 1 for i in cds]
-			except ValueError:
-				return error(con._("Invalid value."))
+			cds = self.parse_ints(caller.text)
 			if len(cds) != len(set(cds)):
 				return error(con._("Duplicate values not allowed."))
 			if (not is_tribute and len(cds) < min_cards) or len(cds) > max_cards:
 				return error(con._("Please enter between %d and %d cards.") % (min_cards, max_cards))
-			if min(cds) < 0 or max(cds) > len(cards) - 1:
+			if cds and (min(cds) < 0 or max(cds) > len(cards) - 1):
 				return error(con._("Invalid value."))
 			buf = bytes([len(cds)])
 			tribute_value = 0
