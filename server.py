@@ -1349,14 +1349,16 @@ def deck_edit(caller):
 		con.notify("Deck exists, loading.")
 		con.deck = json.loads(deck.content)
 	cards = con.deck['cards']
+	last_search = ""
 	def info():
 		show_deck_info(con)
-		con.notify("u: up d: down /: search t: top")
-		con.notify("s: send to deck r: remove from deck l: list deck q: quit")
+		con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
+		con.notify(con._("s: send to deck r: remove from deck l: list deck q: quit"))
 	def read():
 		info()
-		con.notify(Reader, r, prompt="Command (%d cards in deck):" % len(cards), no_abort="Invalid command", restore_parser=parser)
+		con.notify(Reader, r, prompt=con._("Command (%d cards in deck):") % len(cards), no_abort="Invalid command", restore_parser=parser)
 	def r(caller):
+		nonlocal last_search
 		code = all_cards[con.deck_edit_pos]
 		if caller.text == 'd':
 			con.deck_edit_pos+= 1
@@ -1402,7 +1404,21 @@ def deck_edit(caller):
 			con.session.commit()
 			read()
 		elif caller.text.startswith('/'):
-			pos = find_next(caller.text[1:], con.deck_edit_pos + 1)
+			text = caller.text[1:] or last_search
+			last_search = text
+			pos = find_next(con, text, con.deck_edit_pos + 1)
+			if not pos:
+				con.notify(con._("Not found."))
+			else:
+				con.deck_edit_pos = pos
+			read()
+		elif caller.text.startswith('?'):
+			text = caller.text[1:] or last_search
+			last_search = text
+			search_start = con.deck_edit_pos - 1
+			if search_start < 0:
+				search_start = len(all_cards) - 1
+			pos = find_prev(con, text, search_start)
 			if not pos:
 				con.notify(con._("Not found."))
 			else:
@@ -1430,11 +1446,34 @@ def show_deck_info(con):
 	card = dm.Card.from_code(code)
 	con.notify(card.get_info(con))
 
-def find_next(text, start):
-	for i, code in enumerate(all_cards[start:]):
+def find_next(con, text, start, limit=None, wrapped=False):
+	if limit:
+		cards = all_cards[start:start+limit]
+	else:
+		cards = all_cards[start:]
+	wrapped = wrapped
+	for i, code in enumerate(cards):
 		card = dm.Card.from_code(code)
-		if text.lower() in card.name.lower():
-			return start+i
+		if text.lower() in card.get_name(con).lower():
+			return start + i
+	if wrapped:
+		return
+	return find_next(con, text, 0, start, wrapped=True)
+
+def find_prev(con, text, start, end=None, wrapped=False):
+	text = text.lower()
+	pos = start
+	if end is None:
+		end = 0
+	while pos >= end:
+		card = dm.Card.from_code(all_cards[pos])
+		name = card.get_name(con).lower()
+		if text in name:
+			return pos
+		pos -= 1
+	if wrapped:
+		return
+	return find_prev(con, text, len(all_cards) - 1, start, wrapped=True)
 
 def save_deck(deck, session, account, name):
 	deck = json.dumps(deck)
