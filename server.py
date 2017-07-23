@@ -730,19 +730,20 @@ class MyDuel(dm.Duel):
 		for card in mz:
 			s = "m%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
-				s += card.position_name()
+				s += card.get_position(con)
 			else:
 				s += card.get_name(con) + " "
-				s += "(%d/%d) " % (card.attack, card.defense)
-				s += card.position_name()
+				s += (con._("({attack}/{defense}) level {level}")
+					.format(attack=card.attack, defense=card.defense, level=card.level))
+				s += " " + card.get_position(con)
 			con.notify(s)
 		for card in sz:
 			s = "s%d: " % (card.sequence + 1)
 			if hide_facedown and card.position in (0x8, 0xa):
-				s += card.position_name()
+				s += card.get_position(con)
 			else:
 				s += card.get_name(con) + " "
-				s += card.position_name()
+				s += card.get_position(con)
 			con.notify(s)
 
 	def show_cards_in_location(self, con, player, location, hide_facedown=False):
@@ -753,10 +754,10 @@ class MyDuel(dm.Duel):
 		for card in cards:
 			s = self.card_to_spec(player, card)
 			if hide_facedown and card.position in (0x8, 0xa):
-				s += card.position_name()
+				s += card.get_position(con)
 			else:
 				s += card.get_name(con) + " "
-				s += card.position_name()
+				s += card.get_position(con)
 			con.notify(s)
 
 	def show_hand(self, con, player):
