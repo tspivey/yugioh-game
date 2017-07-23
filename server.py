@@ -21,12 +21,9 @@ import strings
 from parsers import parser, duel_parser, LoginParser
 import models
 import game
+import i18n
 
 __ = lambda s: s
-
-german_db = None
-japanese_db = None
-spanish_db = None
 
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
@@ -1728,48 +1725,45 @@ def passwd(caller):
 def language(caller):
 	lang = caller.args[0]
 	if lang not in ('english', 'german', 'japanese', 'spanish'):
-		caller.connection.notify("Usage: language <english/german/japanese>")
+		caller.connection.notify("Usage: language <english/german/japanese/spanish>")
 		return
 	if lang == 'english':
-		caller.connection.cdb = dm.db
-		caller.connection._ = gettext.NullTranslations().gettext
-		caller.connection.language = 'en'
+		i18n.set_language(caller.connection, 'en')
 	elif lang == 'german':
-		caller.connection.cdb = german_db
-		caller.connection._ = gettext.translation('game', 'locale', languages=['de'], fallback=True).gettext
-		caller.connection.language = 'de'
+		i18n.set_language(caller.connection, 'de')
 	elif lang == 'japanese':
-		caller.connection.cdb = japanese_db
-		caller.connection._ = gettext.translation('game', 'locale', languages=['ja'], fallback=True).gettext
-		caller.connection.language = 'ja'
+		i18n.set_language(caller.connection, 'ja')
 	elif lang == 'spanish':
-		caller.connection.cdb = spanish_db
-		caller.connection._ = gettext.translation('game', 'locale', languages=['es'], fallback=True).gettext
-		caller.connection.language = 'es'
+		i18n.set_language(caller.connection, 'es')
+	caller.connection.account.language = caller.connection.language
+	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Language set."))
 
 @parser.command(args_regexp=r'(.*)')
 def encoding(caller):
 	try:
-		codecs.lookup(caller.args[0])
+		codec = codecs.lookup(caller.args[0])
+		if not codec._is_text_encoding:
+			raise LookupError
 	except LookupError:
 		caller.connection.notify(caller.connection._("Unknown encoding."))
 		return
 	caller.connection.encoding = caller.args[0]
+	caller.connection.account.encoding = caller.args[0]
+	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Encoding set."))
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
 def main():
-	global german_db, japanese_db, spanish_db
 	dm.Card = CustomCard
 	if os.path.exists('locale/de/cards.cdb'):
-		german_db = sqlite3.connect('locale/de/cards.cdb')
+		game.german_db = sqlite3.connect('locale/de/cards.cdb')
 	if os.path.exists('locale/ja/cards.cdb'):
-		japanese_db = sqlite3.connect('locale/ja/cards.cdb')
+		game.japanese_db = sqlite3.connect('locale/ja/cards.cdb')
 	if os.path.exists('locale/es/cards.cdb'):
-		spanish_db = sqlite3.connect('locale/es/cards.cdb')
+		game.spanish_db = sqlite3.connect('locale/es/cards.cdb')
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
 	args = parser.parse_args()

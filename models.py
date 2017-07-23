@@ -13,6 +13,8 @@ class Account(Base):
 	email = Column(String(50))
 	created = Column(DateTime, default=func.now())
 	last_logged_in = Column(DateTime, default=func.now())
+	language = Column(Unicode, nullable=False, default='en')
+	encoding = Column(Unicode, nullable=False, default='utf-8')
 	decks = relationship('Deck')
 
 	def set_password(self, password):

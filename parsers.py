@@ -5,6 +5,7 @@ from attr import attrs, attrib
 import gsb
 import game
 import models
+import i18n
 
 command_substitutions = {
 	"'": "say",
@@ -99,9 +100,11 @@ class LoginParser(gsb.Parser):
 		return session.query(models.Account).filter_by(name=nickname).first()
 
 	def login(self, connection, account):
+		i18n.set_language(connection, account.language)
+		connection.encoding = account.encoding
 		if account.name.lower() in game.players:
 			old_con = game.players[account.name.lower()]
-			connection.notify("Disconnecting old connection.")
+			connection.notify(connection._("Disconnecting old connection."))
 			game.server.connections.remove(old_con)
 			game.server.on_disconnect(gsb.Caller(connection=old_con))
 			game.server.disconnect(old_con)
