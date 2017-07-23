@@ -374,6 +374,8 @@ class MyDuel(dm.Duel):
 			l = dm.LOCATION_GRAVE
 		elif r.group(1) == 'x':
 			l = dm.LOCATION_EXTRA
+		elif r.group(1) == 'r':
+			l = dm.LOCATION_REMOVED
 		else:
 			return None, None
 		return l, int(r.group(2)) - 1
@@ -603,6 +605,8 @@ class MyDuel(dm.Duel):
 			s += "g"
 		elif card.location == dm.LOCATION_EXTRA:
 			s += "x"
+		elif card.location == dm.LOCATION_REMOVED:
+			s += "r"
 		s += str(card.sequence + 1)
 		return s
 
