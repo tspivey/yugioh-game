@@ -486,6 +486,7 @@ class MyDuel(dm.Duel):
 		pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
 
 	def select_option(self, player, options):
+		pl = self.players[player]
 		def select(caller, idx):
 			self.set_responsei(idx)
 			reactor.callLater(0, procduel, self)
@@ -496,11 +497,12 @@ class MyDuel(dm.Duel):
 				string = dm.Card.from_code(code).strings[opt & 0xf]
 			else:
 				string = "Unknown option %d" % opt
+				string = strings[pl.language]['system'].get(opt, string)
 			opts.append(string)
-		m = Menu("Select option:", no_abort="Invalid option.", persistent=True, restore_parser=duel_parser)
+		m = Menu(pl._("Select option:"), no_abort=pl._("Invalid option."), persistent=True, restore_parser=duel_parser)
 		for idx, opt in enumerate(opts):
 			m.item(opt)(lambda caller, idx=idx: select(caller, idx))
-		self.players[player].notify(m)
+		pl.notify(m)
 
 	def summoning(self, card, special=False):
 		if special:
