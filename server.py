@@ -705,9 +705,7 @@ class MyDuel(dm.Duel):
 		else:
 			con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
 		for i, c in enumerate(cards):
-			name = c.get_name(con)
-			if c.controller != player and c.position in (0x8, 0xa):
-				name = con._("%s card") % c.get_position(con)
+			name = self.cardlist_info_for_player(c, con)
 			con.notify("%d: %s" % (i+1, name))
 		def error(text):
 			con.notify(text)
@@ -730,6 +728,15 @@ class MyDuel(dm.Duel):
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
 		con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
+
+	def cardlist_info_for_player(self, card, con):
+		spec = self.card_to_spec(con.duel_player, card)
+		if card.controller != con.duel_player and card.position in (0x8, 0xa):
+			position = card.get_position(con)
+			return (con._("{position} card ({spec})")
+				.format(position=position, spec=spec))
+		name = card.get_name(con)
+		return "{name} ({spec})".format(name=name, spec=spec)
 
 	def show_table(self, con, player, hide_facedown=False):
 		mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
