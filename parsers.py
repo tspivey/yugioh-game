@@ -101,8 +101,9 @@ class LoginParser(gsb.Parser):
 
 	def login(self, connection, account):
 		i18n.set_language(connection, account.language)
-		connection.encode_args = (account.encoding, 'replace')
-		connection.decode_args = (account.encoding, 'ignore')
+		if not connection.web:
+			connection.encode_args = (account.encoding, 'replace')
+			connection.decode_args = (account.encoding, 'ignore')
 		if account.name.lower() in game.players:
 			old_con = game.players[account.name.lower()]
 			connection.notify(connection._("Disconnecting old connection."))

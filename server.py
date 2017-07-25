@@ -1715,6 +1715,9 @@ def language(caller):
 
 @parser.command(args_regexp=r'(.*)')
 def encoding(caller):
+	if caller.connection.web:
+		caller.connection.notify(caller.connection._("Encoding is not needed when using the web client."))
+		return
 	try:
 		codec = codecs.lookup(caller.args[0])
 		if not codec._is_text_encoding:
