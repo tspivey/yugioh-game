@@ -211,7 +211,7 @@ class Duel:
 		self.cards[player] = cards[:]
 		if shuffle:
 			random.shuffle(self.cards[player])
-		for c in self.cards[player]:
+		for c in self.cards[player][::-1]:
 			lib.new_card(self.duel, c, player, player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
 
 	def start(self):
