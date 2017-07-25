@@ -687,10 +687,6 @@ class MyDuel(dm.Duel):
 	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
 		con = self.players[player]
 		if is_tribute:
-			s = " to tribute"
-		else:
-			s = ""
-		if is_tribute:
 			con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
 		else:
 			con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
@@ -703,7 +699,7 @@ class MyDuel(dm.Duel):
 			con.notify(text)
 			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
 		def f(caller):
-			cds = self.parse_ints(caller.text)
+			cds = [i - 1 for i in self.parse_ints(caller.text)]
 			if len(cds) != len(set(cds)):
 				return error(con._("Duplicate values not allowed."))
 			if (not is_tribute and len(cds) < min_cards) or len(cds) > max_cards:
