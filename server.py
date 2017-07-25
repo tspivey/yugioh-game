@@ -157,7 +157,8 @@ class CustomCard(dm.Card):
 				types.append(strings[pl.language]['system'][1020+i])
 
 		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
-		lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
+		if self.type & 0x1:
+			lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
 		lst.append(self.get_desc(pl))
 		return "\n".join(lst)
 
