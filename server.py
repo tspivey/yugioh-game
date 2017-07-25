@@ -1566,10 +1566,10 @@ def replay(caller):
 			player0 = get_player(line['player0'])
 			player1 = get_player(line['player1'])
 			if not player0 or not player1:
-				con.notify("One of the players is not logged in.")
+				caller.connection.notify("One of the players is not logged in.")
 				return
 			if player0.duel or player1.duel:
-				con.notify("One of the players is in a duel.")
+				caller.connection.notify("One of the players is in a duel.")
 				return
 			duel = MyDuel()
 			duel.load_deck(0, line['deck0'], shuffle=False)
@@ -1590,6 +1590,8 @@ def replay(caller):
 
 def procduel_replay(duel):
 	res = dm.lib.process(duel.duel)
+	l = dm.lib.get_message(duel.duel, dm.ffi.cast('byte *', duel.buf))
+	data = dm.ffi.unpack(duel.buf, l)
 	cb = duel.cm.callbacks
 	duel.cm.callbacks = collections.defaultdict(list)
 	def tp(t):
@@ -1601,7 +1603,7 @@ def procduel_replay(duel):
 		duel.lp[player] -= amount
 	duel.cm.register_callback('recover', recover)
 	duel.cm.register_callback('damage', damage)
-	data = duel.process_messages()
+	duel.process_messages(data)
 	duel.cm.callbacks = cb
 	return data
 
