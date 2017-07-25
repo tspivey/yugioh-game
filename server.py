@@ -206,6 +206,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('sort_chain', self.sort_chain)
 		self.cm.register_callback('announce_attrib', self.announce_attrib)
 		self.cm.register_callback('announce_card', self.announce_card)
+		self.cm.register_callback('announce_number', self.announce_number)
 		self.cm.register_callback('announce_card_filter', self.announce_card_filter)
 		self.cm.register_callback('select_sum', self.select_sum)
 		self.cm.register_callback('select_counter', self.select_counter)
@@ -679,9 +680,13 @@ class MyDuel(dm.Duel):
 
 	def hint(self, msg, player, data):
 		pl = self.players[player]
+		op = self.players[1 - player]
 		if msg == 3 and data in strings[pl.language]['system']:
 			self.players[player].notify(strings[pl.language]['system'][data])
 		elif msg == 6 or msg == 7 or msg == 8:
+			reactor.callLater(0, procduel, self)
+		elif msg == 9:
+			op.notify(strings[op.language]['system'][1512] % data)
 			reactor.callLater(0, procduel, self)
 
 	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
@@ -970,6 +975,21 @@ class MyDuel(dm.Duel):
 			if not card.type & type:
 				return error(pl._("Wrong type."))
 			self.set_responsei(card.code)
+			reactor.callLater(0, procduel, self)
+		prompt()
+
+	def announce_number(self, player, opts):
+		pl = self.players[player]
+		str_opts = [str(i) for i in opts]
+		def prompt():
+			pl.notify(pl._("Select a number, one of: {opts}")
+				.format(opts=", ".join(str_opts)))
+			return pl.notify(DuelReader, r, no_abort=pl._("Invalid command."), restore_parser=duel_parser)
+		def r(caller):
+			ints = self.parse_ints(caller.text)
+			if not ints or ints[0] not in opts:
+				return prompt()
+			self.set_responsei(opts.index(ints[0]))
 			reactor.callLater(0, procduel, self)
 		prompt()
 
