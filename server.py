@@ -871,6 +871,7 @@ class MyDuel(dm.Duel):
 		c = card.controller
 		o = 1 - c
 		n = self.players[c].nickname
+		self.chaining_player = c
 		self.players[c].notify(self.players[c]._("Activating %s") % card.get_name(self.players[c]))
 		self.players[o].notify(self.players[o]._("%s activating %s") % (n, card.get_name(self.players[o])))
 
