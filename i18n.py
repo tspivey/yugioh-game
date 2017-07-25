@@ -21,17 +21,18 @@ def set_language(con, language):
 		con._ = gettext.translation('game', 'locale', languages=['es'], fallback=True).gettext
 		con.language = 'es'
 
-string_re = re.compile(r'^!(\w+) (\d+) (.+)$')
 def parse_strings(filename):
 	res = {}
 	with open(filename, 'r', encoding='utf-8') as fp:
 		for line in fp:
 			line = line.rstrip('\n')
-			r = string_re.search(line)
-			if not r:
+			if not line.startswith('!'):
 				continue
-			type, id, s = r.groups()
-			id = int(id)
+			type, id, s = line[1:].split(' ', 2)
+			if id.startswith('0x'):
+				id = int(id, 16)
+			else:
+				id = int(id)
 			if type not in res:
 				res[type] = {}
 			res[type][id] = s.replace('\xa0', ' ')
