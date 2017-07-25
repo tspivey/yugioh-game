@@ -224,14 +224,13 @@ class Duel:
 
 	def process(self):
 		res = lib.process(self.duel)
-		data = self.process_messages()
+		l = lib.get_message(self.duel, ffi.cast('byte *', self.buf))
+		data = ffi.unpack(self.buf, l)
 		self.cm.call_callbacks('debug', event_type='process', result=res, data=data.decode('latin1'))
+		data = self.process_messages(data)
 		return res
 
-	def process_messages(self):
-		l = lib.get_message(self.duel, ffi.cast('byte *', self.buf))
-		orig_data = data = ffi.unpack(self.buf, l)
-#		print("received: %r" % data)
+	def process_messages(self, data):
 		while data:
 			msg = int(data[0])
 			fn = self.message_map.get(msg)
@@ -240,7 +239,7 @@ class Duel:
 			else:
 				print("msg %d unhandled" % msg)
 				data = b''
-		return orig_data
+		return data
 
 	def msg_draw(self, data):
 		data = io.BytesIO(data[1:])
