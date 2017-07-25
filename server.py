@@ -823,7 +823,7 @@ class MyDuel(dm.Duel):
 	def show_info_cmd(self, con, spec):
 		cards = []
 		for i in (0, 1):
-			for j in (dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE, dm.LOCATION_REMOVED, dm.LOCATION_HAND):
+			for j in (dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE, dm.LOCATION_REMOVED, dm.LOCATION_HAND, dm.LOCATION_EXTRA):
 				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == con.duel_player or card.position not in (0x8, 0xa))
 		specs = {}
 		for card in cards:
