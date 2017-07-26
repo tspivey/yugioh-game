@@ -1581,7 +1581,7 @@ def score(caller):
 		return
 	caller.connection.duel.show_score(caller.connection)
 
-@parser.command(names=['replay'], args_regexp=r'(.*)=(\d+)')
+@parser.command(names=['replay'], args_regexp=r'(.*)=(\d+)', allowed=lambda caller: caller.connection.is_admin)
 def replay(caller):
 	with open(os.path.join('duels', caller.args[0])) as fp:
 		lines = [json.loads(line) for line in fp]
@@ -1750,7 +1750,7 @@ def encoding(caller):
 	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Encoding set."))
 
-@parser.command
+@parser.command(allowed=lambda caller: caller.connection.is_admin)
 def restart_websockets(caller):
 	if not game.websocket_server:
 		caller.connection.notify("Websocket server not enabled.")

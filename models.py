@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index, collate
+from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index, collate, Boolean
 from passlib.hash import pbkdf2_sha256
 
 Base = declarative_base()
@@ -15,6 +15,7 @@ class Account(Base):
 	last_logged_in = Column(DateTime, default=func.now())
 	language = Column(Unicode, nullable=False, default='en')
 	encoding = Column(Unicode, nullable=False, default='utf-8')
+	is_admin = Column(Boolean, nullable=False, default=False)
 	decks = relationship('Deck')
 
 	def set_password(self, password):

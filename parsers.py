@@ -113,6 +113,7 @@ class LoginParser(gsb.Parser):
 		connection.account = account
 		connection.nickname = account.name
 		connection.parser = parser
+		connection.is_admin = account.is_admin
 		account.last_logged_in = func.now()
 		connection.session.commit()
 		for pl in game.players.values():
