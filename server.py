@@ -47,6 +47,7 @@ class MyServer(gsb.Server):
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
 		caller.connection.chat = True
+		caller.connection.reply_to = ""
 		caller.connection.session = Session()
 		caller.connection._ = gettext.NullTranslations().gettext
 		caller.connection.cdb = dm.db
@@ -1770,6 +1771,37 @@ def announce(caller):
 		return
 	for pl in game.players.values():
 		pl.notify(pl._("Announcement: %s") % caller.args[0])
+
+@parser.command(args_regexp=r'(.*)')
+def tell(caller):
+	args = caller.args[0].split(None, 1)
+	if len(args) != 2:
+		caller.connection.notify(caller.connection._("Usage: tell <player> <message>"))
+		return
+	player = args[0]
+	player = get_player(player)
+	if not player:
+		caller.connection.notify(caller.connection._("That player is not online."))
+		return
+	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
+	player.notify(player._("%s tells you: %s") % (caller.connection.nickname, args[1]))
+	player.reply_to = caller.connection.nickname
+
+@parser.command(args_regexp=r'(.*)')
+def reply(caller):
+	if not caller.args[0]:
+		caller.connection.notify(caller.connection._("Usage: reply <message>"))
+		return
+	if not caller.connection.reply_to:
+		caller.connection.notify(caller.connection._("No one to reply to."))
+		return
+	player = get_player(caller.connection.reply_to)
+	if not player:
+		caller.connection.notify(caller.connection._("That player is not online."))
+		return
+	caller.connection.notify(caller.connection._("You reply to %s: %s") % (player.nickname, caller.args[0]))
+	player.notify(player._("%s replies: %s") % (caller.connection.nickname, caller.args[0]))
+	player.reply_to = caller.connection.nickname
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
