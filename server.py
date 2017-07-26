@@ -406,7 +406,7 @@ class MyDuel(dm.Duel):
 				pl.notify(pl._("Duplicate values not allowed."))
 				return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
 			if len(values) != count:
-				pl.notify(pl._("Please enter %d values."))
+				pl.notify(pl._("Please enter %d values.") % count)
 				return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
 			if any(value not in specs for value in values):
 				pl.notify(pl._("Invalid cardspec. Try again."))
