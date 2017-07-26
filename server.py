@@ -1036,30 +1036,29 @@ class MyDuel(dm.Duel):
 		pl = self.players[player]
 		must_select_value = sum(c.param for c in must_select)
 		def prompt():
-			pl.notify("Select cards with a total value of at least %d, seperated by spaces." % (val - must_select_value))
+			if mode == 0:
+				pl.notify(pl._("Select cards with a total value of %d, seperated by spaces.") % (val - must_select_value))
+			else:
+				pl.notify(pl._("Select cards with a total value of at least %d, seperated by spaces.") % (val - must_select_value))
 			for c in must_select:
-				pl.notify("%s must be selected, automatically selected." % c.name)
+				pl.notify("%s must be selected, automatically selected." % c.get_name(pl))
 			for i, card in enumerate(select_some):
-				pl.notify("%d: %s (%d)" % (i+1, card.name, card.param))
+				pl.notify("%d: %s (%d)" % (i+1, card.get_name(pl), card.param))
 			return pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
 		def error(t):
 			pl.notify(t)
 			return prompt()
 		def r(caller):
-			text = caller.text.split()
-			ints = []
-			try:
-				for i in text:
-					ints.append(int(i) - 1)
-			except ValueError:
-				return error("Invalid entry.")
+			ints = [i - 1 for i in self.parse_ints(caller.text)]
 			if len(ints) != len(set(ints)):
 				return error("Duplicate values not allowed.")
 			if any(i for i in ints if i < 1 or i > len(select_some) - 1):
-				return error("Value out of range.")
+				return error(pl._("Value out of range."))
 			s = sum(select_some[i].param for i in ints)
 			if s < val - must_select_value:
-				return error("%d is less than %d." % (s, val - must_select_value))
+				return error(pl._("%d is less than %d.") % (s, val - must_select_value))
+			if mode == 0 and s != val:
+				return error(pl._("%d does not equal %d.") % (s, val))
 			lst = [len(ints) + len(must_select)]
 			lst.extend([0] * len(must_select))
 			lst.extend(ints)
