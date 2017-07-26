@@ -221,6 +221,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('become_target', self.become_target)
 		self.cm.register_callback('sort_card', self.sort_card)
 		self.cm.register_callback('field_disabled', self.field_disabled)
+		self.cm.register_callback('toss_coin', self.toss_coin)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -1188,6 +1189,13 @@ class MyDuel(dm.Duel):
 				opspecs.append('o'+spec)
 		self.players[0].notify(self.players[0]._("Field locations %s are disabled.") % ", ".join(specs))
 		self.players[1].notify(self.players[1]._("Field locations %s are disabled.") % ", ".join(opspecs))
+
+	def toss_coin(self, player, options):
+		for pl in (self.players[player], self.players[1 - player]):
+			s = strings[pl.language]['system'][1623] + " "
+			options = [strings[pl.language]['system'][60] if opt else strings[pl.language]['system'][61] for opt in options]
+			s += ", ".join(options)
+			pl.notify(s)
 
 	def end(self):
 		super(MyDuel, self).end()

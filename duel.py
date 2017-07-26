@@ -204,6 +204,7 @@ class Duel:
 		22: self.msg_select_counter,
 		83: self.msg_become_target,
 		25: self.msg_sort_card,
+		130: self.msg_toss_coin,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -674,6 +675,14 @@ class Duel:
 			card.sequence = self.read_u8(data)
 			cards.append(card)
 		self.cm.call_callbacks('sort_card', player, cards)
+		return b''
+
+	def msg_toss_coin(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		count = self.read_u8(data)
+		options = [self.read_u8(data) for i in range(count)]
+		self.cm.call_callbacks('toss_coin', player, options)
 		return b''
 
 	def read_u8(self, buf):
