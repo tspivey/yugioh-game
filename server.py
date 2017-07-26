@@ -1763,6 +1763,14 @@ def restart_websockets(caller):
 	d.addCallback(stopped)
 	d.addErrback(log.err)
 
+@parser.command(args_regexp=r'(.*)', allowed=lambda caller: caller.connection.is_admin)
+def announce(caller):
+	if not caller.args[0]:
+		caller.connection.notify("Announce what?")
+		return
+	for pl in game.players.values():
+		pl.notify(pl._("Announcement: %s") % caller.args[0])
+
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
