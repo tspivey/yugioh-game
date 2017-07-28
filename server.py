@@ -223,6 +223,8 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('sort_card', self.sort_card)
 		self.cm.register_callback('field_disabled', self.field_disabled)
 		self.cm.register_callback('toss_coin', self.toss_coin)
+		self.cm.register_callback('confirm_cards', self.confirm_cards)
+		self.cm.register_callback('chain_solved', self.chain_solved)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -733,7 +735,10 @@ class MyDuel(dm.Duel):
 
 	def cardlist_info_for_player(self, card, con):
 		spec = self.card_to_spec(con.duel_player, card)
-		if card.controller != con.duel_player and card.position in (0x8, 0xa):
+		if card.location == dm.LOCATION_DECK:
+			spec = con._("deck")
+		cls = (card.controller, card.location, card.sequence)
+		if card.controller != con.duel_player and card.position in (0x8, 0xa) and cls not in self.revealed:
 			position = card.get_position(con)
 			return (con._("{position} card ({spec})")
 				.format(position=position, spec=spec))
@@ -1196,6 +1201,18 @@ class MyDuel(dm.Duel):
 			options = [strings[pl.language]['system'][60] if opt else strings[pl.language]['system'][61] for opt in options]
 			s += ", ".join(options)
 			pl.notify(s)
+
+	def confirm_cards(self, player, cards):
+		pl = self.players[player]
+		op = self.players[1 - player]
+		pl.notify(pl._("{player} shows you {count} cards.")
+			.format(player=op.nickname, count=len(cards)))
+		for i, c in enumerate(cards):
+			pl.notify("%s: %s" % (i + 1, c.get_name(pl)))
+			self.revealed[(c.controller, c.location, c.sequence)] = True
+
+	def chain_solved(self, count):
+		self.revealed = {}
 
 	def end(self):
 		super(MyDuel, self).end()

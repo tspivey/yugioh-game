@@ -205,9 +205,12 @@ class Duel:
 		83: self.msg_become_target,
 		25: self.msg_sort_card,
 		130: self.msg_toss_coin,
+		31: self.msg_confirm_cards,
+		73: self.msg_chain_solved,
 		}
 		self.state = ''
 		self.cards = [None, None]
+		self.revealed = {}
 
 	def load_deck(self, player, cards, shuffle=True):
 		self.cards[player] = cards[:]
@@ -683,6 +686,27 @@ class Duel:
 		count = self.read_u8(data)
 		options = [self.read_u8(data) for i in range(count)]
 		self.cm.call_callbacks('toss_coin', player, options)
+		return b''
+
+	def msg_confirm_cards(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		size = self.read_u8(data)
+		cards = []
+		for i in range(size):
+			code = self.read_u32(data)
+			c = self.read_u8(data)
+			l = self.read_u8(data)
+			s = self.read_u8(data)
+			card = self.get_card(c, l, s)
+			cards.append(card)
+		self.cm.call_callbacks('confirm_cards', player, cards)
+		return b''
+
+	def msg_chain_solved(self, data):
+		data = io.BytesIO(data[1:])
+		count = self.read_u8(data)
+		self.cm.call_callbacks('chain_solved', count)
 		return b''
 
 	def read_u8(self, buf):
