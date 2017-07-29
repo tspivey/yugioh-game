@@ -208,6 +208,7 @@ class Duel:
 		31: self.msg_confirm_cards,
 		73: self.msg_chain_solved,
 		93: self.msg_equip,
+		94: self.msg_lpupdate,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -719,6 +720,13 @@ class Duel:
 		u = self.unpack_location(target)
 		target = self.get_card(u[0], u[1], u[2])
 		self.cm.call_callbacks('equip', card, target)
+		return b''
+
+	def msg_lpupdate(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		lp = self.read_u32(data)
+		self.cm.call_callbacks('lpupdate', player, lp)
 		return b''
 
 	def read_u8(self, buf):
