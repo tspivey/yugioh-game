@@ -207,6 +207,7 @@ class Duel:
 		130: self.msg_toss_coin,
 		31: self.msg_confirm_cards,
 		73: self.msg_chain_solved,
+		93: self.msg_equip,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -709,6 +710,17 @@ class Duel:
 		self.cm.call_callbacks('chain_solved', count)
 		return b''
 
+	def msg_equip(self, data):
+		data = io.BytesIO(data[1:])
+		loc = self.read_u32(data)
+		target = self.read_u32(data)
+		u = self.unpack_location(loc)
+		card = self.get_card(u[0], u[1], u[2])
+		u = self.unpack_location(target)
+		target = self.get_card(u[0], u[1], u[2])
+		self.cm.call_callbacks('equip', card, target)
+		return b''
+
 	def read_u8(self, buf):
 		return struct.unpack('b', buf.read(1))[0]
 
@@ -763,6 +775,13 @@ class Duel:
 		card.attack = self.read_u32(buf)
 		card.defense = self.read_u32(buf)
 		return card
+
+	def unpack_location(self, loc):
+		controller = loc & 0xff
+		location = (loc >> 8) & 0xff
+		sequence = (loc >> 16) & 0xff
+		position = (loc >> 24) & 0xff
+		return (controller, location, sequence, position)
 
 class TestDuel(Duel):
 	def __init__(self):

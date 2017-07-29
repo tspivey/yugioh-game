@@ -225,6 +225,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('toss_coin', self.toss_coin)
 		self.cm.register_callback('confirm_cards', self.confirm_cards)
 		self.cm.register_callback('chain_solved', self.chain_solved)
+		self.cm.register_callback('equip', self.equip)
 		self.cm.register_callback('debug', self.debug)
 		self.debug_mode = False
 		self.players = [None, None]
@@ -1213,6 +1214,13 @@ class MyDuel(dm.Duel):
 
 	def chain_solved(self, count):
 		self.revealed = {}
+
+	def equip(self, card, target):
+		for pl in self.players:
+			c = self.cardlist_info_for_player(card, pl)
+			t = self.cardlist_info_for_player(target, pl)
+			pl.notify(pl._("{card} equipped to {target}.")
+				.format(card=c, target=t))
 
 	def end(self):
 		super(MyDuel, self).end()
