@@ -1062,7 +1062,7 @@ class MyDuel(dm.Duel):
 			for c in must_select:
 				pl.notify("%s must be selected, automatically selected." % c.get_name(pl))
 			for i, card in enumerate(select_some):
-				pl.notify("%d: %s (%d)" % (i+1, card.get_name(pl), card.param))
+				pl.notify("%d: %s (%d)" % (i+1, card.get_name(pl), card.param & 0xffff))
 			return pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
 		def error(t):
 			pl.notify(t)
@@ -1073,11 +1073,10 @@ class MyDuel(dm.Duel):
 				return error("Duplicate values not allowed.")
 			if any(i for i in ints if i < 1 or i > len(select_some) - 1):
 				return error(pl._("Value out of range."))
-			s = sum(select_some[i].param for i in ints)
-			if s < val - must_select_value:
-				return error(pl._("%d is less than %d.") % (s, val - must_select_value))
-			if mode == 0 and s + must_select_value != val:
-				return error(pl._("%d does not equal %d.") % (s, val))
+			selected = [select_some[i] for i in ints]
+			s = sum(select_some[i].param & 0xffff  for i in ints)
+			if mode == 0 and not check_sum(selected, val - must_select_value):
+				return error(pl._("Selected value does not equal %d.") % (val,))
 			lst = [len(ints) + len(must_select)]
 			lst.extend([0] * len(must_select))
 			lst.extend(ints)
@@ -1262,6 +1261,17 @@ class MyDuel(dm.Duel):
 		s = json.dumps(kwargs)
 		self.debug_fp.write(s+'\n')
 		self.debug_fp.flush()
+
+def check_sum(cards, acc):
+	if acc < 0:
+		return False
+	if not cards:
+		return acc == 0
+	l = cards[0].param
+	l1 = l & 0xffff
+	l2 = l >> 16
+	nc = cards[1:]
+	return check_sum(nc, acc - l1) or check_sum(nc, acc - l2)
 
 class DuelReader(Reader):
 	def handle_line(self, con, line):
