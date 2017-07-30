@@ -119,8 +119,11 @@ class LoginParser(gsb.Parser):
 		for pl in game.players.values():
 			pl.notify(pl._("%s logged in.") % connection.nickname)
 		game.players[connection.nickname.lower()] = connection
-		if os.path.exists("motd.txt"):
-			with open('motd.txt', 'r') as fp:
+		motd_file = os.path.join('locale', connection.language, 'motd.txt')
+		if not os.path.exists(motd_file):
+			motd_file = os.path.join('locale', 'en', 'motd.txt')
+		if os.path.exists(motd_file):
+			with open(motd_file, 'r') as fp:
 				connection.notify(fp.read())
 
 class YesOrNo(gsb.Parser):
