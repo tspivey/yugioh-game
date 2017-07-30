@@ -1076,7 +1076,7 @@ class MyDuel(dm.Duel):
 			s = sum(select_some[i].param for i in ints)
 			if s < val - must_select_value:
 				return error(pl._("%d is less than %d.") % (s, val - must_select_value))
-			if mode == 0 and s != val:
+			if mode == 0 and s + must_select_value != val:
 				return error(pl._("%d does not equal %d.") % (s, val))
 			lst = [len(ints) + len(must_select)]
 			lst.extend([0] * len(must_select))
