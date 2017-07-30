@@ -946,7 +946,7 @@ class MyDuel(dm.Duel):
 			self.set_responsei(0)
 			reactor.callLater(0, procduel, self)
 		spec = self.card_to_spec(player, card)
-		question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.name, spec=spec)
+		question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.get_name(pl), spec=spec)
 		pl.notify(YesOrNo, question, yes, no=no, restore_parser=old_parser)
 
 	def win(self, player, reason):
