@@ -1333,6 +1333,8 @@ def deck(caller):
 		deck_clear(caller)
 	elif cmd == 'delete':
 		deck_delete(caller)
+	elif cmd == 'rename':
+		deck_rename(caller)
 	elif cmd == 'import':
 		deck_import(caller)
 	elif cmd == 'new':
@@ -1398,6 +1400,35 @@ def deck_delete(caller):
 	session.delete(deck)
 	session.commit()
 	caller.connection.notify("Deck deleted.")
+
+def deck_rename(caller):
+	if not caller.args or '=' not in caller.args[0]:
+		caller.connection.notify(caller.connection._("Usage: deck rename <old>=<new>"))
+		return
+	args = caller.args[0].strip().split('=', 1)
+	name = args[0].strip()
+	dest = args[1].strip()
+	if not name or not dest:
+		caller.connection.notify(caller.connection._("Usage: deck rename <old>=<new>"))
+		return
+	if '=' in dest:
+		caller.connection.notify(caller.connection._("Deck names may not contain =."))
+		return
+	account = caller.connection.account
+	session = caller.connection.session
+	deck = models.Deck.find(session, account, name)
+	if not deck:
+		caller.connection.notify(caller.connection._("Deck not found."))
+		session.commit()
+		return
+	dest_deck = models.Deck.find(session, account, dest)
+	if dest_deck:
+		caller.connection.notify(caller.connection._("Destination deck already exists"))
+		session.commit()
+		return
+	deck.name = dest
+	session.commit()
+	caller.connection.notify(caller.connection._("Deck renamed."))
 
 def deck_edit(caller):
 	con = caller.connection
