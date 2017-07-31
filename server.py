@@ -809,7 +809,7 @@ class MyDuel(dm.Duel):
 	def show_score(self, con):
 		player = con.duel_player
 		duel = con.duel
-		con.notify("Your LP: %d Opponent LP: %d" % (duel.lp[player], duel.lp[1 - player]))
+		con.notify(con._("Your LP: %d Opponent LP: %d") % (duel.lp[player], duel.lp[1 - player]))
 		deck = duel.get_cards_in_location(player, dm.LOCATION_DECK)
 		odeck = duel.get_cards_in_location(1 - player, dm.LOCATION_DECK)
 		grave = duel.get_cards_in_location(player, dm.LOCATION_GRAVE)
@@ -818,10 +818,10 @@ class MyDuel(dm.Duel):
 		ohand = duel.get_cards_in_location(1 - player, dm.LOCATION_HAND)
 		removed = duel.get_cards_in_location(player, dm.LOCATION_REMOVED)
 		oremoved = duel.get_cards_in_location(1 - player, dm.LOCATION_REMOVED)
-		con.notify("Hand: You: %d Opponent: %d" % (len(hand), len(ohand)))
-		con.notify("Deck: You: %d Opponent: %d" % (len(deck), len(odeck)))
-		con.notify("Grave: You: %d Opponent: %d" % (len(grave), len(ograve)))
-		con.notify("Removed: You: %d Opponent: %d" % (len(removed), len(oremoved)))
+		con.notify(con._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
+		con.notify(con._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
+		con.notify(con._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
+		con.notify(con._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
 
 	def move(self, code, location, newloc, reason):
 		card = dm.Card.from_code(code)
@@ -1629,40 +1629,40 @@ def chat(caller):
 		if caller.connection.chat:
 			caller.connection.notify("Chat on.")
 		else:
-			caller.connection.notify("Chat off.")
+			caller.connection.notify(caller.connection._("Chat off."))
 		return
 	if not caller.connection.chat:
 		caller.connection.chat = True
-		caller.connection.notify("Chat on.")
+		caller.connection.notify(caller.connection._("Chat on."))
 	for pl in game.players.values():
 		if pl.chat:
-			pl.notify("%s chats: %s" % (caller.connection.nickname, caller.args[0]))
+			pl.notify(pl._("%s chats: %s") % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=["say"], args_regexp=r'(.*)')
 def say(caller):
 	text = caller.args[0]
 	if not text:
-		caller.connection.notify("Say what?")
+		caller.connection.notify(caller.connection._("Say what?"))
 		return
 	if not caller.connection.duel:
-		caller.connection.notify("Not in a duel.")
+		caller.connection.notify(caller.connection._("Not in a duel."))
 		return
 	for pl in caller.connection.duel.players:
-		pl.notify("%s says: %s" % (caller.connection.nickname, caller.args[0]))
+		pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=['who'])
 def who(caller):
-	caller.connection.notify("Online players:")
+	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in game.players.values():
 		s = pl.nickname
 		if pl.duel:
-			s += ' (dueling)'
+			s += ' ' + caller.connection._("(dueling)")
 		caller.connection.notify(s)
 
 @duel_parser.command(names=['sc', 'score'])
 def score(caller):
 	if not caller.connection.duel:
-		caller.connection.notify("Not in a duel.")
+		caller.connection.notify(caller.connection._("Not in a duel."))
 		return
 	caller.connection.duel.show_score(caller.connection)
 
