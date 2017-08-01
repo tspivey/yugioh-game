@@ -330,7 +330,9 @@ class MyDuel(dm.Duel):
 	def act_on_card(self, caller, card):
 		pl = self.players[self.tp]
 		name = card.get_name(pl)
-		def prompt():
+		def prompt(menu=True):
+			if not menu:
+				return pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
 			pl.notify(name)
 			if card in self.summonable:
 				pl.notify(pl._("s: Summon this card in face-up attack position."))
@@ -366,8 +368,7 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.idle_activate.index(card) + 1 << 16) + 5)
 			elif caller.text == 'i':
 				self.show_info(card, pl)
-				prompt()
-				return
+				return prompt(False)
 			elif caller.text == 'z':
 				reactor.callLater(0, self.idle_action, pl)
 				return
