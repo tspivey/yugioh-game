@@ -136,6 +136,8 @@ class YesOrNo(gsb.Parser):
 		super().__init__(*args, **kwargs)
 
 	def on_attach(self, connection, old_parser):
+		for key in duel_parser.commands.keys():
+			self.commands[key] = duel_parser.commands[key]
 		connection.notify(self.question)
 
 	def huh(self, caller):
