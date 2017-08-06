@@ -32,6 +32,7 @@ __ = lambda s: s
 all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
 strings = {}
+lflist = {}
 
 engine = create_engine('sqlite:///game.db')
 models.Base.metadata.bind = engine
@@ -1350,6 +1351,8 @@ def deck(caller):
 		deck_import(caller)
 	elif cmd == 'new':
 		deck_new(caller)
+	elif cmd == 'check':
+		deck_check(caller)
 	else:
 		caller.connection.notify("Invalid deck command.")
 
@@ -1618,6 +1621,28 @@ def deck_new(caller):
 	deck.content = json.dumps({'cards': []})
 	session.commit()
 	caller.connection.notify("Deck created.")
+
+def deck_check(caller):
+	con = caller.connection
+	if not caller.args:
+		caller.connection.notify(caller.connection._("Your deck can be checked against the following lists:"))
+		for k in lflist.keys():
+			caller.connection.notify(k)
+		return
+	section = caller.args[0]
+	if section not in lflist:
+		caller.connection.notify(caller.connection._("Invalid entry."))
+		return
+	codes = set(caller.connection.deck['cards'])
+	errors = 0
+	for code in codes:
+		count = con.deck['cards'].count(code)
+		if code not in lflist[section] or count <= lflist[section][code]:
+			continue
+		card = dm.Card.from_code(code)
+		con.notify(con._("%s: limit %d, found %d.") % (card.get_name(con), lflist[section][code], count))
+		errors += 1
+	con.notify(con._("Check completed with %d errors.") % errors)
 
 def get_player(name):
 	return game.players.get(name.lower())
@@ -1892,6 +1917,7 @@ for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
 
 def main():
+	global lflist
 	dm.Card = CustomCard
 	if os.path.exists('locale/de/cards.cdb'):
 		game.german_db = sqlite3.connect('locale/de/cards.cdb')
@@ -1901,6 +1927,7 @@ def main():
 		game.spanish_db = sqlite3.connect('locale/es/cards.cdb')
 	for i in ('en', 'de', 'ja', 'es'):
 		strings[i] = i18n.parse_strings(os.path.join('locale', i, 'strings.conf'))
+	lflist = parse_lflist('lflist.conf')
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
 	parser.add_argument('-w', '--websocket-port', type=int)
@@ -1926,6 +1953,23 @@ def start_websocket_server():
 		game.websocket_server = reactor.listenSSL(game.args.websocket_port, factory, context_factory)
 	else:
 		game.websocket_server = reactor.listenTCP(game.args.websocket_port, factory)
+
+def parse_lflist(filename):
+	lst = collections.OrderedDict()
+	with open(filename, 'r', encoding='utf-8') as fp:
+		for line in fp:
+			line = line.rstrip('\n')
+			if not line or line.startswith('#'):
+				continue
+			elif line.startswith('!'):
+				section = line[1:]
+				lst[section] = lst.get(section, {})
+			else:
+				code, num_allowed, *extra = line.split(' ', 2)
+				code = int(code)
+				num_allowed = int(num_allowed)
+				lst[section][code] = num_allowed
+	return lst
 
 if __name__ == '__main__':
 	main()
