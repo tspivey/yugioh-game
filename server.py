@@ -14,6 +14,7 @@ import codecs
 import gsb
 from gsb.intercept import Menu, Reader
 from parsers import YesOrNo
+import natsort
 from twisted.internet import reactor
 from twisted.internet import ssl
 from twisted.python import log
@@ -1626,7 +1627,7 @@ def deck_check(caller):
 	con = caller.connection
 	if not caller.args:
 		caller.connection.notify(caller.connection._("Your deck can be checked against the following lists:"))
-		for k in lflist.keys():
+		for k in natsort.natsorted(lflist.keys(), reverse=True):
 			caller.connection.notify(k)
 		return
 	section = caller.args[0]
