@@ -1073,11 +1073,13 @@ class MyDuel(dm.Duel):
 		def r(caller):
 			ints = [i - 1 for i in self.parse_ints(caller.text)]
 			if len(ints) != len(set(ints)):
-				return error("Duplicate values not allowed.")
+				return error(pl._("Duplicate values not allowed."))
 			if any(i for i in ints if i < 1 or i > len(select_some) - 1):
 				return error(pl._("Value out of range."))
 			selected = [select_some[i] for i in ints]
-			s = sum(select_some[i].param & 0xffff  for i in ints)
+			s = [select_some[i].param & 0xffff  for i in ints]
+			if mode == 1 and (sum(s) < val or sum(s) - min(s) >= val):
+				return error(pl._("Levels out of range."))
 			if mode == 0 and not check_sum(selected, val - must_select_value):
 				return error(pl._("Selected value does not equal %d.") % (val,))
 			lst = [len(ints) + len(must_select)]
