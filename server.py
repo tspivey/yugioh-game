@@ -875,7 +875,7 @@ class MyDuel(dm.Duel):
 			pl.notify(pl._("You tribute {spec} ({name}).")
 				.format(spec=plspec, name=name))
 			for op in [op, self.watchers]:
-				opspec = self.card_to_spec(w.duel_player, card)
+				opspec = self.card_to_spec(op.duel_player, card)
 				if card.position in (0x8, 0xa):
 					name = op._("%s card") % card.get_position(op)
 				else:
