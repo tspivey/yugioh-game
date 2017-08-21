@@ -205,6 +205,7 @@ class Duel:
 		83: self.msg_become_target,
 		25: self.msg_sort_card,
 		130: self.msg_toss_coin,
+		131: partial(self.msg_toss_coin, dice=True),
 		31: self.msg_confirm_cards,
 		73: self.msg_chain_solved,
 		93: self.msg_equip,
@@ -682,12 +683,15 @@ class Duel:
 		self.cm.call_callbacks('sort_card', player, cards)
 		return b''
 
-	def msg_toss_coin(self, data):
+	def msg_toss_coin(self, data, dice=False):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		count = self.read_u8(data)
 		options = [self.read_u8(data) for i in range(count)]
-		self.cm.call_callbacks('toss_coin', player, options)
+		if dice:
+			self.cm.call_callbacks('toss_dice', player, options)
+		else:
+			self.cm.call_callbacks('toss_coin', player, options)
 		return b''
 
 	def msg_confirm_cards(self, data):

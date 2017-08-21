@@ -231,6 +231,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('sort_card', self.sort_card)
 		self.cm.register_callback('field_disabled', self.field_disabled)
 		self.cm.register_callback('toss_coin', self.toss_coin)
+		self.cm.register_callback('toss_dice', self.toss_dice)
 		self.cm.register_callback('confirm_cards', self.confirm_cards)
 		self.cm.register_callback('chain_solved', self.chain_solved)
 		self.cm.register_callback('equip', self.equip)
@@ -1269,6 +1270,12 @@ class MyDuel(dm.Duel):
 		for pl in (self.players[player], self.players[1 - player, self.watchers]):
 			s = strings[pl.language]['system'][1623] + " "
 			options = [strings[pl.language]['system'][60] if opt else strings[pl.language]['system'][61] for opt in options]
+			s += ", ".join(options)
+			pl.notify(s)
+
+	def toss_dice(self, player, options):
+		for pl in (self.players[player], self.players[1 - player, self.watchers]):
+			s = strings[pl.language]['system'][1624] + " "
 			s += ", ".join(options)
 			pl.notify(s)
 
