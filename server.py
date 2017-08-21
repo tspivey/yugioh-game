@@ -1981,6 +1981,15 @@ def soundpack_on(caller):
 def watch(caller):
 	con = caller.connection
 	nick = caller.args[0]
+	if nick == 'stop':
+		if not con.watching:
+			con.notify(con._("You aren't watching a duel."))
+			return
+		con.duel.watchers.remove(con)
+		con.duel = None
+		con.watching = False
+		con.notify(con._("Watching stopped."))
+		return
 	player = get_player(nick)
 	if con.duel:
 		con.notify(con._("You are already in a duel."))
