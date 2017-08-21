@@ -1266,7 +1266,7 @@ class MyDuel(dm.Duel):
 		self.players[1].notify(self.players[1]._("Field locations %s are disabled.") % ", ".join(opspecs))
 
 	def toss_coin(self, player, options):
-		for pl in (self.players[player], self.players[1 - player]):
+		for pl in (self.players[player], self.players[1 - player, self.watchers]):
 			s = strings[pl.language]['system'][1623] + " "
 			options = [strings[pl.language]['system'][60] if opt else strings[pl.language]['system'][61] for opt in options]
 			s += ", ".join(options)
