@@ -1742,7 +1742,9 @@ def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in game.players.values():
 		s = pl.nickname
-		if pl.duel:
+		if pl.watching:
+			s += ' ' + caller.connection._("(watching)")
+		elif pl.duel:
 			s += ' ' + caller.connection._("(dueling)")
 		caller.connection.notify(s)
 
