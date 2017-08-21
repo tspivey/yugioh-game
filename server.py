@@ -65,6 +65,9 @@ class MyServer(gsb.Server):
 		del game.players[con.nickname.lower()]
 		for pl in game.players.values():
 			pl.notify(pl._("%s logged out.") % con.nickname)
+		if con.watching:
+			con.duel.watchers.remove(con)
+			con.duel = None
 		if con.duel:
 			con.duel.notify_all("Your opponent disconnected, the duel is over.")
 			con.duel.end()
