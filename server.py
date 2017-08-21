@@ -1303,6 +1303,7 @@ class MyDuel(dm.Duel):
 			pl.duel = None
 			pl.intercept = None
 			pl.parser = parser
+			pl.watching = False
 
 	def start_debug(self):
 		self.debug_mode = True
