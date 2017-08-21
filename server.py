@@ -55,6 +55,7 @@ class MyServer(gsb.Server):
 		caller.connection.cdb = dm.db
 		caller.connection.language = 'en'
 		caller.connection.web = False
+		caller.connection.soundpack = False
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -903,6 +904,17 @@ class MyDuel(dm.Duel):
 		o = 1 - c
 		n = self.players[c].nickname
 		self.chaining_player = c
+		if card.type & 0x2:
+			if self.players[c].soundpack:
+				self.players[c].notify("### activate_spell")
+			if self.players[o].soundpack:
+				self.players[o].notify("### activate_spell")
+		elif card.type & 0x4:
+			if self.players[c].soundpack:
+				self.players[c].notify("### activate_trap")
+			if self.players[o].soundpack:
+				self.players[o].notify("### activate_trap")
+
 		self.players[c].notify(self.players[c]._("Activating %s") % card.get_name(self.players[c]))
 		self.players[o].notify(self.players[o]._("%s activating %s") % (n, card.get_name(self.players[o])))
 
@@ -1915,6 +1927,10 @@ def reply(caller):
 	caller.connection.notify(caller.connection._("You reply to %s: %s") % (player.nickname, caller.args[0]))
 	player.notify(player._("%s replies: %s") % (caller.connection.nickname, caller.args[0]))
 	player.reply_to = caller.connection.nickname
+
+@parser.command
+def soundpack_on(caller):
+	caller.connection.soundpack = True
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
