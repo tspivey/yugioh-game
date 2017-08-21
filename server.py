@@ -56,6 +56,7 @@ class MyServer(gsb.Server):
 		caller.connection.language = 'en'
 		caller.connection.web = False
 		caller.connection.soundpack = False
+		caller.connection.watching = False
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -187,6 +188,7 @@ class MyDuel(dm.Duel):
 		self.to_ep = False
 		self.to_m2 = False
 		self.current_phase = 0
+		self.watchers = []
 		self.cm.register_callback('draw', self.draw)
 		self.cm.register_callback('phase', self.phase)
 		self.cm.register_callback('new_turn', self.new_turn)
@@ -243,6 +245,8 @@ class MyDuel(dm.Duel):
 			pl.notify("%d: %s" % (i+1, c.get_name(pl)))
 		op = self.players[1 - player]
 		op.notify(op._("Opponent drew %d cards.") % len(cards))
+		for w in self.watchers:
+			w.notify(w._("%s drew %d cards.") % (pl.nickname, len(cards)))
 
 	def phase(self, phase):
 		phases = {
@@ -258,7 +262,7 @@ class MyDuel(dm.Duel):
 			0x200: __('end phase'),
 		}
 		phase_str = phases.get(phase, str(phase))
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			pl.notify(pl._('entering %s.') % pl._(phase_str))
 		self.current_phase = phase
 
@@ -267,6 +271,8 @@ class MyDuel(dm.Duel):
 		self.players[tp].notify(self.players[tp]._("Your turn."))
 		op = self.players[1 - tp]
 		op.notify(op._("%s's turn.") % self.players[tp].nickname)
+		for w in self.watchers:
+			w.notify(w._("%s's turn.") % self.players[tp].nickname)
 
 	def idle(self, summonable, spsummon, repos, idle_mset, idle_set, idle_activate, to_bp, to_ep, cs):
 		self.state = "idle"
@@ -534,7 +540,7 @@ class MyDuel(dm.Duel):
 		else:
 			action = "Summoning"
 		nick = self.players[card.controller].nickname
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			pos = card.get_position(pl)
 			if special:
 				pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
@@ -648,27 +654,27 @@ class MyDuel(dm.Duel):
 			return
 		name = self.players[ac].nickname
 		if tc == 0 and tl == 0 and tseq == 0 and tpos == 0:
-			for pl in self.players:
+			for pl in self.players + self.watchers:
 				aspec = self.card_to_spec(pl.duel_player, acard)
 				pl.notify("%s prepares to attack with %s (%s)" % (name, aspec, acard.get_name(pl)))
 			return
 		tcard = self.get_card(tc, tl, tseq)
 		if not tcard:
 			return
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			aspec = self.card_to_spec(pl.duel_player, acard)
 			tspec = self.card_to_spec(pl.duel_player, tcard)
 			tcname = tcard.get_name(pl)
-			if tcard.controller != pl.duel_player and tcard.position in (0x8, 0xa):
+			if (tcard.controller != pl.duel_player or pl.watching) and tcard.position in (0x8, 0xa):
 				tcname = pl._("%s card") % tcard.get_position(pl)
 			pl.notify("%s prepares to attack %s (%s) with %s (%s)" % (name, tspec, tcname, aspec, acard.get_name(pl)))
 
 	def begin_damage(self):
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			pl.notify(pl._("begin damage"))
 
 	def end_damage(self):
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			pl.notify(pl._("end damage"))
 
 	def battle(self, attacker, aa, ad, bd0, tloc, da, dd, bd1):
@@ -683,7 +689,7 @@ class MyDuel(dm.Duel):
 			target = self.get_card(tc, tl, tseq)
 		else:
 			target = None
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			if target:
 				pl.notify(pl._("%s (%d/%d) attacks %s (%d/%d)") % (card.get_name(pl), aa, ad, target.get_name(pl), da, dd))
 			else:
@@ -695,6 +701,8 @@ class MyDuel(dm.Duel):
 		op = self.players[1 - player]
 		pl.notify(pl._("Your lp decreased by %d, now %d") % (amount, new_lp))
 		op.notify(op._("%s's lp decreased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
+		for pl in self.watchers:
+			pl.notify(pl._("%s's lp decreased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
 		self.lp[player] -= amount
 
 	def recover(self, player, amount):
@@ -703,6 +711,8 @@ class MyDuel(dm.Duel):
 		op = self.players[1 - player]
 		pl.notify(pl._("Your lp increased by %d, now %d") % (amount, new_lp))
 		op.notify(op._("%s's lp increased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
+		for pl in self.watchers:
+			pl.notify(pl._("%s's lp increased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
 		self.lp[player] += amount
 
 	def notify_all(self, s):
@@ -837,6 +847,9 @@ class MyDuel(dm.Duel):
 		if reason & 0x01:
 			pl.notify(pl._("Card %s (%s) destroyed.") % (plspec, card.get_name(pl)))
 			op.notify(op._("Card %s (%s) destroyed.") % (opspec, card.get_name(op)))
+			for w in self.watchers:
+				s = self.card_to_spec(op.duel_player, card)
+				w.notify(w._("Card %s (%s) destroyed.") % (s, card.get_name(w)))
 		if (newloc >> 8) & 0xff == 0x02 and reason & 0x40:
 			pl.notify(pl._("Card {spec} ({name}) returned to hand.")
 				.format(spec=plspec, name=card.get_name(pl)))
@@ -846,21 +859,31 @@ class MyDuel(dm.Duel):
 				name = card.get_name(op)
 			op.notify(op._("{plname}'s card {spec} ({name}) returned to their hand.")
 				.format(plname=pl.nickname, spec=opspec, name=name))
+			for w in self.watchers:
+				if card.position in (0x8, 0xa):
+					name = w._("Face-down card")
+				else:
+					name = card.get_name(w)
+				opspec = self.card_to_spec(w.duel_player, card)
+				w.notify(w._("{plname}'s card {spec} ({name}) returned to their hand.")
+					.format(plname=pl.nickname, spec=opspec, name=name))
 		if reason & 0x12:
 			name = card.get_name(pl)
 			pl.notify(pl._("You tribute {spec} ({name}).")
 				.format(spec=plspec, name=name))
-			if card.position in (0x8, 0xa):
-				name = op._("%s card") % card.get_position(op)
-			else:
-				name = card.get_name(op)
-			op.notify(op._("{plname} tributes {spec} ({name}).")
-				.format(plname=pl.nickname, spec=opspec, name=name))
+			for op in [op, self.watchers]:
+				opspec = self.card_to_spec(w.duel_player, card)
+				if card.position in (0x8, 0xa):
+					name = op._("%s card") % card.get_position(op)
+				else:
+					name = card.get_name(op)
+				op.notify(op._("{plname} tributes {spec} ({name}).")
+					.format(plname=pl.nickname, spec=opspec, name=name))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
 		cs = self.card_to_spec(pln, card)
-		if card.position in (0x8, 0xa) and card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE):
+		if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE)):
 			pos = card.position_name()
 			pl.notify("%s: %s card." % (cs, pos))
 			return
@@ -887,6 +910,9 @@ class MyDuel(dm.Duel):
 		op = self.players[1 - card.controller]
 		cpl.notify(cpl._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(cpl), newpos))
 		op.notify(op._("The position of card %s (%s) was changed to %s.") % (cso, card.get_name(op), newpos))
+		for w in self.watchers:
+			cs = self.card_to_spec(w.duel_player, card)
+			w.notify(w._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(w), newpos))
 
 	def set(self, card):
 		c = card.controller
@@ -898,6 +924,9 @@ class MyDuel(dm.Duel):
 		on = self.players[c].nickname
 		opl.notify(opl._("%s sets %s in %s position.") %
 		(on, self.card_to_spec(op, card), card.position_name()))
+		for pl in self.watchers:
+			pl.notify(pl._("%s sets %s in %s position.") %
+			(on, self.card_to_spec(pl, card), card.position_name()))
 
 	def chaining(self, card, tc, tl, ts, desc, cs):
 		c = card.controller
@@ -917,6 +946,14 @@ class MyDuel(dm.Duel):
 
 		self.players[c].notify(self.players[c]._("Activating %s") % card.get_name(self.players[c]))
 		self.players[o].notify(self.players[o]._("%s activating %s") % (n, card.get_name(self.players[o])))
+		for pl in self.watchers:
+			if card.type & 0x2:
+				if pl.soundpack:
+					pl.notify("### activate_spell")
+			if card.type & 0x4:
+				if pl.soundpack:
+					pl.notify("### activate_trap")
+			pl.notify(pl._("%s activating %s") % (n, card.get_name(pl)))
 
 	def select_position(self, player, card, positions):
 		pl = self.players[player]
@@ -1259,7 +1296,7 @@ class MyDuel(dm.Duel):
 
 	def end(self):
 		super(MyDuel, self).end()
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			pl.duel = None
 			pl.intercept = None
 			pl.parser = parser
@@ -1307,13 +1344,18 @@ class DuelReader(Reader):
 @duel_parser.command(names=['h', 'hand'])
 def hand(caller):
 	con = caller.connection
+	if con.watching:
+		return
 	con.duel.show_hand(con, con.duel_player)
 
 @duel_parser.command(names=['tab'])
 def tab(caller):
 	duel = caller.connection.duel
 	caller.connection.notify(caller.connection._("Your table:"))
-	duel.show_table(caller.connection, caller.connection.duel_player)
+	if caller.connection.watching:
+		duel.show_table(caller.connection, caller.connection.duel_player, True)
+	else:
+		duel.show_table(caller.connection, caller.connection.duel_player)
 
 @duel_parser.command(names=['tab2'])
 def tab2(caller):
@@ -1688,7 +1730,7 @@ def say(caller):
 	if not caller.connection.duel:
 		caller.connection.notify(caller.connection._("Not in a duel."))
 		return
-	for pl in caller.connection.duel.players:
+	for pl in caller.connection.duel.players + caller.connection.duel.watchers:
 		pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=['who'])
@@ -1931,6 +1973,27 @@ def reply(caller):
 @parser.command
 def soundpack_on(caller):
 	caller.connection.soundpack = True
+
+@parser.command(args_regexp=r'(.*)')
+def watch(caller):
+	con = caller.connection
+	nick = caller.args[0]
+	player = get_player(nick)
+	if con.duel:
+		con.notify(con._("You are already in a duel."))
+		return
+	elif not player:
+		con.notify(con._("That player is not online."))
+		return
+	if not player.duel:
+		con.notify(con._("That player is not in a duel."))
+		return
+	con.duel = player.duel
+	con.duel_player = 0
+	con.duel.watchers.append(con)
+	con.parser = duel_parser
+	con.watching = True
+	con.notify(con._("Watching duel between %s and %s.") % (con.duel.players[0].nickname, con.duel.players[1].nickname))
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
