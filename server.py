@@ -80,6 +80,14 @@ game.server = server
 def duel(caller):
 	con = caller.connection
 	nick = caller.args[0]
+	if nick == 'end':
+		if con.watching or not con.duel:
+			con.notify(con._("Not in a duel."))
+			return
+		for pl in con.duel.players + con.duel.watchers:
+			pl.notify(pl._("%s has ended the duel.") % con.nickname)
+		con.duel.end()
+		return
 	player = get_player(nick)
 	if con.duel:
 		con.notify(con._("You are already in a duel."))
@@ -1307,8 +1315,13 @@ class MyDuel(dm.Duel):
 	def end(self):
 		super(MyDuel, self).end()
 		for pl in self.players + self.watchers:
+			if pl is None:
+				continue
 			pl.duel = None
 			pl.intercept = None
+			op = pl.parser
+			if isinstance(op, DuelReader):
+				op.done = lambda caller: None
 			pl.parser = parser
 			pl.watching = False
 
