@@ -1045,6 +1045,8 @@ class MyDuel(dm.Duel):
 		loser = self.players[1 - player]
 		winner.notify(winner._("You won."))
 		loser.notify(loser._("You lost."))
+		for pl in self.watchers:
+			pl.notify(pl._("%s won.") % winner.nickname)
 		self.end()
 
 	def pay_lpcost(self, player, cost):
@@ -1352,6 +1354,8 @@ class MyDuel(dm.Duel):
 				op.done = lambda caller: None
 			pl.parser = parser
 			pl.watching = False
+		for pl in self.watchers:
+			pl.notify(pl._("Watching stopped."))
 
 	def start_debug(self):
 		self.debug_mode = True
