@@ -1307,9 +1307,12 @@ class MyDuel(dm.Duel):
 			pl.notify(s)
 
 	def toss_dice(self, player, options):
-		for pl in (self.players[player], self.players[1 - player, self.watchers]):
+		opts = [str(opt) for opt in options]
+		players = []
+		players.extend(self.players + self.watchers)
+		for pl in players:
 			s = strings[pl.language]['system'][1624] + " "
-			s += ", ".join(options)
+			s += ", ".join(opts)
 			pl.notify(s)
 
 	def confirm_cards(self, player, cards):
