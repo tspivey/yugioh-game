@@ -55,7 +55,7 @@ class LoginParser(gsb.Parser):
 	def handle_new(self, caller):
 		if not caller.text:
 			return self.prompt(caller)
-		if 3 < len(caller.text) > 15:
+		if not 3 <= len(caller.text) <= 15:
 			return self.prompt(caller, "Nicknames must be between 3 and 15 characters.")
 		nickname = caller.text.capitalize()
 		if not self.nickname_re.match(nickname):
