@@ -1356,7 +1356,7 @@ class MyDuel(dm.Duel):
 		fn = lt+"_"+self.players[0].nickname+"_"+self.players[1].nickname
 		self.debug_fp = open(os.path.join('duels', fn), 'w')
 		self.debug(event_type='start', player0=self.players[0].nickname, player1=self.players[1].nickname,
-		deck0=self.cards[0], deck1=self.cards[1])
+		deck0=self.cards[0], deck1=self.cards[1], seed=self.seed)
 
 	def debug(self, **kwargs):
 		if not self.debug_mode:

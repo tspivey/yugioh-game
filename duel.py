@@ -154,9 +154,12 @@ class Card(object):
 		return '<%s>' % self.name
 
 class Duel:
-	def __init__(self):
+	def __init__(self, seed=None):
 		self.buf = ffi.new('char[]', 4096)
-		self.duel = lib.create_duel(0)
+		if seed is None:
+			seed = random.randint(0, 0xffffffff)
+		self.seed = seed
+		self.duel = lib.create_duel(seed)
 		lib.set_player_info(self.duel, 0, 8000, 5, 1)
 		lib.set_player_info(self.duel, 1, 8000, 5, 1)
 		self.cm = callback_manager.CallbackManager()
