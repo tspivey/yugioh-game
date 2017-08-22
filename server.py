@@ -11,6 +11,7 @@ import argparse
 import gettext
 import sqlite3
 import codecs
+import weakref
 import gsb
 from gsb.intercept import Menu, Reader
 from parsers import YesOrNo
@@ -34,6 +35,7 @@ all_cards = [int(row[0]) for row in dm.db.execute("select id from datas")]
 
 strings = {}
 lflist = {}
+duels = {}
 
 engine = create_engine('sqlite:///game.db')
 models.Base.metadata.bind = engine
@@ -57,6 +59,7 @@ class MyServer(gsb.Server):
 		caller.connection.web = False
 		caller.connection.soundpack = False
 		caller.connection.watching = False
+		caller.connection.paused_parser = None
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -69,8 +72,7 @@ class MyServer(gsb.Server):
 			con.duel.watchers.remove(con)
 			con.duel = None
 		if con.duel:
-			con.duel.notify_all("Your opponent disconnected, the duel is over.")
-			con.duel.end()
+			con.duel.player_disconnected(con)
 		con.nickname = None
 
 server = MyServer(port=4000, default_parser=LoginParser())
@@ -87,6 +89,27 @@ def duel(caller):
 		for pl in con.duel.players + con.duel.watchers:
 			pl.notify(pl._("%s has ended the duel.") % con.nickname)
 		con.duel.end()
+		return
+	elif nick == 'continue':
+		d = duels.get(con.nickname)
+		if d:
+			d = d()
+		if not d:
+			con.notify(con._("No duel to continue."))
+			return
+		i = d.players.index(None)
+		d.players[i] = con
+		con.parser = d.lost_parser
+		con.duel = d
+		con.duel_player = i
+		for pl in d.players + d.watchers:
+			pl.notify(pl._("Duel continued."))
+		for pl in d.players:
+			if pl.paused_parser:
+				pl.parser = pl.paused_parser
+				pl.paused_parser = None
+		reactor.callLater(0, procduel, d)
+		del duels[con.nickname]
 		return
 	player = get_player(nick)
 	if con.duel:
@@ -1339,6 +1362,23 @@ class MyDuel(dm.Duel):
 		s = json.dumps(kwargs)
 		self.debug_fp.write(s+'\n')
 		self.debug_fp.flush()
+
+	def player_disconnected(self, con):
+		if any(pl is None for pl in self.players):
+			self.end()
+			return
+		self.players[con.duel_player] = None
+		duels[con.nickname] = weakref.ref(self)
+		self.lost_parser = con.parser
+		for pl in self.players + self.watchers:
+			if pl is None:
+				continue
+			pl.notify(pl._("%s disconnected, the duel is paused.") % con.nickname)
+		for pl in self.players:
+			if pl is None:
+				continue
+			pl.paused_parser = pl.parser
+			pl.parser = parser
 
 def check_sum(cards, acc):
 	if acc < 0:
