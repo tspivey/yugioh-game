@@ -87,6 +87,8 @@ def duel(caller):
 			con.notify(con._("Not in a duel."))
 			return
 		for pl in con.duel.players + con.duel.watchers:
+			if pl is None:
+				continue
 			pl.notify(pl._("%s has ended the duel.") % con.nickname)
 		con.duel.end()
 		return
