@@ -218,8 +218,8 @@ class CustomCard(dm.Card):
 			return con._("face down")
 
 class MyDuel(dm.Duel):
-	def __init__(self):
-		super(MyDuel, self).__init__()
+	def __init__(self, *args, **kwargs):
+		super(MyDuel, self).__init__(*args, **kwargs)
 		self.keep_processing = False
 		self.to_ep = False
 		self.to_m2 = False
@@ -1843,7 +1843,7 @@ def replay(caller):
 			if player0.duel or player1.duel:
 				caller.connection.notify("One of the players is in a duel.")
 				return
-			duel = MyDuel()
+			duel = MyDuel(line.get('seed', 0))
 			duel.load_deck(0, line['deck0'], shuffle=False)
 			duel.load_deck(1, line['deck1'], shuffle=False)
 			duel.players = [player0, player1]
