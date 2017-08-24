@@ -1220,7 +1220,7 @@ class MyDuel(dm.Duel):
 		if not card:
 			return
 		name = self.players[self.chaining_player].nickname
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			spec = self.card_to_spec(pl.duel_player, card)
 			tcname = card.get_name(pl)
 			if card.controller != pl.duel_player and card.position in (0x8, 0xa):
@@ -1334,7 +1334,7 @@ class MyDuel(dm.Duel):
 		self.revealed = {}
 
 	def equip(self, card, target):
-		for pl in self.players:
+		for pl in self.players + self.watchers:
 			c = self.cardlist_info_for_player(card, pl)
 			t = self.cardlist_info_for_player(target, pl)
 			pl.notify(pl._("{card} equipped to {target}.")
