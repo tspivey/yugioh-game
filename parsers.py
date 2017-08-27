@@ -115,6 +115,8 @@ class LoginParser(gsb.Parser):
 		connection.parser = parser
 		connection.is_admin = account.is_admin
 		account.last_logged_in = func.now()
+		for i in account.ignores:
+			connection.ignores.add(i.ignored_account.name)
 		connection.session.commit()
 		for pl in game.players.values():
 			pl.notify(pl._("%s logged in.") % connection.nickname)

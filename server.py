@@ -60,6 +60,7 @@ class MyServer(gsb.Server):
 		caller.connection.soundpack = False
 		caller.connection.watching = False
 		caller.connection.paused_parser = None
+		caller.connection.ignores = set()
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -128,6 +129,12 @@ def duel(caller):
 		return
 	elif not con.deck['cards']:
 		con.notify(con._("You can't duel without a deck. Try deck load public/starter."))
+		return
+	elif player.nickname in con.ignores:
+		con.notify(con._("You are ignoring %s.") % player.nickname)
+		return
+	elif con.nickname in player.ignores:
+		con.notify(con._("%s is ignoring you.") % player.nickname)
 		return
 	if player.requested_opponent == con.nickname:
 		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
@@ -1795,7 +1802,7 @@ def chat(caller):
 		caller.connection.chat = True
 		caller.connection.notify(caller.connection._("Chat on."))
 	for pl in game.players.values():
-		if pl.chat:
+		if pl.chat and caller.connection.nickname not in pl.ignores:
 			pl.notify(pl._("%s chats: %s") % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=["say"], args_regexp=r'(.*)')
@@ -1808,7 +1815,8 @@ def say(caller):
 		caller.connection.notify(caller.connection._("Not in a duel."))
 		return
 	for pl in caller.connection.duel.players + caller.connection.duel.watchers:
-		pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
+		if caller.connection.nickname not in pl.ignores:
+			pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
 @parser.command(names=['who'])
 def who(caller):
@@ -2029,6 +2037,9 @@ def tell(caller):
 	if not player:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
+	if caller.connection.nickname in player.ignores:
+		caller.connection.notify(caller.connection._("%s is ignoring you.") % player.nickname)
+		return
 	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
 	player.notify(player._("%s tells you: %s") % (caller.connection.nickname, args[1]))
 	player.reply_to = caller.connection.nickname
@@ -2082,6 +2093,40 @@ def watch(caller):
 	con.parser = duel_parser
 	con.watching = True
 	con.notify(con._("Watching duel between %s and %s.") % (con.duel.players[0].nickname, con.duel.players[1].nickname))
+
+@parser.command(args_regexp=r'(.*)')
+def ignore(caller):
+	con = caller.connection
+	name = caller.args[0]
+	if not name:
+		con.notify("Ignored accounts:")
+		for account in con.account.ignores:
+			con.notify(account.ignored_account.name)
+		con.session.commit()
+		return
+	name = name.capitalize()
+	if name == con.nickname:
+		con.notify(con._("You cannot ignore yourself."))
+		return
+	account = con.session.query(models.Account).filter_by(name=name).first()
+	if not account:
+		con.notify(con._("That account doesn't exist."))
+		con.session.commit()
+		return
+	ignore = con.session.query(models.Ignore).filter_by(account_id=con.account.id, ignored_account_id=account.id).first()
+	if not ignore:
+		i = models.Ignore(account_id=con.account.id, ignored_account_id=account.id)
+		con.account.ignores.append(i)
+		con.session.add(i)
+		con.notify(con._("Ignoring %s.") % name)
+		con.ignores.add(name)
+		con.session.commit()
+		return
+	else:
+		con.session.delete(ignore)
+		con.notify(con._("Stopped ignoring %s.") % name)
+		con.ignores.add(name)
+		con.session.commit()
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]

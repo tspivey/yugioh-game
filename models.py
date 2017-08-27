@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index, collate, Boolean
+from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index, collate, Boolean, UniqueConstraint
+from sqlalchemy import PrimaryKeyConstraint
 from passlib.hash import pbkdf2_sha256
 
 Base = declarative_base()
@@ -17,6 +18,7 @@ class Account(Base):
 	encoding = Column(Unicode, nullable=False, default='utf-8')
 	is_admin = Column(Boolean, nullable=False, default=False)
 	decks = relationship('Deck')
+	ignores = relationship('Ignore', cascade='all, delete-orphan', foreign_keys='Ignore.account_id')
 
 	def set_password(self, password):
 		self.password = pbkdf2_sha256.hash(password)
@@ -37,3 +39,12 @@ class Deck(Base):
 	@staticmethod
 	def find(session, account, name):
 		return session.query(Deck).filter_by(account_id=account.id, name=name).first()
+
+class Ignore(Base):
+	__tablename__ = 'ignores'
+	account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+	ignored_account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+	ignored_account = relationship('Account', foreign_keys=[ignored_account_id])
+	__table_args__ = (
+		PrimaryKeyConstraint('account_id', 'ignored_account_id'),
+	)
