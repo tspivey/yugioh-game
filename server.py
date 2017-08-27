@@ -97,7 +97,7 @@ def duel(caller):
 		d = duels.get(con.nickname)
 		if d:
 			d = d()
-		if not d:
+		if not d or not d.started:
 			con.notify(con._("No duel to continue."))
 			return
 		i = d.players.index(None)
