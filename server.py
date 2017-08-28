@@ -930,8 +930,7 @@ class MyDuel(dm.Duel):
 		pln = pl.duel_player
 		cs = self.card_to_spec(pln, card)
 		if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE)):
-			pos = card.position_name()
-			pl.notify("%s: %s card." % (cs, pos))
+			pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
 			return
 		pl.notify(card.get_info(pl))
 
@@ -951,28 +950,27 @@ class MyDuel(dm.Duel):
 	def pos_change(self, card, prevpos):
 		cs = self.card_to_spec(card.controller, card)
 		cso = self.card_to_spec(1 - card.controller, card)
-		newpos = card.position_name()
 		cpl = self.players[card.controller]
 		op = self.players[1 - card.controller]
-		cpl.notify(cpl._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(cpl), newpos))
-		op.notify(op._("The position of card %s (%s) was changed to %s.") % (cso, card.get_name(op), newpos))
+		cpl.notify(cpl._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(cpl), card.get_position(cpl)))
+		op.notify(op._("The position of card %s (%s) was changed to %s.") % (cso, card.get_name(op), card.get_position(op)))
 		for w in self.watchers:
 			cs = self.card_to_spec(w.duel_player, card)
-			w.notify(w._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(w), newpos))
+			w.notify(w._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(w), card.get_position(w)))
 
 	def set(self, card):
 		c = card.controller
 		cpl = self.players[c]
 		opl = self.players[1 - c]
 		cpl.notify(cpl._("You set %s (%s) in %s position.") %
-		(self.card_to_spec(c, card), card.get_name(cpl), card.position_name()))
+		(self.card_to_spec(c, card), card.get_name(cpl), card.get_position(cpl)))
 		op = 1 - c
 		on = self.players[c].nickname
 		opl.notify(opl._("%s sets %s in %s position.") %
-		(on, self.card_to_spec(op, card), card.position_name()))
+		(on, self.card_to_spec(op, card), card.get_position(opl)))
 		for pl in self.watchers:
 			pl.notify(pl._("%s sets %s in %s position.") %
-			(on, self.card_to_spec(pl, card), card.position_name()))
+			(on, self.card_to_spec(pl, card), card.get_position(pl)))
 
 	def chaining(self, card, tc, tl, ts, desc, cs):
 		c = card.controller
