@@ -207,6 +207,8 @@ class CustomCard(dm.Card):
 		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
 		if self.type & 0x1:
 			lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
+		if self.type & dm.TYPE_PENDULUM:
+			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
 		lst.append(self.get_desc(pl))
 		return "\n".join(lst)
 

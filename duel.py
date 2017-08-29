@@ -26,6 +26,8 @@ QUERY_POSITION = 0x2
 QUERY_ATTACK = 0x100
 QUERY_DEFENSE = 0x200
 
+TYPE_PENDULUM = 0x1000000
+
 @ffi.def_extern()
 def card_reader_callback(code, data):
 	cd = data[0]
