@@ -398,9 +398,9 @@ class MyDuel(dm.Duel):
 			if card in self.spsummon:
 				pl.notify(pl._("c: Special summon this card."))
 			if card in self.idle_activate:
-				pl.notify(pl._("v: Idle activate this card."))
+				pl.notify(pl._("v: Activate this card."))
 			if self.idle_activate.count(card) == 2:
-				pl.notify(pl._("v2: Idle activate the second effect of this card."))
+				pl.notify(pl._("v2: Activate the second effect of this card."))
 			pl.notify(pl._("i: Show card info."))
 			pl.notify(pl._("z: back."))
 			pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
