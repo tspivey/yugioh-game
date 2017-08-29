@@ -2125,7 +2125,7 @@ def ignore(caller):
 	else:
 		con.session.delete(ignore)
 		con.notify(con._("Stopped ignoring %s.") % name)
-		con.ignores.add(name)
+		con.ignores.discard(name)
 		con.session.commit()
 
 for key in parser.commands.keys():
