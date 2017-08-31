@@ -1397,6 +1397,7 @@ class MyDuel(dm.Duel):
 			pl.watching = False
 		for pl in self.watchers:
 			pl.notify(pl._("Watching stopped."))
+		check_reboot()
 
 	def start_debug(self):
 		self.debug_mode = True
@@ -2174,6 +2175,18 @@ def announce_challenge(pl, text):
 	if not pl.challenge:
 		return
 	pl.notify("Challenge: " + text)
+
+@parser.command(allowed=lambda caller: caller.connection.is_admin)
+def reboot(caller):
+	game.rebooting = True
+	check_reboot()
+
+def check_reboot():
+	duels = [c.duel for c in game.players.values()]
+	if game.rebooting and not any(duels):
+		for pl in game.players.values():
+			pl.notify(pl._("Rebooting."))
+		reactor.callLater(0.2, reactor.stop)
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
