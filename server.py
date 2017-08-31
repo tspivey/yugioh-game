@@ -241,6 +241,7 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('select_place', self.select_place)
 		self.cm.register_callback('select_chain', self.select_chain)
 		self.cm.register_callback('summoning', self.summoning)
+		self.cm.register_callback('flipsummoning', self.flipsummoning)
 		self.cm.register_callback("select_battlecmd", self.select_battlecmd)
 		self.cm.register_callback('attack', self.attack)
 		self.cm.register_callback('begin_damage', self.begin_damage)
@@ -1354,6 +1355,14 @@ class MyDuel(dm.Duel):
 			self.recover(player, lp - self.lp[player])
 		else:
 			self.damage(player, self.lp[player] - lp)
+
+	def flipsummoning(self, card):
+		cpl = self.players[card.controller]
+		players = self.players + self.watchers
+		for pl in players:
+			spec = self.card_to_spec(pl.duel_player, card)
+			pl.notify(pl._("{player} flip summons {card} ({spec}).")
+			.format(player=cpl.nickname, card=card.get_name(pl), spec=spec))
 
 	def end(self):
 		super(MyDuel, self).end()

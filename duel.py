@@ -180,6 +180,7 @@ class Duel:
 		60: self.msg_summoning,
 		16: self.msg_select_chain,
 		61: self.msg_summoned,
+		64: self.msg_flipsummoning,
 		54: self.msg_set,
 		10: self.msg_select_battlecmd,
 		110: self.msg_attack,
@@ -736,6 +737,17 @@ class Duel:
 		player = self.read_u8(data)
 		lp = self.read_u32(data)
 		self.cm.call_callbacks('lpupdate', player, lp)
+		return b''
+
+	def msg_flipsummoning(self, data):
+		data = io.BytesIO(data[1:])
+		code = self.read_u32(data)
+		location = self.read_u32(data)
+		c = location & 0xff
+		loc = (location >> 8) & 0xff;
+		seq = (location >> 16) & 0xff
+		card = self.get_card(c, loc, seq)
+		self.cm.call_callbacks('flipsummoning', card)
 		return b''
 
 	def read_u8(self, buf):
