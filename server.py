@@ -47,7 +47,7 @@ class MyServer(gsb.Server):
 		caller.connection.deck = {'cards': []}
 		caller.connection.deck_edit_pos = 0
 		caller.connection.duel = None
-		caller.connection.requested_opponent = None
+		caller.connection.requested_opponent = (None, False)
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
 		caller.connection.chat = True
@@ -81,8 +81,15 @@ game.server = server
 
 @parser.command(names=['duel'], args_regexp=r'(.*)')
 def duel(caller):
-	con = caller.connection
+	duel2(caller)
+
+@parser.command(args_regexp=r'(.*)')
+def pd(caller):
+	duel2(caller, True)
+
+def duel2(caller, private=False):
 	nick = caller.args[0]
+	con = caller.connection
 	if nick == 'end':
 		if con.watching or not con.duel:
 			con.notify(con._("Not in a duel."))
@@ -136,13 +143,14 @@ def duel(caller):
 	elif con.nickname in player.ignores:
 		con.notify(con._("%s is ignoring you.") % player.nickname)
 		return
-	if player.requested_opponent == con.nickname:
+	if player.requested_opponent[0] == con.nickname:
 		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
 		start_duel(con, player)
-		player.requested_opponent = None
+		con.duel.private = player.requested_opponent[1]
+		player.requested_opponent = (None, False)
 	else:
 		player.notify(player._("%s wants to duel. Type duel %s to accept.") % (con.nickname, con.nickname))
-		con.requested_opponent = player.nickname
+		con.requested_opponent = (player.nickname, private)
 		con.notify(con._("Duel request sent to %s.") % player.nickname)
 
 def start_duel(*players):
@@ -234,6 +242,7 @@ class MyDuel(dm.Duel):
 		self.to_m2 = False
 		self.current_phase = 0
 		self.watchers = []
+		self.private = False
 		self.cm.register_callback('draw', self.draw)
 		self.cm.register_callback('phase', self.phase)
 		self.cm.register_callback('new_turn', self.new_turn)
@@ -2097,6 +2106,9 @@ def watch(caller):
 		return
 	if not player.duel:
 		con.notify(con._("That player is not in a duel."))
+		return
+	if player.duel.private:
+		con.notify(con._("That duel is private."))
 		return
 	con.duel = player.duel
 	con.duel_player = 0
