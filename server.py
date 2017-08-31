@@ -99,8 +99,9 @@ def duel2(caller, private=False):
 			if pl is None:
 				continue
 			pl.notify(pl._("%s has ended the duel.") % con.nickname)
-		for pl in game.players.values():
-			announce_challenge(pl, pl._("%s has cowardly submitted to %s.") % (con.nickname, con.duel.orig_nicknames[1 - con.duel_player]))
+		if not con.duel.private:
+			for pl in game.players.values():
+				announce_challenge(pl, pl._("%s has cowardly submitted to %s.") % (con.nickname, con.duel.orig_nicknames[1 - con.duel_player]))
 		con.duel.end()
 		return
 	elif nick == 'continue':
@@ -1076,8 +1077,9 @@ class MyDuel(dm.Duel):
 		loser.notify(loser._("You lost."))
 		for pl in self.watchers:
 			pl.notify(pl._("%s won.") % winner.nickname)
-		for pl in game.players.values():
-			announce_challenge(pl, pl._("%s won the duel between %s and %s.") % (winner.nickname, self.players[0].nickname, self.players[1].nickname))
+		if not self.private:
+			for pl in game.players.values():
+				announce_challenge(pl, pl._("%s won the duel between %s and %s.") % (winner.nickname, self.players[0].nickname, self.players[1].nickname))
 		self.end()
 
 	def pay_lpcost(self, player, cost):
