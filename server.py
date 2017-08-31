@@ -51,6 +51,7 @@ class MyServer(gsb.Server):
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
 		caller.connection.chat = True
+		caller.connection.challenge = True
 		caller.connection.reply_to = ""
 		caller.connection.session = Session()
 		caller.connection._ = gettext.NullTranslations().gettext
@@ -98,6 +99,8 @@ def duel2(caller, private=False):
 			if pl is None:
 				continue
 			pl.notify(pl._("%s has ended the duel.") % con.nickname)
+		for pl in game.players.values():
+			announce_challenge(pl, pl._("%s has cowardly submitted to %s.") % (con.nickname, con.duel.orig_nicknames[1 - con.duel_player]))
 		con.duel.end()
 		return
 	elif nick == 'continue':
@@ -147,6 +150,10 @@ def duel2(caller, private=False):
 		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
 		start_duel(con, player)
 		con.duel.private = player.requested_opponent[1]
+		if not con.duel.private:
+			players = con.duel.players
+			for pl in game.players.values():
+				announce_challenge(pl, pl._("The duel between %s and %s has begun!") % (players[0].nickname, players[1].nickname))
 		player.requested_opponent = (None, False)
 	else:
 		player.notify(player._("%s wants to duel. Type duel %s to accept.") % (con.nickname, con.nickname))
@@ -157,6 +164,7 @@ def start_duel(*players):
 	players = list(players)
 	random.shuffle(players)
 	duel = MyDuel()
+	duel.orig_nicknames = (players[0].nickname, players[1].nickname)
 	duel.load_deck(0, players[0].deck['cards'])
 	duel.load_deck(1, players[1].deck['cards'])
 	for i, pl in enumerate(players):
@@ -1068,6 +1076,8 @@ class MyDuel(dm.Duel):
 		loser.notify(loser._("You lost."))
 		for pl in self.watchers:
 			pl.notify(pl._("%s won.") % winner.nickname)
+		for pl in game.players.values():
+			announce_challenge(pl, pl._("%s won the duel between %s and %s.") % (winner.nickname, self.players[0].nickname, self.players[1].nickname))
 		self.end()
 
 	def pay_lpcost(self, player, cost):
@@ -2150,6 +2160,20 @@ def ignore(caller):
 		con.notify(con._("Stopped ignoring %s.") % name)
 		con.ignores.discard(name)
 		con.session.commit()
+
+@parser.command
+def challenge(caller):
+	con = caller.connection
+	con.challenge = not con.challenge
+	if con.challenge:
+		con.notify(con._("Challenge on."))
+	else:
+		con.notify(con._("Challenge off."))
+
+def announce_challenge(pl, text):
+	if not pl.challenge:
+		return
+	pl.notify("Challenge: " + text)
 
 for key in parser.commands.keys():
 	duel_parser.commands[key] = parser.commands[key]
