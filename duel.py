@@ -669,7 +669,7 @@ class Duel:
 		tseq = (target >> 16) & 0xff
 		tpos = (target >> 24) & 0xff
 		self.cm.call_callbacks('become_target', tc, tl, tseq)
-		return b''
+		return data.read()
 
 	def msg_announce_race(self, data):
 		data = io.BytesIO(data[1:])
