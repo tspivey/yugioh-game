@@ -1266,7 +1266,7 @@ class MyDuel(dm.Duel):
 		for pl in self.players + self.watchers:
 			spec = self.card_to_spec(pl.duel_player, card)
 			tcname = card.get_name(pl)
-			if card.controller != pl.duel_player and card.position in (0x8, 0xa):
+			if (pl.watching or card.controller != pl.duel_player) and card.position in (0x8, 0xa):
 				tcname = pl._("%s card") % card.get_position(pl)
 			pl.notify(pl._("%s targets %s (%s)") % (name, spec, tcname))
 
@@ -1512,7 +1512,7 @@ def removed2(caller):
 
 @duel_parser.command(names=['extra'])
 def extra(caller):
-	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_EXTRA)
+	caller.connection.duel.show_cards_in_location(caller.connection, caller.connection.duel_player, dm.LOCATION_EXTRA, caller.connection.watching)
 
 @duel_parser.command(names=['extra2'])
 def extra2(caller):
