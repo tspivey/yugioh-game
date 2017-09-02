@@ -1095,8 +1095,11 @@ class MyDuel(dm.Duel):
 
 	def pay_lpcost(self, player, cost):
 		self.lp[player] -= cost
-		self.players[player].notify("You pay %d LP. Your LP is now %d." % (cost, self.lp[player]))
-		self.players[1 - player].notify("%s pays %d LP. Their LP is now %d." % (self.players[player].nickname, cost, self.lp[player]))
+		self.players[player].notify(self.players[player]._("You pay %d LP. Your LP is now %d.") % (cost, self.lp[player]))
+		players = [self.players[1 - player]]
+		players.extend(self.watchers)
+		for pl in players:
+			pl.notify(pl._("%s pays %d LP. Their LP is now %d.") % (self.players[player].nickname, cost, self.lp[player]))
 
 	def sort_chain(self, player, cards):
 		self.set_responsei(-1)
