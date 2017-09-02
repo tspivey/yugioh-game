@@ -147,6 +147,17 @@ def duel2(caller, private=False):
 	elif con.nickname in player.ignores:
 		con.notify(con._("%s is ignoring you.") % player.nickname)
 		return
+	cards = [dm.Card.from_code(c) for c in con.deck['cards']]
+	main = 0
+	extra = 0
+	for c in cards:
+		if c.type & (dm.TYPE_FUSION | dm.TYPE_SYNCHRO | dm.TYPE_XYZ | dm.TYPE_LINK):
+			extra += 1
+		else:
+			main += 1
+	if main < 40 or main > 200:
+		con.notify(con._("Your main deck must contain between 40 and 200 cards (currently %d).") % main)
+		return
 	if player.requested_opponent[0] == con.nickname:
 		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
 		start_duel(con, player)
