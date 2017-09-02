@@ -362,7 +362,6 @@ class Duel:
 		return b''
 
 	def msg_begin_damage(self, data):
-		print("%r", data)
 		self.cm.call_callbacks('begin_damage')
 
 	def msg_end_damage(self, data):
@@ -441,7 +440,6 @@ class Duel:
 		newloc = self.read_u32(data)
 		reason = self.read_u32(data)
 		self.cm.call_callbacks('move', code, location, newloc, reason)
-		print("Move: code=%d loc=%x newloc=%x reason=%x" % (code, location, newloc, reason))
 		return b''
 
 	def msg_field_disabled(self, data):
@@ -480,7 +478,6 @@ class Duel:
 
 	def msg_summoned(self, data):
 		data = io.BytesIO(data[1:])
-		print("summoned: %r" % data.read())
 		return b''
 
 	def msg_set(self, data):
