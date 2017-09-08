@@ -1456,7 +1456,12 @@ def check_sum(cards, acc):
 	l1 = l & 0xffff
 	l2 = l >> 16
 	nc = cards[1:]
-	return check_sum(nc, acc - l1) or check_sum(nc, acc - l2)
+	res1 = check_sum(nc, acc - l1)
+	if l2 > 0:
+		res2 = check_sum(nc, acc - l2)
+	else:
+		res2 = False
+	return res1 or res2
 
 class DuelReader(Reader):
 	def handle_line(self, con, line):
