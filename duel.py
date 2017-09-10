@@ -25,6 +25,7 @@ QUERY_CODE = 1
 QUERY_POSITION = 0x2
 QUERY_ATTACK = 0x100
 QUERY_DEFENSE = 0x200
+QUERY_COUNTERS = 0x20000
 
 TYPE_FUSION = 0x40
 TYPE_SYNCHRO = 0x2000
@@ -771,7 +772,7 @@ class Duel:
 
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY_CODE | QUERY_POSITION | QUERY_ATTACK | QUERY_DEFENSE
+		flags = QUERY_CODE | QUERY_POSITION | QUERY_ATTACK | QUERY_DEFENSE | QUERY_COUNTERS
 		bl = lib.query_field_card(self.duel, player, location, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
@@ -787,6 +788,10 @@ class Duel:
 			card.set_location(position)
 			card.attack = self.read_u32(buf)
 			card.defense = self.read_u32(buf)
+			cs = self.read_u32(buf)
+			card.counters = []
+			for i in range(cs):
+				card.counters.append(self.read_u32(buf))
 			cards.append(card)
 		return cards
 

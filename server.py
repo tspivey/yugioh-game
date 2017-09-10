@@ -864,6 +864,15 @@ class MyDuel(dm.Duel):
 				s += (con._("({attack}/{defense}) level {level}")
 					.format(attack=card.attack, defense=card.defense, level=card.level))
 				s += " " + card.get_position(con)
+				counters = []
+				for c in card.counters:
+					counter_type = c & 0xffff
+					counter_val = (c >> 16) & 0xffff
+					counter_type = strings[con.language]['counter'][counter_type]
+					counter_str = "%s: %d" % (counter_type, counter_val)
+					counters.append(counter_str)
+				if counters:
+					s += " (" + ", ".join(counters) + ")"
 			con.notify(s)
 		for card in sz:
 			s = "s%d: " % (card.sequence + 1)
