@@ -1093,13 +1093,17 @@ class MyDuel(dm.Duel):
 			return
 		winner = self.players[player]
 		loser = self.players[1 - player]
-		winner.notify(winner._("You won."))
-		loser.notify(loser._("You lost."))
+		reason_str = strings[winner.language]['victory'][reason]
+		winner.notify(winner._("You won (%s).") % reason_str)
+		reason_str = strings[loser.language]['victory'][reason]
+		loser.notify(loser._("You lost (%s).") % reason_str)
 		for pl in self.watchers:
-			pl.notify(pl._("%s won.") % winner.nickname)
+			reason_str = strings[pl.language]['victory'][reason]
+			pl.notify(pl._("%s won (%s).") % (winner.nickname, reason_str))
 		if not self.private:
 			for pl in game.players.values():
-				announce_challenge(pl, pl._("%s won the duel between %s and %s.") % (winner.nickname, self.players[0].nickname, self.players[1].nickname))
+				reason_str = strings[pl.language]['victory'][reason]
+				announce_challenge(pl, pl._("%s won the duel between %s and %s (%s).") % (winner.nickname, self.players[0].nickname, self.players[1].nickname, reason_str))
 		self.end()
 
 	def pay_lpcost(self, player, cost):
