@@ -8,7 +8,7 @@ import binascii
 import callback_manager
 from functools import partial
 
-db = sqlite3.connect('cards.cdb')
+db = sqlite3.connect('locale/en/cards.cdb')
 db.row_factory = sqlite3.Row
 LOCATION_DECK = 1
 LOCATION_HAND = 2
