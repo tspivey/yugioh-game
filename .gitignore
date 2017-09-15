@@ -4,3 +4,6 @@
 _duel.cpp
 script
 expansions
+game.db
+*.mo
+*.pot
