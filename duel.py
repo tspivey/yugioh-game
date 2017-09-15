@@ -8,7 +8,6 @@ import binascii
 import callback_manager
 from functools import partial
 
-deck = [int(l.strip()) for l in open('deck.ydk')]
 db = sqlite3.connect('cards.cdb')
 db.row_factory = sqlite3.Row
 LOCATION_DECK = 1
