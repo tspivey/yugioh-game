@@ -10,8 +10,9 @@ ygopro-core and ygopro-scripts must be placed one level up from here.
 git clone https://github.com/Fluorohydride/ygopro-core
 git clone https://github.com/Fluorohydride/ygopro-scripts
 cd ygopro-core
-g++ -shared -fPIC -o ../ygo-game/libygo.so *.cpp -I/usr/include/lua5.2 -llua5.2
-cd ../ygo-game
+patch -p0 < ../yugioh-game/etc/ygopro-core.patch
+g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.2 -llua5.2 -std=c++11
+cd ../yugioh-game
 python3 duel_build.py
 ln -s ../ygopro-scripts script
 mkdir expansions
