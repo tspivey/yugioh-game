@@ -1,2 +1,8 @@
 git+https://github.com/chrisnorman7/game-server-base#egg=game-server-base
 cffi
+autobahn==17.9.2
+natsort==5.1.0
+passlib==1.7.1
+pyopenssl==17.3.0
+service-identity==17.0.0
+sqlalchemy==1.1.14
