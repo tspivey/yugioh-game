@@ -57,7 +57,7 @@ def script_reader_callback(name, lenptr):
 	fn = ffi.string(name)
 	if not os.path.exists(fn):
 		lenptr[0] = 0
-		return ffi.new('byte *', None)
+		return ffi.NULL
 	s = open(fn, 'rb').read()
 	buf = ffi.buffer(scriptbuf)
 	buf[0:len(s)] = s

@@ -15,8 +15,6 @@ g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.2 -llua5
 cd ../yugioh-game
 python3 duel_build.py
 ln -s ../ygopro-scripts script
-mkdir expansions
-ln -s ../ygopro-scripts expansions/script
 ```
 
 ## Running
