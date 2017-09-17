@@ -1886,7 +1886,7 @@ def say(caller):
 @parser.command(names=['who'])
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
-	for pl in game.players.values():
+	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
 		s = pl.nickname
 		if pl.watching:
 			s += ' ' + caller.connection._("(watching)")
