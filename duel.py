@@ -509,7 +509,7 @@ class Duel:
 		prevpos = self.read_u8(data)
 		card.position = self.read_u8(data)
 		self.cm.call_callbacks('pos_change', card, prevpos)
-		return b''
+		return data.read()
 
 	def msg_chaining(self, data):
 		data = io.BytesIO(data[1:])
