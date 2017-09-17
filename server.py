@@ -407,8 +407,6 @@ class MyDuel(dm.Duel):
 				if card.position in (0x8, 0xa):
 					pl.notify(pl._("Face-down card."))
 					return prompt()
-				pl.notify(card.get_info(pl))
-				return prompt()
 			self.act_on_card(caller, card)
 		prompt()
 
