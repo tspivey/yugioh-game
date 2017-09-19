@@ -238,6 +238,20 @@ class CustomCard(dm.Card):
 		if self.type & dm.TYPE_PENDULUM:
 			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
 		lst.append(self.get_desc(pl))
+
+		if self.type & dm.TYPE_XYZ and self.location == dm.LOCATION_MZONE:
+
+			if len(self.xyz_materials):
+
+				lst.append(pl._("attached xyz materials:"))
+
+				for i in range(len(self.xyz_materials)):
+					lst.append(str(i+1)+": "+self.xyz_materials[i].get_name(pl))
+
+			else:
+
+				lst.append(pl._("no xyz materials attached"))
+
 		return "\n".join(lst)
 
 	def get_position(self, con):
@@ -862,6 +876,9 @@ class MyDuel(dm.Duel):
 				s += (con._("({attack}/{defense}) level {level}")
 					.format(attack=card.attack, defense=card.defense, level=card.level))
 				s += " " + card.get_position(con)
+
+				if len(card.xyz_materials):
+					s += " ("+con._("xyz materials: %d")%(len(card.xyz_materials))+")"
 				counters = []
 				for c in card.counters:
 					counter_type = c & 0xffff
