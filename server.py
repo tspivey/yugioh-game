@@ -239,18 +239,23 @@ class CustomCard(dm.Card):
 			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
 		lst.append(self.get_desc(pl))
 
-		if self.type & dm.TYPE_XYZ and self.location == dm.LOCATION_MZONE:
+		try:
 
-			if len(self.xyz_materials):
+			if self.type & dm.TYPE_XYZ and self.location == dm.LOCATION_MZONE:
 
-				lst.append(pl._("attached xyz materials:"))
+				if len(self.xyz_materials):
 
-				for i in range(len(self.xyz_materials)):
-					lst.append(str(i+1)+": "+self.xyz_materials[i].get_name(pl))
+					lst.append(pl._("attached xyz materials:"))
 
-			else:
+					for i in range(len(self.xyz_materials)):
+						lst.append(str(i+1)+": "+self.xyz_materials[i].get_name(pl))
 
-				lst.append(pl._("no xyz materials attached"))
+				else:
+
+					lst.append(pl._("no xyz materials attached"))
+
+		except AttributeError:
+			pass
 
 		return "\n".join(lst)
 
