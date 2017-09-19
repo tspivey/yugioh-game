@@ -879,6 +879,11 @@ class MyDuel(dm.Duel):
 			else:
 				s += card.get_name(con) + " "
 				s += card.get_position(con)
+
+				if card.equip_target:
+
+					s += ' ' + con._('(equipped to %s)')%(self.card_to_spec(con.duel_player, card.equip_target))
+
 			con.notify(s)
 
 	def show_cards_in_location(self, con, player, location, hide_facedown=False):
