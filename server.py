@@ -147,17 +147,23 @@ def duel2(caller, private=False):
 	elif con.nickname in player.ignores:
 		con.notify(con._("%s is ignoring you.") % player.nickname)
 		return
-	cards = [dm.Card.from_code(c) for c in con.deck['cards']]
+	rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(con.deck['cards'])])))
 	main = 0
 	extra = 0
-	for c in cards:
-		if c.type & (dm.TYPE_FUSION | dm.TYPE_SYNCHRO | dm.TYPE_XYZ | dm.TYPE_LINK):
-			extra += 1
+	for row in rows:
+		if row[1]&(dm.TYPE_XYZ | dm.TYPE_SYNCHRO | dm.TYPE_FUSION | dm.TYPE_LINK):
+			extra += con.deck['cards'].count(row[0])
 		else:
-			main += 1
+			main += con.deck['cards'].count(row[0])
+
 	if main < 40 or main > 200:
 		con.notify(con._("Your main deck must contain between 40 and 200 cards (currently %d).") % main)
 		return
+
+	if extra > 15:
+		con.notify(con._("Your extra deck may not contain more than 15 cards (currently %d).")%extra)
+		return
+
 	if player.requested_opponent[0] == con.nickname:
 		player.notify(player._("Duel request accepted, dueling with %s.") % con.nickname)
 		start_duel(con, player)
@@ -1691,7 +1697,15 @@ def deck_edit(caller):
 		con.notify(con._("s: send to deck r: remove from deck l: list deck q: quit"))
 	def read():
 		info()
-		con.notify(Reader, r, prompt=con._("Command (%d cards in deck):") % len(cards), no_abort="Invalid command", restore_parser=parser)
+		rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(cards)])))
+		main = 0
+		extra = 0
+		for row in rows:
+			if row[1]&(dm.TYPE_XYZ | dm.TYPE_SYNCHRO | dm.TYPE_FUSION | dm.TYPE_LINK):
+				extra += cards.count(row[0])
+			else:
+				main += cards.count(row[0])
+		con.notify(Reader, r, prompt=con._("Command (%d cards in main deck, %d cards in extra deck):") % (main, extra), no_abort="Invalid command", restore_parser=parser)
 	def r(caller):
 		nonlocal last_search
 		code = all_cards[con.deck_edit_pos]
