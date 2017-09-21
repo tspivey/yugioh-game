@@ -181,6 +181,8 @@ class Duel:
 		2: self.msg_hint,
 		18: self.msg_select_place,
 		24: self.msg_select_place,
+		37: self.msg_reversedeck,
+		38: self.msg_decktop,
 		50: self.msg_move,
 		56: self.msg_field_disabled,
 		60: self.msg_summoning,
@@ -260,6 +262,21 @@ class Duel:
 				print("msg %d unhandled" % msg)
 				data = b''
 		return data
+
+	def msg_reversedeck(self, data):
+		for pl in self.players+self.watchers:
+			pl.notify(pl._("all decks are now reversed."))
+		return data[1:]
+
+	def msg_decktop(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		self.read_u8(data) # don't know what this number does
+		code = self.read_u32(data)
+		if code & 0x80000000:
+			code = code ^ 0x80000000 # don't know what this actually does
+		self.cm.call_callbacks('decktop', player, Card.from_code(code))
+		return data.read()
 
 	def msg_draw(self, data):
 		data = io.BytesIO(data[1:])
