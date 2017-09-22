@@ -48,12 +48,12 @@ def format_english_time(timestamp):
 	Accepts a time as a float and returns
 	a representation of that time.
 	"""
-	days, remainder = divmod(timestamp, 60*60*24)
+	days, remainder = divmod(int(timestamp), 60*60*24)
 	hours, remainder = divmod(remainder, 3600)
 	minutes, seconds = divmod(remainder, 60)
 	ret = ""
 	if days > 0:
-		ret = str(int(days)) +" "+("day" if days == 1 else "days")+" "
+		ret += str(int(days)) +" "+("day" if days == 1 else "days")+" "
 	if hours > 0:
 		ret += str(int(hours)) + " "+("hour" if hours == 1 else "hours")+" "
 	if minutes > 0:
