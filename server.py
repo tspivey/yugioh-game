@@ -2,7 +2,6 @@ import sys
 import os
 import re
 import random
-from time import time
 from functools import partial
 import json
 import datetime
@@ -42,26 +41,6 @@ engine = create_engine('sqlite:///game.db')
 models.Base.metadata.bind = engine
 Session = sessionmaker(bind=engine)
 models.Base.metadata.create_all()
-
-def format_english_time(timestamp):
-	"""
-	Accepts a time as a float and returns
-	a representation of that time.
-	"""
-	days, remainder = divmod(timestamp, 60*60*24)
-	hours, remainder = divmod(remainder, 3600)
-	minutes, seconds = divmod(remainder, 60)
-	ret = ""
-	if days > 0:
-		ret = str(int(days)) +" "+("day" if days == 1 else "days")+" "
-	if hours > 0:
-		ret += str(int(hours)) + " "+("hour" if hours == 1 else "hours")+" "
-	if minutes > 0:
-		ret += str(int(minutes)) + " "+("minute" if minutes == 1 else "minutes") + " "
-	if seconds > 0:
-		ret += str(int(seconds)) + " "+("second" if seconds == 1 else "seconds")+" "
-	ret = ret.strip()
-	return ret
 
 class MyServer(gsb.Server):
 	def on_connect(self, caller):
@@ -2007,12 +1986,6 @@ def say(caller):
 	for pl in caller.connection.duel.players + caller.connection.duel.watchers:
 		if caller.connection.nickname not in pl.ignores:
 			pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
-
-@parser.command(names=['uptime'])
-def uptime(caller):
-	timestamp = time()-game.boottime
-	strtime = format_english_time(timestamp)
-	caller.connection.notify(caller.connection._("The game has been running for "+strtime+"."))
 
 @parser.command(names=['who'])
 def who(caller):

@@ -1,6 +1,3 @@
-from time import time
-
-boottime = time()
 players = {}
 server = None
 websocket_server = None
