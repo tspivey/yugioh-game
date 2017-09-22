@@ -424,6 +424,12 @@ class MyDuel(dm.Duel):
 				self.set_responsei(7)
 				reactor.callLater(0, procduel, self)
 				return
+			elif caller.text == '?':
+				self.show_usable(pl)
+				return pl.notify(DuelReader, r,
+				no_abort=pl._("Invalid specifier. Retry."),
+				prompt=pl._("Select a card:"),
+				restore_parser=duel_parser)
 			if caller.text not in specs:
 				pl.notify(pl._("Invalid specifier. Retry."))
 				prompt()
@@ -496,6 +502,26 @@ class MyDuel(dm.Duel):
 				return
 			reactor.callLater(0, procduel, self)
 		prompt()
+
+	def show_usable(self, pl):
+		summonable = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.summonable])
+		spsummon = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.spsummon])
+		repos = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.repos])
+		mset = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_mset])
+		idle_set = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_set])
+		idle_activate = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_activate])
+		if summonable:
+			pl.notify(pl._("Summonable in attack position: %s") % ", ".join(summonable))
+		if mset:
+			pl.notify(pl._("Summonable in defense position: %s") % ", ".join(mset))
+		if spsummon:
+			pl.notify(pl._("Special summonable: %s") % ", ".join(spsummon))
+		if idle_activate:
+			pl.notify(pl._("Activatable: %s") % ", ".join(idle_activate))
+		if repos:
+			pl.notify(pl._("Repositionable: %s") % ", ".join(repos))
+		if idle_set:
+			pl.notify(pl._("Settable: %s") % ", ".join(idle_set))
 
 	def cardspec_to_ls(self, text):
 		if text.startswith('o'):
