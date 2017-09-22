@@ -336,10 +336,23 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('equip', self.equip)
 		self.cm.register_callback('lpupdate', self.lpupdate)
 		self.cm.register_callback('debug', self.debug)
+		self.cm.register_callback('counters', self.counters)
 		self.debug_mode = False
 		self.players = [None, None]
 		self.lp = [8000, 8000]
 		self.started = False
+
+	def counters(self, card, type, count, added):
+
+		for pl in self.players+self.watchers:
+
+			stype = strings[pl.language]['counter'][type]
+
+			if added:
+				 pl.notify(pl._("{amount} counters of type {counter} placed on {card}").format(amount=count, counter=stype, card=card.get_name(pl)))
+
+			else:
+				 pl.notify(pl._("{amount} counters of type {counter} removed from {card}").format(amount=count, counter=stype, card=card.get_name(pl)))
 
 	def decktop(self, player, card):
 		player = self.players[player]
