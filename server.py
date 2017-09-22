@@ -922,6 +922,16 @@ class MyDuel(dm.Duel):
 
 					s += ' ' + con._('(equipped to %s)')%(self.card_to_spec(con.duel_player, card.equip_target))
 
+				counters = []
+				for c in card.counters:
+					counter_type = c & 0xffff
+					counter_val = (c >> 16) & 0xffff
+					counter_type = strings[con.language]['counter'][counter_type]
+					counter_str = "%s: %d" % (counter_type, counter_val)
+					counters.append(counter_str)
+				if counters:
+					s += " (" + ", ".join(counters) + ")"
+
 			con.notify(s)
 
 	def show_cards_in_location(self, con, player, location, hide_facedown=False):
