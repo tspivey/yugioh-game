@@ -1072,6 +1072,11 @@ class MyDuel(dm.Duel):
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				w.notify(w._("{plname}'s card {spec} ({name}) returned to their deck.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
+		elif ploc != pnewloc and pnewloc == dm.LOCATION_EXTRA:
+			pl.notify(pl._("your card {spec} ({name}) returned to your extra deck.").format(spec=plspec, name=card.get_name(pl)))
+			for w in self.watchers+[op]:
+				s = self.card_to_spec(w.duel_player, card)
+				w.notify(w._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
