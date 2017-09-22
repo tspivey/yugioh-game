@@ -283,6 +283,7 @@ class MyDuel(dm.Duel):
 		self.watchers = []
 		self.private = False
 		self.cm.register_callback('draw', self.draw)
+		self.cm.register_callback('shuffle', self.shuffle)
 		self.cm.register_callback('phase', self.phase)
 		self.cm.register_callback('new_turn', self.new_turn)
 		self.cm.register_callback('idle', self.idle)
@@ -1436,6 +1437,12 @@ class MyDuel(dm.Duel):
 			spec = self.card_to_spec(pl.duel_player, card)
 			pl.notify(pl._("{player} flip summons {card} ({spec}).")
 			.format(player=cpl.nickname, card=card.get_name(pl), spec=spec))
+
+	def shuffle(self, player):
+		pl = self.players[player]
+		pl.notify(pl._("you shuffled your deck."))
+		for pl in self.watchers+[self.players[1 - player]]:
+			pl.notify(pl._("%s shuffled their deck.")%(self.players[player].nickname))
 
 	def end(self):
 		super(MyDuel, self).end()

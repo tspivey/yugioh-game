@@ -222,6 +222,7 @@ class Duel:
 		73: self.msg_chain_solved,
 		93: self.msg_equip,
 		94: self.msg_lpupdate,
+		32: self.msg_shuffle,
 		}
 		self.state = ''
 		self.cards = [None, None]
@@ -741,6 +742,11 @@ class Duel:
 		lp = self.read_u32(data)
 		self.cm.call_callbacks('lpupdate', player, lp)
 		return b''
+
+	def msg_shuffle(self, data):
+		data = io.BytesIO(data[1:])
+		player = self.read_u8(data)
+		self.cm.call_callbacks('shuffle', player)
 
 	def msg_flipsummoning(self, data):
 		data = io.BytesIO(data[1:])
