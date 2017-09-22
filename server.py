@@ -401,7 +401,7 @@ class MyDuel(dm.Duel):
 	def idle_action(self, pl):
 		def prompt():
 			pl.notify(pl._("Select a card on which to perform an action."))
-			pl.notify(pl._("h shows your hand, tab and tab2 shows your or the opponent's table."))
+			pl.notify(pl._("h shows your hand, tab and tab2 shows your or the opponent's table, ? shows usable cards."))
 			if self.to_bp:
 				pl.notify(pl._("b: Enter the battle phase."))
 			if self.to_ep:
