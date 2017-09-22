@@ -191,6 +191,8 @@ class Duel:
 		64: self.msg_flipsummoning,
 		54: self.msg_set,
 		10: self.msg_select_battlecmd,
+		101: self.msg_counters,
+		102: self.msg_counters,
 		110: self.msg_attack,
 		113: self.msg_begin_damage,
 		114: self.msg_end_damage,
@@ -263,6 +265,27 @@ class Duel:
 				print("msg %d unhandled" % msg)
 				data = b''
 		return data
+
+	def msg_counters(self, data):
+		data = io.BytesIO(data[0:])
+
+		msg = self.read_u8(data)
+
+		ctype = self.read_u16(data)
+
+		pl = self.read_u8(data)
+
+		loc = self.read_u8(data)
+
+		seq = self.read_u8(data)
+
+		count = self.read_u16(data)
+
+		card = self.get_card(pl, loc, seq)
+
+		self.cm.call_callbacks('counters', card, ctype, count, msg==101)
+			
+		return data.read()
 
 	def msg_reversedeck(self, data):
 		for pl in self.players+self.watchers:
