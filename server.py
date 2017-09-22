@@ -998,7 +998,6 @@ class MyDuel(dm.Duel):
 	def show_score(self, con):
 		player = con.duel_player
 		duel = con.duel
-		con.notify(con._("Your LP: %d Opponent LP: %d") % (duel.lp[player], duel.lp[1 - player]))
 		deck = duel.get_cards_in_location(player, dm.LOCATION_DECK)
 		odeck = duel.get_cards_in_location(1 - player, dm.LOCATION_DECK)
 		grave = duel.get_cards_in_location(player, dm.LOCATION_GRAVE)
@@ -1007,10 +1006,20 @@ class MyDuel(dm.Duel):
 		ohand = duel.get_cards_in_location(1 - player, dm.LOCATION_HAND)
 		removed = duel.get_cards_in_location(player, dm.LOCATION_REMOVED)
 		oremoved = duel.get_cards_in_location(1 - player, dm.LOCATION_REMOVED)
-		con.notify(con._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
-		con.notify(con._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
-		con.notify(con._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
-		con.notify(con._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
+		if con.watching:
+			nick0 = duel.players[0].nickname
+			nick1 = duel.players[1].nickname
+			con.notify(con._("LP: %s: %d %s: %d") % (nick0, duel.lp[player], nick1, duel.lp[1 - player]))
+			con.notify(con._("Hand: %s: %d %s: %d") % (nick0, len(hand), nick1, len(ohand)))
+			con.notify(con._("Deck: %s: %d %s: %d") % (nick0, len(deck), nick1, len(odeck)))
+			con.notify(con._("Grave: %s: %d %s: %d") % (nick0, len(grave), nick1, len(ograve)))
+			con.notify(con._("Removed: %s: %d %s: %d") % (nick0, len(removed), nick1, len(oremoved)))
+		else:
+			con.notify(con._("Your LP: %d Opponent LP: %d") % (duel.lp[player], duel.lp[1 - player]))
+			con.notify(con._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
+			con.notify(con._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
+			con.notify(con._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
+			con.notify(con._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
 
 	def move(self, code, location, newloc, reason):
 		card = dm.Card.from_code(code)
@@ -1617,16 +1626,20 @@ def hand(caller):
 @duel_parser.command(names=['tab'])
 def tab(caller):
 	duel = caller.connection.duel
-	caller.connection.notify(caller.connection._("Your table:"))
 	if caller.connection.watching:
+		caller.connection.notify(caller.connection._("%s's table:") % duel.players[0].nickname)
 		duel.show_table(caller.connection, caller.connection.duel_player, True)
 	else:
+		caller.connection.notify(caller.connection._("Your table:"))
 		duel.show_table(caller.connection, caller.connection.duel_player)
 
 @duel_parser.command(names=['tab2'])
 def tab2(caller):
 	duel = caller.connection.duel
-	caller.connection.notify(caller.connection._("Opponent's table:"))
+	if caller.connection.watching:
+		caller.connection.notify(caller.connection._("%s's table:") % duel.players[1].nickname)
+	else:
+		caller.connection.notify(caller.connection._("Opponent's table:"))
 	duel.show_table(caller.connection, 1 - caller.connection.duel_player, True)
 
 @duel_parser.command(names=['grave'])
