@@ -2025,12 +2025,13 @@ def say(caller):
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
-		s = pl.nickname
 		if pl.watching:
-			s += ' ' + caller.connection._("(watching)")
+			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(pl.nickname, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
 		elif pl.duel:
-			s += ' ' + caller.connection._("(dueling)")
-		caller.connection.notify(s)
+			caller.connection.notify(caller.connection._("%s (dueling %s)" %(pl.nickname, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
+		else:
+			caller.connection.notify(pl.nickname)
+
 
 @duel_parser.command(names=['sc', 'score'])
 def score(caller):
