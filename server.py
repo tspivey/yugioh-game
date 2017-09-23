@@ -1074,8 +1074,12 @@ class MyDuel(dm.Duel):
 		elif ploc != pnewloc and pnewloc == dm.LOCATION_REMOVED:
 			pl.notify(pl._("your card {spec} ({name}) was banished.").format(spec=plspec, name=card.get_name(pl)))
 			for w in self.watchers+[op]:
+				if card.position in (dm.POS_FACEDOWN_DEFENSE, dm.POS_FACEDOWN):
+					name = w._("Face-down defense")
+				else:
+					name = card.get_name(w)
 				s = self.card_to_spec(w.duel_player, card)
-				w.notify(w._("{plname}'s card {spec} ({name}) was banished.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
+				w.notify(w._("{plname}'s card {spec} ({name}) was banished.").format(plname=pl.nickname, spec=s, name=name))
 		elif ploc != pnewloc and pnewloc == dm.LOCATION_DECK:
 			pl.notify(pl._("your card {spec} ({name}) returned to your deck.").format(spec=plspec, name=card.get_name(pl)))
 			for w in self.watchers+[op]:

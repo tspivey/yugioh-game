@@ -340,7 +340,7 @@ class Duel:
 		to_ep = self.read_u8(data)
 		cs = self.read_u8(data)
 		self.cm.call_callbacks('idle', summonable, spsummon, repos, idle_mset, idle_set, idle_activate, to_bp, to_ep, cs)
-		return b''
+		return data.read()
 
 	def read_cardlist(self, data, extra=False, extra8=False):
 		res = []
@@ -362,7 +362,7 @@ class Duel:
 
 	def msg_retry(self, buf):
 		print("retry")
-		return ''
+		return buf[1:]
 
 	def msg_hint(self, data):
 		data = io.BytesIO(data[1:])
@@ -370,7 +370,7 @@ class Duel:
 		player = self.read_u8(data)
 		value = self.read_u32(data)
 		self.cm.call_callbacks('hint', msg, player, value)
-		return b''
+		return data.read()
 
 	def msg_select_place(self, data):
 		data = io.BytesIO(data)
@@ -379,7 +379,7 @@ class Duel:
 		count = self.read_u8(data)
 		flag = self.read_u32(data)
 		self.cm.call_callbacks('select_place', player, count, flag)
-		return b''
+		return data.read()
 
 	def msg_select_battlecmd(self, data):
 		data = io.BytesIO(data[1:])
@@ -389,7 +389,7 @@ class Duel:
 		to_m2 = self.read_u8(data)
 		to_ep = self.read_u8(data)
 		self.cm.call_callbacks('select_battlecmd', player, activatable, attackable, to_m2, to_ep)
-		return b''
+		return data.read()
 
 	def msg_attack(self, data):
 		data = io.BytesIO(data[1:])
@@ -404,13 +404,15 @@ class Duel:
 		tseq = (target >> 16) & 0xff
 		tpos = (target >> 24) & 0xff
 		self.cm.call_callbacks('attack', ac, al, aseq, apos, tc, tl, tseq, tpos)
-		return b''
+		return data.read()
 
 	def msg_begin_damage(self, data):
 		self.cm.call_callbacks('begin_damage')
+		return data[1:]
 
 	def msg_end_damage(self, data):
 		self.cm.call_callbacks('end_damage')
+		return data[1:]
 
 	def msg_battle(self, data):
 		data = io.BytesIO(data[1:])
@@ -423,7 +425,7 @@ class Duel:
 		dd = self.read_u32(data)
 		bd1 = self.read_u8(data)
 		self.cm.call_callbacks('battle', attacker, aa, ad, bd0, tloc, da, dd, bd1)
-		return b''
+		return data.read()
 
 	def msg_select_card(self, data):
 		data = io.BytesIO(data[1:])
@@ -444,7 +446,7 @@ class Duel:
 			card.set_location(loc)
 			cards.append(card)
 		self.cm.call_callbacks('select_card', player, cancelable, min, max, cards)
-		return b''
+		return data.read()
 
 	def msg_select_tribute(self, data):
 		data = io.BytesIO(data[1:])
@@ -464,19 +466,21 @@ class Duel:
 			card.release_param = self.read_u8(data)
 			cards.append(card)
 		self.cm.call_callbacks('select_tribute', player, cancelable, min, max, cards)
-		return b''
+		return data.read()
 
 	def msg_damage(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		amount = self.read_u32(data)
 		self.cm.call_callbacks('damage', player, amount)
+		return data.read()
 
 	def msg_recover(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		amount = self.read_u32(data)
 		self.cm.call_callbacks('recover', player, amount)
+		return data.read()
 
 	def msg_move(self, data):
 		data = io.BytesIO(data[1:])
@@ -485,13 +489,13 @@ class Duel:
 		newloc = self.read_u32(data)
 		reason = self.read_u32(data)
 		self.cm.call_callbacks('move', code, location, newloc, reason)
-		return b''
+		return data.read()
 
 	def msg_field_disabled(self, data):
 		data = io.BytesIO(data[1:])
 		locations = self.read_u32(data)
 		self.cm.call_callbacks('field_disabled', locations)
-		return b''
+		return data.read()
 
 	def msg_summoning(self, data, special=False):
 		data = io.BytesIO(data[1:])
@@ -499,7 +503,7 @@ class Duel:
 		card = Card.from_code(code)
 		card.set_location(self.read_u32(data))
 		self.cm.call_callbacks('summoning', card, special=special)
-		return b''
+		return data.read()
 
 	def msg_select_chain(self, data):
 		data = io.BytesIO(data[1:])
@@ -519,11 +523,10 @@ class Duel:
 			desc = self.read_u32(data)
 			chains.append((et, card, desc))
 		self.cm.call_callbacks('select_chain', player, size, spe_count, forced, chains)
-		return b''
+		return data.read()
 
 	def msg_summoned(self, data):
-		data = io.BytesIO(data[1:])
-		return b''
+		return data[1:]
 
 	def msg_set(self, data):
 		data = io.BytesIO(data[1:])
@@ -532,7 +535,7 @@ class Duel:
 		card = Card.from_code(code)
 		card.set_location(loc)
 		self.cm.call_callbacks('set', card)
-		return b''
+		return data.read()
 
 	def msg_select_option(self, data):
 		data = io.BytesIO(data[1:])
@@ -542,7 +545,7 @@ class Duel:
 		for i in range(size):
 			options.append(self.read_u32(data))
 		self.cm.call_callbacks("select_option", player, options)
-		return b''
+		return data.read()
 
 	def msg_pos_change(self, data):
 		data = io.BytesIO(data[1:])
@@ -567,7 +570,7 @@ class Duel:
 		desc = self.read_u32(data)
 		cs = self.read_u8(data)
 		self.cm.call_callbacks('chaining', card, tc, tl, ts, desc, cs)
-		return b''
+		return data.read()
 
 	def msg_select_position(self, data):
 		data = io.BytesIO(data[1:])
@@ -576,14 +579,14 @@ class Duel:
 		card = Card.from_code(code)
 		positions = self.read_u8(data)
 		self.cm.call_callbacks('select_position', player, card, positions)
-		return b''
+		return data.read()
 
 	def msg_yesno(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		desc = self.read_u32(data)
 		self.cm.call_callbacks('yesno', player, desc)
-		return b''
+		return data.read()
 
 	def msg_select_effectyn(self, data):
 		data = io.BytesIO(data[1:])
@@ -591,21 +594,21 @@ class Duel:
 		card = Card.from_code(self.read_u32(data))
 		card.set_location(self.read_u32(data))
 		self.cm.call_callbacks('select_effectyn', player, card)
-		return b''
+		return data.read()
 
 	def msg_win(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		reason = self.read_u8(data)
 		self.cm.call_callbacks('win', player, reason)
-		return b''
+		return data.read()
 
 	def msg_pay_lpcost(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		cost = self.read_u32(data)
 		self.cm.call_callbacks('pay_lpcost', player, cost)
-		return b''
+		return data.read()
 
 	def msg_sort_chain(self, data):
 		data = io.BytesIO(data[1:])
@@ -620,7 +623,7 @@ class Duel:
 			card.sequence = self.read_u8(data)
 			cards.append(card)
 		self.cm.call_callbacks('sort_chain', player, cards)
-		return b''
+		return data.read()
 
 	def msg_announce_attrib(self, data):
 		data = io.BytesIO(data[1:])
@@ -628,14 +631,14 @@ class Duel:
 		count = self.read_u8(data)
 		avail = self.read_u32(data)
 		self.cm.call_callbacks('announce_attrib', player, count, avail)
-		return b''
+		return data.read()
 
 	def msg_announce_card(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		type = self.read_u32(data)
 		self.cm.call_callbacks('announce_card', player, type)
-		return b''
+		return data.read()
 
 	def msg_announce_number(self, data):
 		data = io.BytesIO(data[1:])
@@ -643,7 +646,7 @@ class Duel:
 		size = self.read_u8(data)
 		opts = [self.read_u32(data) for i in range(size)]
 		self.cm.call_callbacks('announce_number', player, opts)
-		return b''
+		return data.read()
 
 	def msg_announce_card_filter(self, data):
 		data = io.BytesIO(data[1:])
@@ -653,7 +656,7 @@ class Duel:
 		for i in range(size):
 			options.append(self.read_u32(data))
 		self.cm.call_callbacks('announce_card_filter', player, options)
-		return b''
+		return data.read()
 
 	def msg_select_sum(self, data):
 		data = io.BytesIO(data[1:])
@@ -683,7 +686,7 @@ class Duel:
 			card.param = self.read_u32(data)
 			select_some.append(card)
 		self.cm.call_callbacks('select_sum', mode, player, val, select_min, select_max, must_select, select_some)
-		return b''
+		return data.read()
 
 	def msg_select_counter(self, data):
 		data = io.BytesIO(data[1:])
@@ -700,7 +703,7 @@ class Duel:
 			card.counter = self.read_u16(data)
 			cards.append(card)
 		self.cm.call_callbacks('select_counter', player, countertype, count, cards)
-		return b''
+		return data.read()
 
 	def msg_become_target(self, data):
 		data = io.BytesIO(data[1:])
@@ -719,7 +722,7 @@ class Duel:
 		count = self.read_u8(data)
 		avail = self.read_u32(data)
 		self.cm.call_callbacks('announce_race', player, count, avail)
-		return b''
+		return data.read()
 
 	def msg_sort_card(self, data):
 		data = io.BytesIO(data[1:])
@@ -733,7 +736,7 @@ class Duel:
 			card.sequence = self.read_u8(data)
 			cards.append(card)
 		self.cm.call_callbacks('sort_card', player, cards)
-		return b''
+		return data.read()
 
 	def msg_toss_coin(self, data, dice=False):
 		data = io.BytesIO(data[1:])
@@ -744,7 +747,7 @@ class Duel:
 			self.cm.call_callbacks('toss_dice', player, options)
 		else:
 			self.cm.call_callbacks('toss_coin', player, options)
-		return b''
+		return data.read()
 
 	def msg_confirm_cards(self, data):
 		data = io.BytesIO(data[1:])
@@ -759,13 +762,13 @@ class Duel:
 			card = self.get_card(c, l, s)
 			cards.append(card)
 		self.cm.call_callbacks('confirm_cards', player, cards)
-		return b''
+		return data.read()
 
 	def msg_chain_solved(self, data):
 		data = io.BytesIO(data[1:])
 		count = self.read_u8(data)
 		self.cm.call_callbacks('chain_solved', count)
-		return b''
+		return data.read()
 
 	def msg_equip(self, data):
 		data = io.BytesIO(data[1:])
@@ -776,19 +779,20 @@ class Duel:
 		u = self.unpack_location(target)
 		target = self.get_card(u[0], u[1], u[2])
 		self.cm.call_callbacks('equip', card, target)
-		return b''
+		return data.read()
 
 	def msg_lpupdate(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		lp = self.read_u32(data)
 		self.cm.call_callbacks('lpupdate', player, lp)
-		return b''
+		return data.read()
 
 	def msg_shuffle(self, data):
 		data = io.BytesIO(data[1:])
 		player = self.read_u8(data)
 		self.cm.call_callbacks('shuffle', player)
+		return data.read()
 
 	def msg_flipsummoning(self, data):
 		data = io.BytesIO(data[1:])
@@ -799,7 +803,7 @@ class Duel:
 		seq = (location >> 16) & 0xff
 		card = self.get_card(c, loc, seq)
 		self.cm.call_callbacks('flipsummoning', card)
-		return b''
+		return data.read()
 
 	def read_u8(self, buf):
 		return struct.unpack('b', buf.read(1))[0]
