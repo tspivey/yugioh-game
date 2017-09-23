@@ -66,7 +66,7 @@ msgstr "Solicitud de duelo aceptada, luchando con %s."
 #: server.py:97
 #, python-format
 msgid "%s wants to duel. Type duel %s to accept."
-msgstr "%s quiere luchar! Escribe %s para aceptar."
+msgstr "%s quiere luchar! Escribe duel %s para aceptar."
 
 #: server.py:99
 #, python-format
