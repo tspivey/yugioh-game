@@ -3,6 +3,7 @@ import os
 import re
 import random
 from functools import partial
+from collections import OrderedDict
 import json
 import datetime
 import collections
@@ -1794,6 +1795,14 @@ def deck_edit(caller):
 		con.deck = json.loads(deck.content)
 	cards = con.deck['cards']
 	last_search = ""
+	def group_cards(cards):
+		cnt = OrderedDict()
+		for i, code in enumerate(cards):
+			if not code in cnt:
+				cnt[code] = 1
+			else:
+				cnt[code] += 1
+		return cnt
 	def info():
 		show_deck_info(con)
 		con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
@@ -1839,14 +1848,15 @@ def deck_edit(caller):
 			con.session.commit()
 			read()
 		elif caller.text.startswith('r'):
+			cnt = group_cards(cards)
 			rm = re.search(r'^r(\d+)', caller.text)
 			if rm:
 				n = int(rm.group(1)) - 1
-				if n < 0 or n > len(cards) - 1:
+				if n < 0 or n > len(cnt) - 1:
 					con.notify(con._("Invalid card."))
 					read()
 					return
-				code = cards[n]
+				code = list(cnt.keys())[n]
 			if cards.count(code) == 0:
 				con.notify(con._("This card isn't in your deck."))
 				read()
@@ -1877,9 +1887,15 @@ def deck_edit(caller):
 				con.deck_edit_pos = pos
 			read()
 		elif caller.text == 'l':
-			for i, code in enumerate(cards):
+			i=0
+			cnt = group_cards(cards)
+			for code, count in cnt.items():
+				i+=1
 				card = dm.Card.from_code(code)
-				con.notify("%d: %s" % (i+1, card.get_name(con)))
+				if count == 1:
+					con.notify("%d: %s" % (i, card.get_name(con)))
+				else:
+					con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
 			read()
 		elif caller.text == 'q':
 			con.notify("Quit.")
