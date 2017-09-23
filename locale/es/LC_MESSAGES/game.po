@@ -620,11 +620,10 @@ msgstr "{card} equipada a {target}."
 
 #: server.py:1288
 msgid "Your table:"
-msgstr "Tu table:"
-
+msgstr "Tu campo:"
 #: server.py:1294
 msgid "Opponent's table:"
-msgstr "Tabla del oponente:"
+msgstr "campo del oponente:"
 
 #: server.py:1368
 #, python-format
