@@ -125,28 +125,29 @@ def duel2(caller, private=False):
 		reactor.callLater(0, procduel, d)
 		del duels[con.nickname]
 		return
-	player = get_player(nick)
+	players = guess_players(nick, con.nickname)
 	if con.duel:
 		con.notify(con._("You are already in a duel."))
 		return
-	elif not player:
+	elif len(players) > 1:
+		con.notify(con._("Multiple players match this name: %s")%(','.join([p.nickname for p in players])))
+		return
+	elif not len(players):
 		con.notify(con._("That player is not online."))
 		return
-	elif player.duel:
+	elif players[0].duel:
 		con.notify(con._("That player is already in a duel."))
-		return
-	elif player is con:
-		con.notify(con._("You can't duel yourself."))
 		return
 	elif not con.deck['cards']:
 		con.notify(con._("You can't duel without a deck. Try deck load public/starter."))
 		return
-	elif player.nickname in con.ignores:
-		con.notify(con._("You are ignoring %s.") % player.nickname)
+	elif players[0].nickname in con.ignores:
+		con.notify(con._("You are ignoring %s.") % players[0].nickname)
 		return
-	elif con.nickname in player.ignores:
-		con.notify(con._("%s is ignoring you.") % player.nickname)
+	elif con.nickname in players[0].ignores:
+		con.notify(con._("%s is ignoring you.") % players[0].nickname)
 		return
+	player = players[0]
 	rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(con.deck['cards'])])))
 	main = 0
 	extra = 0
@@ -1995,6 +1996,27 @@ def deck_check(caller):
 def get_player(name):
 	return game.players.get(name.lower())
 
+# self being the caller (we don't want to address me)
+def guess_players(name, self):
+
+	name = name[0].upper()+name[1:].lower()
+	players = [get_player(p) for p in game.players.keys() if (p[0].upper()+p[1:].lower()) != self]
+	i = 0
+
+	while i < len(players):
+		if players[i].nickname == name:
+			# exact match means we will only return that player
+			return [players[i]]
+		elif players[i].nickname.startswith(name):
+			i += 1
+			continue
+		else:
+			del players[i]
+
+	players.sort(key=lambda p: p.nickname)
+
+	return players
+
 @parser.command(names=["chat"], args_regexp=r'(.*)')
 def chat(caller):
 	text = caller.args[0]
@@ -2241,8 +2263,13 @@ def tell(caller):
 		caller.connection.notify(caller.connection._("Usage: tell <player> <message>"))
 		return
 	player = args[0]
-	player = get_player(player)
-	if not player:
+	players = guess_players(player, caller.connection.nickname)
+	if len(players) == 1:
+		player = players[0]
+	elif len(players) > 1:
+		caller.connection.notify(caller.connection._("Multiple players match this name: %s")%(','.join([p.nickname for p in players])))
+		return
+	else:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
 	if caller.connection.nickname in player.ignores:
@@ -2285,19 +2312,23 @@ def watch(caller):
 		con.watching = False
 		con.notify(con._("Watching stopped."))
 		return
-	player = get_player(nick)
+	players = guess_players(nick, con.nickname)
 	if con.duel:
 		con.notify(con._("You are already in a duel."))
 		return
-	elif not player:
+	elif len(players) > 1:
+		con.notify(con._("Multiple players match this name: %s")%(','.join([p.nickname for p in players])))
+		return
+	elif not len(players):
 		con.notify(con._("That player is not online."))
 		return
-	if not player.duel:
+	elif not players[0].duel:
 		con.notify(con._("That player is not in a duel."))
 		return
-	if player.duel.private:
+	elif players[0].duel.private:
 		con.notify(con._("That duel is private."))
 		return
+	player = players[0]
 	con.duel = player.duel
 	con.duel_player = 0
 	con.duel.watchers.append(con)
@@ -2321,7 +2352,7 @@ def ignore(caller):
 		return
 	account = con.session.query(models.Account).filter_by(name=name).first()
 	if not account:
-		con.notify(con._("That account doesn't exist."))
+		con.notify(con._("That account doesn't exist. Make sure you enter the full name (no auto-completion for security reasons)."))
 		con.session.commit()
 		return
 	ignore = con.session.query(models.Ignore).filter_by(account_id=con.account.id, ignored_account_id=account.id).first()
