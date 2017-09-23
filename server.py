@@ -1061,7 +1061,7 @@ class MyDuel(dm.Duel):
 					name = card.get_name(w)
 				w.notify(w._("{plname} tributes {spec} ({name}).")
 					.format(plname=pl.nickname, spec=s, name=name))
-		elif ploc == dm.LOCATION_OVERLAY+dm.LOCATION_MZONE:
+		elif ploc == dm.LOCATION_OVERLAY+dm.LOCATION_MZONE and pnewloc in (dm.LOCATION_GRAVE, dm.LOCATION_REMOVED):
 			pl.notify(pl._("you detached %s.")%(card.get_name(pl)))
 			for w in self.watchers+[op]:
 				w.notify(w._("%s detached %s")%(pl.nickname, card.get_name(w)))
