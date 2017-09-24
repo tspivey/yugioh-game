@@ -90,8 +90,8 @@ def afk(caller):
 		conn.afk = True
 		return
 	else:
-		con.notify(con._("You are no longer AFK."))
-		con.afk = False
+		conn.notify(conn._("You are no longer AFK."))
+		conn.afk = False
 		return
 
 @parser.command(names=['duel'], args_regexp=r'(.*)')
@@ -2083,11 +2083,23 @@ def who(caller):
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
 		s = pl.nickname
 		if pl.afk is True:
-			s += " [AFK]"
+			s += caller.connection._(" [AFK]")
 		if pl.watching:
 			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(s, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
 		elif pl.duel:
-			caller.connection.notify(caller.connection._("%s (dueling %s)" %(s, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
+			other = None
+			if pl.duel.players[0] is pl:
+				other = pl.duel.players[1]
+			else:
+				other = pl.duel.players[0]
+			if other is None:
+				other = "n/a"
+			else:
+				other = other.nickname
+			if pl.duel.private is True:
+				caller.connection.notify(caller.connection._("%s (privately dueling %s)" %(pl.nickname, other)))
+			else:
+				caller.connection.notify(caller.connection._("%s (dueling %s)" %(pl.nickname, other)))
 		else:
 			caller.connection.notify(s)
 
