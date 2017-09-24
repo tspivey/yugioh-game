@@ -50,6 +50,7 @@ class MyServer(gsb.Server):
 		caller.connection.requested_opponent = (None, False)
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
+		caller.connection.afk = False
 		caller.connection.chat = True
 		caller.connection.challenge = True
 		caller.connection.reply_to = ""
@@ -79,6 +80,18 @@ class MyServer(gsb.Server):
 
 server = MyServer(port=4000, default_parser=LoginParser())
 game.server = server
+
+@parser.command(names=['afk'])
+def afk(caller):
+	conn = caller.connection
+	if caller.connection.afk is False:
+		conn.notify(conn._("You are now AFK."))
+		conn.afk = True
+		return
+	else:
+		con.notify(con._("You are no longer AFK."))
+		con.afk = False
+		return
 
 @parser.command(names=['duel'], args_regexp=r'(.*)')
 def duel(caller):
@@ -147,6 +160,8 @@ def duel2(caller, private=False):
 	elif con.nickname in player.ignores:
 		con.notify(con._("%s is ignoring you.") % player.nickname)
 		return
+	if player.afk is True:
+		con.notify(con._("%s is AFK and may not be paying attention.") %(player.nickname))
 	rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(con.deck['cards'])])))
 	main = 0
 	extra = 0
@@ -2029,12 +2044,15 @@ def say(caller):
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
+		s = pl.nickname
+		if pl.afk is True:
+			s += " [AFK]"
 		if pl.watching:
-			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(pl.nickname, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
+			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(s, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
 		elif pl.duel:
-			caller.connection.notify(caller.connection._("%s (dueling %s)" %(pl.nickname, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
+			caller.connection.notify(caller.connection._("%s (dueling %s)" %(s, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
 		else:
-			caller.connection.notify(pl.nickname)
+			caller.connection.notify(s)
 
 
 @duel_parser.command(names=['sc', 'score'])
@@ -2249,6 +2267,8 @@ def tell(caller):
 		caller.connection.notify(caller.connection._("%s is ignoring you.") % player.nickname)
 		return
 	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
+	if player.afk is True:
+		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
 	player.notify(player._("%s tells you: %s") % (caller.connection.nickname, args[1]))
 	player.reply_to = caller.connection.nickname
 
