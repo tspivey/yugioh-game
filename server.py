@@ -1068,18 +1068,17 @@ class MyDuel(dm.Duel):
 				w.notify(w._("{plname}'s card {spec} ({name}) returned to their hand.")
 					.format(plname=pl.nickname, spec=s, name=name))
 		elif reason & 0x12 and ploc != pnewloc:
-			name = card.get_name(pl)
 			pl.notify(pl._("You tribute {spec} ({name}).")
-				.format(spec=plspec, name=name))
+				.format(spec=plspec, name=card.get_name(pl)))
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				if card.position in (dm.POS_FACEDOWN_DEFENSE, dm.POS_FACEDOWN):
-					name = op._("%s card") % card.get_position(w)
+					name = w._("%s card") % card.get_position(w)
 				else:
-					name = card.get_name(op)
+					name = card.get_name(w)
 				w.notify(w._("{plname} tributes {spec} ({name}).")
 					.format(plname=pl.nickname, spec=s, name=name))
-		elif ploc == dm.LOCATION_OVERLAY+dm.LOCATION_MZONE:
+		elif ploc == dm.LOCATION_OVERLAY+dm.LOCATION_MZONE and pnewloc in (dm.LOCATION_GRAVE, dm.LOCATION_REMOVED):
 			pl.notify(pl._("you detached %s.")%(card.get_name(pl)))
 			for w in self.watchers+[op]:
 				w.notify(w._("%s detached %s")%(pl.nickname, card.get_name(w)))
