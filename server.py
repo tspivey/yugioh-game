@@ -3,6 +3,7 @@ import os
 import re
 import random
 from functools import partial
+from collections import OrderedDict
 import json
 import datetime
 import collections
@@ -50,6 +51,7 @@ class MyServer(gsb.Server):
 		caller.connection.requested_opponent = (None, False)
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
+		caller.connection.afk = False
 		caller.connection.chat = True
 		caller.connection.challenge = True
 		caller.connection.reply_to = ""
@@ -79,6 +81,18 @@ class MyServer(gsb.Server):
 
 server = MyServer(port=4000, default_parser=LoginParser())
 game.server = server
+
+@parser.command(names=['afk'])
+def afk(caller):
+	conn = caller.connection
+	if caller.connection.afk is False:
+		conn.notify(conn._("You are now AFK."))
+		conn.afk = True
+		return
+	else:
+		con.notify(con._("You are no longer AFK."))
+		con.afk = False
+		return
 
 @parser.command(names=['duel'], args_regexp=r'(.*)')
 def duel(caller):
@@ -148,6 +162,8 @@ def duel2(caller, private=False):
 		con.notify(con._("%s is ignoring you.") % players[0].nickname)
 		return
 	player = players[0]
+	if player.afk is True:
+		con.notify(con._("%s is AFK and may not be paying attention.") %(player.nickname))
 	rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(con.deck['cards'])])))
 	main = 0
 	extra = 0
@@ -1795,6 +1811,14 @@ def deck_edit(caller):
 		con.deck = json.loads(deck.content)
 	cards = con.deck['cards']
 	last_search = ""
+	def group_cards(cards):
+		cnt = OrderedDict()
+		for i, code in enumerate(cards):
+			if not code in cnt:
+				cnt[code] = 1
+			else:
+				cnt[code] += 1
+		return cnt
 	def info():
 		show_deck_info(con)
 		con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
@@ -1840,14 +1864,15 @@ def deck_edit(caller):
 			con.session.commit()
 			read()
 		elif caller.text.startswith('r'):
+			cnt = group_cards(cards)
 			rm = re.search(r'^r(\d+)', caller.text)
 			if rm:
 				n = int(rm.group(1)) - 1
-				if n < 0 or n > len(cards) - 1:
+				if n < 0 or n > len(cnt) - 1:
 					con.notify(con._("Invalid card."))
 					read()
 					return
-				code = cards[n]
+				code = list(cnt.keys())[n]
 			if cards.count(code) == 0:
 				con.notify(con._("This card isn't in your deck."))
 				read()
@@ -1878,9 +1903,15 @@ def deck_edit(caller):
 				con.deck_edit_pos = pos
 			read()
 		elif caller.text == 'l':
-			for i, code in enumerate(cards):
+			i=0
+			cnt = group_cards(cards)
+			for code, count in cnt.items():
+				i+=1
 				card = dm.Card.from_code(code)
-				con.notify("%d: %s" % (i+1, card.get_name(con)))
+				if count == 1:
+					con.notify("%d: %s" % (i, card.get_name(con)))
+				else:
+					con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
 			read()
 		elif caller.text == 'q':
 			con.notify("Quit.")
@@ -2051,12 +2082,15 @@ def say(caller):
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
+		s = pl.nickname
+		if pl.afk is True:
+			s += " [AFK]"
 		if pl.watching:
-			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(pl.nickname, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
+			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(s, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
 		elif pl.duel:
-			caller.connection.notify(caller.connection._("%s (dueling %s)" %(pl.nickname, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
+			caller.connection.notify(caller.connection._("%s (dueling %s)" %(s, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
 		else:
-			caller.connection.notify(pl.nickname)
+			caller.connection.notify(s)
 
 
 @duel_parser.command(names=['sc', 'score'])
@@ -2276,6 +2310,8 @@ def tell(caller):
 		caller.connection.notify(caller.connection._("%s is ignoring you.") % player.nickname)
 		return
 	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
+	if player.afk is True:
+		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
 	player.notify(player._("%s tells you: %s") % (caller.connection.nickname, args[1]))
 	player.reply_to = caller.connection.nickname
 
