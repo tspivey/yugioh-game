@@ -1063,7 +1063,7 @@ class MyDuel(dm.Duel):
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				w.notify(w._("Card %s (%s) destroyed.") % (s, card.get_name(w)))
-		elif ploc == pnewloc:
+		elif ploc == pnewloc and ploc in (dm.LOCATION_MZONE, dm.LOCATION_SZONE):
 			cnew = dm.Card.from_code(code)
 			cnew.set_location(newloc)
 
