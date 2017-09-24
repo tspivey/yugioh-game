@@ -1067,7 +1067,7 @@ class MyDuel(dm.Duel):
 			if (location & 0xff) != (newloc & 0xff):
 				# controller changed too (e.g. change of heart)
 				pl.notify(pl._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(pl), op = op.nickname, targetspec = self.card_to_spec(pl.duel_player, cnew)))
-				op.notify(op._("{plname}s card {spec} ({name}) is now controlled by you and is located at {targetspec}.").format(plname=pl.nickname, spec=self.card_to_spec(op.duel_player, card), name = card.get_name(op), targetspec = self.card_to_spec(op.duel_player, cnew)))
+				op.notify(op._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=self.card_to_spec(op.duel_player, card), name = card.get_name(op), targetspec = self.card_to_spec(op.duel_player, cnew)))
 				for w in self.watchers:
 					s = self.card_to_spec(w.duel_player, card)
 					ts = self.card_to_spec(w.duel_player, cnew)
