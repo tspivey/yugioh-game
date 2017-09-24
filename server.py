@@ -354,10 +354,22 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('lpupdate', self.lpupdate)
 		self.cm.register_callback('debug', self.debug)
 		self.cm.register_callback('counters', self.counters)
+		self.cm.register_callback('swap', self.swap)
 		self.debug_mode = False
 		self.players = [None, None]
 		self.lp = [8000, 8000]
 		self.started = False
+
+	def swap(self, card1, card2):
+
+		for p in self.watchers+self.players:
+			for card in (card1, card2):
+				if p in self.players and p.duel_player == card.controller:
+					plname = 'you'
+				else:
+					plname = self.players[card.controller].nickname
+				s = self.card_to_spec(p.duel_player, card)
+				p.notify(p._("card {name} swapped control towards {plname} and is now located at {targetspec}.").format(plname=plname, targetspec=s, name=card.get_name(p)))
 
 	def counters(self, card, type, count, added):
 
@@ -1051,11 +1063,46 @@ class MyDuel(dm.Duel):
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				w.notify(w._("Card %s (%s) destroyed.") % (s, card.get_name(w)))
+		elif ploc == pnewloc:
+			cnew = dm.Card.from_code(code)
+			cnew.set_location(newloc)
+
+			if (location & 0xff) != (newloc & 0xff):
+				# controller changed too (e.g. change of heart)
+				pl.notify(pl._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(pl), op = op.nickname, targetspec = self.card_to_spec(pl.duel_player, cnew)))
+				op.notify(op._("{plname}s card {spec} ({name}) is now controlled by you and is located at {targetspec}.").format(plname=pl.nickname, spec=self.card_to_spec(op.duel_player, card), name = card.get_name(op), targetspec = self.card_to_spec(op.duel_player, cnew)))
+				for w in self.watchers:
+					s = self.card_to_spec(w.duel_player, card)
+					ts = self.card_to_spec(w.duel_player, cnew)
+					w.notify(w._("{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(plname=pl.nickname, op=op.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
+			else:
+				# only place changed (alien decks e.g.)
+				pl.notify(pl._("your card {spec} ({name}) switched its zone to {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=self.card_to_spec(pl.duel_player, cnew)))
+				for w in self.watchers+[op]:
+					s = self.card_to_spec(w.duel_player, card)
+					ts = self.card_to_spec(w.duel_player, cnew)
+					w.notify(w._("{plname}s card {spec} ({name}) changed its zone to {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
 		elif reason & 0x4000 and ploc != pnewloc:
 			pl.notify(pl._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(pl)))
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				w.notify(w._("{plname} discarded {spec} ({name}).").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
+		elif ploc == dm.LOCATION_REMOVED and pnewloc in (dm.LOCATION_SZONE, dm.LOCATION_MZONE):
+			cnew = dm.Card.from_code(code)
+			cnew.set_location(newloc)
+			pl.notify(pl._("your banished card {spec} ({name}) returns to the field at {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=self.card_to_spec(pl.duel_player, cnew)))
+			for w in self.watchers+[op]:
+				s=self.card_to_spec(w.duel_player, card)
+				ts = self.card_to_spec(w.duel_player, cnew)
+				w.notify(w._("{plname}s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
+		elif ploc == dm.LOCATION_GRAVE and pnewloc in (dm.LOCATION_SZONE, dm.LOCATION_MZONE):
+			cnew = dm.Card.from_code(code)
+			cnew.set_location(newloc)
+			pl.notify(pl._("your card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=self.card_to_spec(pl.duel_player, cnew)))
+			for w in self.watchers+[op]:
+				s = self.card_to_spec(w.duel_player, card)
+				ts = self.card_to_spec(w.duel_player, cnew)
+				w.notify(w._("{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(plname = pl.nickname, spec=s, targetspec=ts, name = card.get_name(w)))
 		elif pnewloc == dm.LOCATION_HAND and ploc != pnewloc:
 			pl.notify(pl._("Card {spec} ({name}) returned to hand.")
 				.format(spec=plspec, name=card.get_name(pl)))

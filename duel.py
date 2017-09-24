@@ -187,6 +187,7 @@ class Duel:
 		37: self.msg_reversedeck,
 		38: self.msg_decktop,
 		50: self.msg_move,
+		55: self.msg_swap,
 		56: self.msg_field_disabled,
 		60: self.msg_summoning,
 		16: self.msg_select_chain,
@@ -268,6 +269,22 @@ class Duel:
 				print("msg %d unhandled" % msg)
 				data = b''
 		return data
+
+	def msg_swap(self, data):
+		data = io.BytesIO(data[1:])
+
+		code1 = self.read_u32(data)
+		location1 = self.read_u32(data)
+		code2 = self.read_u32(data)
+		location2 = self.read_u32(data)
+
+		card1 = Card.from_code(code1)
+		card1.set_location(location1)
+		card2 = Card.from_code(code2)
+		card2.set_location(location2)
+		self.cm.call_callbacks('swap', card1, card2)
+
+		return data.read()
 
 	def msg_counters(self, data):
 		data = io.BytesIO(data[0:])
