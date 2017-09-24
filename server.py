@@ -364,10 +364,7 @@ class MyDuel(dm.Duel):
 
 		for p in self.watchers+self.players:
 			for card in (card1, card2):
-				if p in self.players and p.duel_player == card.controller:
-					plname = 'you'
-				else:
-					plname = self.players[card.controller].nickname
+				plname = self.players[card.controller].nickname
 				s = self.card_to_spec(p.duel_player, card)
 				p.notify(p._("card {name} swapped control towards {plname} and is now located at {targetspec}.").format(plname=plname, targetspec=s, name=card.get_name(p)))
 
