@@ -2134,9 +2134,17 @@ def who(caller):
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
 		s = pl.nickname
 		if pl.afk is True:
-			s += caller.connection._(" [AFK]")
+			s += " " + caller.connection._("[AFK]")
 		if pl.watching:
-			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(s, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
+			if pl.duel.players[0]:
+				pl0 = pl.duel.players[0].nickname
+			else:
+				pl0 = caller.connection._("n/a")
+			if pl.duel.players[1]:
+				pl1 = pl.duel.players[1].nickname
+			else:
+				pl1 = caller.connection._("n/a")
+			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
 		elif pl.duel:
 			other = None
 			if pl.duel.players[0] is pl:
@@ -2144,13 +2152,13 @@ def who(caller):
 			else:
 				other = pl.duel.players[0]
 			if other is None:
-				other = "n/a"
+				other = caller.connection._("n/a")
 			else:
 				other = other.nickname
 			if pl.duel.private is True:
-				caller.connection.notify(caller.connection._("%s (privately dueling %s)" %(pl.nickname, other)))
+				caller.connection.notify(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
 			else:
-				caller.connection.notify(caller.connection._("%s (dueling %s)" %(pl.nickname, other)))
+				caller.connection.notify(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
 		else:
 			caller.connection.notify(s)
 

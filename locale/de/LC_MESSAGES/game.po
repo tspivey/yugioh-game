@@ -1066,7 +1066,7 @@ msgid "Online players:"
 msgstr "Anwesende Spieler:"
 
 #: server.py:2130
-msgid " [AFK]"
+msgid "[AFK]"
 msgstr "[abwesend]"
 
 #: server.py:2132
