@@ -64,6 +64,7 @@ class MyServer(gsb.Server):
 		caller.connection.watching = False
 		caller.connection.paused_parser = None
 		caller.connection.ignores = set()
+		caller.connection.card_list = []
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -910,6 +911,7 @@ class MyDuel(dm.Duel):
 			con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
 		else:
 			con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
+		con.card_list = cards
 		for i, c in enumerate(cards):
 			name = self.cardlist_info_for_player(c, con)
 			con.notify("%d: %s" % (i+1, name))
@@ -1167,6 +1169,8 @@ class MyDuel(dm.Duel):
 		specs = {}
 		for card in cards:
 			specs[self.card_to_spec(con.duel_player, card)] = card
+		for i, card in enumerate(con.card_list):
+			specs[str(i + 1)] = card
 		if spec not in specs:
 			con.notify(con._("Invalid card."))
 			return
@@ -1614,6 +1618,7 @@ class MyDuel(dm.Duel):
 				op.done = lambda caller: None
 			pl.parser = parser
 			pl.watching = False
+			pl.card_list = []
 		for pl in self.watchers:
 			pl.notify(pl._("Watching stopped."))
 		check_reboot()
