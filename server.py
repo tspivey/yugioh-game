@@ -498,22 +498,25 @@ class MyDuel(dm.Duel):
 			if not menu:
 				return pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
 			pl.notify(name)
+			activate_count = self.idle_activate.count(card)
 			if card in self.summonable:
-				pl.notify(pl._("s: Summon this card in face-up attack position."))
+				pl.notify("s: "+pl._("Summon this card in face-up attack position."))
 			if card in self.idle_set:
-				pl.notify(pl._("t: Set this card."))
+				pl.notify("t: "+pl._("Set this card."))
 			if card in self.idle_mset:
-				pl.notify(pl._("m: Summon this card in face-down defense position."))
+				pl.notify("m: "+pl._("Summon this card in face-down defense position."))
 			if card in self.repos:
-				pl.notify(pl._("r: reposition this card."))
+				pl.notify("r: "+pl._("reposition this card."))
 			if card in self.spsummon:
-				pl.notify(pl._("c: Special summon this card."))
-			if card in self.idle_activate:
-				pl.notify(pl._("v: Activate this card."))
-			if self.idle_activate.count(card) == 2:
-				pl.notify(pl._("v2: Activate the second effect of this card."))
-			pl.notify(pl._("i: Show card info."))
-			pl.notify(pl._("z: back."))
+				pl.notify("c: "+pl._("Special summon this card."))
+			if activate_count > 0:
+				if activate_count == 1:
+					pl.notify("v: "+pl._("Activate this card."))
+				else:
+					for i in range(activate_count):
+						pl.notify("v"+chr(97+i)+": "+pl._("Activate card effect %d.")%(i+1))
+			pl.notify("i: "+pl._("Show card info."))
+			pl.notify("z: "+pl._("back."))
 			pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
 		def action(caller):
 			if caller.text == 's' and card in self.summonable:
@@ -526,16 +529,32 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.repos.index(card) << 16) + 2)
 			elif caller.text == 'c' and card in self.spsummon:
 				self.set_responsei((self.spsummon.index(card) << 16) + 1)
-			elif caller.text == 'v' and card in self.idle_activate:
-				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
-			elif caller.text == 'v2' and self.idle_activate.count(card) == 2:
-				self.set_responsei((self.idle_activate.index(card) + 1 << 16) + 5)
 			elif caller.text == 'i':
 				self.show_info(card, pl)
 				return prompt(False)
 			elif caller.text == 'z':
 				reactor.callLater(0, self.idle_action, pl)
 				return
+			elif caller.text.startswith('v'):
+				activate_count = self.idle_activate.count(card)
+				if len(caller.text)>2 or activate_count == 0 or (len(caller.text) == 1 and activate_count > 1) or (len(caller.text) == 2 and activate_count == 1):
+					pl.notify(pl._("Invalid action."))
+					prompt()
+					return
+				index = self.idle_activate.index(card)
+				if len(caller.text) == 2:
+					# parse the second letter
+					try:
+						o = ord(caller.text[1])
+					except TypeError:
+						o = -1
+					ad = o - ord('a')
+					if not (0 <= ad <= 25) or ad >= activate_count:
+						pl.notify(pl._("Invalid action."))
+						prompt()
+						return
+					index += ad
+				self.set_responsei((index << 16) + 5)
 			else:
 				pl.notify(pl._("Invalid action."))
 				prompt()
