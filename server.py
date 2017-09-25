@@ -1095,7 +1095,7 @@ class MyDuel(dm.Duel):
 			for w in self.watchers+[op]:
 				s=self.card_to_spec(w.duel_player, card)
 				ts = self.card_to_spec(w.duel_player, cnew)
-				w.notify(w._("{plname}s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
+				w.notify(w._("{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
 		elif ploc == dm.LOCATION_GRAVE and pnewloc in (dm.LOCATION_SZONE, dm.LOCATION_MZONE):
 			cnew = dm.Card.from_code(code)
 			cnew.set_location(newloc)
