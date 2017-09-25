@@ -907,17 +907,19 @@ class MyDuel(dm.Duel):
 
 	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
 		con = self.players[player]
-		if is_tribute:
-			con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
-		else:
-			con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
 		con.card_list = cards
-		for i, c in enumerate(cards):
-			name = self.cardlist_info_for_player(c, con)
-			con.notify("%d: %s" % (i+1, name))
+		def prompt():
+			if is_tribute:
+				con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
+			else:
+				con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
+			for i, c in enumerate(cards):
+				name = self.cardlist_info_for_player(c, con)
+				con.notify("%d: %s" % (i+1, name))
+			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
 		def error(text):
 			con.notify(text)
-			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
+			return prompt()
 		def f(caller):
 			cds = [i - 1 for i in self.parse_ints(caller.text)]
 			if len(cds) != len(set(cds)):
@@ -935,7 +937,7 @@ class MyDuel(dm.Duel):
 				return error(con._("Not enough tributes."))
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
-		con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
+		return prompt()
 
 	def cardlist_info_for_player(self, card, con):
 		spec = self.card_to_spec(con.duel_player, card)
