@@ -24,6 +24,7 @@ POS_FACEDOWN_DEFENSE = 8
 POS_FACEDOWN = 0xa
 QUERY_CODE = 1
 QUERY_POSITION = 0x2
+QUERY_LEVEL = 0x10
 QUERY_ATTACK = 0x100
 QUERY_DEFENSE = 0x200
 QUERY_EQUIP_CARD = 0x4000
@@ -186,6 +187,7 @@ class Duel:
 		37: self.msg_reversedeck,
 		38: self.msg_decktop,
 		50: self.msg_move,
+		55: self.msg_swap,
 		56: self.msg_field_disabled,
 		60: self.msg_summoning,
 		16: self.msg_select_chain,
@@ -267,6 +269,22 @@ class Duel:
 				print("msg %d unhandled" % msg)
 				data = b''
 		return data
+
+	def msg_swap(self, data):
+		data = io.BytesIO(data[1:])
+
+		code1 = self.read_u32(data)
+		location1 = self.read_u32(data)
+		code2 = self.read_u32(data)
+		location2 = self.read_u32(data)
+
+		card1 = Card.from_code(code1)
+		card1.set_location(location1)
+		card2 = Card.from_code(code2)
+		card2.set_location(location2)
+		self.cm.call_callbacks('swap', card1, card2)
+
+		return data.read()
 
 	def msg_counters(self, data):
 		data = io.BytesIO(data[0:])
@@ -825,7 +843,7 @@ class Duel:
 
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY_CODE | QUERY_POSITION | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS
+		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS
 		bl = lib.query_field_card(self.duel, player, location, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
@@ -839,6 +857,7 @@ class Duel:
 			card = Card.from_code(code)
 			position = self.read_u32(buf)
 			card.set_location(position)
+			card.level = self.read_u32(buf) & 0xff
 			card.attack = self.read_u32(buf)
 			card.defense = self.read_u32(buf)
 

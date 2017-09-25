@@ -3,6 +3,7 @@ import os
 import re
 import random
 from functools import partial
+from collections import OrderedDict
 import json
 import datetime
 import collections
@@ -50,6 +51,7 @@ class MyServer(gsb.Server):
 		caller.connection.requested_opponent = (None, False)
 		caller.connection.nickname = None
 		caller.connection.seen_waiting = False
+		caller.connection.afk = False
 		caller.connection.chat = True
 		caller.connection.challenge = True
 		caller.connection.reply_to = ""
@@ -62,6 +64,7 @@ class MyServer(gsb.Server):
 		caller.connection.watching = False
 		caller.connection.paused_parser = None
 		caller.connection.ignores = set()
+		caller.connection.card_list = []
 
 	def on_disconnect(self, caller):
 		con = caller.connection
@@ -79,6 +82,18 @@ class MyServer(gsb.Server):
 
 server = MyServer(port=4000, default_parser=LoginParser())
 game.server = server
+
+@parser.command(names=['afk'])
+def afk(caller):
+	conn = caller.connection
+	if caller.connection.afk is False:
+		conn.notify(conn._("You are now AFK."))
+		conn.afk = True
+		return
+	else:
+		conn.notify(conn._("You are no longer AFK."))
+		conn.afk = False
+		return
 
 @parser.command(names=['duel'], args_regexp=r'(.*)')
 def duel(caller):
@@ -125,28 +140,31 @@ def duel2(caller, private=False):
 		reactor.callLater(0, procduel, d)
 		del duels[con.nickname]
 		return
-	player = get_player(nick)
+	players = guess_players(nick, con.nickname)
 	if con.duel:
 		con.notify(con._("You are already in a duel."))
 		return
-	elif not player:
+	elif len(players) > 1:
+		con.notify(con._("Multiple players match this name: %s")%(','.join([p.nickname for p in players])))
+		return
+	elif not len(players):
 		con.notify(con._("That player is not online."))
 		return
-	elif player.duel:
+	elif players[0].duel:
 		con.notify(con._("That player is already in a duel."))
-		return
-	elif player is con:
-		con.notify(con._("You can't duel yourself."))
 		return
 	elif not con.deck['cards']:
 		con.notify(con._("You can't duel without a deck. Try deck load public/starter."))
 		return
-	elif player.nickname in con.ignores:
-		con.notify(con._("You are ignoring %s.") % player.nickname)
+	elif players[0].nickname in con.ignores:
+		con.notify(con._("You are ignoring %s.") % players[0].nickname)
 		return
-	elif con.nickname in player.ignores:
-		con.notify(con._("%s is ignoring you.") % player.nickname)
+	elif con.nickname in players[0].ignores:
+		con.notify(con._("%s is ignoring you.") % players[0].nickname)
 		return
+	player = players[0]
+	if player.afk is True:
+		con.notify(con._("%s is AFK and may not be paying attention.") %(player.nickname))
 	rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(con.deck['cards'])])))
 	main = 0
 	extra = 0
@@ -337,10 +355,19 @@ class MyDuel(dm.Duel):
 		self.cm.register_callback('lpupdate', self.lpupdate)
 		self.cm.register_callback('debug', self.debug)
 		self.cm.register_callback('counters', self.counters)
+		self.cm.register_callback('swap', self.swap)
 		self.debug_mode = False
 		self.players = [None, None]
 		self.lp = [8000, 8000]
 		self.started = False
+
+	def swap(self, card1, card2):
+
+		for p in self.watchers+self.players:
+			for card in (card1, card2):
+				plname = self.players[card.controller].nickname
+				s = self.card_to_spec(p.duel_player, card)
+				p.notify(p._("card {name} swapped control towards {plname} and is now located at {targetspec}.").format(plname=plname, targetspec=s, name=card.get_name(p)))
 
 	def counters(self, card, type, count, added):
 
@@ -880,16 +907,19 @@ class MyDuel(dm.Duel):
 
 	def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
 		con = self.players[player]
-		if is_tribute:
-			con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
-		else:
-			con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
-		for i, c in enumerate(cards):
-			name = self.cardlist_info_for_player(c, con)
-			con.notify("%d: %s" % (i+1, name))
+		con.card_list = cards
+		def prompt():
+			if is_tribute:
+				con.notify(con._("Select %d to %d cards to tribute separated by spaces:") % (min_cards, max_cards))
+			else:
+				con.notify(con._("Select %d to %d cards separated by spaces:") % (min_cards, max_cards))
+			for i, c in enumerate(cards):
+				name = self.cardlist_info_for_player(c, con)
+				con.notify("%d: %s" % (i+1, name))
+			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
 		def error(text):
 			con.notify(text)
-			con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
+			return prompt()
 		def f(caller):
 			cds = [i - 1 for i in self.parse_ints(caller.text)]
 			if len(cds) != len(set(cds)):
@@ -907,7 +937,7 @@ class MyDuel(dm.Duel):
 				return error(con._("Not enough tributes."))
 			self.set_responseb(buf)
 			reactor.callLater(0, procduel, self)
-		con.notify(DuelReader, f, no_abort="Invalid command", restore_parser=duel_parser)
+		return prompt()
 
 	def cardlist_info_for_player(self, card, con):
 		spec = self.card_to_spec(con.duel_player, card)
@@ -1034,11 +1064,46 @@ class MyDuel(dm.Duel):
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				w.notify(w._("Card %s (%s) destroyed.") % (s, card.get_name(w)))
+		elif ploc == pnewloc and ploc in (dm.LOCATION_MZONE, dm.LOCATION_SZONE):
+			cnew = dm.Card.from_code(code)
+			cnew.set_location(newloc)
+
+			if (location & 0xff) != (newloc & 0xff):
+				# controller changed too (e.g. change of heart)
+				pl.notify(pl._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(pl), op = op.nickname, targetspec = self.card_to_spec(pl.duel_player, cnew)))
+				op.notify(op._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=self.card_to_spec(op.duel_player, card), name = card.get_name(op), targetspec = self.card_to_spec(op.duel_player, cnew)))
+				for w in self.watchers:
+					s = self.card_to_spec(w.duel_player, card)
+					ts = self.card_to_spec(w.duel_player, cnew)
+					w.notify(w._("{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(plname=pl.nickname, op=op.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
+			else:
+				# only place changed (alien decks e.g.)
+				pl.notify(pl._("your card {spec} ({name}) switched its zone to {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=self.card_to_spec(pl.duel_player, cnew)))
+				for w in self.watchers+[op]:
+					s = self.card_to_spec(w.duel_player, card)
+					ts = self.card_to_spec(w.duel_player, cnew)
+					w.notify(w._("{plname}s card {spec} ({name}) changed its zone to {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
 		elif reason & 0x4000 and ploc != pnewloc:
 			pl.notify(pl._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(pl)))
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				w.notify(w._("{plname} discarded {spec} ({name}).").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
+		elif ploc == dm.LOCATION_REMOVED and pnewloc in (dm.LOCATION_SZONE, dm.LOCATION_MZONE):
+			cnew = dm.Card.from_code(code)
+			cnew.set_location(newloc)
+			pl.notify(pl._("your banished card {spec} ({name}) returns to the field at {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=self.card_to_spec(pl.duel_player, cnew)))
+			for w in self.watchers+[op]:
+				s=self.card_to_spec(w.duel_player, card)
+				ts = self.card_to_spec(w.duel_player, cnew)
+				w.notify(w._("{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
+		elif ploc == dm.LOCATION_GRAVE and pnewloc in (dm.LOCATION_SZONE, dm.LOCATION_MZONE):
+			cnew = dm.Card.from_code(code)
+			cnew.set_location(newloc)
+			pl.notify(pl._("your card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=self.card_to_spec(pl.duel_player, cnew)))
+			for w in self.watchers+[op]:
+				s = self.card_to_spec(w.duel_player, card)
+				ts = self.card_to_spec(w.duel_player, cnew)
+				w.notify(w._("{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(plname = pl.nickname, spec=s, targetspec=ts, name = card.get_name(w)))
 		elif pnewloc == dm.LOCATION_HAND and ploc != pnewloc:
 			pl.notify(pl._("Card {spec} ({name}) returned to hand.")
 				.format(spec=plspec, name=card.get_name(pl)))
@@ -1051,18 +1116,17 @@ class MyDuel(dm.Duel):
 				w.notify(w._("{plname}'s card {spec} ({name}) returned to their hand.")
 					.format(plname=pl.nickname, spec=s, name=name))
 		elif reason & 0x12 and ploc != pnewloc:
-			name = card.get_name(pl)
 			pl.notify(pl._("You tribute {spec} ({name}).")
-				.format(spec=plspec, name=name))
+				.format(spec=plspec, name=card.get_name(pl)))
 			for w in self.watchers+[op]:
 				s = self.card_to_spec(w.duel_player, card)
 				if card.position in (dm.POS_FACEDOWN_DEFENSE, dm.POS_FACEDOWN):
-					name = op._("%s card") % card.get_position(w)
+					name = w._("%s card") % card.get_position(w)
 				else:
-					name = card.get_name(op)
+					name = card.get_name(w)
 				w.notify(w._("{plname} tributes {spec} ({name}).")
 					.format(plname=pl.nickname, spec=s, name=name))
-		elif ploc == dm.LOCATION_OVERLAY+dm.LOCATION_MZONE:
+		elif ploc == dm.LOCATION_OVERLAY+dm.LOCATION_MZONE and pnewloc in (dm.LOCATION_GRAVE, dm.LOCATION_REMOVED):
 			pl.notify(pl._("you detached %s.")%(card.get_name(pl)))
 			for w in self.watchers+[op]:
 				w.notify(w._("%s detached %s")%(pl.nickname, card.get_name(w)))
@@ -1107,6 +1171,8 @@ class MyDuel(dm.Duel):
 		specs = {}
 		for card in cards:
 			specs[self.card_to_spec(con.duel_player, card)] = card
+		for i, card in enumerate(con.card_list):
+			specs[str(i + 1)] = card
 		if spec not in specs:
 			con.notify(con._("Invalid card."))
 			return
@@ -1554,6 +1620,7 @@ class MyDuel(dm.Duel):
 				op.done = lambda caller: None
 			pl.parser = parser
 			pl.watching = False
+			pl.card_list = []
 		for pl in self.watchers:
 			pl.notify(pl._("Watching stopped."))
 		check_reboot()
@@ -1794,6 +1861,14 @@ def deck_edit(caller):
 		con.deck = json.loads(deck.content)
 	cards = con.deck['cards']
 	last_search = ""
+	def group_cards(cards):
+		cnt = OrderedDict()
+		for i, code in enumerate(cards):
+			if not code in cnt:
+				cnt[code] = 1
+			else:
+				cnt[code] += 1
+		return cnt
 	def info():
 		show_deck_info(con)
 		con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
@@ -1839,14 +1914,15 @@ def deck_edit(caller):
 			con.session.commit()
 			read()
 		elif caller.text.startswith('r'):
+			cnt = group_cards(cards)
 			rm = re.search(r'^r(\d+)', caller.text)
 			if rm:
 				n = int(rm.group(1)) - 1
-				if n < 0 or n > len(cards) - 1:
+				if n < 0 or n > len(cnt) - 1:
 					con.notify(con._("Invalid card."))
 					read()
 					return
-				code = cards[n]
+				code = list(cnt.keys())[n]
 			if cards.count(code) == 0:
 				con.notify(con._("This card isn't in your deck."))
 				read()
@@ -1877,9 +1953,15 @@ def deck_edit(caller):
 				con.deck_edit_pos = pos
 			read()
 		elif caller.text == 'l':
-			for i, code in enumerate(cards):
+			i=0
+			cnt = group_cards(cards)
+			for code, count in cnt.items():
+				i+=1
 				card = dm.Card.from_code(code)
-				con.notify("%d: %s" % (i+1, card.get_name(con)))
+				if count == 1:
+					con.notify("%d: %s" % (i, card.get_name(con)))
+				else:
+					con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
 			read()
 		elif caller.text == 'q':
 			con.notify("Quit.")
@@ -1995,6 +2077,27 @@ def deck_check(caller):
 def get_player(name):
 	return game.players.get(name.lower())
 
+# self being the caller (we don't want to address me)
+def guess_players(name, self):
+
+	name = name[0].upper()+name[1:].lower()
+	players = [get_player(p) for p in game.players.keys() if (p[0].upper()+p[1:].lower()) != self]
+	i = 0
+
+	while i < len(players):
+		if players[i].nickname == name:
+			# exact match means we will only return that player
+			return [players[i]]
+		elif players[i].nickname.startswith(name):
+			i += 1
+			continue
+		else:
+			del players[i]
+
+	players.sort(key=lambda p: p.nickname)
+
+	return players
+
 @parser.command(names=["chat"], args_regexp=r'(.*)')
 def chat(caller):
 	text = caller.args[0]
@@ -2029,12 +2132,35 @@ def say(caller):
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
+		s = pl.nickname
+		if pl.afk is True:
+			s += " " + caller.connection._("[AFK]")
 		if pl.watching:
-			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)" %(pl.nickname, pl.duel.players[0].nickname, pl.duel.players[1].nickname)))
+			if pl.duel.players[0]:
+				pl0 = pl.duel.players[0].nickname
+			else:
+				pl0 = caller.connection._("n/a")
+			if pl.duel.players[1]:
+				pl1 = pl.duel.players[1].nickname
+			else:
+				pl1 = caller.connection._("n/a")
+			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
 		elif pl.duel:
-			caller.connection.notify(caller.connection._("%s (dueling %s)" %(pl.nickname, (pl.duel.players[1] if pl.duel.players[0] is pl else pl.duel.players[0]).nickname)))
+			other = None
+			if pl.duel.players[0] is pl:
+				other = pl.duel.players[1]
+			else:
+				other = pl.duel.players[0]
+			if other is None:
+				other = caller.connection._("n/a")
+			else:
+				other = other.nickname
+			if pl.duel.private is True:
+				caller.connection.notify(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
+			else:
+				caller.connection.notify(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
 		else:
-			caller.connection.notify(pl.nickname)
+			caller.connection.notify(s)
 
 
 @duel_parser.command(names=['sc', 'score'])
@@ -2241,14 +2367,21 @@ def tell(caller):
 		caller.connection.notify(caller.connection._("Usage: tell <player> <message>"))
 		return
 	player = args[0]
-	player = get_player(player)
-	if not player:
+	players = guess_players(player, caller.connection.nickname)
+	if len(players) == 1:
+		player = players[0]
+	elif len(players) > 1:
+		caller.connection.notify(caller.connection._("Multiple players match this name: %s")%(','.join([p.nickname for p in players])))
+		return
+	else:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
 	if caller.connection.nickname in player.ignores:
 		caller.connection.notify(caller.connection._("%s is ignoring you.") % player.nickname)
 		return
 	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
+	if player.afk is True:
+		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
 	player.notify(player._("%s tells you: %s") % (caller.connection.nickname, args[1]))
 	player.reply_to = caller.connection.nickname
 
@@ -2285,19 +2418,23 @@ def watch(caller):
 		con.watching = False
 		con.notify(con._("Watching stopped."))
 		return
-	player = get_player(nick)
+	players = guess_players(nick, con.nickname)
 	if con.duel:
 		con.notify(con._("You are already in a duel."))
 		return
-	elif not player:
+	elif len(players) > 1:
+		con.notify(con._("Multiple players match this name: %s")%(','.join([p.nickname for p in players])))
+		return
+	elif not len(players):
 		con.notify(con._("That player is not online."))
 		return
-	if not player.duel:
+	elif not players[0].duel:
 		con.notify(con._("That player is not in a duel."))
 		return
-	if player.duel.private:
+	elif players[0].duel.private:
 		con.notify(con._("That duel is private."))
 		return
+	player = players[0]
 	con.duel = player.duel
 	con.duel_player = 0
 	con.duel.watchers.append(con)
@@ -2321,7 +2458,7 @@ def ignore(caller):
 		return
 	account = con.session.query(models.Account).filter_by(name=name).first()
 	if not account:
-		con.notify(con._("That account doesn't exist."))
+		con.notify(con._("That account doesn't exist. Make sure you enter the full name (no auto-completion for security reasons)."))
 		con.session.commit()
 		return
 	ignore = con.session.query(models.Ignore).filter_by(account_id=con.account.id, ignored_account_id=account.id).first()
