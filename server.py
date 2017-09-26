@@ -242,6 +242,13 @@ class CustomCard(dm.Card):
 			return row[0]
 		return desc
 
+	def get_strings(self, con):
+		row = con.cdb.execute('select * from texts where id = ?', (self.code, )).fetchone()
+		strings = []
+		for i in range(3, len(row), 1):
+			strings.append(row[i])
+		return strings
+
 	def get_info(self, pl):
 		lst = []
 		types = []
@@ -494,26 +501,40 @@ class MyDuel(dm.Duel):
 	def act_on_card(self, caller, card):
 		pl = self.players[self.tp]
 		name = card.get_name(pl)
+		if card in self.idle_activate:
+			card = self.idle_activate[self.idle_activate.index(card)]
 		def prompt(menu=True):
 			if not menu:
 				return pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
 			pl.notify(name)
+			activate_count = self.idle_activate.count(card)
 			if card in self.summonable:
-				pl.notify(pl._("s: Summon this card in face-up attack position."))
+				pl.notify("s: "+pl._("Summon this card in face-up attack position."))
 			if card in self.idle_set:
-				pl.notify(pl._("t: Set this card."))
+				pl.notify("t: "+pl._("Set this card."))
 			if card in self.idle_mset:
-				pl.notify(pl._("m: Summon this card in face-down defense position."))
+				pl.notify("m: "+pl._("Summon this card in face-down defense position."))
 			if card in self.repos:
-				pl.notify(pl._("r: reposition this card."))
+				pl.notify("r: "+pl._("reposition this card."))
 			if card in self.spsummon:
-				pl.notify(pl._("c: Special summon this card."))
-			if card in self.idle_activate:
-				pl.notify(pl._("v: Activate this card."))
-			if self.idle_activate.count(card) == 2:
-				pl.notify(pl._("v2: Activate the second effect of this card."))
-			pl.notify(pl._("i: Show card info."))
-			pl.notify(pl._("z: back."))
+				pl.notify("c: "+pl._("Special summon this card."))
+			if activate_count > 0:
+				effect_descriptions = []
+				strings = card.get_strings(caller.connection)
+				for i in range(activate_count):
+					ind = self.idle_activate[self.idle_activate.index(card)+i].extra
+					if ind == 0 or strings[ind-card.code*16].strip() == '':
+						effect_descriptions.append(caller.connection._("Activate this card."))
+					else:
+						ind -= card.code*16
+						effect_descriptions.append(strings[ind])
+				if activate_count == 1:
+					pl.notify("v: "+effect_descriptions[0])
+				else:
+					for i in range(activate_count):
+						pl.notify("v"+chr(97+i)+": "+effect_descriptions[i])
+			pl.notify("i: "+pl._("Show card info."))
+			pl.notify("z: "+pl._("back."))
 			pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
 		def action(caller):
 			if caller.text == 's' and card in self.summonable:
@@ -526,16 +547,32 @@ class MyDuel(dm.Duel):
 				self.set_responsei((self.repos.index(card) << 16) + 2)
 			elif caller.text == 'c' and card in self.spsummon:
 				self.set_responsei((self.spsummon.index(card) << 16) + 1)
-			elif caller.text == 'v' and card in self.idle_activate:
-				self.set_responsei((self.idle_activate.index(card) << 16) + 5)
-			elif caller.text == 'v2' and self.idle_activate.count(card) == 2:
-				self.set_responsei((self.idle_activate.index(card) + 1 << 16) + 5)
 			elif caller.text == 'i':
 				self.show_info(card, pl)
 				return prompt(False)
 			elif caller.text == 'z':
 				reactor.callLater(0, self.idle_action, pl)
 				return
+			elif caller.text.startswith('v'):
+				activate_count = self.idle_activate.count(card)
+				if len(caller.text)>2 or activate_count == 0 or (len(caller.text) == 1 and activate_count > 1) or (len(caller.text) == 2 and activate_count == 1):
+					pl.notify(pl._("Invalid action."))
+					prompt()
+					return
+				index = self.idle_activate.index(card)
+				if len(caller.text) == 2:
+					# parse the second letter
+					try:
+						o = ord(caller.text[1])
+					except TypeError:
+						o = -1
+					ad = o - ord('a')
+					if not (0 <= ad <= 25) or ad >= activate_count:
+						pl.notify(pl._("Invalid action."))
+						prompt()
+						return
+					index += ad
+				self.set_responsei((index << 16) + 5)
 			else:
 				pl.notify(pl._("Invalid action."))
 				prompt()
@@ -649,19 +686,32 @@ class MyDuel(dm.Duel):
 		if not op.seen_waiting:
 			op.notify(op._("Waiting for opponent."))
 			op.seen_waiting = True
-		specs = {}
 		chain_cards = [c[1] for c in chains]
-		for et, card, desc in chains:
+		specs = {}
+		for i in range(len(chains)):
+			card = chains[i][1]
+			card.chain_index = i
+			desc = chains[i][2]
 			cs = self.card_to_spec(player, card)
+			chain_count = chain_cards.count(card)
+			if chain_count > 1:
+				cs += chr(ord('a')+list(specs.values()).count(card))
 			specs[cs] = card
+			card.chain_spec = cs
+			if desc == 0:
+				card.effect_description = ''
+			else:
+				card.effect_description = card.get_strings(pl)[desc-card.code*16].strip()
 		def prompt():
 			if forced:
 				pl.notify(pl._("Select chain:"))
 			else:
 				pl.notify(pl._("Select chain (c to cancel):"))
-			for et, card, desc in chains:
-				cs = self.card_to_spec(player, card)
-				pl.notify("%s: %s" % (cs, card.get_name(pl)))
+			for card in chain_cards:
+				if card.effect_description == '':
+					pl.notify("%s: %s" % (card.chain_spec, card.get_name(pl)))
+				else:
+					pl.notify("%s (%s): %s"%(card.chain_spec, card.get_name(pl), card.effect_description))
 			if forced:
 				prompt = pl._("Select card to chain:")
 			else:
@@ -682,7 +732,7 @@ class MyDuel(dm.Duel):
 				pl.notify(pl._("Invalid spec."))
 				return prompt()
 			card = specs[caller.text]
-			idx = chain_cards.index(card)
+			idx = card.chain_index
 			if info:
 				self.show_info(card, pl)
 				return prompt()
@@ -1263,7 +1313,7 @@ class MyDuel(dm.Duel):
 			opt = strings[pl.language]['system'].get(desc, opt)
 		pl.notify(YesOrNo, opt, yes, no=no, restore_parser=old_parser)
 
-	def select_effectyn(self, player, card):
+	def select_effectyn(self, player, card, desc):
 		pl = self.players[player]
 		old_parser = pl.parser
 		def yes(caller):
@@ -1274,6 +1324,11 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		spec = self.card_to_spec(player, card)
 		question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.get_name(pl), spec=spec)
+		if desc > 0:
+			desc -= card.code*16
+			strings = card.get_strings(pl)
+			if strings[desc].strip() != '':
+				question += '\n'+strings[desc]
 		pl.notify(YesOrNo, question, yes, no=no, restore_parser=old_parser)
 
 	def win(self, player, reason):
