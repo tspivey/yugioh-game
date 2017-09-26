@@ -688,17 +688,26 @@ class MyDuel(dm.Duel):
 			op.seen_waiting = True
 		specs = {}
 		chain_cards = [c[1] for c in chains]
+		effect_descriptions = []
 		for et, card, desc in chains:
 			cs = self.card_to_spec(player, card)
 			specs[cs] = card
+			if desc == 0:
+				effect_descriptions.append('')
+			else:
+				effect_descriptions.append(card.get_strings(pl)[desc-card.code*16].strip())
 		def prompt():
 			if forced:
 				pl.notify(pl._("Select chain:"))
 			else:
 				pl.notify(pl._("Select chain (c to cancel):"))
-			for et, card, desc in chains:
+			for i in range(len(chains)):
+				card = chains[i][1]
 				cs = self.card_to_spec(player, card)
-				pl.notify("%s: %s" % (cs, card.get_name(pl)))
+				if effect_descriptions[i] == '':
+					pl.notify("%s: %s" % (cs, card.get_name(pl)))
+				else:
+					pl.notify("%s (%s): %s"%(cs, card.get_name(pl), effect_descriptions[i]))
 			if forced:
 				prompt = pl._("Select card to chain:")
 			else:
