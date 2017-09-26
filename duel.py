@@ -858,7 +858,9 @@ class Duel:
 			card = Card.from_code(code)
 			position = self.read_u32(buf)
 			card.set_location(position)
-			card.level = self.read_u32(buf) & 0xff
+			level = self.read_u32(buf)
+			if (level & 0xff) > 0:
+				card.level = level & 0xff
 			card.attack = self.read_u32(buf)
 			card.defense = self.read_u32(buf)
 
@@ -887,7 +889,7 @@ class Duel:
 		return cards
 
 	def get_card(self, player, loc, seq):
-		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION
+		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
@@ -898,6 +900,9 @@ class Duel:
 		card = Card.from_code(code)
 		position = self.read_u32(buf)
 		card.set_location(position)
+		level = self.read_u32(buf)
+		if (level & 0xff) > 0:
+			card.level = level & 0xff
 		card.attack = self.read_u32(buf)
 		card.defense = self.read_u32(buf)
 		return card
