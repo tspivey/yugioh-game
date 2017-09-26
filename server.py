@@ -242,6 +242,13 @@ class CustomCard(dm.Card):
 			return row[0]
 		return desc
 
+	def get_strings(self, con):
+		row = con.cdb.execute('select * from texts where id = ?', (self.code, )).fetchone()
+		strings = []
+		for i in range(3, len(row), 1):
+			strings.append(row[i])
+		return strings
+
 	def get_info(self, pl):
 		lst = []
 		types = []
@@ -494,6 +501,8 @@ class MyDuel(dm.Duel):
 	def act_on_card(self, caller, card):
 		pl = self.players[self.tp]
 		name = card.get_name(pl)
+		if card in self.idle_activate:
+			card = self.idle_activate[self.idle_activate.index(card)]
 		def prompt(menu=True):
 			if not menu:
 				return pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
@@ -510,11 +519,20 @@ class MyDuel(dm.Duel):
 			if card in self.spsummon:
 				pl.notify("c: "+pl._("Special summon this card."))
 			if activate_count > 0:
+				effect_descriptions = []
+				strings = card.get_strings(caller.connection)
+				for i in range(activate_count):
+					ind = self.idle_activate[self.idle_activate.index(card)+i].extra
+					if ind == 0 or strings[ind-card.code*16].strip() == '':
+						effect_descriptions.append(caller.connection._("Activate this card."))
+					else:
+						ind -= card.code*16
+						effect_descriptions.append(strings[ind])
 				if activate_count == 1:
-					pl.notify("v: "+pl._("Activate this card."))
+					pl.notify("v: "+effect_descriptions[0])
 				else:
 					for i in range(activate_count):
-						pl.notify("v"+chr(97+i)+": "+pl._("Activate card effect %d.")%(i+1))
+						pl.notify("v"+chr(97+i)+": "+effect_descriptions[i])
 			pl.notify("i: "+pl._("Show card info."))
 			pl.notify("z: "+pl._("back."))
 			pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
