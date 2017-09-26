@@ -53,6 +53,7 @@ class MyServer(gsb.Server):
 		caller.connection.seen_waiting = False
 		caller.connection.afk = False
 		caller.connection.chat = True
+		caller.connection.watchnotify = True
 		caller.connection.challenge = True
 		caller.connection.reply_to = ""
 		caller.connection.session = Session()
@@ -2196,6 +2197,14 @@ def say(caller):
 		if caller.connection.nickname not in pl.ignores:
 			pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
+@parser.command(names=['watchnotify', 'watchn'])
+def watchnotify(caller):
+	caller.connection.watchnotify = not caller.connection.watchnotify
+	if caller.connection.watchnotify:
+		caller.connection.notify(caller.connection._("Watch notification enabled."))
+	else:
+		caller.connection.notify(caller.connection._("Watch notification disabled."))
+
 @parser.command(names=['who'])
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
@@ -2482,6 +2491,9 @@ def watch(caller):
 			con.notify(con._("You aren't watching a duel."))
 			return
 		con.duel.watchers.remove(con)
+		for pl in con.duel.players:
+			if pl.watchnotify:
+				pl.notify(pl._("%s is no longer watching this duel.")%(con.nickname))
 		con.duel = None
 		con.watching = False
 		con.notify(con._("Watching stopped."))
@@ -2509,6 +2521,9 @@ def watch(caller):
 	con.parser = duel_parser
 	con.watching = True
 	con.notify(con._("Watching duel between %s and %s.") % (con.duel.players[0].nickname, con.duel.players[1].nickname))
+	for pl in con.duel.players:
+		if pl.watchnotify:
+			pl.notify(pl._("%s is now watching this duel.")%(con.nickname))
 
 @parser.command(args_regexp=r'(.*)')
 def ignore(caller):
