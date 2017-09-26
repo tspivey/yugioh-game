@@ -89,7 +89,7 @@ class LoginParser(gsb.Parser):
 
 	def handle_email(self, caller):
 		if not caller.text or '@' not in caller.text:
-			return self.prompt("Invalid email address.")
+			return self.prompt(caller, "Invalid email address.")
 		caller.connection.account.email = caller.text.strip()
 		caller.connection.session.add(caller.connection.account)
 		caller.connection.session.commit()
