@@ -249,6 +249,28 @@ class CustomCard(dm.Card):
 			strings.append(row[i])
 		return strings
 
+	def get_effect_description(self, con, i, existing=False):
+
+		s = ''
+		e = False
+		lstr = self.get_strings(con)
+
+		try:
+
+			if i == 0 or lstr[i-self.code*16].strip() == '':
+				s = con._("Activate this card.")
+			else:
+				e = True
+				s = lstr[i-self.code*16].strip()
+		except IndexError:
+			e = True
+			s = strings[con.language]['system'][i]
+
+		if existing and not e:
+			s = ''
+
+		return s
+
 	def get_info(self, pl):
 		lst = []
 		types = []
@@ -520,14 +542,10 @@ class MyDuel(dm.Duel):
 				pl.notify("c: "+pl._("Special summon this card."))
 			if activate_count > 0:
 				effect_descriptions = []
-				strings = card.get_strings(caller.connection)
 				for i in range(activate_count):
 					ind = self.idle_activate[self.idle_activate.index(card)+i].extra
-					if ind == 0 or strings[ind-card.code*16].strip() == '':
-						effect_descriptions.append(caller.connection._("Activate this card."))
-					else:
-						ind -= card.code*16
-						effect_descriptions.append(strings[ind])
+					effect_descriptions.append(card.get_effect_description(pl, ind))
+
 				if activate_count == 1:
 					pl.notify("v: "+effect_descriptions[0])
 				else:
@@ -698,10 +716,7 @@ class MyDuel(dm.Duel):
 				cs += chr(ord('a')+list(specs.values()).count(card))
 			specs[cs] = card
 			card.chain_spec = cs
-			if desc == 0:
-				card.effect_description = ''
-			else:
-				card.effect_description = card.get_strings(pl)[desc-card.code*16].strip()
+			card.effect_description = card.get_effect_description(pl, desc, True)
 		def prompt():
 			if forced:
 				pl.notify(pl._("Select chain:"))
@@ -1324,11 +1339,9 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		spec = self.card_to_spec(player, card)
 		question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.get_name(pl), spec=spec)
-		if desc > 0:
-			desc -= card.code*16
-			strings = card.get_strings(pl)
-			if strings[desc].strip() != '':
-				question += '\n'+strings[desc]
+		s = card.get_effect_description(pl, desc, True)
+		if s != '':
+			question += '\n'+s
 		pl.notify(YesOrNo, question, yes, no=no, restore_parser=old_parser)
 
 	def win(self, player, reason):
