@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-24 21:51+0200\n"
+"POT-Creation-Date: 2017-09-26 18:43+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -35,1152 +35,1156 @@ msgstr "%s angemeldet."
 msgid "Please enter y or n."
 msgstr "Gib y oder n ein"
 
-#: server.py:74
+#: server.py:75
 #, python-format
 msgid "%s logged out."
 msgstr "%s abgemeldet."
 
-#: server.py:89
+#: server.py:90
 msgid "You are now AFK."
 msgstr "Du bist jetzt abwesend."
 
-#: server.py:93
+#: server.py:94
 msgid "You are no longer AFK."
 msgstr "Du bist nicht länger abwesend."
 
-#: server.py:110 server.py:2118 server.py:2154
+#: server.py:111 server.py:2180 server.py:2224
 msgid "Not in a duel."
 msgstr "Du duellierst Dich gerade nicht."
 
-#: server.py:115
+#: server.py:116
 #, python-format
 msgid "%s has ended the duel."
 msgstr "%s hat das Duell beendet."
 
-#: server.py:118
+#: server.py:119
 #, python-format
 msgid "%s has cowardly submitted to %s."
 msgstr "%s hat das Duell mit %s aufgegeben."
 
-#: server.py:126
+#: server.py:127
 msgid "No duel to continue."
 msgstr "Es gibt kein Duell, welches Du fortsetzen könntest."
 
-#: server.py:134
+#: server.py:135
 msgid "Duel continued."
 msgstr "Duell fortgesetzt."
 
-#: server.py:144 server.py:2408
+#: server.py:145 server.py:2478
 msgid "You are already in a duel."
 msgstr "Du duellierst Dich bereits."
 
-#: server.py:147 server.py:2359 server.py:2411
+#: server.py:148 server.py:2429 server.py:2481
 #, python-format
 msgid "Multiple players match this name: %s"
 msgstr "Mehrere Spieler könnten gemeint sein: %s"
 
-#: server.py:150 server.py:2362 server.py:2383 server.py:2414
+#: server.py:151 server.py:2432 server.py:2453 server.py:2484
 msgid "That player is not online."
 msgstr "Dieser Spieler ist nicht anwesend."
 
-#: server.py:153
+#: server.py:154
 msgid "That player is already in a duel."
 msgstr "Dieser Spieler duelliert sich bereits."
 
-#: server.py:156
+#: server.py:157
 msgid "You can't duel without a deck. Try deck load public/starter."
 msgstr "Du kannst nicht ohne Deck duellieren. Versuche deck load public/starter"
 
-#: server.py:159
+#: server.py:160
 #, python-format
 msgid "You are ignoring %s."
 msgstr "Du ignorierst %s."
 
-#: server.py:162 server.py:2365
+#: server.py:163 server.py:2435
 #, python-format
 msgid "%s is ignoring you."
 msgstr "%s ignoriert Dich."
 
-#: server.py:166 server.py:2369
+#: server.py:167 server.py:2439
 #, python-format
 msgid "%s is AFK and may not be paying attention."
 msgstr "%s ist abwesend und könnte Dich eventuell nicht bemerken."
 
-#: server.py:177
+#: server.py:178
 #, python-format
 msgid "Your main deck must contain between 40 and 200 cards (currently %d)."
 msgstr "Dein Main Deck muss zwischen 40 und 200 Karten beinhalten (derzeit %d)."
 
-#: server.py:181
+#: server.py:182
 #, python-format
 msgid "Your extra deck may not contain more than 15 cards (currently %d)."
 msgstr "Dein Extradeck darf nicht mehr als 15 Karten beinhalten (derzeit %d)."
 
-#: server.py:185
+#: server.py:186
 #, python-format
 msgid "Duel request accepted, dueling with %s."
 msgstr "Duell-Anfrage akzeptiert, Duell mit %s."
 
-#: server.py:191
+#: server.py:192
 #, python-format
 msgid "The duel between %s and %s has begun!"
 msgstr "Das Duell zwischen %s und %s hat begonnen!"
 
-#: server.py:194
+#: server.py:195
 #, python-format
 msgid "%s wants to duel. Type duel %s to accept."
 msgstr "%s möchte sich mit Dir duellieren. Tippe duel %s um die Anfrage zu akzeptieren."
 
-#: server.py:196
+#: server.py:197
 #, python-format
 msgid "Duel request sent to %s."
 msgstr "Duell-Anfrage an %s gesendet."
 
-#: server.py:206
+#: server.py:207
 #, python-format
 msgid "Duel created. You are player %d."
 msgstr "Duell begonnen. Du bist Spieler %d."
 
-#: server.py:207
+#: server.py:208
 msgid "Type help dueling for a list of usable commands."
 msgstr "Gib help dueling für eine Liste hilfreicher Befehle ein."
 
-#: server.py:260
+#: server.py:268
 #, python-format
 msgid "Attack: %d Defense: %d Level: %d"
 msgstr "Angriff: %d Verteidigung: %d Stufe: %d"
 
-#: server.py:262
+#: server.py:270
 #, python-format
 msgid "Pendulum scale: %d/%d"
 msgstr "Pendelbereich: %d/%d"
 
-#: server.py:271
+#: server.py:279
 msgid "attached xyz materials:"
 msgstr "Angehängte XYZ-Materialien:"
 
-#: server.py:278
+#: server.py:286
 msgid "no xyz materials attached"
 msgstr "Keine XYZ-Materialien angehängt."
 
-#: server.py:287
+#: server.py:295
 msgid "face-up attack"
 msgstr "Offener Angriff"
 
-#: server.py:289
+#: server.py:297
 msgid "face-down attack"
 msgstr "Verdeckter Angriff"
 
-#: server.py:291
+#: server.py:299
 msgid "face-up defense"
 msgstr "Offene Verteidigung"
 
-#: server.py:293
+#: server.py:301
 msgid "face-up"
 msgstr "offen"
 
-#: server.py:295
+#: server.py:303
 msgid "face-down defense"
 msgstr "Verdeckte Verteidigung"
 
-#: server.py:297
+#: server.py:305
 msgid "face down"
 msgstr "Verdeckt"
 
-#: server.py:369
+#: server.py:377
 msgid "card {name} swapped control towards {plname} and is now located at {targetspec}."
 msgstr "{name} wechselte den Besitzer zu {plname} und befindet sich jetzt in {targetspec}."
 
-#: server.py:378
+#: server.py:386
 msgid "{amount} counters of type {counter} placed on {card}"
 msgstr "{amount} Zählmarken vom Typ {counter} wurden auf {card} gelegt."
 
-#: server.py:381
+#: server.py:389
 msgid "{amount} counters of type {counter} removed from {card}"
 msgstr "{amount} Zählmarken vom Typ {counter} wurden von {card} entfernt."
 
-#: server.py:387
+#: server.py:395
 #, python-format
 msgid "you reveal your top deck card to be %s"
 msgstr "Die oberste Karte Deines Decks ist %s."
 
-#: server.py:389
+#: server.py:397
 #, python-format
 msgid "%s reveals their top deck card to be %s"
 msgstr "Die oberste Karte des Decks von %s ist %s."
 
-#: server.py:393
+#: server.py:401
 #, python-format
 msgid "Drew %d cards:"
 msgstr "%d Karten gezogen:"
 
-#: server.py:397
+#: server.py:405
 #, python-format
 msgid "Opponent drew %d cards."
 msgstr "Gegner zog %d Karten."
 
-#: server.py:399
+#: server.py:407
 #, python-format
 msgid "%s drew %d cards."
 msgstr "%s zog %d Karten."
 
-#: server.py:403
+#: server.py:411
 msgid "draw phase"
 msgstr "Draw Phase"
 
-#: server.py:404
+#: server.py:412
 msgid "standby phase"
 msgstr "Standby Phase"
 
-#: server.py:405
+#: server.py:413
 msgid "main1 phase"
 msgstr "Main Phase 1"
 
-#: server.py:406
+#: server.py:414
 msgid "battle start phase"
 msgstr "Battle Phase"
 
-#: server.py:407
+#: server.py:415
 msgid "battle step phase"
 msgstr "Battle Step"
 
-#: server.py:408
+#: server.py:416
 msgid "damage phase"
 msgstr "Damage Step"
 
-#: server.py:409
+#: server.py:417
 msgid "damage calculation phase"
 msgstr "Schadensberechnung"
 
-#: server.py:410
+#: server.py:418
 msgid "battle phase"
 msgstr "Battle Phase"
 
-#: server.py:411
+#: server.py:419
 msgid "main2 phase"
 msgstr "Main Phase 2"
 
-#: server.py:412
+#: server.py:420
 msgid "end phase"
 msgstr "End Phase"
 
-#: server.py:416
+#: server.py:424
 #, python-format
 msgid "entering %s."
 msgstr "Beginn der %s."
 
-#: server.py:421
+#: server.py:429
 msgid "Your turn."
 msgstr "Dein Zug."
 
-#: server.py:423 server.py:425
+#: server.py:431 server.py:433
 #, python-format
 msgid "%s's turn."
 msgstr "%ss Zug."
 
-#: server.py:442
+#: server.py:450
 msgid "Select a card on which to perform an action."
 msgstr "Wähle eine Karte aus, mit der eine Aktion ausgeführt werden soll."
 
-#: server.py:443
+#: server.py:451
 msgid "h shows your hand, tab and tab2 shows your or the opponent's table, ? shows usable cards."
 msgstr "h zeigt Deine Hand, tab und tab2 zeigen Deinen oder den gegnerischen Tisch, ? zeigt Dir mögliche Aktionen."
 
-#: server.py:445
+#: server.py:453
 msgid "b: Enter the battle phase."
 msgstr "B: In die Battle Phase wechseln."
 
-#: server.py:447 server.py:742
+#: server.py:455 server.py:793
 msgid "e: End phase."
 msgstr "E: Zug beenden."
 
-#: server.py:449 server.py:469 server.py:473
+#: server.py:457 server.py:477 server.py:481
 msgid "Invalid specifier. Retry."
 msgstr "Ungültiger Befehl. Wiederholen."
 
-#: server.py:450 server.py:470 server.py:780
+#: server.py:458 server.py:478 server.py:831
 msgid "Select a card:"
 msgstr "Wähle eine Karte:"
 
-#: server.py:483
+#: server.py:491
 msgid "There is no card in that position."
 msgstr "Es gibt keine Karte in dieser Position."
 
-#: server.py:488
+#: server.py:496
 msgid "Face-down card."
 msgstr "Verdeckte Karte."
 
-#: server.py:498 server.py:516 server.py:668 server.py:757 server.py:780
-#: server.py:1338 server.py:1358 server.py:1371 server.py:1515 server.py:1962
+#: server.py:508 server.py:538 server.py:719 server.py:808 server.py:831
+#: server.py:1399 server.py:1419 server.py:1432 server.py:1576 server.py:2024
 msgid "Invalid command."
 msgstr "Ungültiger Befehl."
 
-#: server.py:498 server.py:516
+#: server.py:508 server.py:538
 msgid "Select action for {card}"
 msgstr "Wähle eine Aktion für diese Karte:"
 
-#: server.py:501
-msgid "s: Summon this card in face-up attack position."
-msgstr "S: Beschwöre diese Karte in offener Angriffsposition."
-
-#: server.py:503
-msgid "t: Set this card."
-msgstr "T: Setze diese Karte."
-
-#: server.py:505
-msgid "m: Summon this card in face-down defense position."
-msgstr "M: Beschwöre diese Karte in verdeckter Verteidigungsposition."
-
-#: server.py:507
-msgid "r: reposition this card."
-msgstr "R: Position dieser Karte wechseln."
-
-#: server.py:509
-msgid "c: Special summon this card."
-msgstr "C: Spezialbeschwörung durchführen."
-
-#: server.py:511
-msgid "v: Activate this card."
-msgstr "V: Effekt aktivieren."
-
-#: server.py:513
-msgid "v2: Activate the second effect of this card."
-msgstr "V2: Zweiten Effekt aktivieren."
+#: server.py:512
+msgid "Summon this card in face-up attack position."
+msgstr "Beschwöre diese Karte in Angriffsposition."
 
 #: server.py:514
-msgid "i: Show card info."
-msgstr "I: Karte anzeigen."
+msgid "Set this card."
+msgstr "Setze diese Karte."
 
-#: server.py:515 server.py:768 server.py:791
-msgid "z: back."
-msgstr "Z: zurück."
+#: server.py:516
+msgid "Summon this card in face-down defense position."
+msgstr "Beschwöre diese Karte in verdeckter Verteidigungsposition."
 
-#: server.py:539
+#: server.py:518
+msgid "reposition this card."
+msgstr "Ändere die Position dieser Karte."
+
+#: server.py:520
+msgid "Special summon this card."
+msgstr "Beschwöre diese Karte als Spezialbeschwörung."
+
+#: server.py:527
+msgid "Activate this card."
+msgstr "Aktiviere diese Karte."
+
+#: server.py:536
+msgid "Show card info."
+msgstr "Zeige Informationen für diese Karte."
+
+#: server.py:537
+msgid "back."
+msgstr "Zurück."
+
+#: server.py:559 server.py:571 server.py:577
 msgid "Invalid action."
 msgstr "Ungültige Aktion."
 
-#: server.py:553
+#: server.py:591
 #, python-format
 msgid "Summonable in attack position: %s"
 msgstr "Kann in Angriffsposition beschworen werden: %s"
 
-#: server.py:555
+#: server.py:593
 #, python-format
 msgid "Summonable in defense position: %s"
 msgstr "Kann in Verteidigungsposition beschworen werden: %s"
 
-#: server.py:557
+#: server.py:595
 #, python-format
 msgid "Special summonable: %s"
 msgstr "Kann als Spezialbeschwörung beschworen werden: %s"
 
-#: server.py:559
+#: server.py:597
 #, python-format
 msgid "Activatable: %s"
 msgstr "Kann aktiviert werden: %s"
 
-#: server.py:561
+#: server.py:599
 #, python-format
 msgid "Repositionable: %s"
 msgstr "Kann Position verändern: %s"
 
-#: server.py:563
+#: server.py:601
 #, python-format
 msgid "Settable: %s"
 msgstr "Kann gesetzt werden: %s"
 
-#: server.py:596
+#: server.py:634
 #, python-format
 msgid "Select place for card, one of %s."
 msgstr "Wähle den Platz der Karte, einer aus %s."
 
-#: server.py:598
+#: server.py:636
 #, python-format
 msgid "Select %d places for card, from %s."
 msgstr "Wähle %d Plätze für diese Karte aus %s"
 
-#: server.py:602 server.py:922 server.py:1406 server.py:1528
+#: server.py:640 server.py:976 server.py:1467 server.py:1589
 msgid "Duplicate values not allowed."
 msgstr "Doppelte Werte nicht erlaubt."
 
-#: server.py:603 server.py:606 server.py:609 server.py:621
+#: server.py:641 server.py:644 server.py:647 server.py:659
 msgid "Invalid command"
 msgstr "Falscher Befehl"
 
-#: server.py:605 server.py:1526
+#: server.py:643 server.py:1587
 #, python-format
 msgid "Please enter %d values."
 msgstr "Bitte gib %d Werte ein"
 
-#: server.py:608
+#: server.py:646
 msgid "Invalid cardspec. Try again."
 msgstr "Ungültiger Kartenbezeichner. Versuch es noch einmal."
 
-#: server.py:649
+#: server.py:687
 msgid "Waiting for opponent."
 msgstr "Auf den Gegner warten."
 
-#: server.py:658
+#: server.py:707
 msgid "Select chain:"
 msgstr "Kette auswählen:"
 
-#: server.py:660
+#: server.py:709
 msgid "Select chain (c to cancel):"
 msgstr "Kette auswählen (c um abzubrechen):"
 
-#: server.py:665
+#: server.py:716
 msgid "Select card to chain:"
 msgstr "Wähle Karte zum Anketten:"
 
-#: server.py:667
+#: server.py:718
 msgid "Select card to chain (c = cancel):"
 msgstr "Wähle Karte zum Anketten (c um abzubrechen):"
 
-#: server.py:681
+#: server.py:732
 msgid "Invalid spec."
 msgstr "Ungültiger Befehl."
 
-#: server.py:706
+#: server.py:757
 msgid "Select option:"
 msgstr "Option auswählen:"
 
-#: server.py:706
+#: server.py:757
 msgid "Invalid option."
 msgstr "Ungültige Option"
 
-#: server.py:720
+#: server.py:771
 #, python-format
 msgid "%s special summoning %s (%d/%d) in %s position."
 msgstr "%s Spezialbeschwörung %s (%d/%d) in %s Position."
 
-#: server.py:722
+#: server.py:773
 #, python-format
 msgid "%s summoning %s (%d/%d) in %s position."
 msgstr "%s beschwört %s (%d/%d) in %s Position."
 
-#: server.py:734
+#: server.py:785
 msgid "Battle menu:"
 msgstr "Kampfmenü:"
 
-#: server.py:736
+#: server.py:787
 msgid "a: Attack."
 msgstr "a: Angriff."
 
-#: server.py:738
+#: server.py:789
 msgid "c: activate."
 msgstr "c: aktivieren."
 
-#: server.py:740
+#: server.py:791
 msgid "m: Main phase 2."
 msgstr "m: Main Phase 2."
 
-#: server.py:757
+#: server.py:808
 msgid "Select an option:"
 msgstr "Wähle eine Option:"
 
-#: server.py:762
+#: server.py:813
 msgid "Select card to attack with:"
 msgstr "Wähle angreifende Karte:"
 
-#: server.py:774 server.py:797
+#: server.py:819 server.py:842
+msgid "z: back."
+msgstr "Z: zurück."
+
+#: server.py:825 server.py:848
 msgid "Invalid cardspec. Retry."
 msgstr "Ungültige Kartenbezeichnung. Wiederholen."
 
-#: server.py:785
+#: server.py:836
 msgid "Select card to activate:"
 msgstr "Wähle die zu aktivierende Karte aus:"
 
-#: server.py:833
+#: server.py:884
 #, python-format
 msgid "%s prepares to attack with %s (%s)"
 msgstr "%s greift mit %s (%s) an."
 
-#: server.py:843 server.py:1120 server.py:1467
+#: server.py:894 server.py:1174 server.py:1528
 #, python-format
 msgid "%s card"
 msgstr "%s Karte"
 
-#: server.py:844
+#: server.py:895
 #, python-format
 msgid "%s prepares to attack %s (%s) with %s (%s)"
 msgstr "%s greift %s (%s) mit %s (%s) an."
 
-#: server.py:848
+#: server.py:899
 msgid "begin damage"
 msgstr "Schadensberechnung"
 
-#: server.py:852
+#: server.py:903
 msgid "end damage"
 msgstr "Schadensberechnung abgeschlossen"
 
-#: server.py:868
+#: server.py:919
 #, python-format
 msgid "%s (%d/%d) attacks %s (%d/%d)"
 msgstr "%s (%d/%d) greift %s (%d/%d) an"
 
-#: server.py:870
+#: server.py:921
 #, python-format
 msgid "%s (%d/%d) attacks"
 msgstr "%s (%d/%d) greift an"
 
-#: server.py:876
+#: server.py:927
 #, python-format
 msgid "Your lp decreased by %d, now %d"
 msgstr "Deine Lebenspunkte wurden um %d reduziert, jetzt %d"
 
-#: server.py:877 server.py:879
+#: server.py:928 server.py:930
 #, python-format
 msgid "%s's lp decreased by %d, now %d"
 msgstr "%ss Lebenspunkte wurden um %d reduziert, jetzt %d"
 
-#: server.py:886
+#: server.py:937
 #, python-format
 msgid "Your lp increased by %d, now %d"
 msgstr "Deine Lebenspunkte wurden um %d erhöht, jetzt %d"
 
-#: server.py:887 server.py:889
+#: server.py:938 server.py:940
 #, python-format
 msgid "%s's lp increased by %d, now %d"
 msgstr "%ss Lebenspunkte wurden um %d erhöht, jetzt %d"
 
-#: server.py:910
+#: server.py:963
 #, python-format
 msgid "Select %d to %d cards to tribute separated by spaces:"
 msgstr "Wähle %d bis %d zu opfernde Karten (mit Leerzeichen trennen):"
 
-#: server.py:912
+#: server.py:965
 #, python-format
 msgid "Select %d to %d cards separated by spaces:"
 msgstr "Wähle %d bis %d Karten (mit Leerzeichen trennen):"
 
-#: server.py:924
+#: server.py:978
 #, python-format
 msgid "Please enter between %d and %d cards."
 msgstr "Bitte zwischen %d und %d Karten eingeben."
 
-#: server.py:926
+#: server.py:980
 msgid "Invalid value."
 msgstr "Ungültiger Wert."
 
-#: server.py:933
+#: server.py:987
 msgid "Not enough tributes."
 msgstr "Nicht genügend Opfer."
 
-#: server.py:941
+#: server.py:995
 msgid "deck"
 msgstr "Deck"
 
-#: server.py:945
+#: server.py:999
 msgid "{position} card ({spec})"
 msgstr "{position} Karte ({spec})"
 
-#: server.py:954 server.py:1005
+#: server.py:1008 server.py:1059
 msgid "Table is empty."
 msgstr "Keine Karten auf dem Tisch."
 
-#: server.py:962
+#: server.py:1016
 msgid "({attack}/{defense}) level {level}"
 msgstr "({attack}/{defense}) Stufe {level}"
 
-#: server.py:967
+#: server.py:1021
 #, python-format
 msgid "xyz materials: %d"
 msgstr "XYZ-Materialien: %d"
 
-#: server.py:988
+#: server.py:1042
 #, python-format
 msgid "(equipped to %s)"
 msgstr "(rüstet %s aus)"
 
-#: server.py:1019
+#: server.py:1073
 msgid "Your hand is empty."
 msgstr "Keine Karten auf der Hand."
 
-#: server.py:1038
+#: server.py:1092
 #, python-format
 msgid "LP: %s: %d %s: %d"
 msgstr "LP: %s: %d, %s: %d"
 
-#: server.py:1039
+#: server.py:1093
 #, python-format
 msgid "Hand: %s: %d %s: %d"
 msgstr "Hand: %s: %d, %s: %d"
 
-#: server.py:1040
+#: server.py:1094
 #, python-format
 msgid "Deck: %s: %d %s: %d"
 msgstr "Deck: %s: %d, %s: %d"
 
-#: server.py:1041
+#: server.py:1095
 #, python-format
 msgid "Grave: %s: %d %s: %d"
 msgstr "Friedhof: %s: %d, %s: %d"
 
-#: server.py:1042
+#: server.py:1096
 #, python-format
 msgid "Removed: %s: %d %s: %d"
 msgstr "Verbannt: %s: %d, %s: %d"
 
-#: server.py:1044
+#: server.py:1098
 #, python-format
 msgid "Your LP: %d Opponent LP: %d"
 msgstr "Deine Lebenspunkte: %d, Gegnerische Lebenspunkte: %d"
 
-#: server.py:1045
+#: server.py:1099
 #, python-format
 msgid "Hand: You: %d Opponent: %d"
 msgstr "Hand: Du %d Karten, Gegner %d Karten"
 
-#: server.py:1046
+#: server.py:1100
 #, python-format
 msgid "Deck: You: %d Opponent: %d"
 msgstr "Deck: Du %d Karten, Gegner %d Karten"
 
-#: server.py:1047
+#: server.py:1101
 #, python-format
 msgid "Grave: You: %d Opponent: %d"
 msgstr "Friedhof: Du %d Karten, Gegner %d Karten"
 
-#: server.py:1048
+#: server.py:1102
 #, python-format
 msgid "Removed: You: %d Opponent: %d"
 msgstr "Verbannt: Du %d Karten, Gegner %d Karten"
 
-#: server.py:1059 server.py:1062
+#: server.py:1113 server.py:1116
 #, python-format
 msgid "Card %s (%s) destroyed."
 msgstr "Karte %s (%s) zerstört."
 
-#: server.py:1069
+#: server.py:1123
 msgid "your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}."
 msgstr "Deine Karte {spec} ({name}) wechselte den Besitzer zu {op} und befindet sich jetzt in {targetspec}."
 
-#: server.py:1070
+#: server.py:1124
 msgid "you now control {plname}s card {spec} ({name}) and its located at {targetspec}."
 msgstr "Du kontrollierst jetzt {plname}s Karte {spec} ({name}) und sie befindet sich in {targetspec}."
 
-#: server.py:1074
+#: server.py:1128
 msgid "{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}."
 msgstr "{plname}s Karte {spec} ({name}) wechselte den Besitzer zu {op} und befindet sich jetzt in {targetspec}."
 
-#: server.py:1077
+#: server.py:1131
 msgid "your card {spec} ({name}) switched its zone to {targetspec}."
 msgstr "Deine Karte {spec} ({name}) wechselte die Zone nach {targetspec}."
 
-#: server.py:1081
+#: server.py:1135
 msgid "{plname}s card {spec} ({name}) changed its zone to {targetspec}."
 msgstr "{plname}s Karte {spec} ({name}) wechselte die Zone nach {targetspec}."
 
-#: server.py:1083
+#: server.py:1137
 msgid "you discarded {spec} ({name})."
 msgstr "Du wirfst {spec} ({name}) von Deiner Hand ab."
 
-#: server.py:1086
+#: server.py:1140
 msgid "{plname} discarded {spec} ({name})."
 msgstr "{plname} wirft {spec} ({name}) von seiner Hand ab."
 
-#: server.py:1090
+#: server.py:1144
 msgid "your banished card {spec} ({name}) returns to the field at {targetspec}."
 msgstr "Deine verbannte Karte {spec} ({name}) kehrt in {targetspec} auf das Spielfeld zurück."
 
-#: server.py:1094
-msgid "{plname}s banished card {spec} ({name}) returned to their field at {targetspec}."
-msgstr "{plname}s verbannte Karte {spec} ({spec}) kehrt in {targetspec} auf das Spielfeld zurück."
+#: server.py:1148
+msgid "{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}."
+msgstr "{plname}s Karte {spec} ({name}) kehrte in {targetspec} auf sein Spielfeld zurück."
 
-#: server.py:1098
+#: server.py:1152
 msgid "your card {spec} ({name}) returns from the graveyard to the field at {targetspec}."
 msgstr "Deine Karte {spec} ({name}) kehrt in {targetspec} vom Friedhof auf das Spielfeld zurück."
 
-#: server.py:1102
+#: server.py:1156
 msgid "{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}."
 msgstr "{plname}s Karte {spec} ({name}) kehrt in {targetspec} vom Friedhof auf das Spielfeld zurück."
 
-#: server.py:1104
+#: server.py:1158
 msgid "Card {spec} ({name}) returned to hand."
 msgstr "Karte {spec} ({name}) auf die Hand genommen."
 
-#: server.py:1108
+#: server.py:1162
 msgid "Face-down card"
 msgstr "Verdeckte Karte"
 
-#: server.py:1112
+#: server.py:1166
 msgid "{plname}'s card {spec} ({name}) returned to their hand."
 msgstr "{plname}s Karte {spec} ({name}) auf die Hand genommen."
 
-#: server.py:1115
+#: server.py:1169
 msgid "You tribute {spec} ({name})."
 msgstr "Du bietest {spec} ({name}) zum Tribut an."
 
-#: server.py:1123
+#: server.py:1177
 msgid "{plname} tributes {spec} ({name})."
 msgstr "{plname} bietet {spec} ({name}) zum Tribut an."
 
-#: server.py:1126
+#: server.py:1180
 #, python-format
 msgid "you detached %s."
 msgstr "Du hängst %s ab."
 
-#: server.py:1128
+#: server.py:1182
 #, python-format
 msgid "%s detached %s"
 msgstr "%s hängt %s ab."
 
-#: server.py:1130
+#: server.py:1184
 msgid "your card {spec} ({name}) was sent to the graveyard."
 msgstr "Deine Karte {spec} ({name}) wurde auf den Friedhof gelegt."
 
-#: server.py:1133
+#: server.py:1187
 msgid "{plname}'s card {spec} ({name}) was sent to the graveyard."
 msgstr "{plname}s Karte {spec} ({name}) wurde auf den Friedhof gelegt."
 
-#: server.py:1135
+#: server.py:1189
 msgid "your card {spec} ({name}) was banished."
 msgstr "Deine Karte {spec} ({name}) wurde verbannt."
 
-#: server.py:1138 server.py:1240
+#: server.py:1192 server.py:1296
 msgid "Face-down defense"
 msgstr "Verdeckte Verteidigung"
 
-#: server.py:1142
+#: server.py:1196
 msgid "{plname}'s card {spec} ({name}) was banished."
 msgstr "{plname}s Karte {spec} ({name}) wurde verbannt."
 
-#: server.py:1144
+#: server.py:1198
 msgid "your card {spec} ({name}) returned to your deck."
 msgstr "Deine Karte {spec} ({name}) wurde in Dein Deck zurückgelegt."
 
-#: server.py:1147
+#: server.py:1201
 msgid "{plname}'s card {spec} ({name}) returned to their deck."
 msgstr "{plname}s Karte {spec} ({name}) wurde in sein Deck zurückgelegt."
 
-#: server.py:1149
+#: server.py:1203
 msgid "your card {spec} ({name}) returned to your extra deck."
 msgstr "Deine Karte {spec} ({name}) wurde in Dein Extradeck gelegt."
 
-#: server.py:1152
+#: server.py:1206
 msgid "{plname}'s card {spec} ({name}) returned to their extra deck."
 msgstr "{plname}s Karte {spec} ({name}) wurde in sein Extradeck gelegt."
 
-#: server.py:1158
+#: server.py:1212
 #, python-format
 msgid "%s: %s card."
 msgstr "%s: %s Karte"
 
-#: server.py:1171 server.py:1915
+#: server.py:1227 server.py:1977
 msgid "Invalid card."
 msgstr "Ungültige Karte."
 
-#: server.py:1180 server.py:1181 server.py:1184
+#: server.py:1236 server.py:1237 server.py:1240
 #, python-format
 msgid "The position of card %s (%s) was changed to %s."
 msgstr "Die Position der Karte %s (%s) wurde in %s geändert."
 
-#: server.py:1190
+#: server.py:1246
 #, python-format
 msgid "You set %s (%s) in %s position."
 msgstr "Du setzt %s (%s) in %s Position."
 
-#: server.py:1194 server.py:1197
+#: server.py:1250 server.py:1253
 #, python-format
 msgid "%s sets %s in %s position."
 msgstr "%s setzt %s in %s Position."
 
-#: server.py:1216
+#: server.py:1272
 #, python-format
 msgid "Activating %s"
 msgstr "Aktiviere %s"
 
-#: server.py:1217 server.py:1225
+#: server.py:1273 server.py:1281
 #, python-format
 msgid "%s activating %s"
 msgstr "%s aktiviert %s"
 
-#: server.py:1229
+#: server.py:1285
 #, python-format
 msgid "Select position for %s:"
 msgstr "Position für %s auswählen:"
 
-#: server.py:1234
+#: server.py:1290
 msgid "Face-up attack"
 msgstr "Offener Angriff"
 
-#: server.py:1236
+#: server.py:1292
 msgid "Face-down attack"
 msgstr "Verdeckter Angriff"
 
-#: server.py:1238
+#: server.py:1294
 msgid "Face-up defense"
 msgstr "Offene Verteidigung"
 
-#: server.py:1270
+#: server.py:1326
 msgid "Do you want to use the effect from {card} in {spec}?"
 msgstr "Möchtest Du den Effekt von {card} in {spec} verwenden?"
 
-#: server.py:1281
+#: server.py:1342
 #, python-format
 msgid "You won (%s)."
 msgstr "Du hast gewonnen (%s)."
 
-#: server.py:1283
+#: server.py:1344
 #, python-format
 msgid "You lost (%s)."
 msgstr "Du hast verloren (%s)."
 
-#: server.py:1286
+#: server.py:1347
 #, python-format
 msgid "%s won (%s)."
 msgstr "%s hat gewonnen (%s)."
 
-#: server.py:1290
+#: server.py:1351
 #, python-format
 msgid "%s won the duel between %s and %s (%s)."
 msgstr "%s hat das Duell zwischen %s und %s gewonnen (%s)."
 
-#: server.py:1295
+#: server.py:1356
 #, python-format
 msgid "You pay %d LP. Your LP is now %d."
 msgstr "Du zahlst %d Lebenspunkte. Es verbleiben noch %d Lebenspunkte."
 
-#: server.py:1299
+#: server.py:1360
 #, python-format
 msgid "%s pays %d LP. Their LP is now %d."
 msgstr "%s bezahlt %d Lebenspunkte. Es verbleiben noch %d Lebenspunkte."
 
-#: server.py:1337 server.py:1370
+#: server.py:1398 server.py:1431
 msgid "Enter the name of a card:"
 msgstr "Gib den Namen einer Karte ein"
 
-#: server.py:1345 server.py:1378 server.py:2236
+#: server.py:1406 server.py:1439 server.py:2306
 msgid "No results found."
 msgstr "Keine Ergebnisse gefunden"
 
-#: server.py:1347 server.py:1382
+#: server.py:1408 server.py:1443
 msgid "Wrong type."
 msgstr "Falscher Typ"
 
-#: server.py:1356
+#: server.py:1417
 msgid "Select a number, one of: {opts}"
 msgstr "Wähle eine Nummer, eine aus: {opts}"
 
-#: server.py:1392
+#: server.py:1453
 #, python-format
 msgid "Select cards with a total value of %d, seperated by spaces."
 msgstr "Wähle Karten mit einem Gesamtwert von %d (mit Leerzeichen getrennt):"
 
-#: server.py:1394
+#: server.py:1455
 #, python-format
 msgid "Select cards with a total value of at least %d, seperated by spaces."
 msgstr "Wähle Karten mit einem Gesamtwert von mindestens %d (mit Leerzeichen getrennt):"
 
-#: server.py:1408
+#: server.py:1469
 msgid "Value out of range."
 msgstr "Wert nicht im gültigen Bereich"
 
-#: server.py:1412
+#: server.py:1473
 msgid "Levels out of range."
 msgstr "Stufe nicht im gültigen Bereich."
 
-#: server.py:1414
+#: server.py:1475
 #, python-format
 msgid "Selected value does not equal %d."
 msgstr "Dieser Wert beträgt nicht %d."
 
-#: server.py:1427
+#: server.py:1488
 msgid "Type new {counter} for {cards} cards, separated by spaces."
 msgstr "Gib neue {counter} für Karten {cards} ein (mit Leerzeichen getrennt):"
 
-#: server.py:1439
+#: server.py:1500
 #, python-format
 msgid "Please specify %d values."
 msgstr "Bitte gib %d Werte an."
 
-#: server.py:1441
+#: server.py:1502
 msgid "Values cannot be greater than counter."
 msgstr "Werte können nicht größer als {counter} sein."
 
-#: server.py:1443
+#: server.py:1504
 #, python-format
 msgid "Please specify %d values with a sum of %d."
 msgstr "Bitte gib einen %d Werte mit einer Summe von %d an."
 
-#: server.py:1468
+#: server.py:1529
 #, python-format
 msgid "%s targets %s (%s)"
 msgstr "%s bestimmt %s (%s) zum Ziel"
 
-#: server.py:1512
+#: server.py:1573
 #, python-format
 msgid "Sort %d cards by entering numbers separated by spaces (c = cancel):"
 msgstr "Sortiere %d Karten, indem Du Nummern getrennt durch Leerzeichen angibst (c zum abbrechen)"
 
-#: server.py:1530
+#: server.py:1591
 #, python-format
 msgid "Please enter values between 1 and %d."
 msgstr "Bitte Werte zwischen 1 und %d eingeben"
 
-#: server.py:1543 server.py:1544
+#: server.py:1604 server.py:1605
 #, python-format
 msgid "Field locations %s are disabled."
 msgstr "Feldplätze %s gesperrt"
 
-#: server.py:1569
+#: server.py:1630
 msgid "{player} shows you {count} cards."
 msgstr "{player} zeigt Dir {count} Karten."
 
-#: server.py:1582
+#: server.py:1643
 msgid "{card} equipped to {target}."
 msgstr "Rüste {target} mit {card} aus."
 
-#: server.py:1596
+#: server.py:1657
 msgid "{player} flip summons {card} ({spec})."
 msgstr "{player} flipp-beschwört {card} ({spec})."
 
-#: server.py:1601
+#: server.py:1662
 msgid "you shuffled your deck."
 msgstr "Du mischst Dein Deck."
 
-#: server.py:1603
+#: server.py:1664
 #, python-format
 msgid "%s shuffled their deck."
 msgstr "%s mischt sein Deck."
 
-#: server.py:1618 server.py:2404
+#: server.py:1680 server.py:2474
 msgid "Watching stopped."
 msgstr "Du bist nun kein Zuschauer mehr."
 
-#: server.py:1646
+#: server.py:1708
 #, python-format
 msgid "%s disconnected, the duel is paused."
 msgstr "%s abgemeldet. Das Duell wurde pausiert."
 
-#: server.py:1694 server.py:1704
+#: server.py:1756 server.py:1766
 #, python-format
 msgid "%s's table:"
 msgstr "%ss Tisch:"
 
-#: server.py:1697
+#: server.py:1759
 msgid "Your table:"
 msgstr "Dein Tisch:"
 
-#: server.py:1706
+#: server.py:1768
 msgid "Opponent's table:"
 msgstr "Tisch des Gegners:"
 
-#: server.py:1784
+#: server.py:1846
 #, python-format
 msgid "Deck loaded with %d cards."
 msgstr "Deck mit %d Karten geladen."
 
-#: server.py:1820 server.py:1826
+#: server.py:1882 server.py:1888
 msgid "Usage: deck rename <old>=<new>"
 msgstr "Verwendung: deck rename <alt>=<neu>"
 
-#: server.py:1829
+#: server.py:1891
 msgid "Deck names may not contain =."
 msgstr "Decknamen dürfen kein = enthalten."
 
-#: server.py:1835
+#: server.py:1897
 msgid "Deck not found."
 msgstr "Deck nicht gefunden."
 
-#: server.py:1840
+#: server.py:1902
 msgid "Destination deck already exists"
 msgstr "Dieses Deck existiert bereits."
 
-#: server.py:1845
+#: server.py:1907
 msgid "Deck renamed."
 msgstr "Deck umbenannt."
 
-#: server.py:1867
+#: server.py:1929
 msgid "u: up d: down /: search forward ?: search backward t: top"
 msgstr "u: auf d: ab /: vorwärts suchen ?: rückwerts suchen t: anfang"
 
-#: server.py:1868
+#: server.py:1930
 msgid "s: send to deck r: remove from deck l: list deck q: quit"
 msgstr "S: Dem Deck hinzufügen r: vom Deck entfernen l: Deck auflisten q: Beenden"
 
-#: server.py:1879
+#: server.py:1941
 #, python-format
 msgid "Command (%d cards in main deck, %d cards in extra deck):"
 msgstr "Befehl (%d Karten im Main Deck, %d Karten im Extradeck):"
 
-#: server.py:1902
+#: server.py:1964
 msgid "You already have 3 of this card in your deck."
 msgstr "Du hast bereits 3 dieser Karten in Deinem Deck."
 
-#: server.py:1920
+#: server.py:1982
 msgid "This card isn't in your deck."
 msgstr "Diese Karte ist nicht in deinem Deck."
 
-#: server.py:1932 server.py:1944
+#: server.py:1994 server.py:2006
 msgid "Not found."
 msgstr "Nicht gefunden."
 
-#: server.py:1972
+#: server.py:2034
 #, python-format
 msgid "%d in deck."
 msgstr "%d in Deck."
 
-#: server.py:2051
+#: server.py:2113
 msgid "Your deck can be checked against the following lists:"
 msgstr "Dein Deck kann gegen die folgenden Listen geprüft werden:"
 
-#: server.py:2057
+#: server.py:2119
 msgid "Invalid entry."
 msgstr "Ungültiger Befehl."
 
-#: server.py:2066
+#: server.py:2128
 #, python-format
 msgid "%s: limit %d, found %d."
 msgstr "%s: Limit %d, %d gefunden."
 
-#: server.py:2068
+#: server.py:2130
 #, python-format
 msgid "Check completed with %d errors."
 msgstr "Prüfung mit %d Fehlern abgeschlossen."
 
-#: server.py:2102
+#: server.py:2164
 msgid "Chat off."
 msgstr "Chat ausgeschaltet."
 
-#: server.py:2106
+#: server.py:2168
 msgid "Chat on."
 msgstr "Chat eingeschaltet."
 
-#: server.py:2109
+#: server.py:2171
 #, python-format
 msgid "%s chats: %s"
 msgstr "%s chattet: %s"
 
-#: server.py:2115
+#: server.py:2177
 msgid "Say what?"
 msgstr "Was möchtest Du sagen?"
 
-#: server.py:2122
+#: server.py:2184
 #, python-format
 msgid "%s says: %s"
 msgstr "%s sagt: %s"
 
-#: server.py:2126
+#: server.py:2188
 msgid "Online players:"
 msgstr "Anwesende Spieler:"
 
-#: server.py:2130
+#: server.py:2192
 msgid "[AFK]"
 msgstr "[abwesend]"
 
-#: server.py:2132
+#: server.py:2197 server.py:2201 server.py:2210
+msgid "n/a"
+msgstr "Unbekannt"
+
+#: server.py:2202
 #, python-format
 msgid "%s (Watching duel with %s and %s)"
 msgstr "%s (schaut Duell zwischen %s und %s zu)"
 
-#: server.py:2144
+#: server.py:2214
 #, python-format
 msgid "%s (privately dueling %s)"
 msgstr "%s (duelliert sich privat mit %s)"
 
-#: server.py:2146
+#: server.py:2216
 #, python-format
 msgid "%s (dueling %s)"
 msgstr "%s (duelliert sich mit %s)"
 
-#: server.py:2307
+#: server.py:2377
 msgid "Language set."
 msgstr "Sprache gesetzt."
 
-#: server.py:2312
+#: server.py:2382
 msgid "Encoding is not needed when using the web client."
 msgstr "Eine Kodierung wird im Web-Client nicht benötigt."
 
-#: server.py:2319
+#: server.py:2389
 msgid "Unknown encoding."
 msgstr "Unbekannte Kodierung"
 
-#: server.py:2325
+#: server.py:2395
 msgid "Encoding set."
 msgstr "Kodierung gesetzt."
 
-#: server.py:2346
+#: server.py:2416
 #, python-format
 msgid "Announcement: %s"
 msgstr "Ankündigung: %s"
 
-#: server.py:2352
+#: server.py:2422
 msgid "Usage: tell <player> <message>"
 msgstr "Verwendung: tell <spieler> <text>"
 
-#: server.py:2367
+#: server.py:2437
 #, python-format
 msgid "You tell %s: %s"
 msgstr "Du vermittelst %s: %s"
 
-#: server.py:2370
+#: server.py:2440
 #, python-format
 msgid "%s tells you: %s"
 msgstr "%s vermittelt Dir: %s"
 
-#: server.py:2376
+#: server.py:2446
 msgid "Usage: reply <message>"
 msgstr "Verwendung: reply <text>"
 
-#: server.py:2379
+#: server.py:2449
 msgid "No one to reply to."
 msgstr "Es gibt niemanden, dem Du antworten kannst."
 
-#: server.py:2385
+#: server.py:2455
 #, python-format
 msgid "You reply to %s: %s"
 msgstr "Du antwortest auf %s: %s"
 
-#: server.py:2386
+#: server.py:2456
 #, python-format
 msgid "%s replies: %s"
 msgstr "%s antwortet Dir: %s"
 
-#: server.py:2399
+#: server.py:2469
 msgid "You aren't watching a duel."
 msgstr "Du schaust gerade keinem Duell zu."
 
-#: server.py:2417
+#: server.py:2487
 msgid "That player is not in a duel."
 msgstr "Dieser Spieler duelliert sich gerade nicht."
 
-#: server.py:2420
+#: server.py:2490
 msgid "That duel is private."
 msgstr "Dieses Duell ist privat."
 
-#: server.py:2428
+#: server.py:2498
 #, python-format
 msgid "Watching duel between %s and %s."
 msgstr "Schaue Duell zwischen %s und %s zu."
 
-#: server.py:2442
+#: server.py:2512
 msgid "You cannot ignore yourself."
 msgstr "Du kannst Dich nicht selbst ignorieren."
 
-#: server.py:2446
+#: server.py:2516
 msgid "That account doesn't exist. Make sure you enter the full name (no auto-completion for security reasons)."
 msgstr "Diesen Spieler gibt es nicht. Stelle sicher, dass du den vollständigen Namen eingibst (keine Autovervollständigung aus Sicherheitsgründen)."
 
-#: server.py:2454
+#: server.py:2524
 #, python-format
 msgid "Ignoring %s."
 msgstr "Ignoriere %s."
 
-#: server.py:2460
+#: server.py:2530
 #, python-format
 msgid "Stopped ignoring %s."
 msgstr "Ignoriere %s nicht mehr."
 
-#: server.py:2469
+#: server.py:2539
 msgid "Challenge on."
 msgstr "Herausforderungen werden angezeigt."
 
-#: server.py:2471
+#: server.py:2541
 msgid "Challenge off."
 msgstr "Herausforderungen werden nicht mehr angezeigt."
 
-#: server.py:2487
+#: server.py:2557
 msgid "Rebooting."
 msgstr "Neustart."
 
@@ -1204,4 +1208,31 @@ msgstr "Neustart."
 
 #~ msgid "{plname}s card {spec} ({name}) is now controlled by you and is located at {targetspec}."
 #~ msgstr "Du kontrollierst jetzt die Karte {spec} ({name}) und sie befindet sich in {targetspec}."
+
+#~ msgid "s: Summon this card in face-up attack position."
+#~ msgstr "S: Beschwöre diese Karte in offener Angriffsposition."
+
+#~ msgid "t: Set this card."
+#~ msgstr "T: Setze diese Karte."
+
+#~ msgid "m: Summon this card in face-down defense position."
+#~ msgstr "M: Beschwöre diese Karte in verdeckter Verteidigungsposition."
+
+#~ msgid "r: reposition this card."
+#~ msgstr "R: Position dieser Karte wechseln."
+
+#~ msgid "c: Special summon this card."
+#~ msgstr "C: Spezialbeschwörung durchführen."
+
+#~ msgid "v: Activate this card."
+#~ msgstr "V: Effekt aktivieren."
+
+#~ msgid "v2: Activate the second effect of this card."
+#~ msgstr "V2: Zweiten Effekt aktivieren."
+
+#~ msgid "i: Show card info."
+#~ msgstr "I: Karte anzeigen."
+
+#~ msgid "{plname}s banished card {spec} ({name}) returned to their field at {targetspec}."
+#~ msgstr "{plname}s verbannte Karte {spec} ({spec}) kehrt in {targetspec} auf das Spielfeld zurück."
 
