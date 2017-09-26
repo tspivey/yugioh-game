@@ -1313,7 +1313,7 @@ class MyDuel(dm.Duel):
 			opt = strings[pl.language]['system'].get(desc, opt)
 		pl.notify(YesOrNo, opt, yes, no=no, restore_parser=old_parser)
 
-	def select_effectyn(self, player, card):
+	def select_effectyn(self, player, card, desc):
 		pl = self.players[player]
 		old_parser = pl.parser
 		def yes(caller):
@@ -1324,6 +1324,11 @@ class MyDuel(dm.Duel):
 			reactor.callLater(0, procduel, self)
 		spec = self.card_to_spec(player, card)
 		question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.get_name(pl), spec=spec)
+		if desc > 0:
+			desc -= card.code*16
+			strings = card.get_strings(pl)
+			if strings[desc].strip() != '':
+				question += '\n'+strings[desc]
 		pl.notify(YesOrNo, question, yes, no=no, restore_parser=old_parser)
 
 	def win(self, player, reason):

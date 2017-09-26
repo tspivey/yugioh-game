@@ -611,7 +611,8 @@ class Duel:
 		player = self.read_u8(data)
 		card = Card.from_code(self.read_u32(data))
 		card.set_location(self.read_u32(data))
-		self.cm.call_callbacks('select_effectyn', player, card)
+		desc = self.read_u32(data)
+		self.cm.call_callbacks('select_effectyn', player, card, desc)
 		return data.read()
 
 	def msg_win(self, data):
