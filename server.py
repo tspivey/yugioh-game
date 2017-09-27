@@ -242,26 +242,29 @@ class CustomCard(dm.Card):
 			return row[0]
 		return desc
 
-	def get_strings(self, con):
-		row = con.cdb.execute('select * from texts where id = ?', (self.code, )).fetchone()
+	def get_strings(self, con, code=None):
+		row = con.cdb.execute('select * from texts where id = ?', (code or self.code, )).fetchone()
 		strings = []
 		for i in range(3, len(row), 1):
 			strings.append(row[i])
 		return strings
 
 	def get_effect_description(self, con, i, existing=False):
-
 		s = ''
 		e = False
-		lstr = self.get_strings(con)
+		if i > 10000:
+			code = i >> 4
+		else:
+			code = self.code
+		lstr = self.get_strings(con, code)
 
 		try:
 
-			if i == 0 or lstr[i-self.code*16].strip() == '':
+			if i == 0 or lstr[i-code*16].strip() == '':
 				s = con._("Activate this card.")
 			else:
 				e = True
-				s = lstr[i-self.code*16].strip()
+				s = lstr[i-code*16].strip()
 		except IndexError:
 			e = True
 			s = strings[con.language]['system'][i]
