@@ -267,7 +267,7 @@ class CustomCard(dm.Card):
 				s = lstr[i-code*16].strip()
 		except IndexError:
 			e = True
-			s = strings[con.language]['system'][i]
+			s = strings[con.language]['system'].get(i, '')
 
 		if existing and not e:
 			s = ''
