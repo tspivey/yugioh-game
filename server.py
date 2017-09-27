@@ -1077,12 +1077,14 @@ class MyDuel(dm.Duel):
 			con.notify(con._("Table is empty."))
 			return
 		for card in cards:
-			s = self.card_to_spec(player, card)
+			s = self.card_to_spec(player, card) + " "
 			if hide_facedown and card.position in (0x8, 0xa):
 				s += card.get_position(con)
 			else:
 				s += card.get_name(con) + " "
 				s += card.get_position(con)
+				if card.type & dm.TYPE_MONSTER:
+					s += " " + con._("level %d") % card.level
 			con.notify(s)
 
 	def show_hand(self, con, player):
