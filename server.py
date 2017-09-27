@@ -1940,7 +1940,7 @@ def deck_edit(caller):
 	def info():
 		show_deck_info(con)
 		con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
-		con.notify(con._("s: send to deck r: remove from deck l: list deck q: quit"))
+		con.notify(con._("s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"))
 	def read():
 		info()
 		rows = dm.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(cards)])))
@@ -2031,6 +2031,19 @@ def deck_edit(caller):
 				else:
 					con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
 			read()
+		elif caller.text.startswith('g'):
+			cnt = group_cards(cards)
+			gm = re.search(r'^g(\d+)', caller.text)
+			if gm:
+				n = int(gm.group(1)) - 1
+				if n < 0 or n > len(cnt) - 1:
+					con.notify(con._("Invalid card."))
+					read()
+					return
+				code = list(cnt.keys())[n]
+				con.deck_edit_pos=all_cards.index(code)
+				read()
+
 		elif caller.text == 'q':
 			con.notify("Quit.")
 		else:
