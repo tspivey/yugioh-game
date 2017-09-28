@@ -54,6 +54,7 @@ class MyServer(gsb.Server):
 		caller.connection.afk = False
 		caller.connection.chat = True
 		caller.connection.say = True
+		caller.connection.watchnotify = True
 		caller.connection.challenge = True
 		caller.connection.reply_to = ""
 		caller.connection.session = Session()
@@ -2222,6 +2223,7 @@ def say(caller):
 		if caller.connection.nickname not in pl.ignores and pl.say:
 			pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
+
 @parser.command(names=['who'])
 def who(caller):
 	caller.connection.notify(caller.connection._("Online players:"))
@@ -2263,6 +2265,15 @@ def score(caller):
 		caller.connection.notify(caller.connection._("Not in a duel."))
 		return
 	caller.connection.duel.show_score(caller.connection)
+
+@duel_parser.command(names=['watchers'])
+def show_watchers(caller):
+	if caller.connection.duel.watchers==[]:
+		caller.connection.notify(caller.connection._("No one is watching this duel."))
+	else:
+		caller.connection.notify(caller.connection._("People watching this duel:"))
+		for pl in sorted(caller.connection.duel.watchers, key=lambda x: x.nickname):
+			caller.connection.notify(pl.nickname)
 
 @parser.command(names=['replay'], args_regexp=r'(.*)=(\d+)', allowed=lambda caller: caller.connection.is_admin)
 def replay(caller):
@@ -2503,11 +2514,23 @@ def soundpack_on(caller):
 def watch(caller):
 	con = caller.connection
 	nick = caller.args[0]
+	if not nick:
+		caller.connection.watchnotify = not caller.connection.watchnotify
+		if caller.connection.watchnotify:
+			caller.connection.notify(caller.connection._("Watch notification enabled."))
+		else:
+			caller.connection.notify(caller.connection._("Watch notification disabled."))
+		return
 	if nick == 'stop':
 		if not con.watching:
 			con.notify(con._("You aren't watching a duel."))
 			return
 		con.duel.watchers.remove(con)
+		for pl in con.duel.players + con.duel.watchers:
+			if pl is None:
+				continue
+			if pl.watchnotify:
+				pl.notify(pl._("%s is no longer watching this duel.")%(con.nickname))
 		con.duel = None
 		con.watching = False
 		con.notify(con._("Watching stopped."))
@@ -2535,6 +2558,11 @@ def watch(caller):
 	con.parser = duel_parser
 	con.watching = True
 	con.notify(con._("Watching duel between %s and %s.") % (con.duel.players[0].nickname, con.duel.players[1].nickname))
+	for pl in con.duel.players + con.duel.watchers:
+		if pl is None:
+			continue
+		if pl.watchnotify:
+			pl.notify(pl._("%s is now watching this duel.")%(con.nickname))
 
 @parser.command(args_regexp=r'(.*)')
 def ignore(caller):
