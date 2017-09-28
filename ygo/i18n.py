@@ -1,7 +1,7 @@
 import gettext
 import re
 
-import globals
+from . import globals
 
 def set_language(pl, language):
   if language == 'en':

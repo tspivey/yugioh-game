@@ -6,7 +6,7 @@ import random
 import binascii
 from functools import partial
 
-import callback_manager
+from . import callback_manager
 from .card import Card
 from .constants import *
 

@@ -5,7 +5,7 @@ from autobahn.twisted.websocket import WebSocketServerFactory, \
      WebSocketServerProtocol
 from gsb import Caller
 
-import globals
+from . import globals
 
 class WSProtocol(WebSocketServerProtocol):
 

@@ -2,9 +2,9 @@ import gettext
 import json
 
 from .constants import *
-import globals
+from . import globals
 from .i18n import set_language as i18n_set_language
-import models
+from . import models
 
 class Player:
 
