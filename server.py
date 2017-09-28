@@ -53,6 +53,7 @@ class MyServer(gsb.Server):
 		caller.connection.seen_waiting = False
 		caller.connection.afk = False
 		caller.connection.chat = True
+		caller.connection.say = True
 		caller.connection.watchnotify = True
 		caller.connection.challenge = True
 		caller.connection.reply_to = ""
@@ -2206,13 +2207,20 @@ def chat(caller):
 def say(caller):
 	text = caller.args[0]
 	if not text:
-		caller.connection.notify(caller.connection._("Say what?"))
+		caller.connection.say = not caller.connection.say
+		if caller.connection.say:
+			caller.connection.notify(caller.connection._("Say on."))
+		else:
+			caller.connection.notify(caller.connection._("Say off."))
 		return
+	if not caller.connection.say:
+		caller.connection.say = True
+		caller.connection.notify(caller.connection._("Say on."))
 	if not caller.connection.duel:
 		caller.connection.notify(caller.connection._("Not in a duel."))
 		return
 	for pl in caller.connection.duel.players + caller.connection.duel.watchers:
-		if caller.connection.nickname not in pl.ignores:
+		if caller.connection.nickname not in pl.ignores and pl.say:
 			pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
 
