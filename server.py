@@ -2214,14 +2214,27 @@ def say(caller):
 		if caller.connection.nickname not in pl.ignores:
 			pl.notify(pl._("%s says: %s") % (caller.connection.nickname, caller.args[0]))
 
-@parser.command(names=['who'])
+@parser.command(names=['who'], args_regexp=r'(.*)')
 def who(caller):
+	filters = ["duel", "watch", "idle"]
+	showing = ["duel", "watch", "idle"]
+	who_output = []
+	text = caller.args[0]
+	if text:
+		showing = []
+		text = text.split()
+		for s in text:
+			if s in filters:
+				showing.append(s)
+			else:
+				caller.connection.notify(caller.connection._("Invalid filter: %s") % s)
+				return
 	caller.connection.notify(caller.connection._("Online players:"))
 	for pl in sorted(game.players.values(), key=lambda x: x.nickname):
 		s = pl.nickname
 		if pl.afk is True:
 			s += " " + caller.connection._("[AFK]")
-		if pl.watching:
+		if pl.watching and "watch" in showing:
 			if pl.duel.players[0]:
 				pl0 = pl.duel.players[0].nickname
 			else:
@@ -2230,8 +2243,8 @@ def who(caller):
 				pl1 = pl.duel.players[1].nickname
 			else:
 				pl1 = caller.connection._("n/a")
-			caller.connection.notify(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
-		elif pl.duel:
+			who_output.append(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
+		elif pl.duel and "duel" in showing:
 			other = None
 			if pl.duel.players[0] is pl:
 				other = pl.duel.players[1]
@@ -2242,11 +2255,14 @@ def who(caller):
 			else:
 				other = other.nickname
 			if pl.duel.private is True:
-				caller.connection.notify(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
+				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
 			else:
-				caller.connection.notify(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
-		else:
-			caller.connection.notify(s)
+				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
+		elif not pl.duel and not pl.watching:
+			if "idle" in showing:
+				who_output.append(s)
+	for pl in who_output:
+		caller.connection.notify(pl)
 
 
 @duel_parser.command(names=['sc', 'score'])
