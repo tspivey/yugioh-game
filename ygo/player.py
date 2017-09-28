@@ -1,8 +1,8 @@
 import gettext
-import json
 
 from .constants import *
 from . import globals
+from .deck_editor import DeckEditor
 from .i18n import set_language as i18n_set_language
 from . import models
 
@@ -16,7 +16,7 @@ class Player:
     self.chat = True
     self.connection = None
     self.deck = {'cards': []}
-    self.deck_edit_pos = 0
+    self.deck_editor = DeckEditor(self)
     self.duel = None
     self.ignores = set()
     self.is_admin = False
@@ -27,7 +27,6 @@ class Player:
     self.requested_opponent = (None, False)
     self.say = True
     self.seen_waiting = None
-    self.session = Session()
     self.soundpack = False
     self.watch = True
     self.watching = False
@@ -129,83 +128,4 @@ class Player:
       player.notify(player._("%s wants to duel. Type duel %s to accept.") % (self.nickname, self.nickname))
       self.requested_opponent = (player.nickname, private)
       self.notify(self._("Duel request sent to %s.") % player.nickname)
-
-  def deck_list(self):
-    decks = self.connection.account.decks
-      if not decks:
-      self.notify(self._("No decks."))
-      self.connection.session.commit()
-      return
-    for deck in decks:
-      self.notify(deck.name)
-    caller.connection.session.commit()
-
-  def deck_load(self, name):
-    session = self.connection.session
-    account = self.connection.account
-    if name.startswith('public/'):
-      account = session.query(models.Account).filter_by(name='Public').first()
-      name = name[7:]
-  deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
-  if not deck:
-    self.notify(self._("Deck doesn't exist."))
-      session.commit()
-      return
-    content = json.loads(deck.content)
-    self.deck = content
-    session.commit()
-    self.notify(self._("Deck loaded with %d cards.") % len(content['cards']))
-
-  def deck_clear(self, name):
-    account = self.connection.account
-    session = self.connection.session
-    deck = models.Deck.find(session, account, name)
-    if not deck:
-      self.notify(self._("Deck not found."))
-      session.commit()
-      return
-    deck.content = json.dumps({'cards': []})
-    session.commit()
-    self.notify(self._("Deck cleared."))
-
-  def deck_delete(self, name):
-    account = self.connection.account
-    session = self.connection.session
-    deck = models.Deck.find(session, account, name)
-    if not deck:
-    self.notify(self._("Deck not found."))
-      session.commit()
-      return
-    session.delete(deck)
-    session.commit()
-  self.notify(self._("Deck deleted."))
-
-  def deck_rename(self, args):
-    if '=' not in args:
-      self.notify(self._("Usage: deck rename <old>=<new>"))
-      return
-    args = args.strip().split('=', 1)
-    name = args[0].strip()
-    dest = args[1].strip()
-    if not name or not dest:
-      self.notify(self._("Usage: deck rename <old>=<new>"))
-      return
-    if '=' in dest:
-      self.notify(self._("Deck names may not contain =."))
-      return
-    account = self.connection.account
-    session = self.connection.session
-    deck = models.Deck.find(session, account, name)
-    if not deck:
-      self.notify(self._("Deck not found."))
-      session.commit()
-      return
-    dest_deck = models.Deck.find(session, account, dest)
-    if dest_deck:
-      self.notify(self._("Destination deck already exists"))
-      session.commit()
-      return
-    deck.name = dest
-    session.commit()
-    self.notify(self._("Deck renamed."))
 

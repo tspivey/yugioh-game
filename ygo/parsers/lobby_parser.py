@@ -30,7 +30,14 @@ def deck(caller):
   cmd = lst[0]
   caller.args = lst[1:]
   if cmd == 'list':
-    caller.connection.player.deck_list()
+    caller.connection.player.deck_editor.list()
+    return
+  elif cmd == 'check':
+    if len(caller.args) == 0:
+      caller.connection.player.deck_editor.check()
+    else:
+      caller.connection.player.deck_editor.check(caller.args[0])
+    return
 
   if len(caller.args) == 0:
     caller.connection.notify(caller.connection._("This command requires more information to operate with."))
@@ -46,12 +53,8 @@ def deck(caller):
     caller.connection.player.deck_delete(caller.args[0])
   elif cmd == 'rename':
     caller.connection.player.deck_rename(caller.args[0])
-  elif cmd == 'import':
-    caller.connection.player.deck_import(caller.args[0])
   elif cmd == 'new':
     caller.connection.player.deck_new(caller.args[0])
-  elif cmd == 'check':
-    caller.connection.player.deck_check(caller.args[0])
   else:
     caller.connection.notify(caller.connection._("Invalid deck command."))
 

@@ -1,29 +1,27 @@
 from .constants import *
+from . import globals
 
 class Card(object):
-  @classmethod
-  def from_code(cls, code):
-    row = db.execute('select * from datas where id=?', (code,)).fetchone()
-    cd = cls()
-    cd.code = code
-    cd.alias = row['alias']
-    cd.setcode = row['setcode']
-    cd.type = row['type']
-    cd.level = row['level'] & 0xff
-    cd.lscale = (row['level'] >> 24) & 0xff
-    cd.rscale = (row['level'] >> 16) & 0xff
-    cd.attack = row['atk']
-    cd.defense = row['def']
-    cd.race = row['race']
-    cd.attribute = row['attribute']
-    cd.category = row['category']
-    row = db.execute('select * from texts where id = ?', (self.code, )).fetchone()
+  def __init__(self, code):
+    row = globals.server.db.execute('select * from datas where id=?', (code,)).fetchone()
+    self.code = code
+    self.alias = row['alias']
+    self.setcode = row['setcode']
+    self.type = row['type']
+    self.level = row['level'] & 0xff
+    self.lscale = (row['level'] >> 24) & 0xff
+    self.rscale = (row['level'] >> 16) & 0xff
+    self.attack = row['atk']
+    self.defense = row['def']
+    self.race = row['race']
+    self.attribute = row['attribute']
+    self.category = row['category']
+    row = globals.server.db.execute('select * from texts where id = ?', (self.code, )).fetchone()
     self.name = row[1]
     self.desc = row[2]
     self.strings = []
     for i in range(3, len(row), 1):
       self.strings.append(row[i])
-    return cd
 
   def set_location(self, location):
     self.controller = location & 0xff
