@@ -1,3 +1,5 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Unicode, Integer, String, func, DateTime, ForeignKey, Index, collate, Boolean, UniqueConstraint
@@ -48,3 +50,11 @@ class Ignore(Base):
 	__table_args__ = (
 		PrimaryKeyConstraint('account_id', 'ignored_account_id'),
 	)
+
+def setup():
+  global Base
+  engine = create_engine('sqlite:///game.db')
+  Base.metadata.bind = engine
+  Session = sessionmaker(bind=engine)
+  Base.metadata.create_all()
+  return Session
