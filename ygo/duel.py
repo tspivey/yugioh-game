@@ -7,6 +7,7 @@ import binascii
 from functools import partial
 import pkgutil
 import re
+import datetime
 
 from . import callback_manager
 from .card import Card
@@ -1115,3 +1116,35 @@ if __name__ == '__main__':
     except ValueError:
       pass
     return ints
+
+  def start_debug(self):
+    self.debug_mode = True
+    lt = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    fn = lt+"_"+self.players[0].nickname+"_"+self.players[1].nickname
+    self.debug_fp = open(os.path.join('duels', fn), 'w')
+    self.debug(event_type='start', player0=self.players[0].nickname, player1=self.players[1].nickname,
+    deck0=self.cards[0], deck1=self.cards[1], seed=self.seed)
+
+  def debug(self, **kwargs):
+    if not self.debug_mode:
+      return
+    s = json.dumps(kwargs)
+    self.debug_fp.write(s+'\n')
+    self.debug_fp.flush()
+
+  def player_disconnected(self, con):
+    if any(pl is None for pl in self.players):
+      self.end()
+      return
+    self.players[con.duel_player] = None
+    duels[con.nickname] = weakref.ref(self)
+    self.lost_parser = con.parser
+    for pl in self.players + self.watchers:
+      if pl is None:
+        continue
+      pl.notify(pl._("%s disconnected, the duel is paused.") % con.nickname)
+    for pl in self.players:
+      if pl is None:
+        continue
+      pl.paused_parser = pl.parser
+      pl.parser = parser
