@@ -1,5 +1,7 @@
 import collections
 
+from _duel import ffi, lib
+
 def parse_lflist(filename):
   lst = collections.OrderedDict()
   with open(filename, 'r', encoding='utf-8') as fp:
@@ -27,3 +29,38 @@ def process_duel(d):
         d.keep_processing = False
         continue
       break
+
+def process_duel_replay(duel):
+  res = lib.process(duel.duel)
+  l = lib.get_message(duel.duel, ffi.cast('byte *', duel.buf))
+  data = ffi.unpack(duel.buf, l)
+  cb = duel.cm.callbacks
+  duel.cm.callbacks = collections.defaultdict(list)
+  def tp(t):
+    duel.tp = t
+  duel.cm.register_callback('new_turn', tp)
+  def recover(player, amount):
+    duel.lp[player] += amount
+  def damage(player, amount):
+    duel.lp[player] -= amount
+  duel.cm.register_callback('recover', recover)
+  duel.cm.register_callback('damage', damage)
+  duel.process_messages(data)
+  duel.cm.callbacks = cb
+  return data
+
+def check_sum(cards, acc):
+  if acc < 0:
+    return False
+  if not cards:
+    return acc == 0
+  l = cards[0].param
+  l1 = l & 0xffff
+  l2 = l >> 16
+  nc = cards[1:]
+  res1 = check_sum(nc, acc - l1)
+  if l2 > 0:
+    res2 = check_sum(nc, acc - l2)
+  else:
+    res2 = False
+  return res1 or res2

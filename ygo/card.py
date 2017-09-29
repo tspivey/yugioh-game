@@ -137,3 +137,21 @@ class Card(object):
     elif self.position == POS_FACEDOWN:
       return pl._("face down")
 
+  def get_spec(self, player):
+    s = ""
+    if self.controller != player:
+      s += "o"
+    if self.location == LOCATION_HAND:
+      s += "h"
+    elif self.location == LOCATION_MZONE:
+      s += "m"
+    elif self.location == LOCATION_SZONE:
+      s += "s"
+    elif self.location == LOCATION_GRAVE:
+      s += "g"
+    elif self.location == LOCATION_EXTRA:
+      s += "x"
+    elif self.location == LOCATION_REMOVED:
+      s += "r"
+    s += str(self.sequence + 1)
+    return s

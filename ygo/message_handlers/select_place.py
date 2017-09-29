@@ -1,0 +1,34 @@
+from twisted.internet import reactor
+
+from ..duel_reader import DuelReader
+
+def select_place(self, player, count, flag):
+  pl = self.players[player]
+  specs = self.flag_to_usable_cardspecs(flag)
+  if count == 1:
+    pl.notify(pl._("Select place for card, one of %s.") % ", ".join(specs))
+  else:
+    pl.notify(pl._("Select %d places for card, from %s.") % (count, ", ".join(specs)))
+  def r(caller):
+    values = caller.text.split()
+    if len(set(values)) != len(values):
+      pl.notify(pl._("Duplicate values not allowed."))
+      return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+    if len(values) != count:
+      pl.notify(pl._("Please enter %d values.") % count)
+      return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+    if any(value not in specs for value in values):
+      pl.notify(pl._("Invalid cardspec. Try again."))
+      pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+      return
+    resp = b''
+    for value in values:
+      l, s = self.cardspec_to_ls(value)
+      if value.startswith('o'):
+        plr = 1 - player
+      else:
+        plr = player
+      resp += bytes([plr, l, s])
+    self.set_responseb(resp)
+    reactor.callLater(0, procduel, self)
+  pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)

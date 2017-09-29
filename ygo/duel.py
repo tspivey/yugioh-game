@@ -5,10 +5,13 @@ import struct
 import random
 import binascii
 from functools import partial
+import pkgutil
+import re
 
 from . import callback_manager
 from .card import Card
 from .constants import *
+from . import message_handlers
 
 @ffi.def_extern()
 def card_reader_callback(code, data):
@@ -53,8 +56,20 @@ class Duel:
     self.duel = lib.create_duel(seed)
     lib.set_player_info(self.duel, 0, 8000, 5, 1)
     lib.set_player_info(self.duel, 1, 8000, 5, 1)
+    self.bind_message_handlers()
     self.cm = callback_manager.CallbackManager()
+    self.keep_processing = False
+    self.to_ep = False
+    self.to_m2 = False
+    self.current_phase = 0
+    self.watchers = []
+    self.private = False
     self.started = False
+    self.debug_mode = False
+    self.players = [None, None]
+    self.lp = [8000, 8000]
+    self.started = False
+    self.register_callbacks()
     self.message_map = {
       90: self.msg_draw,
       40: self.msg_new_turn,
@@ -130,6 +145,20 @@ class Duel:
   def end(self):
     lib.end_duel(self.duel)
     self.started = False
+    for pl in self.players + self.watchers:
+      if pl is None:
+        continue
+      pl.duel = None
+      pl.intercept = None
+      op = pl.connection.parser
+      if isinstance(op, DuelReader):
+        op.done = lambda caller: None
+      pl.connection.parser = LobbyParserparser
+      pl.watching = False
+      pl.card_list = []
+    for pl in self.watchers:
+      pl.notify(pl._("Watching stopped."))
+    globals.server.check_reboot()
 
   def process(self):
     res = lib.process(self.duel)
@@ -820,3 +849,269 @@ if __name__ == '__main__':
       else:
         resp = int(resp, 16)
         d.set_responsei(resp)
+
+  def bind_message_handlers(self):
+
+    for importer, modname, ispkg in pkgutil.iter_modules(message_handlers.__path__):
+      if not ispkg:
+        m = importer.find_module(modname).load_module(modname)
+        # we bind the functions in those modules to this object
+        # the functions need to have the same name as the module
+        setattr(self, modname, getattr(m, modname).__get__(self))
+
+  def register_callbacks(self):
+    self.cm.register_callback('draw', self.draw)
+    self.cm.register_callback('shuffle', self.shuffle)
+    self.cm.register_callback('phase', self.phase)
+    self.cm.register_callback('new_turn', self.new_turn)
+    self.cm.register_callback('idle', self.idle)
+    self.cm.register_callback('select_place', self.select_place)
+    self.cm.register_callback('select_chain', self.select_chain)
+    self.cm.register_callback('summoning', self.summoning)
+    self.cm.register_callback('flipsummoning', self.flipsummoning)
+    self.cm.register_callback("select_battlecmd", self.select_battlecmd)
+    self.cm.register_callback('attack', self.attack)
+    self.cm.register_callback('begin_damage', self.begin_damage)
+    self.cm.register_callback('end_damage', self.end_damage)
+    self.cm.register_callback('decktop', self.decktop)
+    self.cm.register_callback('battle', self.battle)
+    self.cm.register_callback('damage', self.damage)
+    self.cm.register_callback('hint', self.hint)
+    self.cm.register_callback('select_card', self.select_card)
+    self.cm.register_callback('move', self.move)
+    self.cm.register_callback('select_option', self.select_option)
+    self.cm.register_callback('recover', self.recover)
+    self.cm.register_callback('select_tribute', partial(self.select_card, is_tribute=True))
+    self.cm.register_callback('pos_change', self.pos_change)
+    self.cm.register_callback('set', self.set)
+    self.cm.register_callback("chaining", self.chaining)
+    self.cm.register_callback('select_position', self.select_position)
+    self.cm.register_callback('yesno', self.yesno)
+    self.cm.register_callback('select_effectyn', self.select_effectyn)
+    self.cm.register_callback('win', self.win)
+    self.cm.register_callback('pay_lpcost', self.pay_lpcost)
+    self.cm.register_callback('sort_chain', self.sort_chain)
+    self.cm.register_callback('announce_attrib', self.announce_attrib)
+    self.cm.register_callback('announce_card', self.announce_card)
+    self.cm.register_callback('announce_number', self.announce_number)
+    self.cm.register_callback('announce_card_filter', self.announce_card_filter)
+    self.cm.register_callback('select_sum', self.select_sum)
+    self.cm.register_callback('select_counter', self.select_counter)
+    self.cm.register_callback('announce_race', self.announce_race)
+    self.cm.register_callback('become_target', self.become_target)
+    self.cm.register_callback('sort_card', self.sort_card)
+    self.cm.register_callback('field_disabled', self.field_disabled)
+    self.cm.register_callback('toss_coin', self.toss_coin)
+    self.cm.register_callback('toss_dice', self.toss_dice)
+    self.cm.register_callback('confirm_cards', self.confirm_cards)
+    self.cm.register_callback('chain_solved', self.chain_solved)
+    self.cm.register_callback('equip', self.equip)
+    self.cm.register_callback('lpupdate', self.lpupdate)
+    self.cm.register_callback('debug', self.debug)
+    self.cm.register_callback('counters', self.counters)
+    self.cm.register_callback('swap', self.swap)
+
+  def show_usable(self, pl):
+    summonable = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.summonable])
+    spsummon = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.spsummon])
+    repos = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.repos])
+    mset = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_mset])
+    idle_set = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_set])
+    idle_activate = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_activate])
+    if summonable:
+      pl.notify(pl._("Summonable in attack position: %s") % ", ".join(summonable))
+    if mset:
+      pl.notify(pl._("Summonable in defense position: %s") % ", ".join(mset))
+    if spsummon:
+      pl.notify(pl._("Special summonable: %s") % ", ".join(spsummon))
+    if idle_activate:
+      pl.notify(pl._("Activatable: %s") % ", ".join(idle_activate))
+    if repos:
+      pl.notify(pl._("Repositionable: %s") % ", ".join(repos))
+    if idle_set:
+      pl.notify(pl._("Settable: %s") % ", ".join(idle_set))
+
+  def cardspec_to_ls(self, text):
+    if text.startswith('o'):
+      text = text[1:]
+    r = re.search(r'^([a-z]+)(\d+)', text)
+    if not r:
+      return (None, None)
+    if r.group(1) == 'h':
+      l = dm.LOCATION_HAND
+    elif r.group(1) == 'm':
+      l = dm.LOCATION_MZONE
+    elif r.group(1) == 's':
+      l = dm.LOCATION_SZONE
+    elif r.group(1) == 'g':
+      l = dm.LOCATION_GRAVE
+    elif r.group(1) == 'x':
+      l = dm.LOCATION_EXTRA
+    elif r.group(1) == 'r':
+      l = dm.LOCATION_REMOVED
+    else:
+      return None, None
+    return l, int(r.group(2)) - 1
+
+  def flag_to_usable_cardspecs(self, flag, reverse=False):
+    pm = flag & 0xff
+    ps = (flag >> 8) & 0xff
+    om = (flag >> 16) & 0xff
+    os = (flag >> 24) & 0xff
+    zone_names = ('m', 's', 'om', 'os')
+    specs = []
+    for zn, val in zip(zone_names, (pm, ps, om, os)):
+      for i in range(8):
+        if reverse:
+          avail = val & (1 << i) != 0
+        else:
+          avail = val & (1 << i) == 0
+        if avail:
+          specs.append(zn + str(i + 1))
+    return specs
+
+  def cardlist_info_for_player(self, card, con):
+    spec = self.card_to_spec(con.duel_player, card)
+    if card.location == dm.LOCATION_DECK:
+      spec = con._("deck")
+    cls = (card.controller, card.location, card.sequence)
+    if card.controller != con.duel_player and card.position in (0x8, 0xa) and cls not in self.revealed:
+      position = card.get_position(con)
+      return (con._("{position} card ({spec})")
+        .format(position=position, spec=spec))
+    name = card.get_name(con)
+    return "{name} ({spec})".format(name=name, spec=spec)
+
+  def show_table(self, con, player, hide_facedown=False):
+    mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
+    sz = self.get_cards_in_location(player, dm.LOCATION_SZONE)
+    if len(mz+sz) == 0:
+      con.notify(con._("Table is empty."))
+      return
+    for card in mz:
+      s = "m%d: " % (card.sequence + 1)
+      if hide_facedown and card.position in (0x8, 0xa):
+        s += card.get_position(con)
+      else:
+        s += card.get_name(con) + " "
+        s += (con._("({attack}/{defense}) level {level}")
+          .format(attack=card.attack, defense=card.defense, level=card.level))
+        s += " " + card.get_position(con)
+
+        if len(card.xyz_materials):
+          s += " ("+con._("xyz materials: %d")%(len(card.xyz_materials))+")"
+        counters = []
+        for c in card.counters:
+          counter_type = c & 0xffff
+          counter_val = (c >> 16) & 0xffff
+          counter_type = strings[con.language]['counter'][counter_type]
+          counter_str = "%s: %d" % (counter_type, counter_val)
+          counters.append(counter_str)
+        if counters:
+          s += " (" + ", ".join(counters) + ")"
+      con.notify(s)
+    for card in sz:
+      s = "s%d: " % (card.sequence + 1)
+      if hide_facedown and card.position in (0x8, 0xa):
+        s += card.get_position(con)
+      else:
+        s += card.get_name(con) + " "
+        s += card.get_position(con)
+
+        if card.equip_target:
+
+          s += ' ' + con._('(equipped to %s)')%(self.card_to_spec(con.duel_player, card.equip_target))
+
+        counters = []
+        for c in card.counters:
+          counter_type = c & 0xffff
+          counter_val = (c >> 16) & 0xffff
+          counter_type = strings[con.language]['counter'][counter_type]
+          counter_str = "%s: %d" % (counter_type, counter_val)
+          counters.append(counter_str)
+        if counters:
+          s += " (" + ", ".join(counters) + ")"
+
+      con.notify(s)
+
+  def show_cards_in_location(self, con, player, location, hide_facedown=False):
+    cards = self.get_cards_in_location(player, location)
+    if not cards:
+      con.notify(con._("Table is empty."))
+      return
+    for card in cards:
+      s = self.card_to_spec(player, card) + " "
+      if hide_facedown and card.position in (0x8, 0xa):
+        s += card.get_position(con)
+      else:
+        s += card.get_name(con) + " "
+        s += card.get_position(con)
+        if card.type & dm.TYPE_MONSTER:
+          s += " " + con._("level %d") % card.level
+      con.notify(s)
+
+  def show_hand(self, con, player):
+    h = self.get_cards_in_location(player, dm.LOCATION_HAND)
+    if not h:
+      con.notify(con._("Your hand is empty."))
+      return
+    for c in h:
+      con.notify("h%d: %s" % (c.sequence + 1, c.get_name(con)))
+
+  def show_score(self, con):
+    player = con.duel_player
+    duel = con.duel
+    deck = duel.get_cards_in_location(player, dm.LOCATION_DECK)
+    odeck = duel.get_cards_in_location(1 - player, dm.LOCATION_DECK)
+    grave = duel.get_cards_in_location(player, dm.LOCATION_GRAVE)
+    ograve = duel.get_cards_in_location(1 - player, dm.LOCATION_GRAVE)
+    hand = duel.get_cards_in_location(player, dm.LOCATION_HAND)
+    ohand = duel.get_cards_in_location(1 - player, dm.LOCATION_HAND)
+    removed = duel.get_cards_in_location(player, dm.LOCATION_REMOVED)
+    oremoved = duel.get_cards_in_location(1 - player, dm.LOCATION_REMOVED)
+    if con.watching:
+      nick0 = duel.players[0].nickname
+      nick1 = duel.players[1].nickname
+      con.notify(con._("LP: %s: %d %s: %d") % (nick0, duel.lp[player], nick1, duel.lp[1 - player]))
+      con.notify(con._("Hand: %s: %d %s: %d") % (nick0, len(hand), nick1, len(ohand)))
+      con.notify(con._("Deck: %s: %d %s: %d") % (nick0, len(deck), nick1, len(odeck)))
+      con.notify(con._("Grave: %s: %d %s: %d") % (nick0, len(grave), nick1, len(ograve)))
+      con.notify(con._("Removed: %s: %d %s: %d") % (nick0, len(removed), nick1, len(oremoved)))
+    else:
+      con.notify(con._("Your LP: %d Opponent LP: %d") % (duel.lp[player], duel.lp[1 - player]))
+      con.notify(con._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
+      con.notify(con._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
+      con.notify(con._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
+      con.notify(con._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
+
+  def show_info(self, card, pl):
+    pln = pl.duel_player
+    cs = self.card_to_spec(pln, card)
+    if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE)):
+      pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
+      return
+    pl.notify(card.get_info(pl))
+
+  def show_info_cmd(self, con, spec):
+    cards = []
+    for i in (0, 1):
+      for j in (dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE, dm.LOCATION_REMOVED, dm.LOCATION_HAND, dm.LOCATION_EXTRA):
+        cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == con.duel_player or card.position not in (0x8, 0xa))
+    specs = {}
+    for card in cards:
+      specs[self.card_to_spec(con.duel_player, card)] = card
+    for i, card in enumerate(con.card_list):
+      specs[str(i + 1)] = card
+    if spec not in specs:
+      con.notify(con._("Invalid card."))
+      return
+    self.show_info(specs[spec], con)
+
+  def parse_ints(self, text):
+    ints = []
+    try:
+      for i in text.split():
+        ints.append(int(i))
+    except ValueError:
+      pass
+    return ints
