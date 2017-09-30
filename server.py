@@ -1810,14 +1810,52 @@ def deck_edit(caller):
 		con.deck = json.loads(deck.content)
 	cards = con.deck['cards']
 	last_search = ""
-	def group_cards(cards):
+	def group_cards(cardlist):
+		"""
+		Groups all cards in the supplied list.
+
+		This provides output like foo, bar(x3) etc.
+		"""
 		cnt = OrderedDict()
-		for i, code in enumerate(cards):
+		for code in cardlist:
 			if not code in cnt:
 				cnt[code] = 1
 			else:
 				cnt[code] += 1
 		return cnt
+	def group_soart_cards(cardlist):
+		"""
+		Use the above function to group all cards, then soart them into groups.
+		"""
+		extras = [c for c in cardlist if (dm.Card.from_code(c).type & (dm.TYPE_XYZ | dm.TYPE_SYNCHRO | dm.TYPE_FUSION | dm.TYPE_LINK))]
+		for c in extras: cardlist.remove(c)
+		traps = [c for c in cardlist if (dm.Card.from_code(c).type & 4)]
+		for c in traps: cardlist.remove(c)
+		monsters = [c for c in cardlist if (dm.Card.from_code(c).type&1)]
+		for c in monsters: cardlist.remove(c)
+		spells = [c for c in cardlist if (dm.Card.from_code(c).type & 2)]
+		for c in spells: cardlist.remove(c)
+		other=cardlist
+		extras_group = group_cards(extras)
+		traps_group = group_cards(traps)
+		spells_group = group_cards(spells)
+		monsters_group = group_cards(monsters)
+		other_group = group_cards(other)
+		groups=(monsters_group, spells_group, traps_group, extras_group, other_group)
+		return groups
+	def group_cards_combined(cardlist):
+		"""
+		Groups and soarts cards, then combines them in the correct order for proper indexing.
+		"""
+		groups = group_soart_cards(cardlist)
+		monsters, spells, traps, extras, other = groups
+		full = OrderedDict()
+		for x,y in monsters.items(): full[x] = y
+		for x,y in spells.items(): full[x] = y
+		for x,y in traps.items(): full[x] = y
+		for x,y in extras.items(): full[x] = y
+		for x, y in other.items(): full[x] = y
+		return full
 	def info():
 		show_deck_info(con)
 		con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
@@ -1863,7 +1901,7 @@ def deck_edit(caller):
 			con.session.commit()
 			read()
 		elif caller.text.startswith('r'):
-			cnt = group_cards(cards)
+			cnt = group_cards_combined(cards.copy())
 			rm = re.search(r'^r(\d+)', caller.text)
 			if rm:
 				n = int(rm.group(1)) - 1
@@ -1877,6 +1915,7 @@ def deck_edit(caller):
 				read()
 				return
 			cards.remove(code)
+			con.notify(con._("Removed %s from your deck." %(dm.Card.from_code(code).get_name(con))))
 			save_deck(con.deck, con.session, con.account, deck_name)
 			con.session.commit()
 			read()
@@ -1902,15 +1941,45 @@ def deck_edit(caller):
 				con.deck_edit_pos = pos
 			read()
 		elif caller.text == 'l':
-			i=0
-			cnt = group_cards(cards)
-			for code, count in cnt.items():
-				i+=1
-				card = dm.Card.from_code(code)
-				if count == 1:
-					con.notify("%d: %s" % (i, card.get_name(con)))
-				else:
-					con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
+			groups = group_soart_cards(cards.copy())
+			monsters, spells, traps, extras, other = groups
+			i=1
+			if len(monsters):
+				con.notify(con._("monsters:"))
+				for code, count in monsters.items():
+					card = dm.Card.from_code(code)
+					if count > 1:
+						con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
+					else:
+						con.notify("%d: %s" % (i, card.get_name(con)))
+					i += 1
+			if len(spells):
+				con.notify(con._("spells:"))
+				for code, count in spells.items():
+					card = dm.Card.from_code(code)
+					if count > 1:
+						con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
+					else:
+						con.notify("%d: %s" % (i, card.get_name(con)))
+					i += 1
+			if len(traps):
+				con.notify(con._("traps:"))
+				for code, count in traps.items():
+					card = dm.Card.from_code(code)
+					if count > 1:
+						con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
+					else:
+						con.notify("%d: %s" % (i, card.get_name(con)))
+					i += 1
+			if len(extras):
+				con.notify(con._("extras:"))
+				for code, count in extras.items():
+					card = dm.Card.from_code(code)
+					if count > 1:
+						con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
+					else:
+						con.notify("%d: %s" % (i, card.get_name(con)))
+					i += 1
 			read()
 		elif caller.text == 'q':
 			con.notify("Quit.")
