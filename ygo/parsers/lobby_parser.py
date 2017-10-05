@@ -54,17 +54,17 @@ def deck(caller):
     return
 
   if cmd == 'load':
-    caller.connection.player.deck_load(caller.args[0])
+    caller.connection.player.deck_editor.load(caller.args[0])
   elif cmd == 'edit':
-    caller.connection.player.deck_edit(caller.args[0])
+    caller.connection.player.deck_editor.edit(caller.args[0])
   elif cmd == 'clear':
-    caller.connection.player.deck_clear(caller.args[0])
+    caller.connection.player.deck_editor.clear(caller.args[0])
   elif cmd == 'delete':
-    caller.connection.player.deck_delete(caller.args[0])
+    caller.connection.player.deck_editor.delete(caller.args[0])
   elif cmd == 'rename':
-    caller.connection.player.deck_rename(caller.args[0])
+    caller.connection.player.deck_editor.rename(caller.args[0])
   elif cmd == 'new':
-    caller.connection.player.deck_new(caller.args[0])
+    caller.connection.player.deck_editor.new(caller.args[0])
   else:
     caller.connection.notify(caller.connection._("Invalid deck command."))
 

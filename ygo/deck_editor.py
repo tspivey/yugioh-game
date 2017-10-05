@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from gsb.intercept import Reader
 import json
 import natsort
 import re
@@ -94,6 +95,7 @@ class DeckEditor:
 
   def edit(self, deck_name):
     con = self.player.connection
+    parser = con.parser
     account = con.account
     deck = con.session.query(models.Deck).filter_by(account_id=con.account.id, name=deck_name).first()
     if deck:
@@ -159,7 +161,7 @@ class DeckEditor:
           read()
           return
         cards.remove(code)
-        save(con.player.deck, con.session, con.account, deck_name)
+        self.save(con.player.deck, con.session, con.account, deck_name)
         con.session.commit()
         read()
       elif caller.text.startswith('/'):
@@ -168,7 +170,7 @@ class DeckEditor:
         search_pos = self.deck_edit_pos + 1
         if search_pos >= len(globals.server.all_cards):
           search_pos = 0
-        pos = find_next(text, search_pos)
+        pos = self.find_next(text, search_pos)
         if not pos:
           con.notify(con._("Not found."))
         else:
@@ -180,7 +182,7 @@ class DeckEditor:
         search_start = self.deck_edit_pos - 1
         if search_start < 0:
           search_start = len(globals.server.all_cards) - 1
-        pos = find_prev(text, search_start)
+        pos = self.find_prev(text, search_start)
         if not pos:
           con.notify(con._("Not found."))
         else:
@@ -193,9 +195,9 @@ class DeckEditor:
           i+=1
           card = Card(code)
           if count == 1:
-            con.notify("%d: %s" % (i, card.get_name(con)))
+            con.notify("%d: %s" % (i, card.get_name(con.player)))
           else:
-            con.notify("%d: %s (x %d)" % (i, card.get_name(con), count))
+            con.notify("%d: %s (x %d)" % (i, card.get_name(con.player), count))
         read()
       elif caller.text.startswith('g'):
         cnt = group_cards(cards)

@@ -87,13 +87,13 @@ class Card(object):
     t = str(self.type)
     for i in range(26):
       if self.type & (1 << i):
-        types.append(strings[pl.language]['system'][1050+i])
+        types.append(globals.strings[pl.language]['system'][1050+i])
     for i in range(7):
       if self.attribute & (1 << i):
-        types.append(strings[pl.language]['system'][1010+i])
+        types.append(globals.strings[pl.language]['system'][1010+i])
     for i in range(25):
       if self.race & (1 << i):
-        types.append(strings[pl.language]['system'][1020+i])
+        types.append(globals.strings[pl.language]['system'][1020+i])
 
     lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
     if self.type & TYPE_MONSTER:
