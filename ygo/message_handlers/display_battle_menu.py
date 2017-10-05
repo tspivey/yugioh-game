@@ -1,3 +1,9 @@
+from twisted.internet import reactor
+
+from ..duel_reader import DuelReader
+from ..utils import process_duel
+from ..parsers.duel_parser import DuelParser
+
 def display_battle_menu(self, pl):
   pl.notify(pl._("Battle menu:"))
   if self.attackable:
@@ -10,16 +16,16 @@ def display_battle_menu(self, pl):
     pl.notify(pl._("e: End phase."))
   def r(caller):
     if caller.text == 'a' and self.attackable:
-      self.battle_attack(caller.connection)
+      self.battle_attack(caller.connection.player)
     elif caller.text == 'c' and self.activatable:
-      self.battle_activate(caller.connection)
+      self.battle_activate(caller.connection.player)
     elif caller.text == 'e' and self.to_ep:
       self.set_responsei(3)
-      reactor.callLater(0, procduel, self)
+      reactor.callLater(0, process_duel, self)
     elif caller.text == 'm' and self.to_m2:
       self.set_responsei(2)
-      reactor.callLater(0, procduel, self)
+      reactor.callLater(0, process_duel, self)
     else:
-      pl.notify("Invalid option.")
+      pl.notify(pl._("Invalid option."))
       return self.display_battle_menu(pl)
-  pl.notify(DuelReader, r, no_abort=pl._("Invalid command."), prompt=pl._("Select an option:"), restore_parser=duel_parser)
+  pl.notify(DuelReader, r, no_abort=pl._("Invalid command."), prompt=pl._("Select an option:"), restore_parser=DuelParser)

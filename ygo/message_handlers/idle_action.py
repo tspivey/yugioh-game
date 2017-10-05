@@ -1,5 +1,9 @@
+from twisted.internet import reactor
+
+from ..constants import *
 from ..duel_reader import DuelReader
 from ..parsers.duel_parser import DuelParser
+from ..utils import process_duel
 
 def idle_action(self, pl):
   def prompt():
@@ -12,27 +16,27 @@ def idle_action(self, pl):
     pl.notify(DuelReader, r,
     no_abort=pl._("Invalid specifier. Retry."),
     prompt=pl._("Select a card:"),
-    restore_parser=duel_parser)
+    restore_parser=DuelParser)
   cards = []
   for i in (0, 1):
-    for j in (dm.LOCATION_HAND, dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE, dm.LOCATION_EXTRA):
+    for j in (LOCATION_HAND, LOCATION_MZONE, LOCATION_SZONE, LOCATION_GRAVE, LOCATION_EXTRA):
       cards.extend(self.get_cards_in_location(i, j))
-  specs = set(self.card_to_spec(self.tp, card) for card in cards)
+  specs = set(card.get_spec(self.tp) for card in cards)
   def r(caller):
     if caller.text == 'b' and self.to_bp:
       self.set_responsei(6)
-      reactor.callLater(0, procduel, self)
+      reactor.callLater(0, process_duel, self)
       return
     elif caller.text == 'e' and self.to_ep:
       self.set_responsei(7)
-      reactor.callLater(0, procduel, self)
+      reactor.callLater(0, process_duel, self)
       return
     elif caller.text == '?':
       self.show_usable(pl)
       return pl.notify(DuelReader, r,
       no_abort=pl._("Invalid specifier. Retry."),
       prompt=pl._("Select a card:"),
-      restore_parser=duel_parser)
+      restore_parser=DuelParser)
     if caller.text not in specs:
       pl.notify(pl._("Invalid specifier. Retry."))
       prompt()

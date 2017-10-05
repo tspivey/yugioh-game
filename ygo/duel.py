@@ -971,151 +971,141 @@ if __name__ == '__main__':
           specs.append(zn + str(i + 1))
     return specs
 
-  def cardlist_info_for_player(self, card, con):
-    spec = self.card_to_spec(con.duel_player, card)
-    if card.location == dm.LOCATION_DECK:
-      spec = con._("deck")
+  def cardlist_info_for_player(self, card, pl):
+    spec = card.get_spec(pl.duel_player)
+    if card.location == LOCATION_DECK:
+      spec = pl._("deck")
     cls = (card.controller, card.location, card.sequence)
-    if card.controller != con.duel_player and card.position in (0x8, 0xa) and cls not in self.revealed:
-      position = card.get_position(con)
-      return (con._("{position} card ({spec})")
+    if card.controller != pl.duel_player and card.position in (0x8, 0xa) and cls not in self.revealed:
+      position = card.get_position(pl)
+      return (pl._("{position} card ({spec})")
         .format(position=position, spec=spec))
-    name = card.get_name(con)
+    name = card.get_name(pl)
     return "{name} ({spec})".format(name=name, spec=spec)
 
-  def show_table(self, con, player, hide_facedown=False):
-    mz = self.get_cards_in_location(player, dm.LOCATION_MZONE)
-    sz = self.get_cards_in_location(player, dm.LOCATION_SZONE)
+  def show_table(self, pl, player, hide_facedown=False):
+    mz = self.get_cards_in_location(player, LOCATION_MZONE)
+    sz = self.get_cards_in_location(player, LOCATION_SZONE)
     if len(mz+sz) == 0:
-      con.notify(con._("Table is empty."))
+      pl.notify(pl._("Table is empty."))
       return
     for card in mz:
       s = "m%d: " % (card.sequence + 1)
       if hide_facedown and card.position in (0x8, 0xa):
-        s += card.get_position(con)
+        s += card.get_position(pl)
       else:
-        s += card.get_name(con) + " "
-        s += (con._("({attack}/{defense}) level {level}")
+        s += card.get_name(pl) + " "
+        s += (pl._("({attack}/{defense}) level {level}")
           .format(attack=card.attack, defense=card.defense, level=card.level))
-        s += " " + card.get_position(con)
+        s += " " + card.get_position(pl)
 
         if len(card.xyz_materials):
-          s += " ("+con._("xyz materials: %d")%(len(card.xyz_materials))+")"
+          s += " ("+pl._("xyz materials: %d")%(len(card.xyz_materials))+")"
         counters = []
         for c in card.counters:
           counter_type = c & 0xffff
           counter_val = (c >> 16) & 0xffff
-          counter_type = strings[con.language]['counter'][counter_type]
+          counter_type = globals.strings[pl.language]['counter'][counter_type]
           counter_str = "%s: %d" % (counter_type, counter_val)
           counters.append(counter_str)
         if counters:
           s += " (" + ", ".join(counters) + ")"
-      con.notify(s)
+      pl.notify(s)
     for card in sz:
       s = "s%d: " % (card.sequence + 1)
       if hide_facedown and card.position in (0x8, 0xa):
-        s += card.get_position(con)
+        s += card.get_position(pl)
       else:
-        s += card.get_name(con) + " "
-        s += card.get_position(con)
+        s += card.get_name(pl) + " "
+        s += card.get_position(pl)
 
         if card.equip_target:
 
-          s += ' ' + con._('(equipped to %s)')%(self.card_to_spec(con.duel_player, card.equip_target))
+          s += ' ' + pl._('(equipped to %s)')%(card.equip_target.get_spec(pl.duel_player))
 
         counters = []
         for c in card.counters:
           counter_type = c & 0xffff
           counter_val = (c >> 16) & 0xffff
-          counter_type = strings[con.language]['counter'][counter_type]
+          counter_type = globals.strings[pl.language]['counter'][counter_type]
           counter_str = "%s: %d" % (counter_type, counter_val)
           counters.append(counter_str)
         if counters:
           s += " (" + ", ".join(counters) + ")"
 
-      con.notify(s)
+      pl.notify(s)
 
-  def show_cards_in_location(self, con, player, location, hide_facedown=False):
+  def show_cards_in_location(self, pl, player, location, hide_facedown=False):
     cards = self.get_cards_in_location(player, location)
     if not cards:
-      con.notify(con._("Table is empty."))
+      pl.notify(pl._("Table is empty."))
       return
     for card in cards:
-      s = self.card_to_spec(player, card) + " "
+      s = card.card_to_spec(player) + " "
       if hide_facedown and card.position in (0x8, 0xa):
-        s += card.get_position(con)
+        s += card.get_position(pl)
       else:
-        s += card.get_name(con) + " "
-        s += card.get_position(con)
-        if card.type & dm.TYPE_MONSTER:
-          s += " " + con._("level %d") % card.level
-      con.notify(s)
+        s += card.get_name(pl) + " "
+        s += card.get_position(pl)
+        if card.type & TYPE_MONSTER:
+          s += " " + pl._("level %d") % card.level
+      pl.notify(s)
 
-  def show_hand(self, con, player):
-    h = self.get_cards_in_location(player, dm.LOCATION_HAND)
+  def show_hand(self, pl, player):
+    h = self.get_cards_in_location(player, LOCATION_HAND)
     if not h:
-      con.notify(con._("Your hand is empty."))
+      pl.notify(pl._("Your hand is empty."))
       return
     for c in h:
-      con.notify("h%d: %s" % (c.sequence + 1, c.get_name(con)))
+      pl.notify("h%d: %s" % (c.sequence + 1, c.get_name(pl)))
 
-  def show_score(self, con):
-    player = con.duel_player
-    duel = con.duel
-    deck = duel.get_cards_in_location(player, dm.LOCATION_DECK)
-    odeck = duel.get_cards_in_location(1 - player, dm.LOCATION_DECK)
-    grave = duel.get_cards_in_location(player, dm.LOCATION_GRAVE)
-    ograve = duel.get_cards_in_location(1 - player, dm.LOCATION_GRAVE)
-    hand = duel.get_cards_in_location(player, dm.LOCATION_HAND)
-    ohand = duel.get_cards_in_location(1 - player, dm.LOCATION_HAND)
-    removed = duel.get_cards_in_location(player, dm.LOCATION_REMOVED)
-    oremoved = duel.get_cards_in_location(1 - player, dm.LOCATION_REMOVED)
-    if con.watching:
-      nick0 = duel.players[0].nickname
-      nick1 = duel.players[1].nickname
-      con.notify(con._("LP: %s: %d %s: %d") % (nick0, duel.lp[player], nick1, duel.lp[1 - player]))
-      con.notify(con._("Hand: %s: %d %s: %d") % (nick0, len(hand), nick1, len(ohand)))
-      con.notify(con._("Deck: %s: %d %s: %d") % (nick0, len(deck), nick1, len(odeck)))
-      con.notify(con._("Grave: %s: %d %s: %d") % (nick0, len(grave), nick1, len(ograve)))
-      con.notify(con._("Removed: %s: %d %s: %d") % (nick0, len(removed), nick1, len(oremoved)))
+  def show_score(self, pl):
+    player = pl.duel_player
+    deck = self.get_cards_in_location(player, LOCATION_DECK)
+    odeck = self.get_cards_in_location(1 - player, LOCATION_DECK)
+    grave = self.get_cards_in_location(player, LOCATION_GRAVE)
+    ograve = self.get_cards_in_location(1 - player, LOCATION_GRAVE)
+    hand = self.get_cards_in_location(player, LOCATION_HAND)
+    ohand = self.get_cards_in_location(1 - player, LOCATION_HAND)
+    removed = self.get_cards_in_location(player, LOCATION_REMOVED)
+    oremoved = self.get_cards_in_location(1 - player, LOCATION_REMOVED)
+    if pl.watching:
+      nick0 = self.players[0].nickname
+      nick1 = self.players[1].nickname
+      pl.notify(pl._("LP: %s: %d %s: %d") % (nick0, self.lp[player], nick1, self.lp[1 - player]))
+      pl.notify(pl._("Hand: %s: %d %s: %d") % (nick0, len(hand), nick1, len(ohand)))
+      pl.notify(pl._("Deck: %s: %d %s: %d") % (nick0, len(deck), nick1, len(odeck)))
+      pl.notify(pl._("Grave: %s: %d %s: %d") % (nick0, len(grave), nick1, len(ograve)))
+      pl.notify(pl._("Removed: %s: %d %s: %d") % (nick0, len(removed), nick1, len(oremoved)))
     else:
-      con.notify(con._("Your LP: %d Opponent LP: %d") % (duel.lp[player], duel.lp[1 - player]))
-      con.notify(con._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
-      con.notify(con._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
-      con.notify(con._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
-      con.notify(con._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
+      pl.notify(pl._("Your LP: %d Opponent LP: %d") % (self.lp[player], self.lp[1 - player]))
+      pl.notify(pl._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
+      pl.notify(pl._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
+      pl.notify(pl._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
+      pl.notify(pl._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
 
   def show_info(self, card, pl):
     pln = pl.duel_player
-    cs = self.card_to_spec(pln, card)
-    if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, dm.LOCATION_MZONE) + self.get_cards_in_location(1 - pln, dm.LOCATION_SZONE)):
+    cs = card.get_spec(pln)
+    if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION_MZONE) + self.get_cards_in_location(1 - pln, LOCATION_SZONE)):
       pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
       return
     pl.notify(card.get_info(pl))
 
-  def show_info_cmd(self, con, spec):
+  def show_info_cmd(self, pl, spec):
     cards = []
     for i in (0, 1):
-      for j in (dm.LOCATION_MZONE, dm.LOCATION_SZONE, dm.LOCATION_GRAVE, dm.LOCATION_REMOVED, dm.LOCATION_HAND, dm.LOCATION_EXTRA):
-        cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == con.duel_player or card.position not in (0x8, 0xa))
+      for j in (LOCATION_MZONE, LOCATION_SZONE, LOCATION_GRAVE, LOCATION_REMOVED, LOCATION_HAND, LOCATION_EXTRA):
+        cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == pl.duel_player or card.position not in (0x8, 0xa))
     specs = {}
     for card in cards:
-      specs[self.card_to_spec(con.duel_player, card)] = card
-    for i, card in enumerate(con.card_list):
+      specs[card.get_spec(pl.duel_player)] = card
+    for i, card in enumerate(pl.card_list):
       specs[str(i + 1)] = card
     if spec not in specs:
-      con.notify(con._("Invalid card."))
+      pl.notify(pl._("Invalid card."))
       return
-    self.show_info(specs[spec], con)
-
-  def parse_ints(self, text):
-    ints = []
-    try:
-      for i in text.split():
-        ints.append(int(i))
-    except ValueError:
-      pass
-    return ints
+    self.show_info(specs[spec], pl)
 
   def start_debug(self):
     self.debug_mode = True

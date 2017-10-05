@@ -64,3 +64,12 @@ def check_sum(cards, acc):
   else:
     res2 = False
   return res1 or res2
+
+def parse_ints(text):
+  ints = []
+  try:
+    for i in text.split():
+      ints.append(int(i))
+  except ValueError:
+    pass
+  return ints

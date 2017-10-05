@@ -1,6 +1,8 @@
 from twisted.internet import reactor
 
 from ..duel_reader import DuelReader
+from ..parsers.duel_parser import DuelParser
+from ..utils import process_duel
 
 def select_place(self, player, count, flag):
   pl = self.players[player]
@@ -16,10 +18,10 @@ def select_place(self, player, count, flag):
       return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
     if len(values) != count:
       pl.notify(pl._("Please enter %d values.") % count)
-      return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+      return pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=DuelParser)
     if any(value not in specs for value in values):
       pl.notify(pl._("Invalid cardspec. Try again."))
-      pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+      pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=DuelParser)
       return
     resp = b''
     for value in values:
@@ -30,5 +32,5 @@ def select_place(self, player, count, flag):
         plr = player
       resp += bytes([plr, l, s])
     self.set_responseb(resp)
-    reactor.callLater(0, procduel, self)
-  pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=duel_parser)
+    reactor.callLater(0, process_duel, self)
+  pl.notify(DuelReader, r, no_abort=pl._("Invalid command"), restore_parser=DuelParser)

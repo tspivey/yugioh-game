@@ -1,6 +1,12 @@
+from twisted.internet import reactor
+
+from ..constants import ATTRIBUTES
+from ..duel_reader import DuelReader
+from ..parsers.duel_parser import DuelParser
+from ..utils import process_duel
+
 def announce_attrib(self, player, count, avail):
-  attributes = ('Earth', 'Water', 'Fire', 'Wind', 'Light', 'Dark', 'Divine')
-  attrmap = {k: (1<<i) for i, k in enumerate(attributes)}
+  attrmap = {k: (1<<i) for i, k in enumerate(ATTRIBUTES)}
   avail_attributes = {k: v for k, v in attrmap.items() if avail & v}
   avail_attributes_keys = avail_attributes.keys()
   avail_attributes_values = list(avail_attributes.values())
@@ -9,7 +15,7 @@ def announce_attrib(self, player, count, avail):
     pl.notify("Type %d attributes separated by spaces." % count)
     for i, attrib in enumerate(avail_attributes_keys):
       pl.notify("%d. %s" % (i + 1, attrib))
-    pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=duel_parser)
+    pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=DuelParser)
   def r(caller):
     items = caller.text.split()
     ints = []
@@ -24,5 +30,5 @@ def announce_attrib(self, player, count, avail):
       return prompt()
     value = sum(avail_attributes_values[i - 1] for i in ints)
     self.set_responsei(value)
-    reactor.callLater(0, procduel, self)
+    reactor.callLater(0, process_duel, self)
   return prompt()

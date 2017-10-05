@@ -1,5 +1,7 @@
 __ = lambda s: s
 
+ATTRIBUTES = ('Earth', 'Water', 'Fire', 'Wind', 'Light', 'Dark', 'Divine')
+
 COMMAND_SUBSTITUTIONS = {
 	"'": "say",
 	".": "chat",
@@ -33,6 +35,14 @@ POS_FACEUP_DEFENSE = 0x4
 POS_FACEUP = 0x5
 POS_FACEDOWN_DEFENSE = 0x8
 POS_FACEDOWN = 0xa
+
+RACES = (
+  "Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie",
+  "Machine", "Aqua", "Pyro", "Rock", "Wind Beast",
+  "Plant", "Insect", "Thunder", "Dragon", "Beast",
+  "Beast Warrior", "Dinosaur", "Fish", "Sea Serpent", "Reptile",
+  "Psycho", "Divine", "Creator god", "Wyrm", "Cyberse",
+)
 
 QUERY_CODE = 1
 QUERY_POSITION = 0x2

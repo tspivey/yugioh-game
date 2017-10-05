@@ -1,3 +1,9 @@
+from twisted.internet import reactor
+
+from ..duel_reader import DuelReader
+from ..parsers.duel_parser import DuelParser
+from ..utils import process_duel
+
 def select_chain(self, player, size, spe_count, forced, chains):
   if size == 0 and spe_count == 0:
     self.keep_processing = True
@@ -15,7 +21,7 @@ def select_chain(self, player, size, spe_count, forced, chains):
     card = chains[i][1]
     card.chain_index = i
     desc = chains[i][2]
-    cs = self.card_to_spec(player, card)
+    cs = card.get_spec(player)
     chain_count = chain_cards.count(card)
     if chain_count > 1:
       cs += chr(ord('a')+list(specs.values()).count(card))
@@ -37,11 +43,11 @@ def select_chain(self, player, size, spe_count, forced, chains):
     else:
       prompt = pl._("Select card to chain (c = cancel):")
     pl.notify(DuelReader, r, no_abort=pl._("Invalid command."),
-    prompt=prompt, restore_parser=duel_parser)
+    prompt=prompt, restore_parser=DuelParser)
   def r(caller):
     if caller.text == 'c' and not forced:
       self.set_responsei(-1)
-      reactor.callLater(0, procduel, self)
+      reactor.callLater(0, process_duel, self)
       return
     if caller.text.startswith('i'):
       info = True
@@ -57,5 +63,5 @@ def select_chain(self, player, size, spe_count, forced, chains):
       self.show_info(card, pl)
       return prompt()
     self.set_responsei(idx)
-    reactor.callLater(0, procduel, self)
+    reactor.callLater(0, process_duel, self)
   prompt()

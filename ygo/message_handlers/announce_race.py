@@ -1,22 +1,22 @@
+from twisted.internet import reactor
+
+from ..constants import RACES
+from ..duel_reader import DuelReader
+from ..parsers.duel_parser import DuelParser
+from ..utils import process_duel
+
 def announce_race(self, player, count, avail):
-  races = (
-    "Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie",
-    "Machine", "Aqua", "Pyro", "Rock", "Wind Beast",
-    "Plant", "Insect", "Thunder", "Dragon", "Beast",
-    "Beast Warrior", "Dinosaur", "Fish", "Sea Serpent", "Reptile",
-    "psycho", "Divine", "Creator god", "Wyrm", "Cybers",
-  )
-  racemap = {k: (1<<i) for i, k in enumerate(races)}
+  racemap = {k: (1<<i) for i, k in enumerate(RACES)}
   avail_races = {k: v for k, v in racemap.items() if avail & v}
   pl = self.players[player]
   def prompt():
     pl.notify("Type %d races separated by spaces." % count)
     for i, s in enumerate(avail_races.keys()):
       pl.notify("%d: %s" % (i+1, s))
-    pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
+    pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=DuelParser)
   def error(text):
     pl.notify(text)
-    pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
+    pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=DuelParser)
   def r(caller):
     ints = []
     try:
@@ -34,5 +34,5 @@ def announce_race(self, player, count, avail):
     for i in ints:
       result |= list(avail_races.values())[i]
     self.set_responsei(result)
-    reactor.callLater(0, procduel, self)
+    reactor.callLater(0, process_duel, self)
   prompt()

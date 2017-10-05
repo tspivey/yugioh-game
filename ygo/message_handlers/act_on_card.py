@@ -1,6 +1,8 @@
 from twisted.internet import reactor
 
+from ..duel_reader import DuelReader
 from ..utils import process_duel
+from ..parsers.duel_parser import DuelParser
 
 def act_on_card(self, caller, card):
   pl = self.players[self.tp]
@@ -9,7 +11,7 @@ def act_on_card(self, caller, card):
     card = self.idle_activate[self.idle_activate.index(card)]
   def prompt(menu=True):
     if not menu:
-      return pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
+      return pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=DuelParser)
     pl.notify(name)
     activate_count = self.idle_activate.count(card)
     if card in self.summonable:

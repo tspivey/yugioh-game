@@ -1,3 +1,9 @@
+from twisted.internet import reactor
+
+from ..duel_reader import DuelReader
+from ..parsers.duel_parser import DuelParser
+from ..utils import parse_ints, process_duel
+
 def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
   pl = self.players[player]
   must_select_value = sum(c.param for c in must_select)
@@ -10,12 +16,12 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
       pl.notify("%s must be selected, automatically selected." % c.get_name(pl))
     for i, card in enumerate(select_some):
       pl.notify("%d: %s (%d)" % (i+1, card.get_name(pl), card.param & 0xffff))
-    return pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=duel_parser)
+    return pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=DuelParser)
   def error(t):
     pl.notify(t)
     return prompt()
   def r(caller):
-    ints = [i - 1 for i in self.parse_ints(caller.text)]
+    ints = [i - 1 for i in parse_ints(caller.text)]
     if len(ints) != len(set(ints)):
       return error(pl._("Duplicate values not allowed."))
     if any(i for i in ints if i < 1 or i > len(select_some) - 1):
@@ -31,5 +37,5 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
     lst.extend(ints)
     b = bytes(lst)
     self.set_responseb(b)
-    reactor.callLater(0, procduel, self)
+    reactor.callLater(0, process_duel, self)
   prompt()
