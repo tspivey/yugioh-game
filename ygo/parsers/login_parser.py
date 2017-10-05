@@ -96,8 +96,8 @@ class login_parser(gsb.Parser):
     if not connection.web:
       connection.encode_args = (account.encoding, 'replace')
       connection.decode_args = (account.encoding, 'ignore')
-    if account.name.lower() in globals.players:
-      pl = globals.players[account.name.lower()]
+    if account.name.lower() in globals.server.get_all_players():
+      pl = globals.get_player(account.name.lower())
       if pl.connection is not None:
         connection.notify(pl._("Disconnecting old connection."))
         connection.parser = pl.connection.parser
@@ -111,19 +111,19 @@ class login_parser(gsb.Parser):
         pl.attach_connection(connection)
         connection.parser = pl.paused_parser
         pl.paused_parser = None
-        for opl in [p for p in globals.players.values() if p is not pl]:
+        for opl in [p for p in globals.server.get_all_players() if p is not pl]:
           opl.notify(opl._("%s reconnected.")%(pl.nickname))
     else:
       connection.player = Player(account.name)
       connection.player.attach_connection(connection)
-      connection.player.parser = LobbyParser
+      connection.parser = LobbyParser
       connection.player.is_admin = account.is_admin
       connection.player.set_language(account.language)
       for i in account.ignores:
         connection.player.ignores.add(i.ignored_account.name)
-      for opl in globals.players.values():
+      for opl in globals.server.get_all_players():
         opl.notify(opl._("%s logged in.") % connection.player.nickname)
-      globals.players[connection.player.nickname.lower()] = connection.player
+      globals.server.add_player(connection.player)
       motd_file = os.path.join('locale', connection.player.language, 'motd.txt')
       if not os.path.exists(motd_file):
         motd_file = os.path.join('locale', 'en', 'motd.txt')

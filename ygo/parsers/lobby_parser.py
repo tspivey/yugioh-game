@@ -258,7 +258,7 @@ def language(caller):
     caller.connection.player.set_language('ja')
   elif lang == 'spanish':
     caller.connection.player.set_language('es')
-  caller.connection.account.language = caller.connection.language
+  caller.connection.account.language = caller.connection.player.language
   caller.connection.session.commit()
   caller.connection.notify(caller.connection._("Language set."))
 

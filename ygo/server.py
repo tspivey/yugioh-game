@@ -4,10 +4,12 @@ import random
 import sqlite3
 import gsb
 
+from . import models
+
 class Server(gsb.Server):
 
   def __init__(self, *args, **kwargs):
-    super(Server, self).__init__(self, *args, **kwargs)
+    gsb.Server.__init__(self, *args, **kwargs)
     self.db = sqlite3.connect('locale/en/cards.cdb')
     self.db.row_factory = sqlite3.Row
     self.players = {}
@@ -40,6 +42,9 @@ class Server(gsb.Server):
 
   def get_all_players(self):
     return self.players.values()
+
+  def add_player(self, player):
+    self.players[player.nickname.lower()] = player
 
   def start_duel(self, *players):
     players = list(players)

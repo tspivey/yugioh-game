@@ -10,7 +10,7 @@ from ygo.utils import parse_lflist
 from ygo.websockets import start_websocket_server
 
 def main():
-        server = Server(port = 4000, default_parser = LoginParser())
+        server = Server(port = 4000, default_parser = LoginParser)
         if os.path.exists('locale/de/cards.cdb'):
                 globals.german_db = sqlite3.connect('locale/de/cards.cdb')
         if os.path.exists('locale/ja/cards.cdb'):
@@ -29,6 +29,7 @@ def main():
         server.port = args.port
         if args.websocket_port:
                 start_websocket_server(args.websocket_port, args.websocket_cert, args.websocket_key)
+        globals.server = server
         server.run()
 
 main()

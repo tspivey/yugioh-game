@@ -15,7 +15,7 @@ class DeckEditor:
 
   def list(self):
     decks = self.player.connection.account.decks
-      if not decks:
+    if not decks:
       self.player.notify(self.player._("No decks."))
       self.player.connection.session.commit()
       return
