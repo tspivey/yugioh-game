@@ -6,7 +6,7 @@ DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 
 @DuelParser.command(names=['h', 'hand'])
 def hand(caller):
-  pl = con.connection.player
+  pl = caller.connection.player
   if pl.watching:
     return
   pl.duel.show_hand(pl, pl.duel_player)

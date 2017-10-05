@@ -1,4 +1,4 @@
-from .. import globals
+from ygo import globals
 
 def toss_dice(self, player, options):
   opts = [str(opt) for opt in options]

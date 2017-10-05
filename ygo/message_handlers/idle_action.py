@@ -1,9 +1,9 @@
 from twisted.internet import reactor
 
-from ..constants import *
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
+from ygo.constants import *
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
 
 def idle_action(self, pl):
   def prompt():

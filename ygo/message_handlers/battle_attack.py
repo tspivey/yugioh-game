@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..utils import process_duel
-from ..parsers.duel_parser import DuelParser
+from ygo.duel_reader import DuelReader
+from ygo.utils import process_duel
+from ygo.parsers.duel_parser import DuelParser
 
 def battle_attack(self, pl):
   pln = pl.duel_player

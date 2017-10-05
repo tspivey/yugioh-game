@@ -1,11 +1,11 @@
-from gsb.intercepts import Menu
+from gsb.intercept import Menu
 
 from twisted.internet import reactor
 
-from ..card import Card
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
-from .. import globals
+from ygo.card import Card
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
+from ygo import globals
 
 def select_option(self, player, options):
   pl = self.players[player]

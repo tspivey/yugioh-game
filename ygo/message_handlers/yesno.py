@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..card import Card
-from ..parsers.yes_or_no_parser import YesOrNoParser
-from ..utils import process_duel
+from ygo.card import Card
+from ygo.parsers.yes_or_no_parser import yes_or_no_parser
+from ygo.utils import process_duel
 
 def yesno(self, player, desc):
   pl = self.players[player]
@@ -19,4 +19,4 @@ def yesno(self, player, desc):
   else:
     opt = "String %d" % desc
     opt = globals.strings[pl.language]['system'].get(desc, opt)
-  pl.notify(YesOrNoParser, opt, yes, no=no, restore_parser=old_parser)
+  pl.notify(yes_or_no_parser, opt, yes, no=no, restore_parser=old_parser)

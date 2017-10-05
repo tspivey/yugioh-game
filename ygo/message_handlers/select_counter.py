@@ -1,10 +1,10 @@
 import struct
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import parse_ints, process_duel
-from .. import globals
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import parse_ints, process_duel
+from ygo import globals
 
 def select_counter(self, player, countertype, count, cards):
   pl = self.players[player]

@@ -1,4 +1,4 @@
-from .. import globals
+from ygo import globals
 
 def counters(self, card, type, count, added):
 

@@ -1,7 +1,7 @@
 from twisted.internet import reactor
 
-from ..utils import process_duel
-from .. import globals
+from ygo.utils import process_duel
+from ygo import globals
 
 def hint(self, msg, player, data):
   pl = self.players[player]

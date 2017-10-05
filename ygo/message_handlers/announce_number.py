@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel, parse_ints
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel, parse_ints
 
 def announce_number(self, player, opts):
   pl = self.players[player]

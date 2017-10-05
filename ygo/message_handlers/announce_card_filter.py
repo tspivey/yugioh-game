@@ -1,10 +1,10 @@
-from gsb.intercepts import Reader
+from gsb.intercept import Reader
 from twisted.internet import reactor
 
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
-from .. import globals
-from .. import duel
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
+from ygo import globals
+from ygo import duel
 
 def announce_card_filter(self, player, options):
   pl = self.players[player]

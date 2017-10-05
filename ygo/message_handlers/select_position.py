@@ -1,8 +1,8 @@
-from gsb.intercepts import Menu
+from gsb.intercept import Menu
 from twisted.internet import reactor
 
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
 
 def select_position(self, player, card, positions):
   pl = self.players[player]

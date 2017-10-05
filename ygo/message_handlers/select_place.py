@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
 
 def select_place(self, player, count, flag):
   pl = self.players[player]

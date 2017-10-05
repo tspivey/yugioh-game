@@ -1,4 +1,4 @@
-from .. import globals
+from ygo import globals
 
 def toss_coin(self, player, options):
   players = []

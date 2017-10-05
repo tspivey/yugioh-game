@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import parse_ints, process_duel
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import parse_ints, process_duel
 
 def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
   pl = self.players[player]

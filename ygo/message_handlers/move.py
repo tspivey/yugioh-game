@@ -1,5 +1,5 @@
-from ..card import Card
-from ..constants import *
+from ygo.card import Card
+from ygo.constants import *
 
 def move(self, code, location, newloc, reason):
   card = Card(code)
@@ -58,7 +58,7 @@ def move(self, code, location, newloc, reason):
     pl.notify(pl._("Card {spec} ({name}) returned to hand.")
       .format(spec=plspec, name=card.get_name(pl)))
     for w in self.watchers+[op]:
-      if card.position in (POS_FACEDOWN_DEFENSE, dm.POS_FACEDOWN):
+      if card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
         name = w._("Face-down card")
       else:
         name = card.get_name(w)

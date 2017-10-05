@@ -59,7 +59,7 @@ class Player:
 
     return (main, extra)
 
-  def duel(self, text, private=False):
+  def request_duel(self, text, private=False):
     nick = text[0]
     if nick == 'end':
       if self.watching or not self.duel:
@@ -70,7 +70,7 @@ class Player:
           continue
         pl.notify(pl._("%s has ended the duel.") % self.nickname)
       if not self.duel.private:
-        for pl in globals.players.values():
+        for pl in globals.server.get_all_players():
           globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.") % (self.nickname, self.duel.orig_nicknames[1 - self.duel_player]))
         self.duel.end()
         return

@@ -1,4 +1,4 @@
-from .. import globals
+from ygo import globals
 
 def win(self, player, reason):
   if player == 2:

@@ -1,9 +1,9 @@
 from twisted.internet import reactor
 
-from ..constants import ATTRIBUTES
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
+from ygo.constants import ATTRIBUTES
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
 
 def announce_attrib(self, player, count, avail):
   attrmap = {k: (1<<i) for i, k in enumerate(ATTRIBUTES)}

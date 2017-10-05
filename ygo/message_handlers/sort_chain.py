@@ -1,6 +1,6 @@
 from twisted.internet import reactor
 
-from ..utils import process_duel
+from ygo.utils import process_duel
 
 def sort_chain(self, player, cards):
   self.set_responsei(-1)

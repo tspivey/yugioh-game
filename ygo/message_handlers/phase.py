@@ -1,4 +1,4 @@
-from ..constants import PHASES
+from ygo.constants import PHASES
 
 def phase(self, phase):
   phase_str = PHASES.get(phase, str(phase))

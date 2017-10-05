@@ -4,6 +4,11 @@ import random
 import sqlite3
 import gsb
 
+from twisted.internet import reactor
+
+from .duel import Duel
+from .parsers.duel_parser import DuelParser
+from .utils import process_duel
 from . import models
 
 class Server(gsb.Server):

@@ -17,22 +17,24 @@ LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
 @LobbyParser.command(names=['afk'])
 def afk(caller):
   conn = caller.connection
-  if caller.connection.player.afk is False:
-    conn.notify(conn.player._("You are now AFK."))
+  if conn.player.afk is False:
+    conn.notify(conn._("You are now AFK."))
     conn.player.afk = True
     return
   else:
-    conn.notify(conn.player._("You are no longer AFK."))
+    conn.notify(conn._("You are no longer AFK."))
     conn.player.afk = False
     return
 
 @LobbyParser.command(names=['duel'], args_regexp=r'(.*)')
 def cmd_duel(caller):
-  caller.connection.player.duel(caller.text)
+  args = caller.text.split(None, 1)
+  caller.connection.player.request_duel(args[1])
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def cmd_pd(caller):
-  caller.connection.player.duel(caller.text, True)
+  args = caller.text.split(None, 1)
+  caller.connection.player.duel(args[1], True)
 
 @LobbyParser.command(names='deck', args_regexp=r'(.*)')
 def deck(caller):

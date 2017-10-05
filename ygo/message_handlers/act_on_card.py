@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..utils import process_duel
-from ..parsers.duel_parser import DuelParser
+from ygo.duel_reader import DuelReader
+from ygo.utils import process_duel
+from ygo.parsers.duel_parser import DuelParser
 
 def act_on_card(self, caller, card):
   pl = self.players[self.tp]
@@ -37,7 +37,7 @@ def act_on_card(self, caller, card):
           pl.notify("v"+chr(97+i)+": "+effect_descriptions[i])
     pl.notify("i: "+pl._("Show card info."))
     pl.notify("z: "+pl._("back."))
-    pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=duel_parser)
+    pl.notify(DuelReader, action, no_abort=pl._("Invalid command."), prompt=pl._("Select action for {card}").format(card=name), restore_parser=DuelParser)
   def action(caller):
     if caller.text == 's' and card in self.summonable:
       self.set_responsei(self.summonable.index(card) << 16)

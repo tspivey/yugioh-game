@@ -1,8 +1,8 @@
-from gsb.intercepts import Reader
+from gsb.intercept import Reader
 
-from parsers.duel_parser import DuelParser
+from .parsers.duel_parser import DuelParser
 
-class duel_reader(Reader):
+class DuelReader(Reader):
   def handle_line(self, con, line):
     con.player.seen_waiting = False
     for s, c in DuelParser.command_substitutions.items():
@@ -15,5 +15,3 @@ class duel_reader(Reader):
       con.notify(self, self.done)
     else:
       super().handle_line(con, line)
-
-DuelReader = duel_reader()

@@ -1,9 +1,9 @@
-from gsb.intercepts import Reader
+from gsb.intercept import Reader
 from twisted.internet import reactor
 
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel
-from .. import globals
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel
+from ygo import globals
 
 def announce_card(self, player, type):
   pl = self.players[player]

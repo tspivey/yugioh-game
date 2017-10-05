@@ -12,12 +12,13 @@ import datetime
 from . import callback_manager
 from .card import Card
 from .constants import *
+from . import globals
 from . import message_handlers
 
 @ffi.def_extern()
 def card_reader_callback(code, data):
   cd = data[0]
-  row = db.execute('select * from datas where id=?', (code,)).fetchone()
+  row = globals.server.db.execute('select * from datas where id=?', (code,)).fetchone()
   cd.code = code
   cd.alias = row['alias']
   cd.setcode = row['setcode']
@@ -188,9 +189,9 @@ class Duel:
     code2 = self.read_u32(data)
     location2 = self.read_u32(data)
 
-    card1 = Card.from_code(code1)
+    card1 = Card(code1)
     card1.set_location(location1)
-    card2 = Card.from_code(code2)
+    card2 = Card(code2)
     card2.set_location(location2)
     self.cm.call_callbacks('swap', card1, card2)
 
@@ -229,7 +230,7 @@ class Duel:
     code = self.read_u32(data)
     if code & 0x80000000:
       code = code ^ 0x80000000 # don't know what this actually does
-    self.cm.call_callbacks('decktop', player, Card.from_code(code))
+    self.cm.call_callbacks('decktop', player, Card(code))
     return data.read()
 
   def msg_draw(self, data):
@@ -239,7 +240,7 @@ class Duel:
     cards = []
     for i in range(drawed):
       c = self.read_u32(data)
-      card = Card.from_code(c & 0x7fffffff)
+      card = Card(c & 0x7fffffff)
       cards.append(card)
     self.cm.call_callbacks('draw', player, cards)
     return data.read()
@@ -370,7 +371,7 @@ class Duel:
       l = (loc >> 8) & 0xff;
       s = (loc >> 16) & 0xff
       card = self.get_card(c, l, s)
-      card = Card.from_code(code)
+      card = Card(code)
       card.set_location(loc)
       cards.append(card)
     self.cm.call_callbacks('select_card', player, cancelable, min, max, cards)
@@ -386,7 +387,7 @@ class Duel:
     cards = []
     for i in range(size):
       code = self.read_u32(data)
-      card = Card.from_code(code)
+      card = Card(code)
       card.controller = self.read_u8(data)
       card.location = self.read_u8(data)
       card.sequence = self.read_u8(data)
@@ -428,7 +429,7 @@ class Duel:
   def msg_summoning(self, data, special=False):
     data = io.BytesIO(data[1:])
     code = self.read_u32(data)
-    card = Card.from_code(code)
+    card = Card(code)
     card.set_location(self.read_u32(data))
     self.cm.call_callbacks('summoning', card, special=special)
     return data.read()
@@ -446,7 +447,7 @@ class Duel:
       et = self.read_u8(data)
       code = self.read_u32(data)
       loc = self.read_u32(data)
-      card = Card.from_code(code)
+      card = Card(code)
       card.set_location(loc)
       desc = self.read_u32(data)
       chains.append((et, card, desc))
@@ -460,7 +461,7 @@ class Duel:
     data = io.BytesIO(data[1:])
     code = self.read_u32(data)
     loc = self.read_u32(data)
-    card = Card.from_code(code)
+    card = Card(code)
     card.set_location(loc)
     self.cm.call_callbacks('set', card)
     return data.read()
@@ -478,7 +479,7 @@ class Duel:
   def msg_pos_change(self, data):
     data = io.BytesIO(data[1:])
     code = self.read_u32(data)
-    card = Card.from_code(code)
+    card = Card(code)
     card.controller = self.read_u8(data)
     card.location = self.read_u8(data)
     card.sequence = self.read_u8(data)
@@ -490,7 +491,7 @@ class Duel:
   def msg_chaining(self, data):
     data = io.BytesIO(data[1:])
     code = self.read_u32(data)
-    card = Card.from_code(code)
+    card = Card(code)
     card.set_location(self.read_u32(data))
     tc = self.read_u8(data)
     tl = self.read_u8(data)
@@ -504,7 +505,7 @@ class Duel:
     data = io.BytesIO(data[1:])
     player = self.read_u8(data)
     code = self.read_u32(data)
-    card = Card.from_code(code)
+    card = Card(code)
     positions = self.read_u8(data)
     self.cm.call_callbacks('select_position', player, card, positions)
     return data.read()
@@ -519,7 +520,7 @@ class Duel:
   def msg_select_effectyn(self, data):
     data = io.BytesIO(data[1:])
     player = self.read_u8(data)
-    card = Card.from_code(self.read_u32(data))
+    card = Card(self.read_u32(data))
     card.set_location(self.read_u32(data))
     desc = self.read_u32(data)
     self.cm.call_callbacks('select_effectyn', player, card, desc)
@@ -546,7 +547,7 @@ class Duel:
     cards = []
     for i in range(size):
       code = self.read_u32(data)
-      card = Card.from_code(code)
+      card = Card(code)
       card.controller = self.read_u8(data)
       card.location = self.read_u8(data)
       card.sequence = self.read_u8(data)
@@ -598,7 +599,7 @@ class Duel:
     must_select = []
     for i in range(count):
       code = self.read_u32(data)
-      card = Card.from_code(code)
+      card = Card(code)
       card.controller = self.read_u8(data)
       card.location = self.read_u8(data)
       card.sequence = self.read_u8(data)
@@ -608,7 +609,7 @@ class Duel:
     select_some = []
     for i in range(count):
       code = self.read_u32(data)
-      card = Card.from_code(code)
+      card = Card(code)
       card.controller = self.read_u8(data)
       card.location = self.read_u8(data)
       card.sequence = self.read_u8(data)
@@ -625,7 +626,7 @@ class Duel:
     size = self.read_u8(data)
     cards = []
     for i in range(size):
-      card = Card.from_code(self.read_u32(data))
+      card = Card(self.read_u32(data))
       card.controller = self.read_u8(data)
       card.location = self.read_u8(data)
       card.sequence = self.read_u8(data)
@@ -659,7 +660,7 @@ class Duel:
     size = self.read_u8(data)
     cards = []
     for i in range(size):
-      card = Card.from_code(self.read_u32(data))
+      card = Card(self.read_u32(data))
       card.controller = self.read_u8(data)
       card.location = self.read_u8(data)
       card.sequence = self.read_u8(data)
@@ -765,7 +766,7 @@ class Duel:
         continue #No card here
       f = self.read_u32(buf)
       code = self.read_u32(buf)
-      card = Card.from_code(code)
+      card = Card(code)
       position = self.read_u32(buf)
       card.set_location(position)
       level = self.read_u32(buf)
@@ -789,7 +790,7 @@ class Duel:
       xyz = self.read_u32(buf)
 
       for i in range(xyz):
-        card.xyz_materials.append(Card.from_code(self.read_u32(buf)))
+        card.xyz_materials.append(Card(self.read_u32(buf)))
 
       cs = self.read_u32(buf)
       card.counters = []
@@ -807,7 +808,7 @@ class Duel:
       return
     f = self.read_u32(buf)
     code = self.read_u32(buf)
-    card = Card.from_code(code)
+    card = Card(code)
     position = self.read_u32(buf)
     card.set_location(position)
     level = self.read_u32(buf)
@@ -823,33 +824,6 @@ class Duel:
     sequence = (loc >> 16) & 0xff
     position = (loc >> 24) & 0xff
     return (controller, location, sequence, position)
-
-class TestDuel(Duel):
-  def __init__(self):
-    super(TestDuel, self).__init__()
-    self.cm.register_callback('draw', self.on_draw)
-
-  def on_draw(self, player, cards):
-    print("player %d draw %d cards:" % (player, len(cards)))
-    for c in cards:
-      print(c.name + ": " + c.desc)
-
-if __name__ == '__main__':
-  d = TestDuel()
-  d.load_deck(0, deck)
-  d.load_deck(1, deck)
-  d.start()
-
-  while True:
-    flag = d.process()
-    if flag & 0x10000:
-      resp = input()
-      if resp.startswith('`'):
-        b = binascii.unhexlify(resp[1:])
-        d.set_responseb(b)
-      else:
-        resp = int(resp, 16)
-        d.set_responsei(resp)
 
   def bind_message_handlers(self):
 
@@ -913,12 +887,12 @@ if __name__ == '__main__':
     self.cm.register_callback('swap', self.swap)
 
   def show_usable(self, pl):
-    summonable = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.summonable])
-    spsummon = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.spsummon])
-    repos = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.repos])
-    mset = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_mset])
-    idle_set = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_set])
-    idle_activate = natsort.natsorted([self.card_to_spec(pl.duel_player, card) for card in self.idle_activate])
+    summonable = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.summonable])
+    spsummon = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.spsummon])
+    repos = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.repos])
+    mset = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.idle_mset])
+    idle_set = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.idle_set])
+    idle_activate = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.idle_activate])
     if summonable:
       pl.notify(pl._("Summonable in attack position: %s") % ", ".join(summonable))
     if mset:
@@ -939,17 +913,17 @@ if __name__ == '__main__':
     if not r:
       return (None, None)
     if r.group(1) == 'h':
-      l = dm.LOCATION_HAND
+      l = LOCATION_HAND
     elif r.group(1) == 'm':
-      l = dm.LOCATION_MZONE
+      l = LOCATION_MZONE
     elif r.group(1) == 's':
-      l = dm.LOCATION_SZONE
+      l = LOCATION_SZONE
     elif r.group(1) == 'g':
-      l = dm.LOCATION_GRAVE
+      l = LOCATION_GRAVE
     elif r.group(1) == 'x':
-      l = dm.LOCATION_EXTRA
+      l = LOCATION_EXTRA
     elif r.group(1) == 'r':
-      l = dm.LOCATION_REMOVED
+      l = LOCATION_REMOVED
     else:
       return None, None
     return l, int(r.group(2)) - 1
@@ -1041,7 +1015,7 @@ if __name__ == '__main__':
       pl.notify(pl._("Table is empty."))
       return
     for card in cards:
-      s = card.card_to_spec(player) + " "
+      s = card.get_spec(player) + " "
       if hide_facedown and card.position in (0x8, 0xa):
         s += card.get_position(pl)
       else:
@@ -1138,3 +1112,30 @@ if __name__ == '__main__':
         continue
       pl.paused_parser = pl.parser
       pl.parser = parser
+
+class TestDuel(Duel):
+  def __init__(self):
+    super(TestDuel, self).__init__()
+    self.cm.register_callback('draw', self.on_draw)
+
+  def on_draw(self, player, cards):
+    print("player %d draw %d cards:" % (player, len(cards)))
+    for c in cards:
+      print(c.name + ": " + c.desc)
+
+if __name__ == '__main__':
+  d = TestDuel()
+  d.load_deck(0, deck)
+  d.load_deck(1, deck)
+  d.start()
+
+  while True:
+    flag = d.process()
+    if flag & 0x10000:
+      resp = input()
+      if resp.startswith('`'):
+        b = binascii.unhexlify(resp[1:])
+        d.set_responseb(b)
+      else:
+        resp = int(resp, 16)
+        d.set_responsei(resp)

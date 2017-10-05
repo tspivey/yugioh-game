@@ -1,8 +1,8 @@
 from twisted.internet import reactor
 
-from ..duel_reader import DuelReader
-from ..parsers.duel_parser import DuelParser
-from ..utils import process_duel, parse_ints
+from ygo.duel_reader import DuelReader
+from ygo.parsers.duel_parser import DuelParser
+from ygo.utils import process_duel, parse_ints
 
 def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribute=False):
   pl = self.players[player]

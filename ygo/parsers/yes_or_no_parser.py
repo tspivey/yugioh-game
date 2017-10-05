@@ -26,5 +26,3 @@ class yes_or_no_parser(gsb.Parser):
       caller.connection.notify(self.question)
       return
     caller.connection.parser = self.restore_parser
-
-YesOrNoParser = yes_or_no_parser()

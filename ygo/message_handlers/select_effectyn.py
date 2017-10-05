@@ -1,7 +1,7 @@
 from twisted.internet import reactor
 
-from ..parsers.yes_or_no_parser import YesOrNoParser
-from ..utils import process_duel
+from ygo.parsers.yes_or_no_parser import yes_or_no_parser
+from ygo.utils import process_duel
 
 def select_effectyn(self, player, card, desc):
   pl = self.players[player]
@@ -17,4 +17,4 @@ def select_effectyn(self, player, card, desc):
   s = card.get_effect_description(pl, desc, True)
   if s != '':
     question += '\n'+s
-  pl.notify(YesOrNoParser, question, yes, no=no, restore_parser=old_parser)
+  pl.notify(yes_or_no_parser, question, yes, no=no, restore_parser=old_parser)
