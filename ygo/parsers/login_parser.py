@@ -6,7 +6,6 @@ import gsb
 from .. import globals
 from .. import models
 from ..player import Player
-from .lobby_parser import LobbyParser
 
 class login_parser(gsb.Parser):
 
@@ -96,27 +95,32 @@ class login_parser(gsb.Parser):
     if not connection.web:
       connection.encode_args = (account.encoding, 'replace')
       connection.decode_args = (account.encoding, 'ignore')
-    if account.name.lower() in globals.server.get_all_players():
-      pl = globals.get_player(account.name.lower())
+    pl = globals.server.get_player(account.name.lower())
+    if pl:
       if pl.connection is not None:
         connection.notify(pl._("Disconnecting old connection."))
-        connection.parser = pl.connection.parser
         globals.server.connections.remove(pl.connection)
-        globals.server.on_disconnect(gsb.Caller(connection=pl.connection))
+        pl.connection.dont_process = True
         globals.server.disconnect(pl.connection)
+        connection.parser = pl.connection.parser
         pl.detach_connection()
+        connection.player = pl
         pl.attach_connection(connection)
+        if pl.duel is None:
+          pl.set_parser('LobbyParser')
+          pl.paused_parser = None
       else:
         connection.notify(pl._("Reconnecting..."))
-        pl.attach_connection(connection)
-        connection.parser = pl.paused_parser
-        pl.paused_parser = None
         for opl in [p for p in globals.server.get_all_players() if p is not pl]:
           opl.notify(opl._("%s reconnected.")%(pl.nickname))
+        connection.player = pl
+        pl.attach_connection(connection)
+        if pl.duel is not None:
+          pl.duel.player_reconnected(pl)
     else:
       connection.player = Player(account.name)
       connection.player.attach_connection(connection)
-      connection.parser = LobbyParser
+      connection.player.set_parser('LobbyParser')
       connection.player.is_admin = account.is_admin
       connection.player.set_language(account.language)
       for i in account.ignores:

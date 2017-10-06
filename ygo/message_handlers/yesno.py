@@ -3,6 +3,7 @@ from twisted.internet import reactor
 from ygo.card import Card
 from ygo.parsers.yes_or_no_parser import yes_or_no_parser
 from ygo.utils import process_duel
+from ygo import globals
 
 def yesno(self, player, desc):
   pl = self.players[player]

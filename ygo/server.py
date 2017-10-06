@@ -7,8 +7,8 @@ import gsb
 from twisted.internet import reactor
 
 from .duel import Duel
-from .parsers.duel_parser import DuelParser
 from .utils import process_duel
+from . import globals
 from . import models
 
 class Server(gsb.Server):
@@ -27,20 +27,24 @@ class Server(gsb.Server):
     caller.connection.player = None
     caller.connection.session = self.session_factory()
     caller.connection.web = False
+    caller.connection.dont_process = False
 
   def on_disconnect(self, caller):
     con = caller.connection
-    if not con.player:
+    if not con.player or not con.player.connection or con.dont_process:
       return
-    del self.players[con.player.nickname.lower()]
-    for pl in self.players.values():
-      pl.notify(pl._("%s logged out.") % con.player.nickname)
-    if con.player.watching:
-      con.player.duel.watchers.remove(con.player)
-      con.player.duel = None
-    if con.player.duel:
+    if con.player.duel is not None and con.player.watching is False:
+      # player is in a duel, so we won't disconnect entirely
+      for pl in self.get_all_players():
+        pl.notify(pl._("%s lost connection while in a duel.")%con.player.nickname)
       con.player.duel.player_disconnected(con.player)
-    con.player.nickname = None
+      con.player.detach_connection()
+    else:
+      if con.player.watching:
+        con.player.duel.remove_watcher(con.player)
+      self.remove_player(con.player.nickname)
+      for pl in self.get_all_players():
+        pl.notify(pl._("%s logged out.") % con.player.nickname)
 
   def get_player(self, name):
     return self.players.get(name.lower())
@@ -50,6 +54,12 @@ class Server(gsb.Server):
 
   def add_player(self, player):
     self.players[player.nickname.lower()] = player
+
+  def remove_player(self, nick):
+    try:
+      del(self.players[nick.lower()])
+    except KeyError:
+      pass
 
   def start_duel(self, *players):
     players = list(players)
@@ -63,7 +73,7 @@ class Server(gsb.Server):
       pl.notify(pl._("Type help dueling for a list of usable commands."))
       pl.duel = duel
       pl.duel_player = i
-      pl.parser = DuelParser
+      pl.set_parser('DuelParser')
     duel.players = players
     if os.environ.get('DEBUG', 0):
       duel.start_debug()
@@ -115,7 +125,7 @@ class Server(gsb.Server):
 
   def check_reboot(self):
     duels = [c.duel for c in self.get_all_players()]
-    if globals.rebooting and not any(duels):
+    if globals.rebooting and len(duels) == 0:
       for pl in self.get_all_players():
         pl.notify(pl._("Rebooting."))
-    reactor.callLater(0.2, reactor.stop)
+      reactor.callLater(0.2, reactor.stop)

@@ -28,13 +28,11 @@ def afk(caller):
 
 @LobbyParser.command(names=['duel'], args_regexp=r'(.*)')
 def cmd_duel(caller):
-  args = caller.text.split(None, 1)
-  caller.connection.player.request_duel(args[1])
+  caller.connection.player.request_duel(caller.args[0])
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def cmd_pd(caller):
-  args = caller.text.split(None, 1)
-  caller.connection.player.duel(args[1], True)
+  caller.connection.player.duel(caller.args[0], True)
 
 @LobbyParser.command(names='deck', args_regexp=r'(.*)')
 def deck(caller):
@@ -363,15 +361,7 @@ def watch(caller):
     if not con.player.watching:
       con.notify(con._("You aren't watching a duel."))
       return
-    con.player.duel.watchers.remove(con.player)
-    for pl in con.player.duel.players + con.player.duel.watchers:
-      if pl is None:
-        continue
-      if pl.watch:
-        pl.notify(pl._("%s is no longer watching this duel.")%(con.player.nickname))
-    con.player.duel = None
-    con.player.watching = False
-    con.notify(con._("Watching stopped."))
+    con.player.duel.remove_watcher(con.player)
     return
   players = globals.server.guess_players(nick, con.player.nickname)
   if con.player.duel:
@@ -390,17 +380,7 @@ def watch(caller):
     con.notify(con._("That duel is private."))
     return
   player = players[0]
-  con.player.duel = player.duel
-  con.player.duel_player = 0
-  con.player.duel.watchers.append(con.player)
-  con.parser = DuelParser
-  con.player.watching = True
-  con.notify(con._("Watching duel between %s and %s.") % (con.player.duel.players[0].nickname, con.player.duel.players[1].nickname))
-  for pl in con.player.duel.players + con.player.duel.watchers:
-    if pl is None:
-      continue
-    if pl.watch:
-      pl.notify(pl._("%s is now watching this duel.")%(con.player.nickname))
+  con.player.duel.add_watcher(con.player)
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def ignore(caller):

@@ -4,6 +4,8 @@ from .constants import *
 from . import globals
 from .deck_editor import DeckEditor
 from .i18n import set_language as i18n_set_language
+from .parsers.duel_parser import DuelParser
+from .parsers.lobby_parser import LobbyParser
 from . import models
 
 class Player:
@@ -59,24 +61,18 @@ class Player:
 
     return (main, extra)
 
-  def request_duel(self, text, private=False):
-    nick = text[0]
+  def request_duel(self, nick, private=False):
     if nick == 'end':
       if self.watching or not self.duel:
         self.notify(self._("Not in a duel."))
         return
       for pl in self.duel.players + self.duel.watchers:
-        if pl is None:
-          continue
         pl.notify(pl._("%s has ended the duel.") % self.nickname)
       if not self.duel.private:
         for pl in globals.server.get_all_players():
           globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.") % (self.nickname, self.duel.orig_nicknames[1 - self.duel_player]))
         self.duel.end()
         return
-    # TODO: duel recovery code goes here
-    # since players will stay in the duel, even when their connection dropped,
-    # we don't need to restore any relevant data anymore
 
     players = globals.server.guess_players(nick, self.nickname)
     if self.duel:
@@ -120,7 +116,6 @@ class Player:
       self.duel.private = player.requested_opponent[1]
       if not self.duel.private:
         players = self.duel.players
-
         for pl in globals.server.get_all_players():
           globals.server.announce_challenge(pl, pl._("The duel between %s and %s has begun!") % (players[0].nickname, players[1].nickname))
       player.requested_opponent = (None, False)
@@ -129,3 +124,9 @@ class Player:
       self.requested_opponent = (player.nickname, private)
       self.notify(self._("Duel request sent to %s.") % player.nickname)
 
+  def set_parser(self, p):
+    p=p.lower()
+    if p == 'lobbyparser':
+      self.connection.parser = LobbyParser
+    elif p == 'duelparser':
+      self.connection.parser = DuelParser

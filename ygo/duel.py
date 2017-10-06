@@ -12,6 +12,7 @@ import datetime
 from . import callback_manager
 from .card import Card
 from .constants import *
+from .duel_reader import DuelReader
 from . import globals
 from . import message_handlers
 
@@ -148,16 +149,19 @@ class Duel:
     lib.end_duel(self.duel)
     self.started = False
     for pl in self.players + self.watchers:
-      if pl is None:
-        continue
       pl.duel = None
       pl.intercept = None
-      op = pl.connection.parser
-      if isinstance(op, DuelReader):
-        op.done = lambda caller: None
-      pl.connection.parser = LobbyParserparser
-      pl.watching = False
-      pl.card_list = []
+      if pl.connection is None:
+        for opl in globals.server.get_all_players():
+          opl.notify(opl._("%s logged out.")%(pl.nickname))
+        globals.server.remove_player(pl.nickname)
+      else:
+        op = pl.connection.parser
+        if isinstance(op, DuelReader):
+          op.done = lambda caller: None
+        pl.set_parser('LobbyParser')
+        pl.watching = False
+        pl.card_list = []
     for pl in self.watchers:
       pl.notify(pl._("Watching stopped."))
     globals.server.check_reboot()
@@ -1096,22 +1100,65 @@ class Duel:
     self.debug_fp.write(s+'\n')
     self.debug_fp.flush()
 
-  def player_disconnected(self, con):
-    if any(pl is None for pl in self.players):
-      self.end()
-      return
-    self.players[con.duel_player] = None
-    duels[con.nickname] = weakref.ref(self)
-    self.lost_parser = con.parser
+  def player_disconnected(self, player):
+    if not self.paused:
+      self.pause()
+
+  def player_reconnected(self, pl):
+    if not self.paused:
+      self.unpause()
+
+  def pause(self):
     for pl in self.players + self.watchers:
-      if pl is None:
-        continue
-      pl.notify(pl._("%s disconnected, the duel is paused.") % con.nickname)
+      pl.notify(pl._("Duel paused until all duelists reconnect."))
     for pl in self.players:
-      if pl is None:
-        continue
-      pl.paused_parser = pl.parser
-      pl.parser = parser
+      if pl.connection is not None:
+        pl.paused_parser = pl.connection.parser
+        pl.set_parser('LobbyParser')
+
+    for w in self.watchers:
+      w.set_parser('LobbyParser')
+
+  def unpause(self):
+    for pl in self.players:
+      pl.connection.parser = pl.paused_parser
+      pl.paused_parser = None
+    for w in self.watchers:
+      w.set_parser('DuelParser')
+
+    for pl in self.players+self.watchers:
+      pl.notify(pl._("Duel continues."))
+
+  def remove_watcher(self, pl):
+    try:
+      self.watchers.remove(pl)
+      for p in self.players+self.watchers:
+        if p.watch:
+          p.notify(p._("%s is no longer watching this duel.")%(pl.nickname))
+      pl.duel = None
+      pl.watching = False
+      pl.notify(pl._("Watching stopped."))
+      pl.set_parser('LobbyParser')
+    except ValueError:
+      pass
+
+  def add_watcher(self, pl):
+    pl.duel = self
+    pl.duel_player = 0
+    pl.watching = True
+    pl.notify(pl._("Watching duel between %s and %s.")%(self.players[0].nickname, self.players[1].nickname))
+    self.watchers.append(pl)
+    for p in self.players+self.watchers:
+      if p.watch and p is not pl:
+        p.notify(p._("%s is now watching this duel.")%(pl.nickname))
+    if self.paused:
+      pl.notify(pl._("The duel is currently paused due to not all players being connected."))
+    else:
+      pl.set_parser('DuelParser')
+
+  @property
+  def paused(self):
+    return len(self.players) != len([p for p in self.players if p.connection is not None])
 
 class TestDuel(Duel):
   def __init__(self):
