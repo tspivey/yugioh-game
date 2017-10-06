@@ -6,6 +6,7 @@ import gsb
 
 from twisted.internet import reactor
 
+from .card import Card
 from .duel import Duel
 from .utils import process_duel
 from . import globals

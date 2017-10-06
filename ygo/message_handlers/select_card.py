@@ -79,7 +79,7 @@ def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribut
 
 def select_tribute(self, *args, **kwargs):
   kwargs['is_tribute'] = True
-  self.select_tribute(*args, **kwargs)
+  self.select_card(*args, **kwargs)
 
 MESSAGES = {15: msg_select_card, 20: msg_select_tribute}
 
