@@ -11,7 +11,7 @@ def set_language(pl, language):
   elif language == 'de':
     pl.cdb = globals.german_db
     pl._ = gettext.translation('game', 'locale', languages=['de'], fallback=True).gettext
-    pl.anguage = 'de'
+    pl.language = 'de'
   elif language == 'ja':
     pl.cdb = globals.japanese_db
     pl._ = gettext.translation('game', 'locale', languages=['ja'], fallback=True).gettext
