@@ -3,32 +3,32 @@ import io
 from ygo.card import Card
 
 def msg_summoned(self, data):
-  return data[1:]
+	return data[1:]
 
 def msg_summoning(self, data, special=False):
-  data = io.BytesIO(data[1:])
-  code = self.read_u32(data)
-  card = Card(code)
-  card.set_location(self.read_u32(data))
-  self.cm.call_callbacks('summoning', card, special=special)
-  return data.read()
+	data = io.BytesIO(data[1:])
+	code = self.read_u32(data)
+	card = Card(code)
+	card.set_location(self.read_u32(data))
+	self.cm.call_callbacks('summoning', card, special=special)
+	return data.read()
 
 def summoning(self, card, special=False):
-  if special:
-    action = "Special summoning"
-  else:
-    action = "Summoning"
-  nick = self.players[card.controller].nickname
-  for pl in self.players + self.watchers:
-    pos = card.get_position(pl)
-    if special:
-      pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
-    else:
-      pl.notify(pl._("%s summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
+	if special:
+		action = "Special summoning"
+	else:
+		action = "Summoning"
+	nick = self.players[card.controller].nickname
+	for pl in self.players + self.watchers:
+		pos = card.get_position(pl)
+		if special:
+			pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
+		else:
+			pl.notify(pl._("%s summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))
 
 def msg_summoning_special(self, *args, **kwargs):
-  kwargs['special'] = True
-  self.msg_summoning(*args, **kwargs)
+	kwargs['special'] = True
+	self.msg_summoning(*args, **kwargs)
 
 MESSAGES = {60: msg_summoning, 62: msg_summoning_special, 61: msg_summoned}
 

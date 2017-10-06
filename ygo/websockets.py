@@ -2,7 +2,7 @@ import logging
 from twisted.internet import reactor
 from twisted.internet import ssl
 from autobahn.twisted.websocket import WebSocketServerFactory, \
-     WebSocketServerProtocol
+		 WebSocketServerProtocol
 from gsb import Caller
 
 from . import globals

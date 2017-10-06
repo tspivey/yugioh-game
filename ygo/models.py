@@ -52,9 +52,9 @@ class Ignore(Base):
 	)
 
 def setup():
-  global Base
-  engine = create_engine('sqlite:///game.db')
-  Base.metadata.bind = engine
-  Session = sessionmaker(bind=engine)
-  Base.metadata.create_all()
-  return Session
+	global Base
+	engine = create_engine('sqlite:///game.db')
+	Base.metadata.bind = engine
+	Session = sessionmaker(bind=engine)
+	Base.metadata.create_all()
+	return Session
