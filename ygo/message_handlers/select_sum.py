@@ -4,7 +4,7 @@ from twisted.internet import reactor
 from ygo.card import Card
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
-from ygo.utils import parse_ints, process_duel
+from ygo.utils import parse_ints, process_duel, check_sum
 
 def msg_select_sum(self, data):
   data = io.BytesIO(data[1:])

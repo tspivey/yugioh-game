@@ -61,18 +61,18 @@ def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribut
   def f(caller):
     cds = [i - 1 for i in parse_ints(caller.text)]
     if len(cds) != len(set(cds)):
-      return error(con._("Duplicate values not allowed."))
+      return error(pl._("Duplicate values not allowed."))
     if (not is_tribute and len(cds) < min_cards) or len(cds) > max_cards:
-      return error(con._("Please enter between %d and %d cards.") % (min_cards, max_cards))
+      return error(pl._("Please enter between %d and %d cards.") % (min_cards, max_cards))
     if cds and (min(cds) < 0 or max(cds) > len(cards) - 1):
-      return error(con._("Invalid value."))
+      return error(pl._("Invalid value."))
     buf = bytes([len(cds)])
     tribute_value = 0
     for i in cds:
       tribute_value += (cards[i].release_param if is_tribute else 0)
       buf += bytes([i])
     if is_tribute and tribute_value < min_cards:
-      return error(con._("Not enough tributes."))
+      return error(pl._("Not enough tributes."))
     self.set_responseb(buf)
     reactor.callLater(0, process_duel, self)
   return prompt()

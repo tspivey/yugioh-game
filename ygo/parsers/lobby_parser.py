@@ -155,11 +155,14 @@ def who(caller):
   for pl in who_output:
     caller.connection.notify(pl)
 
-@LobbyParser.command(names=['replay'], args_regexp=r'(.*)=(\d+)', allowed=lambda caller: caller.connection.is_admin)
+@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-]+)(?:=(\d+))?', allowed=lambda caller: caller.connection.player.is_admin)
 def replay(caller):
   with open(os.path.join('duels', caller.args[0])) as fp:
     lines = [json.loads(line) for line in fp]
-  limit = int(caller.args[1])
+  if caller.args[1] is not None:
+    limit = int(caller.args[1])
+  else:
+    limit = len(lines)
   for line in lines[:limit]:
     if line['event_type'] == 'start':
       player0 = globals.server.get_player(line['player0'])
@@ -280,7 +283,7 @@ def encoding(caller):
   caller.connection.session.commit()
   caller.connection.notify(caller.connection._("Encoding set."))
 
-@LobbyParser.command(allowed=lambda caller: caller.connection.is_admin)
+@LobbyParser.command(allowed=lambda caller: caller.connection.player.is_admin)
 def restart_websockets(caller):
   if not globals.websocket_server:
     caller.connection.notify(caller.connection._("Websocket server not enabled."))
@@ -293,7 +296,7 @@ def restart_websockets(caller):
   d.addCallback(stopped)
   d.addErrback(log.err)
 
-@LobbyParser.command(args_regexp=r'(.*)', allowed=lambda caller: caller.connection.is_admin)
+@LobbyParser.command(args_regexp=r'(.*)', allowed=lambda caller: caller.connection.player.is_admin)
 def announce(caller):
   if not caller.args[0]:
     caller.connection.notify(caller.connection._("Announce what?"))
@@ -425,7 +428,7 @@ def challenge(caller):
   else:
     con.notify(con._("Challenge off."))
 
-@LobbyParser.command(allowed=lambda caller: caller.connection.is_admin)
+@LobbyParser.command(allowed=lambda caller: caller.connection.player.is_admin)
 def reboot(caller):
   globals.rebooting = True
   globals.server.check_reboot()

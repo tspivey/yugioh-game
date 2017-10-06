@@ -1,5 +1,7 @@
 import io
 
+from ygo.card import Card
+
 def msg_decktop(self, data):
   data = io.BytesIO(data[1:])
   player = self.read_u8(data)

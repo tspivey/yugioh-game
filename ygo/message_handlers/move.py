@@ -32,7 +32,7 @@ def move(self, code, location, newloc, reason):
     if (location & 0xff) != (newloc & 0xff):
       # controller changed too (e.g. change of heart)
       pl.notify(pl._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(pl), op = op.nickname, targetspec = cnew.get_spec(pl.duel_player)))
-      op.notify(op._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=self.card_to_spec(op.duel_player, card), name = card.get_name(op), targetspec = cnew.get_spec(op.duel_player)))
+      op.notify(op._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=card.get_spec(op.duel_player), name = card.get_name(op), targetspec = cnew.get_spec(op.duel_player)))
       for w in self.watchers:
         s = card.get_spec(w.duel_player)
         ts = cnew.get_spec(w.duel_player)

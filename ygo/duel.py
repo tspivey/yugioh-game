@@ -68,6 +68,7 @@ class Duel:
     self.private = False
     self.started = False
     self.debug_mode = False
+    self.debug_fp = None
     self.players = [None, None]
     self.lp = [8000, 8000]
     self.started = False
@@ -85,6 +86,8 @@ class Duel:
       lib.new_card(self.duel, c, player, player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
 
   def start(self):
+    if os.environ.get('DEBUG', 0):
+      self.start_debug()
     lib.start_duel(self.duel, 0)
     self.started = True
 
@@ -107,6 +110,8 @@ class Duel:
         pl.card_list = []
     for pl in self.watchers:
       pl.notify(pl._("Watching stopped."))
+    if self.debug_mode is True and self.debug_fp is not None:
+      self.debug_fp.close()
     globals.server.check_reboot()
 
   def process(self):

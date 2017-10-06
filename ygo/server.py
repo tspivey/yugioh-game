@@ -1,4 +1,3 @@
-import os
 import re
 import random
 import sqlite3
@@ -76,8 +75,6 @@ class Server(gsb.Server):
       pl.duel_player = i
       pl.set_parser('DuelParser')
     duel.players = players
-    if os.environ.get('DEBUG', 0):
-      duel.start_debug()
     duel.start()
     reactor.callLater(0, process_duel, duel)
 
