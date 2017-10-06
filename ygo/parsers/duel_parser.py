@@ -16,7 +16,7 @@ def tab(caller):
   duel = caller.connection.player.duel
   if caller.connection.player.watching:
     caller.connection.notify(caller.connection._("%s's table:") % duel.players[0].nickname)
-    duel.show_table(caller.connection.player, caller.connection.duel_player, True)
+    duel.show_table(caller.connection.player, caller.connection.player.duel_player, True)
   else:
     caller.connection.notify(caller.connection._("Your table:"))
     duel.show_table(caller.connection.player, caller.connection.player.duel_player)

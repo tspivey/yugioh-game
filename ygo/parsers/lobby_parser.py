@@ -382,8 +382,7 @@ def watch(caller):
   elif players[0].duel.private:
     con.notify(con._("That duel is private."))
     return
-  player = players[0]
-  con.player.duel.add_watcher(con.player)
+  players[0].duel.add_watcher(con.player)
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def ignore(caller):
