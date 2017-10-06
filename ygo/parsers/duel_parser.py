@@ -54,13 +54,6 @@ def extra(caller):
 def extra2(caller):
   caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_EXTRA, True)
 
-@DuelParser.command(names=['sc', 'score'])
-def score(caller):
-  if not caller.connection.player.duel:
-    caller.connection.notify(caller.connection._("Not in a duel."))
-    return
-  caller.connection.player.duel.show_score(caller.connection.player)
-
 @DuelParser.command(names=['watchers'])
 def show_watchers(caller):
   if caller.connection.player.duel.watchers==[]:

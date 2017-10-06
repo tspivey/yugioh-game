@@ -430,6 +430,13 @@ def reboot(caller):
   globals.rebooting = True
   globals.server.check_reboot()
 
+# watchers and duelists in paused games need to see them too
+@LobbyParser.command(names=['sc', 'score'])
+def score(caller):
+  if caller.connection.player.duel is None:
+    caller.connection.parser.huh(caller)
+    return
+  caller.connection.player.duel.show_score(caller.connection.player)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
