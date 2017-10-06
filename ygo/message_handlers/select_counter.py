@@ -1,10 +1,29 @@
+import io
 import struct
 from twisted.internet import reactor
 
+from ygo.card import Card
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import parse_ints, process_duel
 from ygo import globals
+
+def msg_select_counter(self, data):
+  data = io.BytesIO(data[1:])
+  player = self.read_u8(data)
+  countertype = self.read_u16(data)
+  count = self.read_u16(data)
+  size = self.read_u8(data)
+  cards = []
+  for i in range(size):
+    card = Card(self.read_u32(data))
+    card.controller = self.read_u8(data)
+    card.location = self.read_u8(data)
+    card.sequence = self.read_u8(data)
+    card.counter = self.read_u16(data)
+    cards.append(card)
+  self.cm.call_callbacks('select_counter', player, countertype, count, cards)
+  return data.read()
 
 def select_counter(self, player, countertype, count, cards):
   pl = self.players[player]
@@ -31,3 +50,7 @@ def select_counter(self, player, countertype, count, cards):
     self.set_responseb(bytes)
     reactor.callLater(0, process_duel, self)
   prompt()
+
+MESSAGES = {22: msg_select_counter}
+
+CALLBACKS = {'select_counter': select_counter}

@@ -1,4 +1,13 @@
+import io
+
 from ygo import globals
+
+def msg_win(self, data):
+  data = io.BytesIO(data[1:])
+  player = self.read_u8(data)
+  reason = self.read_u8(data)
+  self.cm.call_callbacks('win', player, reason)
+  return data.read()
 
 def win(self, player, reason):
   if player == 2:
@@ -19,3 +28,7 @@ def win(self, player, reason):
       reason_str = globals.strings[pl.language]['victory'][reason]
       globals.server.announce_challenge(pl, pl._("%s won the duel between %s and %s (%s).") % (winner.nickname, self.players[0].nickname, self.players[1].nickname, reason_str))
   self.end()
+
+MESSAGES = {5: msg_win}
+
+CALLBACKS = {'win': win}

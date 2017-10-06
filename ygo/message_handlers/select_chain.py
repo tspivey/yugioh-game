@@ -1,8 +1,30 @@
+import io
 from twisted.internet import reactor
 
+from ygo.card import Card
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
+
+def msg_select_chain(self, data):
+  data = io.BytesIO(data[1:])
+  player = self.read_u8(data)
+  size = self.read_u8(data)
+  spe_count = self.read_u8(data)
+  forced = self.read_u8(data)
+  hint_timing = self.read_u32(data)
+  other_timing = self.read_u32(data)
+  chains = []
+  for i in range(size):
+    et = self.read_u8(data)
+    code = self.read_u32(data)
+    loc = self.read_u32(data)
+    card = Card(code)
+    card.set_location(loc)
+    desc = self.read_u32(data)
+    chains.append((et, card, desc))
+  self.cm.call_callbacks('select_chain', player, size, spe_count, forced, chains)
+  return data.read()
 
 def select_chain(self, player, size, spe_count, forced, chains):
   if size == 0 and spe_count == 0:
@@ -65,3 +87,7 @@ def select_chain(self, player, size, spe_count, forced, chains):
     self.set_responsei(idx)
     reactor.callLater(0, process_duel, self)
   prompt()
+
+MESSAGES = {16: msg_select_chain}
+
+CALLBACKS = {'select_chain': select_chain}

@@ -1,3 +1,20 @@
+import io
+
+def msg_attack(self, data):
+  data = io.BytesIO(data[1:])
+  attacker = self.read_u32(data)
+  ac = attacker & 0xff
+  al = (attacker >> 8) & 0xff
+  aseq = (attacker >> 16) & 0xff
+  apos = (attacker >> 24) & 0xff
+  target = self.read_u32(data)
+  tc = target & 0xff
+  tl = (target >> 8) & 0xff
+  tseq = (target >> 16) & 0xff
+  tpos = (target >> 24) & 0xff
+  self.cm.call_callbacks('attack', ac, al, aseq, apos, tc, tl, tseq, tpos)
+  return data.read()
+
 def attack(self, ac, al, aseq, apos, tc, tl, tseq, tpos):
   acard = self.get_card(ac, al, aseq)
   if not acard:
@@ -18,3 +35,7 @@ def attack(self, ac, al, aseq, apos, tc, tl, tseq, tpos):
     if (tcard.controller != pl.duel_player or pl.watching) and tcard.position in (0x8, 0xa):
       tcname = pl._("%s card") % tcard.get_position(pl)
     pl.notify(pl._("%s prepares to attack %s (%s) with %s (%s)") % (name, tspec, tcname, aspec, acard.get_name(pl)))
+
+MESSAGES = {110: msg_attack}
+
+CALLBACKS = {'attack': attack}

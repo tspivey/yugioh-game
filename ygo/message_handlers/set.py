@@ -1,3 +1,16 @@
+import io
+
+from ygo.card import Card
+
+def msg_set(self, data):
+  data = io.BytesIO(data[1:])
+  code = self.read_u32(data)
+  loc = self.read_u32(data)
+  card = Card(code)
+  card.set_location(loc)
+  self.cm.call_callbacks('set', card)
+  return data.read()
+
 def set(self, card):
   c = card.controller
   cpl = self.players[c]
@@ -11,3 +24,7 @@ def set(self, card):
   for pl in self.watchers:
     pl.notify(pl._("%s sets %s in %s position.") %
     (on, card.get_spec(pl), card.get_position(pl)))
+
+MESSAGES = {54: msg_set}
+
+CALLBACKS = {'set': set}

@@ -26,3 +26,5 @@ def battle_activate(self, pl):
     self.set_responsei((seq << 16))
     reactor.callLater(0, process_duel, self)
   pl.notify(DuelReader, r, no_abort="Invalid command", restore_parser=DuelParser)
+
+METHODS = {'battle_activate': battle_activate}

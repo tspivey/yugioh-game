@@ -1,3 +1,12 @@
+import io
+
+def msg_recover(self, data):
+  data = io.BytesIO(data[1:])
+  player = self.read_u8(data)
+  amount = self.read_u32(data)
+  self.cm.call_callbacks('recover', player, amount)
+  return data.read()
+
 def recover(self, player, amount):
   new_lp = self.lp[player] + amount
   pl = self.players[player]
@@ -8,3 +17,6 @@ def recover(self, player, amount):
     pl.notify(pl._("%s's lp increased by %d, now %d") % (self.players[player].nickname, amount, new_lp))
   self.lp[player] += amount
 
+MESSAGES = {92: msg_recover}
+
+CALLBACKS = {'recover': recover}

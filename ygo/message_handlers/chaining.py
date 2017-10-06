@@ -1,3 +1,20 @@
+import io
+
+from ygo.card import Card
+
+def msg_chaining(self, data):
+  data = io.BytesIO(data[1:])
+  code = self.read_u32(data)
+  card = Card(code)
+  card.set_location(self.read_u32(data))
+  tc = self.read_u8(data)
+  tl = self.read_u8(data)
+  ts = self.read_u8(data)
+  desc = self.read_u32(data)
+  cs = self.read_u8(data)
+  self.cm.call_callbacks('chaining', card, tc, tl, ts, desc, cs)
+  return data.read()
+
 def chaining(self, card, tc, tl, ts, desc, cs):
   c = card.controller
   o = 1 - c
@@ -24,3 +41,7 @@ def chaining(self, card, tc, tl, ts, desc, cs):
       if pl.soundpack:
         pl.notify("### activate_trap")
     pl.notify(pl._("%s activating %s") % (n, card.get_name(pl)))
+
+MESSAGES = {70: msg_chaining}
+
+CALLBACKS = {'chaining': chaining}

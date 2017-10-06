@@ -29,3 +29,5 @@ def display_battle_menu(self, pl):
       pl.notify(pl._("Invalid option."))
       return self.display_battle_menu(pl)
   pl.notify(DuelReader, r, no_abort=pl._("Invalid command."), prompt=pl._("Select an option:"), restore_parser=DuelParser)
+
+METHODS = {'display_battle_menu': display_battle_menu}

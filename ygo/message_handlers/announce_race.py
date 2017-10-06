@@ -1,9 +1,18 @@
+import io
 from twisted.internet import reactor
 
 from ygo.constants import RACES
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
+
+def msg_announce_race(self, data):
+  data = io.BytesIO(data[1:])
+  player = self.read_u8(data)
+  count = self.read_u8(data)
+  avail = self.read_u32(data)
+  self.cm.call_callbacks('announce_race', player, count, avail)
+  return data.read()
 
 def announce_race(self, player, count, avail):
   racemap = {k: (1<<i) for i, k in enumerate(RACES)}
@@ -36,3 +45,7 @@ def announce_race(self, player, count, avail):
     self.set_responsei(result)
     reactor.callLater(0, process_duel, self)
   prompt()
+
+MESSAGES = {140: msg_announce_race}
+
+CALLBACKS = {'announce_race': announce_race}

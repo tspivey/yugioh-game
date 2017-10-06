@@ -25,3 +25,5 @@ def battle_attack(self, pl):
     self.set_responsei((seq << 16) + 1)
     reactor.callLater(0, process_duel, self)
   pl.notify(DuelReader, r, no_abort=pl._("Invalid command."), prompt=pl._("Select a card:"), restore_parser=DuelParser)
+
+METHODS = {'battle_attack': battle_attack}

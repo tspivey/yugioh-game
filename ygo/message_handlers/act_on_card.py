@@ -81,3 +81,5 @@ def act_on_card(self, caller, card):
       return
     reactor.callLater(0, process_duel, self)
   prompt()
+
+METHODS = {'act_on_card': act_on_card}

@@ -58,3 +58,5 @@ def idle_action(self, pl):
         return prompt()
     self.act_on_card(caller, card)
   prompt()
+
+METHODS = {'idle_action': idle_action}

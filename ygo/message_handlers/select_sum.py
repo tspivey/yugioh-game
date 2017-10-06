@@ -1,8 +1,40 @@
+import io
 from twisted.internet import reactor
 
+from ygo.card import Card
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import parse_ints, process_duel
+
+def msg_select_sum(self, data):
+  data = io.BytesIO(data[1:])
+  mode = self.read_u8(data)
+  player = self.read_u8(data)
+  val = self.read_u32(data)
+  select_min = self.read_u8(data)
+  select_max = self.read_u8(data)
+  count = self.read_u8(data)
+  must_select = []
+  for i in range(count):
+    code = self.read_u32(data)
+    card = Card(code)
+    card.controller = self.read_u8(data)
+    card.location = self.read_u8(data)
+    card.sequence = self.read_u8(data)
+    card.param = self.read_u32(data)
+    must_select.append(card)
+  count = self.read_u8(data)
+  select_some = []
+  for i in range(count):
+    code = self.read_u32(data)
+    card = Card(code)
+    card.controller = self.read_u8(data)
+    card.location = self.read_u8(data)
+    card.sequence = self.read_u8(data)
+    card.param = self.read_u32(data)
+    select_some.append(card)
+  self.cm.call_callbacks('select_sum', mode, player, val, select_min, select_max, must_select, select_some)
+  return data.read()
 
 def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
   pl = self.players[player]
@@ -39,3 +71,7 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
     self.set_responseb(b)
     reactor.callLater(0, process_duel, self)
   prompt()
+
+MESSAGES = {23: msg_select_sum}
+
+CALLBACKS = {'select_sum': select_sum}

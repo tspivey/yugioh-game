@@ -1,5 +1,16 @@
+import io
+
 from ygo.card import Card
 from ygo.constants import *
+
+def msg_move(self, data):
+  data = io.BytesIO(data[1:])
+  code = self.read_u32(data)
+  location = self.read_u32(data)
+  newloc = self.read_u32(data)
+  reason = self.read_u32(data)
+  self.cm.call_callbacks('move', code, location, newloc, reason)
+  return data.read()
 
 def move(self, code, location, newloc, reason):
   card = Card(code)
@@ -104,3 +115,7 @@ def move(self, code, location, newloc, reason):
     for w in self.watchers+[op]:
       s = card.get_spec(w.duel_player)
       w.notify(w._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
+
+MESSAGES = {50: msg_move}
+
+CALLBACKS = {'move': move}
