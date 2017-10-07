@@ -122,7 +122,7 @@ class Server(gsb.Server):
 		return card
 
 	def check_reboot(self):
-		duels = [c.duel for c in self.get_all_players()]
+		duels = [c.duel for c in self.get_all_players() if c.duel is not None]
 		if globals.rebooting and len(duels) == 0:
 			for pl in self.get_all_players():
 				pl.notify(pl._("Rebooting."))
