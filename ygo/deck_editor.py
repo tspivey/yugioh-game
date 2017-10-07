@@ -20,6 +20,7 @@ class DeckEditor:
 			self.player.notify(self.player._("No decks."))
 			self.player.connection.session.commit()
 			return
+		self.player.notify(self.player._("You own %d decks:")%(len(decks)))
 		for deck in decks:
 			self.player.notify(deck.name)
 		self.player.connection.session.commit()

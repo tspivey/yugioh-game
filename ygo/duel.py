@@ -464,6 +464,13 @@ class Duel:
 			pl.notify(pl._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
 			pl.notify(pl._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
 			pl.notify(pl._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
+		if self.paused:
+			pl.notify(pl._("This duel is currently paused."))
+		else:
+			if not pl.watching and pl.duel_player == self.tp:
+				pl.notify(pl._("It's your turn."))
+			else:
+				pl.notify(pl._("It's %s turn."))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
