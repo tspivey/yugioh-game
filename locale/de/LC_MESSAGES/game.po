@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-07 14:08+0200\n"
+"POT-Creation-Date: 2017-10-07 17:26+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -373,7 +373,7 @@ msgstr "Du bist am Zug."
 
 #: ygo/duel.py:473
 #, python-format
-msgid "It's %s turn."
+msgid "It's %s's turn."
 msgstr "%s ist am Zug."
 
 #: ygo/duel.py:479
@@ -1470,4 +1470,7 @@ msgstr "Gib y oder n ein"
 
 #~ msgid "Say what?"
 #~ msgstr "Was möchtest Du sagen?"
+
+#~ msgid "It's %s turn."
+#~ msgstr "%s ist am Zug."
 
