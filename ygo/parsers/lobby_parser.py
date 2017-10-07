@@ -440,6 +440,10 @@ def score(caller):
 		return
 	caller.connection.player.duel.show_score(caller.connection.player)
 
+@LobbyParser.command(args_regexp=r'(.*)')
+def echo(caller):
+	caller.connection.notify(caller.args[0])
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	DuelParser.commands[key] = LobbyParser.commands[key]
