@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-07 13:56+0200\n"
+"POT-Creation-Date: 2017-10-07 14:08+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -108,93 +108,98 @@ msgstr "End Phase"
 msgid "No decks."
 msgstr "Keine Decks gefunden."
 
-#: ygo/deck_editor.py:35
+#: ygo/deck_editor.py:23
+#, python-format
+msgid "You own %d decks:"
+msgstr "Du besitzt %d Decks."
+
+#: ygo/deck_editor.py:36
 msgid "Deck doesn't exist."
 msgstr "Das Deck existiert nicht."
 
-#: ygo/deck_editor.py:41
+#: ygo/deck_editor.py:42
 #, python-format
 msgid "Deck loaded with %d cards."
 msgstr "Deck mit %d Karten geladen."
 
-#: ygo/deck_editor.py:48 ygo/deck_editor.py:60 ygo/deck_editor.py:84
+#: ygo/deck_editor.py:49 ygo/deck_editor.py:61 ygo/deck_editor.py:85
 msgid "Deck not found."
 msgstr "Deck nicht gefunden."
 
-#: ygo/deck_editor.py:53
+#: ygo/deck_editor.py:54
 msgid "Deck cleared."
 msgstr "Deck geleert."
 
-#: ygo/deck_editor.py:65
+#: ygo/deck_editor.py:66
 msgid "Deck deleted."
 msgstr "Deck gelöscht."
 
-#: ygo/deck_editor.py:69 ygo/deck_editor.py:75
+#: ygo/deck_editor.py:70 ygo/deck_editor.py:76
 msgid "Usage: deck rename <old>=<new>"
 msgstr "Verwendung: deck rename <alt>=<neu>"
 
-#: ygo/deck_editor.py:78
+#: ygo/deck_editor.py:79
 msgid "Deck names may not contain =."
 msgstr "Decknamen dürfen kein = enthalten."
 
-#: ygo/deck_editor.py:89
+#: ygo/deck_editor.py:90
 msgid "Destination deck already exists"
 msgstr "Dieses Deck existiert bereits."
 
-#: ygo/deck_editor.py:94
+#: ygo/deck_editor.py:95
 msgid "Deck renamed."
 msgstr "Deck umbenannt."
 
-#: ygo/deck_editor.py:102
+#: ygo/deck_editor.py:103
 msgid "Deck exists, loading."
 msgstr "Das Deck existiert bereits, es wird geladen."
 
-#: ygo/deck_editor.py:115
+#: ygo/deck_editor.py:116
 msgid "u: up d: down /: search forward ?: search backward t: top"
 msgstr "u: auf d: ab /: vorwärts suchen ?: rückwerts suchen t: anfang"
 
-#: ygo/deck_editor.py:116
+#: ygo/deck_editor.py:117
 msgid "s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"
 msgstr "s: Zu Deck hinzufügen, r: Aus Deck entfernen, l: Deck auflisten, g: Zu Karte in Deck springen"
 
-#: ygo/deck_editor.py:120
+#: ygo/deck_editor.py:121
 #, python-format
 msgid "Command (%d cards in main deck, %d cards in extra deck):"
 msgstr "Befehl (%d Karten im Main Deck, %d Karten im Extradeck):"
 
-#: ygo/deck_editor.py:127
+#: ygo/deck_editor.py:128
 msgid "bottom of list."
 msgstr "Ende der Liste."
 
-#: ygo/deck_editor.py:131
+#: ygo/deck_editor.py:132
 msgid "Top of list."
 msgstr "Beginn der Liste."
 
-#: ygo/deck_editor.py:137
+#: ygo/deck_editor.py:138
 msgid "Top."
 msgstr "Anfang."
 
-#: ygo/deck_editor.py:142
+#: ygo/deck_editor.py:143
 msgid "You already have 3 of this card in your deck."
 msgstr "Du hast bereits 3 dieser Karten in Deinem Deck."
 
-#: ygo/deck_editor.py:155 ygo/deck_editor.py:208 ygo/duel.py:494
+#: ygo/deck_editor.py:156 ygo/deck_editor.py:209 ygo/duel.py:494
 msgid "Invalid card."
 msgstr "Ungültige Karte."
 
-#: ygo/deck_editor.py:160
+#: ygo/deck_editor.py:161
 msgid "This card isn't in your deck."
 msgstr "Diese Karte ist nicht in deinem Deck."
 
-#: ygo/deck_editor.py:175 ygo/deck_editor.py:187
+#: ygo/deck_editor.py:176 ygo/deck_editor.py:188
 msgid "Not found."
 msgstr "Nicht gefunden."
 
-#: ygo/deck_editor.py:215
+#: ygo/deck_editor.py:216
 msgid "Quit."
 msgstr "Beenden."
 
-#: ygo/deck_editor.py:217 ygo/message_handlers/act_on_card.py:14
+#: ygo/deck_editor.py:218 ygo/message_handlers/act_on_card.py:14
 #: ygo/message_handlers/act_on_card.py:40
 #: ygo/message_handlers/announce_card.py:20
 #: ygo/message_handlers/announce_card_filter.py:24
@@ -207,29 +212,29 @@ msgstr "Beenden."
 msgid "Invalid command."
 msgstr "Ungültiger Befehl."
 
-#: ygo/deck_editor.py:227
+#: ygo/deck_editor.py:228
 #, python-format
 msgid "%d in deck."
 msgstr "%d in Deck."
 
-#: ygo/deck_editor.py:274
+#: ygo/deck_editor.py:275
 msgid "That deck already exists."
 msgstr "Dieses Deck existiert bereits."
 
-#: ygo/deck_editor.py:281
+#: ygo/deck_editor.py:282
 msgid "Deck created."
 msgstr "Deck erstellt."
 
-#: ygo/deck_editor.py:290
+#: ygo/deck_editor.py:291
 msgid "Invalid entry."
 msgstr "Ungültiger Befehl."
 
-#: ygo/deck_editor.py:299
+#: ygo/deck_editor.py:300
 #, python-format
 msgid "%s: limit %d, found %d."
 msgstr "%s: Limit %d, %d gefunden."
 
-#: ygo/deck_editor.py:301
+#: ygo/deck_editor.py:302
 #, python-format
 msgid "Check completed with %d errors."
 msgstr "Prüfung mit %d Fehlern abgeschlossen."
