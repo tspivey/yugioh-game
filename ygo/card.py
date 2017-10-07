@@ -72,7 +72,7 @@ class Card(object):
 				s = lstr[i-code*16].strip()
 				e = True
 		except IndexError:
-			s = strings[pl.language]['system'].get(i, '')
+			s = globals.strings[pl.language]['system'].get(i, '')
 			if s != '':
 				e = True
 
