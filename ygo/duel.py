@@ -470,7 +470,7 @@ class Duel:
 			if not pl.watching and pl.duel_player == self.tp:
 				pl.notify(pl._("It's your turn."))
 			else:
-				pl.notify(pl._("It's %s turn."))
+				pl.notify(pl._("It's %s's turn.")%(self.players[self.tp].nickname))
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
