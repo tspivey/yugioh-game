@@ -30,9 +30,9 @@ def afk(caller):
 def cmd_duel(caller):
 	caller.connection.player.request_duel(caller.args[0])
 
-@LobbyParser.command(args_regexp=r'(.*)')
+@LobbyParser.command(names=['pd'], args_regexp=r'(.*)')
 def cmd_pd(caller):
-	caller.connection.player.duel(caller.args[0], True)
+	caller.connection.player.request_duel(caller.args[0], True)
 
 @LobbyParser.command(names='deck', args_regexp=r'(.*)')
 def deck(caller):
