@@ -102,6 +102,8 @@ class DeckEditor:
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
+		else:
+			con.notify(con._("Creating new deck %s.") % deck_name)
 		cards = con.player.deck['cards']
 		def group_cards(cards):
 			cnt = OrderedDict()
