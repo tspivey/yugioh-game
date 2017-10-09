@@ -505,7 +505,11 @@ class Duel:
 
 	def player_disconnected(self, player):
 		if not self.paused:
+			# all players returned successfully
 			self.pause()
+		else:
+			# the player returned, but there are players left who need to reconnect
+			player.set_parser('LobbyParser')
 
 	def player_reconnected(self, pl):
 		if not self.paused:
