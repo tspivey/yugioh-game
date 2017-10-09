@@ -67,7 +67,7 @@ class Room:
 			# always the newest tcg list
 			lst = [l for l in globals.lflist if l.endswith('tcg')]
 			return lst[0]
-		elif list == 'ocg':
+		elif self.banlist == 'ocg':
 			# always the newest ocg list
 			lst = [l for l in globals.lflist.keys() if not l.endswith('tcg')]
 			return lst[0]

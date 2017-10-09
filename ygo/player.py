@@ -26,6 +26,7 @@ class Player:
 		self.language = 'en'
 		self.nickname = name
 		self.paused_parser = None
+		self.room = None
 		self.reply_to = ""
 		self.requested_opponent = (None, False)
 		self.say = True
