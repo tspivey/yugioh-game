@@ -26,14 +26,6 @@ def afk(caller):
 		conn.player.afk = False
 		return
 
-@LobbyParser.command(names=['duel'], args_regexp=r'(.*)')
-def cmd_duel(caller):
-	caller.connection.player.request_duel(caller.args[0])
-
-@LobbyParser.command(names=['pd'], args_regexp=r'(.*)')
-def cmd_pd(caller):
-	caller.connection.player.request_duel(caller.args[0], True)
-
 @LobbyParser.command(names='deck', args_regexp=r'(.*)')
 def deck(caller):
 	lst = caller.args[0].split(None, 1)
@@ -53,9 +45,7 @@ def deck(caller):
 		caller.connection.notify(caller.connection._("This command requires more information to operate with."))
 		return
 
-	if cmd == 'load':
-		caller.connection.player.deck_editor.load(caller.args[0])
-	elif cmd == 'edit':
+	if cmd == 'edit':
 		caller.connection.player.deck_editor.edit(caller.args[0])
 	elif cmd == 'clear':
 		caller.connection.player.deck_editor.clear(caller.args[0])
