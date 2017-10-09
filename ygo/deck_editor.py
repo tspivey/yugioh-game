@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from gsb.intercept import Reader
 import json
-import natsort
 import re
 
 from .card import Card
@@ -286,7 +285,7 @@ class DeckEditor:
 	def check(self, banlist = None):
 		con = self.player.connection
 		if not banlist:
-			for k in natsort.natsorted(globals.lflist.keys(), reverse=True):
+			for k in globals.lflist.keys():
 				self.player.notify(k)
 			return
 		if banlist not in globals.lflist:

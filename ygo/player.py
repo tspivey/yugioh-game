@@ -6,6 +6,7 @@ from .deck_editor import DeckEditor
 from .i18n import set_language as i18n_set_language
 from .parsers.duel_parser import DuelParser
 from .parsers.lobby_parser import LobbyParser
+from .parsers.room_parser import RoomParser
 from . import models
 
 class Player:
@@ -130,3 +131,5 @@ class Player:
 			self.connection.parser = LobbyParser
 		elif p == 'duelparser':
 			self.connection.parser = DuelParser
+		elif p == 'roomparser':
+			self.connection.parser = RoomParser

@@ -8,6 +8,7 @@ from twisted.python import log
 from ..constants import *
 from ..duel import Duel
 from .. import globals
+from ..room import Room
 from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
 from .duel_parser import DuelParser
@@ -28,6 +29,11 @@ def afk(caller):
 
 @LobbyParser.command(names='deck', args_regexp=r'(.*)')
 def deck(caller):
+
+	if caller.connection.player.duel is not None:
+		caller.connection.parser.huh(caller)
+		return
+
 	lst = caller.args[0].split(None, 1)
 	cmd = lst[0]
 	caller.args = lst[1:]
@@ -209,6 +215,11 @@ def lookup(caller):
 
 @LobbyParser.command(names='passwd')
 def passwd(caller):
+
+	if caller.connection.player.duel is not None or caller.connection.player.room is not None:
+		caller.connection.parser.huh(caller)
+		return
+
 	session = caller.connection.session
 	account = caller.connection.account
 	new_password = ""
@@ -341,6 +352,11 @@ def soundpack_on(caller):
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def watch(caller):
+
+	if caller.connection.player.room is not None:
+		caller.connection.parser.huh(caller)
+		return
+
 	con = caller.connection
 	nick = caller.args[0]
 	if not nick:
@@ -433,6 +449,12 @@ def score(caller):
 @LobbyParser.command(args_regexp=r'(.*)')
 def echo(caller):
 	caller.connection.notify(caller.args[0])
+
+@LobbyParser.command(names=['create'], allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None and c.connection.parser is LobbyParser)
+def create(caller):
+	r = Room(caller.connection.player)
+	r.join(caller.connection.player)
+	caller.connection.parser.prompt(caller)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
