@@ -24,22 +24,6 @@ class DeckEditor:
 			self.player.notify(deck.name)
 		self.player.connection.session.commit()
 
-	def load(self, name):
-		session = self.player.connection.session
-		account = self.player.connection.account
-		if name.startswith('public/'):
-			account = session.query(models.Account).filter_by(name='Public').first()
-			name = name[7:]
-		deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
-		if not deck:
-			self.player.notify(self.player._("Deck doesn't exist."))
-			session.commit()
-			return
-		content = json.loads(deck.content)
-		self.player.deck = content
-		session.commit()
-		self.player.notify(self.player._("Deck loaded with %d cards.") % len(content['cards']))
-
 	def clear(self, name):
 		account = self.player.connection.account
 		session = self.player.connection.session

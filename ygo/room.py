@@ -39,6 +39,7 @@ class Room:
 
 		player.set_parser('LobbyParser')
 		player.room = None
+		player.deck = {'cards': []}
 
 		player.notify(player._("You left the room."))
 
@@ -50,6 +51,7 @@ class Room:
 			for pl in self.get_all_players():
 				pl.set_parser('LobbyParser')
 				pl.room = None
+				pl.deck = {'cards': []}
 				pl.notify(pl._("The room creator disbanded the room."))
 
 			player.notify(player._("The room was disbanded."))

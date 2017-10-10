@@ -1,7 +1,10 @@
 import gsb
+import json
 
+from ..card import Card
 from ..constants import COMMAND_SUBSTITUTIONS
 from .. import globals
+from .. import models
 
 class room_parser(gsb.Parser):
 
@@ -202,3 +205,64 @@ def rules(caller):
 		s = s%(s2)
 
 		pl.notify(s)
+
+@RoomParser.command(names=['deck'], args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room.open)
+def deck(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+
+	if len(caller.args) == 0:
+		pl.deck_editor.list()
+		return
+
+	name = caller.args[0]
+
+	# first the loading algorithm
+	# parsing the string, loading from database
+	session = caller.connection.session
+	account = caller.connection.account
+	if name.startswith('public/'):
+		account = session.query(models.Account).filter_by(name='Public').first()
+		name = name[7:]
+	deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
+	if not deck:
+		pl.notify(pl._("Deck doesn't exist."))
+		session.commit()
+		return
+
+	content = json.loads(deck.content)
+
+	# we parsed the deck now we execute several checks
+	# we check card limits first
+	main, extra = pl.count_deck_cards(content)
+	if main < 40 or main > 200:
+		pl.notify(pl._("Your main deck must contain between 40 and 200 cards (currently %d).") % main)
+		return
+
+	if extra > 15:
+		pl.notify(pl._("Your extra deck may not contain more than 15 cards (currently %d).")%extra)
+		return
+
+	# check against selected banlist
+	codes = set(content['cards'])
+	errors = 0
+	for code in codes:
+		count = content['cards'].count(code)
+		if code not in globals.lflist[room.get_banlist()] or count <= globals.lflist[room.get_banlist()][code]:
+			continue
+		card = Card(code)
+		pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), globals.lflist[room.get_banlist()][code], count))
+		errors += 1
+
+	if errors > 0:
+		pl.notify(pl._("Check completed with %d errors.") % errors)
+		return
+
+	pl.deck = content
+	session.commit()
+	pl.notify(pl._("Deck loaded with %d cards.") % len(content['cards']))
+
+	for p in room.get_all_players():
+		if p is not pl:
+			p.notify(p._("%s loaded a deck.")%(pl.nickname))
