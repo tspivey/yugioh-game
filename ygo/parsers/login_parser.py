@@ -3,13 +3,14 @@ import re
 from sqlalchemy import func
 import gsb
 
+from ..constants import RE_NICKNAME
 from .. import globals
 from .. import models
 from ..player import Player
 
 class login_parser(gsb.Parser):
 
-	nickname_re = re.compile(r'^[A-Za-z][a-zA-Z0-9]+$')
+	nickname_re = re.compile(RE_NICKNAME)
 
 	def on_attach(self, connection, old_parser=None):
 		connection.login_state = ("nickname", "Nickname (or new to create a new account):")

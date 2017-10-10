@@ -2,10 +2,9 @@ import gsb
 import json
 
 from ..card import Card
-from ..constants import COMMAND_SUBSTITUTIONS
+from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME
 from .. import globals
 from .. import models
-from .login_parser import LoginParser
 
 class room_parser(gsb.Parser):
 
@@ -89,7 +88,7 @@ def finish(caller):
 		pl.notify(pl._("Players can now join this room, or you can invite them to join you."))
 		for p in globals.server.get_all_players():
 			if not pl.nickname in p.ignores:
-				globals.server.announce_challenge(p, "%s created a new duel room.")%(pl.nickname))
+				globals.server.announce_challenge(p, p._("%s created a new duel room.")%(pl.nickname))
 
 @RoomParser.command(names=['leave'])
 def leave(caller):
@@ -160,7 +159,7 @@ def move(caller):
 				if p is pl:
 					pl.notify(pl._("You were moved into %s.")%(pl._("team %d")%(team)))
 				else:
-					p.notify(p._("%s was moved into %s.")%(p._("team %d")%(team)))
+					p.notify(p._("%s was moved into %s.")%(pl.nickname, p._("team %d")%(team)))
 
 @RoomParser.command(names=['private'])
 def private(caller):
@@ -200,9 +199,9 @@ def rules(caller):
 		s = pl._("Duel rules were set to %s.")
 
 		if room.rules == 0:
-			s2 = pl._("Traditional")
-		elif room.rules == 1:
 			s2 = pl._("Default")
+		elif room.rules == 1:
+			s2 = pl._("Traditional")
 		elif room.rules == 4:
 			s2 = pl._("Link")
 
@@ -210,7 +209,7 @@ def rules(caller):
 
 		pl.notify(s)
 
-@RoomParser.command(names=['deck'], args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room.open)
+@RoomParser.command(names=['deck'], args_regexp=r'(.+)', allowed = lambda c: c.connection.player.room.open)
 def deck(caller):
 
 	pl = caller.connection.player
@@ -239,7 +238,7 @@ def deck(caller):
 
 	# we parsed the deck now we execute several checks
 	# we check card limits first
-	main, extra = pl.count_deck_cards(content)
+	main, extra = pl.count_deck_cards(content['cards'])
 	if main < 40 or main > 200:
 		pl.notify(pl._("Your main deck must contain between 40 and 200 cards (currently %d).") % main)
 		return
@@ -307,7 +306,7 @@ def start(caller):
 			globals.server.announce_challenge(p, p._("The duel between %s and %s has begun!") % (room.teams[1][0].nickname, room.teams[2][0].nickname))
 
 	# launch the duel
-	globals.server.start_duel(room.options, room.rules, room.teams[1]+room.teams[2])
+	globals.server.start_duel(room.options, room.rules, *(room.teams[1]+room.teams[2]))
 
 	room.teams[1][0].duel.private = room.private
 
@@ -319,7 +318,7 @@ def start(caller):
 	for p in room.get_all_players():
 		p.room = None
 
-@RoomParser.command(names=['invite'], args_regexp=LoginParser.nickname_re, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
+@RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
 def invite(caller):
 
 	pl = caller.connection.player
@@ -333,7 +332,7 @@ def invite(caller):
 		pl.notify(pl._("No player with this name found."))
 		return
 
-	players = globals.server.guess_players(caller.args[1], pl.nickname)
+	players = globals.server.guess_players(caller.args[0], pl.nickname)
 
 	if len(players) == 0:
 		pl.notify(pl._("No player with this name found."))

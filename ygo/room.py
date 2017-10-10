@@ -25,9 +25,9 @@ class Room:
 				if player is self.creator:
 					player.notify(player._("You joined your new room. You need to finish the setup to make it available to the other players."))
 				else:
-					pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel."))
+					pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
 			else:
-				pl.notify(pl._("%s joined this room."))
+				pl.notify(pl._("%s joined this room.")%(player.nickname))
 
 	def leave(self, player):
 

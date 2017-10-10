@@ -44,6 +44,8 @@ RACES = (
 	"Psycho", "Divine", "Creator god", "Wyrm", "Cyberse",
 )
 
+RE_NICKNAME = r'^([A-Za-z][a-zA-Z0-9]+)$'
+
 QUERY_CODE = 1
 QUERY_POSITION = 0x2
 QUERY_LEVEL = 0x10

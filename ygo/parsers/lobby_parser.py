@@ -13,7 +13,6 @@ from ..room import Room
 from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
 from .duel_parser import DuelParser
-from .login_parser import LoginParser
 from .room_parser import RoomParser
 
 LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
@@ -102,7 +101,7 @@ def say(caller):
 
 @LobbyParser.command(names=['who'], args_regexp=r'(.*)')
 def who(caller):
-	filters = ["duel", "watch", "idle", '"prepare"]
+	filters = ["duel", "watch", "idle", "prepare"]
 	showing = ["duel", "watch", "idle", "prepare"]
 	who_output = []
 	text = caller.args[0]
@@ -440,13 +439,13 @@ def create(caller):
 	r.join(caller.connection.player)
 	caller.connection.parser.prompt(caller.connection)
 
-@LobbyParser.command(names=['join'], args_regexp=LoginParser.nickname_re, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None)
+@LobbyParser.command(names=['join'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None)
 def join(caller):
 
 	pl = caller.connection.player
 
 	if len(caller.args) == 0:
-		pl.notify("Usage: join <player>"))
+		pl.notify("Usage: join <player>")
 		return
 
 	if caller.args[0] is None:
@@ -470,7 +469,7 @@ def join(caller):
 		pl.notify(pl._("This player ignores you."))
 	elif target.duel is not None:
 		pl.notify(pl._("This player is currently in a duel."))
-	elif target.room is None or target.room.open is not True or (target.room.private is not True and not pl.nickname in target.room.invitations):
+	elif target.room is None or target.room.open is not True or (target.room.private is True and not pl.nickname in target.room.invitations):
 		pl.notify(pl._("This player currently doesn't prepare to duel or you may not enter the room."))
 	elif target.room.creator.nickname in pl.ignores:
 		pl.notify(pl._("You're currently ignoring %s, who is the owner of this room.")%(target.room.creator.nickname))
@@ -482,5 +481,7 @@ def join(caller):
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
-	DuelParser.commands[key] = LobbyParser.commands[key]
-	RoomParser.commands[key] = LobbyParser.commands[key]
+	if not key in DuelParser.commands:
+		DuelParser.commands[key] = LobbyParser.commands[key]
+	if not key in RoomParser.commands:
+		RoomParser.commands[key] = LobbyParser.commands[key]
