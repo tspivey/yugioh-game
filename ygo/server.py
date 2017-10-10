@@ -75,7 +75,7 @@ class Server(gsb.Server):
 			pl.duel_player = i
 			pl.set_parser('DuelParser')
 		duel.players = players
-		duel.start(((rules&0xff)<<16)&(options&0xffff))
+		duel.start(((rules&0xff)<<16)+(options&0xffff))
 		reactor.callLater(0, process_duel, duel)
 
 	# me being the caller (we don't want to address me)
