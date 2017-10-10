@@ -28,12 +28,8 @@ def afk(caller):
 		conn.player.afk = False
 		return
 
-@LobbyParser.command(names='deck', args_regexp=r'(.*)')
+@LobbyParser.command(names='deck', args_regexp=r'(.*)', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def deck(caller):
-
-	if caller.connection.player.duel is not None:
-		caller.connection.parser.huh(caller)
-		return
 
 	lst = caller.args[0].split(None, 1)
 	cmd = lst[0]
@@ -170,6 +166,9 @@ def replay(caller):
 			if player0.duel or player1.duel:
 				caller.connection.notify(caller.connection._("One of the players is in a duel."))
 				return
+			if player0.room or player1.room:
+				pl.notify(pl._("At least one player is currently in a duel room."))
+				return
 			duel = Duel(line.get('seed', 0))
 			duel.load_deck(0, line['deck0'], shuffle=False)
 			duel.load_deck(1, line['deck1'], shuffle=False)
@@ -214,12 +213,8 @@ def lookup(caller):
 		return
 	caller.connection.notify(card.get_info(caller.connection.player))
 
-@LobbyParser.command(names='passwd')
+@LobbyParser.command(names='passwd', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def passwd(caller):
-
-	if caller.connection.player.duel is not None or caller.connection.player.room is not None:
-		caller.connection.parser.huh(caller)
-		return
 
 	session = caller.connection.session
 	account = caller.connection.account
@@ -351,12 +346,8 @@ def reply(caller):
 def soundpack_on(caller):
 	caller.connection.player.soundpack = True
 
-@LobbyParser.command(args_regexp=r'(.*)')
+@LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None)
 def watch(caller):
-
-	if caller.connection.player.room is not None:
-		caller.connection.parser.huh(caller)
-		return
 
 	con = caller.connection
 	nick = caller.args[0]
@@ -440,11 +431,8 @@ def reboot(caller):
 	globals.server.check_reboot()
 
 # watchers and duelists in paused games need to see them too
-@LobbyParser.command(names=['sc', 'score'])
+@LobbyParser.command(names=['sc', 'score'], allowed = lambda c: c.connection.player.duel is not None)
 def score(caller):
-	if caller.connection.player.duel is None:
-		caller.connection.parser.huh(caller)
-		return
 	caller.connection.player.duel.show_score(caller.connection.player)
 
 @LobbyParser.command(args_regexp=r'(.*)')

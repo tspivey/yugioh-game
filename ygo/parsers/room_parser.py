@@ -33,14 +33,26 @@ def list(caller):
 
 	pl.notify(pl._("Banlist: %s")%(room.get_banlist()))
 
+	s = pl._("Duel Rules:")+" "
+
+	if room.rules == 4:
+		s += pl._("Link")
+	elif room.rules == 1:
+		s += pl._("Traditional")
+	elif room.rules == 0:
+		s += pl._("Default")
+
+	pl.notify(s)
+
 	pl.notify(pl._("Privacy: %s")%(pl._("private") if room.private is True else pl._("public")))
 
 	pl.notify(pl._("The following commands are available for you:"))
 
 	if not room.open:
-		pl.notify(pl._("banlist - define banlist for this room"))
+		pl.notify(pl._("banlist - define banlist"))
 		pl.notify(pl._("finish - finish room creation and open it to other players"))
-		pl.notify(pl._("private - toggles privacy of this room"))
+		pl.notify(pl._("private - toggles privacy"))
+		pl.notify(pl._("rules - define duel rules"))
 		pl.notify(pl._("save - saves the current preferences as default for future rooms you create"))
 
 	if room.open:
@@ -155,3 +167,38 @@ def private(caller):
 		pl.notify(pl._("This room is now private."))
 	else:
 		pl.notify(pl._("This room is now public."))
+
+@RoomParser.command(names=['rules'], args_regexp=r'([a-zA-Z]+)', allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
+def rules(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+
+	if len(caller.args) == 0:
+		pl.notify(pl._("Following rules can be defined:"))
+		pl.notify(pl._("Default - The default duelling behaviour before link summons came in"))
+		pl.notify(pl._("Link - Enable link summons"))
+		pl.notify(pl._("Traditional - Duel rules from the first days of Yu-Gi-Oh"))
+	elif caller.args[0] is None or caller.args[0].lower() not in ('link', 'default', 'traditional'):
+		pl.notify(pl._("Invalid duel rules specified. See rules command to get the possible arguments."))
+	else:
+		rule = caller.args[0].lower()
+		if rule == 'link':
+			room.rules = 4
+		elif rule == 'traditional':
+			room.rules = 1
+		else:
+			room.rules = 0
+
+		s = pl._("Duel rules were set to %s.")
+
+		if room.rules == 0:
+			s2 = pl._("Traditional")
+		elif room.rules == 1:
+			s2 = pl._("Default")
+		elif room.rules == 4:
+			s2 = pl._("Link")
+
+		s = s%(s2)
+
+		pl.notify(s)
