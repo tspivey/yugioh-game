@@ -71,8 +71,8 @@ class Player:
 			if not self.duel.private:
 				for pl in globals.server.get_all_players():
 					globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.") % (self.nickname, self.duel.orig_nicknames[1 - self.duel_player]))
-				self.duel.end()
-				return
+			self.duel.end()
+			return
 
 		players = globals.server.guess_players(nick, self.nickname)
 		if self.duel:
