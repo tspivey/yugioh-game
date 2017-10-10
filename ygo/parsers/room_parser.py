@@ -269,3 +269,51 @@ def deck(caller):
 	for p in room.get_all_players():
 		if p is not pl:
 			p.notify(p._("%s loaded a deck.")%(pl.nickname))
+
+@RoomParser.command(names=['start'], allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
+def start(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+
+	# do we have an equal amount of players in both teams?
+
+	if len(room.teams[1]) != len(room.teams[2]):
+		pl.notify(pl._("Both teams must have the same amount of players."))
+		return
+
+	# only one player per team
+	# TODO: modify check as soon as tag duels are in
+	if len(room.teams[1]) != 1:
+		pl.notify(pl._("Both teams need to have only one player."))
+		return
+
+	# do all players have decks loaded?
+	for p in room.teams[1]+room.teams[2]:
+		if len(p.deck['cards']) == 0:
+			pl.notify(pl._("%s doesn't have a deck loaded yet.")%(p.nickname))
+			return
+
+	for p in room.get_all_players():
+		if p is pl:
+			p.notify(p._("You start the duel."))
+		else:
+			p.notify(p._("%s starts the duel.")%(pl.nickname))
+
+	if not room.private:
+		for p in globals.server.get_all_players():
+			# TODO: show all players if tag duels are in
+			globals.server.announce_challenge(p, p._("The duel between %s and %s has begun!") % (room.teams[1][0].nickname, room.teams[2][0].nickname))
+
+	# launch the duel
+	globals.server.start_duel(room.teams[1]+room.teams[2])
+
+	room.teams[1][0].duel.private = room.private
+
+	# move all 	players without a team into the duel as watchers
+	for p in room.teams[0]:
+		room.teams[1][0].duel.add_watcher(p)
+
+	# remove the room from all players
+	for p in room.get_all_players():
+		p.room = None
