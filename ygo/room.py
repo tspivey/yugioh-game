@@ -8,6 +8,7 @@ class Room:
 		self.creator = creator
 		self.options = 0
 		self.rules = 0
+		self.invitations = []
 		self.banlist = 'tcg'
 
 	def get_all_players(self):
@@ -17,6 +18,8 @@ class Room:
 		player.set_parser('RoomParser')
 		player.room = self
 		self.teams[0].append(player)
+		if player.nickname in self.invitations:
+			self.invitations.remove(player.nickname)
 		for pl in self.get_all_players():
 			if pl is player:
 				if player is self.creator:
@@ -88,3 +91,11 @@ class Room:
 			return
 
 		self.teams[team].append(player)
+
+	def add_invitation(self, pl):
+
+		if pl.nickname in self.invitations:
+			return False
+		else:
+			self.invitations.append(pl.nickname)
+			return True

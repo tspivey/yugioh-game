@@ -66,3 +66,17 @@ def show_watchers(caller):
 @DuelParser.command(names=['info'], args_regexp=r'(.*)')
 def info(caller):
 	caller.connection.player.duel.show_info_cmd(caller.connection.player, caller.args[0])
+
+@DuelParser.command(names=['giveup'])
+def giveup(caller):
+
+	duel = caller.connection.player.duel
+
+	for pl in duel.players+duel.watchers:
+		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
+
+	duel.end()
+
+	if not duel.private:
+		for pl in globals.server.get_all_players():
+			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, duel.players[1 - caller.connection.player.duel_player].nickname))

@@ -5,6 +5,7 @@ from ..card import Card
 from ..constants import COMMAND_SUBSTITUTIONS
 from .. import globals
 from .. import models
+from .login_parser import LoginParser
 
 class room_parser(gsb.Parser):
 
@@ -306,7 +307,7 @@ def start(caller):
 			globals.server.announce_challenge(p, p._("The duel between %s and %s has begun!") % (room.teams[1][0].nickname, room.teams[2][0].nickname))
 
 	# launch the duel
-	globals.server.start_duel(room.teams[1]+room.teams[2])
+	globals.server.start_duel(room.options, room.rules, room.teams[1]+room.teams[2])
 
 	room.teams[1][0].duel.private = room.private
 
@@ -317,3 +318,50 @@ def start(caller):
 	# remove the room from all players
 	for p in room.get_all_players():
 		p.room = None
+
+@RoomParser.command(names=['invite'], args_regexp=LoginParser.nickname_re, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
+def invite(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+
+	if len(caller.args) == 0:
+		pl.notify(pl._("You can invite any player to join this room. Simply type invite <player> to do so."))
+		return
+
+	if caller.args[0] is None:
+		pl.notify(pl._("No player with this name found."))
+		return
+
+	players = globals.server.guess_players(caller.args[1], pl.nickname)
+
+	if len(players) == 0:
+		pl.notify(pl._("No player with this name found."))
+		return
+	elif len(players)>1:
+		pl.notify(pl._("Multiple players match this name: %s")%(', '.join([p.nickname for p in players])))
+		return
+
+	target = players[0]
+
+	if target.duel is not None:
+		pl.notify(pl._("This player is already in a duel."))
+		return
+	elif target.room is not None:
+		pl.notify(pl._("This player is already preparing to duel."))
+		return
+	elif target.nickname in pl.ignores:
+		pl.notify(pl._("You're ignoring this player."))
+		return
+	elif pl.nickname in target.ignores:
+		pl.notify(pl._("This player ignores you."))
+		return
+
+	room.add_invitation(target)
+
+	if target.afk is True:
+		pl.notify(pl._("%s is AFK and may not be paying attention.")%(target.nickname))
+
+	target.notify(target._("%s invites you to join his duel room. Type join %s to do so.")%(pl.nickname, pl.nickname))
+
+	pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))

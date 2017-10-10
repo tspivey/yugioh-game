@@ -85,10 +85,10 @@ class Duel:
 		for c in self.cards[player][::-1]:
 			lib.new_card(self.duel, c, player, player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
 
-	def start(self):
+	def start(self, options):
 		if os.environ.get('DEBUG', 0):
-			self.start_debug()
-		lib.start_duel(self.duel, 0)
+			self.start_debug(options)
+		lib.start_duel(self.duel, options)
 		self.started = True
 
 	def end(self):
@@ -495,13 +495,13 @@ class Duel:
 			return
 		self.show_info(specs[spec], pl)
 
-	def start_debug(self):
+	def start_debug(self, options):
 		self.debug_mode = True
 		lt = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 		fn = lt+"_"+self.players[0].nickname+"_"+self.players[1].nickname
 		self.debug_fp = open(os.path.join('duels', fn), 'w')
 		self.debug(event_type='start', player0=self.players[0].nickname, player1=self.players[1].nickname,
-		deck0=self.cards[0], deck1=self.cards[1], seed=self.seed)
+		deck0=self.cards[0], deck1=self.cards[1], seed=self.seed, options = options)
 
 	def player_disconnected(self, player):
 		if not self.paused:
@@ -572,20 +572,3 @@ class TestDuel(Duel):
 		print("player %d draw %d cards:" % (player, len(cards)))
 		for c in cards:
 			print(c.name + ": " + c.desc)
-
-if __name__ == '__main__':
-	d = TestDuel()
-	d.load_deck(0, deck)
-	d.load_deck(1, deck)
-	d.start()
-
-	while True:
-		flag = d.process()
-		if flag & 0x10000:
-			resp = input()
-			if resp.startswith('`'):
-				b = binascii.unhexlify(resp[1:])
-				d.set_responseb(b)
-			else:
-				resp = int(resp, 16)
-				d.set_responsei(resp)

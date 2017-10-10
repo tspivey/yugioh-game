@@ -13,6 +13,7 @@ from ..room import Room
 from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
 from .duel_parser import DuelParser
+from .login_parser import LoginParser
 from .room_parser import RoomParser
 
 LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
@@ -171,7 +172,7 @@ def replay(caller):
 			player1.duel = duel
 			player0.duel_player = 0
 			player1.duel_player = 1
-			duel.start()
+			duel.start(line.get('options', 0))
 		elif line['event_type'] == 'process':
 			process_duel_replay(duel)
 		elif line['event_type'] == 'set_responsei':
@@ -438,6 +439,46 @@ def create(caller):
 	r = Room(caller.connection.player)
 	r.join(caller.connection.player)
 	caller.connection.parser.prompt(caller.connection)
+
+@LobbyParser.command(names=['join'], args_regexp=LoginParser.nickname_re, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None)
+def join(caller):
+
+	pl = caller.connection.player
+
+	if len(caller.args) == 0:
+		pl.notify("Usage: join <player>"))
+		return
+
+	if caller.args[0] is None:
+		pl.notify(pl._("Invalid player name."))
+		return
+
+	players = globals.server.guess_players(caller.args[0], pl.nickname)
+
+	if len(players) == 0:
+		pl.notify(pl._("This player isn't online."))
+		return
+	elif len(players) > 1:
+		pl.notify(pl._("Multiple players match this name: %s")%(', '.join([p.nickname for p in players])))
+		return
+
+	target = players[0]  
+
+	if target.nickname in pl.ignores:
+		pl.notify(pl._("You're ignoring this player."))
+	elif pl.nickname in target.ignores:
+		pl.notify(pl._("This player ignores you."))
+	elif target.duel is not None:
+		pl.notify(pl._("This player is currently in a duel."))
+	elif target.room is None or target.room.open is not True or (target.room.private is not True and not pl.nickname in target.room.invitations):
+		pl.notify(pl._("This player currently doesn't prepare to duel or you may not enter the room."))
+	elif target.room.creator.nickname in pl.ignores:
+		pl.notify(pl._("You're currently ignoring %s, who is the owner of this room.")%(target.room.creator.nickname))
+	elif pl.nickname in target.room.creator.ignores:
+		pl.notify(pl._("%s, who is the owner of this room, is ignoring you.")%(target.room.creator.nickname))
+	else:
+		target.room.join(pl)
+		caller.connection.parser.prompt(caller.connection)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
