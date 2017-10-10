@@ -86,6 +86,9 @@ def finish(caller):
 		pl.notify(pl._("You can now invite players to join this room."))
 	else:
 		pl.notify(pl._("Players can now join this room, or you can invite them to join you."))
+		for p in globals.server.get_all_players():
+			if not pl.nickname in p.ignores:
+				globals.server.announce_challenge(p, "%s created a new duel room.")%(pl.nickname))
 
 @RoomParser.command(names=['leave'])
 def leave(caller):

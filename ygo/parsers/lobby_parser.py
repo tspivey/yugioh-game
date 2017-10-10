@@ -1,6 +1,7 @@
 import codecs
 import gsb
 import json
+import natsort
 import os.path
 from twisted.internet import reactor
 from twisted.python import log
@@ -100,8 +101,8 @@ def say(caller):
 
 @LobbyParser.command(names=['who'], args_regexp=r'(.*)')
 def who(caller):
-	filters = ["duel", "watch", "idle"]
-	showing = ["duel", "watch", "idle"]
+	filters = ["duel", "watch", "idle", '"prepare"]
+	showing = ["duel", "watch", "idle", "prepare"]
 	who_output = []
 	text = caller.args[0]
 	if text:
@@ -114,19 +115,13 @@ def who(caller):
 				caller.connection.notify(caller.connection._("Invalid filter: %s") % s)
 				return
 	caller.connection.notify(caller.connection._("Online players:"))
-	for pl in sorted(globals.server.get_all_players(), key=lambda x: x.nickname):
+	for pl in natsort.natsorted(globals.server.get_all_players(), key=lambda x: x.nickname):
 		s = pl.nickname
 		if pl.afk is True:
 			s += " " + caller.connection._("[AFK]")
 		if pl.watching and "watch" in showing:
-			if pl.duel.players[0]:
-				pl0 = pl.duel.players[0].nickname
-			else:
-				pl0 = caller.connection._("n/a")
-			if pl.duel.players[1]:
-				pl1 = pl.duel.players[1].nickname
-			else:
-				pl1 = caller.connection._("n/a")
+			pl0 = pl.duel.players[0].nickname
+			pl1 = pl.duel.players[1].nickname
 			who_output.append(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
 		elif pl.duel and "duel" in showing:
 			other = None
@@ -134,14 +129,13 @@ def who(caller):
 				other = pl.duel.players[1]
 			else:
 				other = pl.duel.players[0]
-			if other is None:
-				other = caller.connection._("n/a")
-			else:
-				other = other.nickname
+			other = other.nickname
 			if pl.duel.private is True:
 				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
 			else:
 				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
+		elif pl.room and "prepare" in showing:
+			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:
 			if "idle" in showing:
 				who_output.append(s)
