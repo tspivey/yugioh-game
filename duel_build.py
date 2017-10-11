@@ -16,7 +16,7 @@ int32 declarable(card_data *cd, int32 size, uint32 *array) {
 	return is_declarable(*cd, v);
 }
 // modified from query_card()
-int32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence) {
+uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence) {
 	if(playerid != 0 && playerid != 1)
 		return 0;
 	duel* ptduel = (duel*)pduel;
@@ -103,7 +103,7 @@ void set_responseb(ptr pduel, byte *value);
 int32 query_card(ptr pduel, uint8 playerid, uint8 location, uint8 sequence, int32 query_flag, byte* buf, int32 use_cache);
 int32 query_field_count(ptr pduel, uint8 playerid, uint8 location);
 int32 query_field_card(ptr pduel, uint8 playerid, uint8 location, int32 query_flag, byte* buf, int32 use_cache);
-int32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence);
+uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence);
 int32 declarable(struct card_data *cd, int32 size, uint32 *array);
 """)
 
