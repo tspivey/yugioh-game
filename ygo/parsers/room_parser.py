@@ -106,7 +106,7 @@ def banlist(caller):
 	if len(caller.args) == 0:
 		pl.notify(pl._("You can set the banlist to ocg or tcg, which will automatically select the newest tcg/ocg banlist for you."))
 
-		pl.notify(pl._("You can also set the banlist to one of the following:"))
+		pl.notify(pl._("You can also set the banlist to none or one of the following:"))
 		for k in globals.lflist.keys():
 			pl.notify(k)
 
@@ -247,19 +247,20 @@ def deck(caller):
 		return
 
 	# check against selected banlist
-	codes = set(content['cards'])
-	errors = 0
-	for code in codes:
-		count = content['cards'].count(code)
-		if code not in globals.lflist[room.get_banlist()] or count <= globals.lflist[room.get_banlist()][code]:
-			continue
-		card = Card(code)
-		pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), globals.lflist[room.get_banlist()][code], count))
-		errors += 1
+	if room.get_banlist() != 'none':
+		codes = set(content['cards'])
+		errors = 0
+		for code in codes:
+			count = content['cards'].count(code)
+			if code not in globals.lflist[room.get_banlist()] or count <= globals.lflist[room.get_banlist()][code]:
+				continue
+			card = Card(code)
+			pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), globals.lflist[room.get_banlist()][code], count))
+			errors += 1
 
-	if errors > 0:
-		pl.notify(pl._("Check completed with %d errors.") % errors)
-		return
+		if errors > 0:
+			pl.notify(pl._("Check completed with %d errors.") % errors)
+			return
 
 	pl.deck = content
 	session.commit()
