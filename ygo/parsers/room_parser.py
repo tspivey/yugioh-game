@@ -152,7 +152,7 @@ def move(caller):
 				if p is pl:
 					pl.notify(pl._("You were removed from any team."))
 				else:
-					p.notify(p._("%s was removed from any team."))
+					p.notify(p._("%s was removed from any team.") % pl.nickname)
 		else:
 			for p in room.get_all_players():
 				if p is pl:

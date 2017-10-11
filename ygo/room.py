@@ -47,7 +47,7 @@ class Room:
 		player.notify(player._("You left the room."))
 
 		for pl in self.get_all_players():
-			pl.notify(pl._("%s left this room."))
+			pl.notify(pl._("%s left this room.") % player.nickname)
 
 		if player is self.creator:
 			# closing room entirely
