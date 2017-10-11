@@ -171,7 +171,7 @@ class Duel:
 
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS
+		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS
 		bl = lib.query_field_card(self.duel, player, location, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
@@ -188,6 +188,9 @@ class Duel:
 			level = self.read_u32(buf)
 			if (level & 0xff) > 0:
 				card.level = level & 0xff
+			rank = self.read_u32(buf)
+			if (rank & 0xff) > 0:
+				card.level = rank & 0xff
 			card.attack = self.read_u32(buf)
 			card.defense = self.read_u32(buf)
 
@@ -216,7 +219,7 @@ class Duel:
 		return cards
 
 	def get_card(self, player, loc, seq):
-		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL
+		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
@@ -230,6 +233,9 @@ class Duel:
 		level = self.read_u32(buf)
 		if (level & 0xff) > 0:
 			card.level = level & 0xff
+		rank = self.read_u32(buf)
+		if (rank & 0xff) > 0:
+			card.level = rank & 0xff
 		card.attack = self.read_u32(buf)
 		card.defense = self.read_u32(buf)
 		return card
