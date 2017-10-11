@@ -1,6 +1,7 @@
 import gsb
 
 from ..constants import *
+from .. import globals
 
 DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 
