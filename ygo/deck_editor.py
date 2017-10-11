@@ -203,7 +203,7 @@ class DeckEditor:
 			elif caller.text.startswith('c'):
 				cm = re.search(r'c ?([a-zA-Z0-9\.\- ]+)', caller.text)
 				if cm:
-					self.check(cards, cm.group(1))
+					self.check(cards, cm.group(1).lower())
 				else:
 					self.check(None)
 				read()
