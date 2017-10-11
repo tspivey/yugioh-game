@@ -597,13 +597,3 @@ class Duel:
 	@property
 	def paused(self):
 		return len(self.players) != len([p for p in self.players if p.connection is not None])
-
-class TestDuel(Duel):
-	def __init__(self):
-		super(TestDuel, self).__init__()
-		self.cm.register_callback('draw', self.on_draw)
-
-	def on_draw(self, player, cards):
-		print("player %d draw %d cards:" % (player, len(cards)))
-		for c in cards:
-			print(c.name + ": " + c.desc)
