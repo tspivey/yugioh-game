@@ -7,6 +7,17 @@ COMMAND_SUBSTITUTIONS = {
 	".": "chat",
 }
 
+LINK_MARKERS = {
+	0x1: __("bottom left"),
+	0x2: __("bottom"),
+	0x4: __("bottom right"),
+	0x10: __("left"),
+	0x40: __("right"),
+	0x100: __("top left"),
+	0x200: __("top"),
+	0x400: __("top right")
+}
+
 LOCATION_DECK = 1
 LOCATION_HAND = 2
 LOCATION_MZONE = 4
