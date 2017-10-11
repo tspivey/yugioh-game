@@ -59,6 +59,9 @@ class Room:
 
 			player.notify(player._("The room was disbanded."))
 
+			for pl in globals.server.get_all_players():
+				globals.server.announce_challenge(pl, pl._("%s disbanded their duel room.")%(player.nickname))
+
 	def set_banlist(self, list):
 
 		if list.lower() != 'tcg' and list.lower() != 'ocg' and not list.lower() in globals.lflist or self.open:
