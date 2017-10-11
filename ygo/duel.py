@@ -422,6 +422,13 @@ class Duel:
 
 			pl.notify(s)
 
+		for card in mz:
+			if card.type & TYPE_LINK:
+				zone = self.get_link_zone(card, pl)
+				if zone == '':
+					continue
+				pl.notify(pl._("Zone linked by %s (%s): %s")%(card.get_name(pl), card.get_spec(pl), zone))
+
 	def show_cards_in_location(self, pl, player, location, hide_facedown=False):
 		cards = self.get_cards_in_location(player, location)
 		if not cards:
@@ -564,6 +571,28 @@ class Duel:
 			pl.notify(pl._("The duel is currently paused due to not all players being connected."))
 		else:
 			pl.set_parser('DuelParser')
+
+	def get_linked_zone(self, card, pl):
+
+		lst = []
+
+		zone = lib.query_linked_zone(self.duel, card.controller, card.location, card.sequence)
+
+		if pl.duel_player != card.controller:
+			zone = zone >> 16
+
+		zone = zone & 0xff
+
+		if zone == 0:
+			return ""
+
+		i = 0
+
+		for i in range(8):
+			if zone & (1<<i):
+				lst.append('m'+str(i+1))
+
+		return ', '.join(lst)
 
 	@property
 	def paused(self):
