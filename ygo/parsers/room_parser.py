@@ -56,7 +56,6 @@ def list(caller):
 		pl.notify(pl._("finish - finish room creation and open it to other players"))
 		pl.notify(pl._("private - toggles privacy"))
 		pl.notify(pl._("rules - define duel rules"))
-		pl.notify(pl._("save - saves the current preferences as default for future rooms you create"))
 
 	if room.open:
 		pl.notify(pl._("deck - select a deck to duel with"))
