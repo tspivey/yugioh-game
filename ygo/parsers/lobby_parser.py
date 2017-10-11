@@ -1,6 +1,7 @@
 import codecs
 import gsb
 import json
+import natsort
 import os.path
 from twisted.internet import reactor
 from twisted.python import log
@@ -8,9 +9,11 @@ from twisted.python import log
 from ..constants import *
 from ..duel import Duel
 from .. import globals
+from ..room import Room
 from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
 from .duel_parser import DuelParser
+from .room_parser import RoomParser
 
 LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
 
@@ -26,16 +29,9 @@ def afk(caller):
 		conn.player.afk = False
 		return
 
-@LobbyParser.command(names=['duel'], args_regexp=r'(.*)')
-def cmd_duel(caller):
-	caller.connection.player.request_duel(caller.args[0])
-
-@LobbyParser.command(names=['pd'], args_regexp=r'(.*)')
-def cmd_pd(caller):
-	caller.connection.player.request_duel(caller.args[0], True)
-
-@LobbyParser.command(names='deck', args_regexp=r'(.*)')
+@LobbyParser.command(names='deck', args_regexp=r'(.*)', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def deck(caller):
+
 	lst = caller.args[0].split(None, 1)
 	cmd = lst[0]
 	caller.args = lst[1:]
@@ -53,9 +49,7 @@ def deck(caller):
 		caller.connection.notify(caller.connection._("This command requires more information to operate with."))
 		return
 
-	if cmd == 'load':
-		caller.connection.player.deck_editor.load(caller.args[0])
-	elif cmd == 'edit':
+	if cmd == 'edit':
 		caller.connection.player.deck_editor.edit(caller.args[0])
 	elif cmd == 'clear':
 		caller.connection.player.deck_editor.clear(caller.args[0])
@@ -107,8 +101,8 @@ def say(caller):
 
 @LobbyParser.command(names=['who'], args_regexp=r'(.*)')
 def who(caller):
-	filters = ["duel", "watch", "idle"]
-	showing = ["duel", "watch", "idle"]
+	filters = ["duel", "watch", "idle", "prepare"]
+	showing = ["duel", "watch", "idle", "prepare"]
 	who_output = []
 	text = caller.args[0]
 	if text:
@@ -121,19 +115,13 @@ def who(caller):
 				caller.connection.notify(caller.connection._("Invalid filter: %s") % s)
 				return
 	caller.connection.notify(caller.connection._("Online players:"))
-	for pl in sorted(globals.server.get_all_players(), key=lambda x: x.nickname):
+	for pl in natsort.natsorted(globals.server.get_all_players(), key=lambda x: x.nickname):
 		s = pl.nickname
 		if pl.afk is True:
 			s += " " + caller.connection._("[AFK]")
 		if pl.watching and "watch" in showing:
-			if pl.duel.players[0]:
-				pl0 = pl.duel.players[0].nickname
-			else:
-				pl0 = caller.connection._("n/a")
-			if pl.duel.players[1]:
-				pl1 = pl.duel.players[1].nickname
-			else:
-				pl1 = caller.connection._("n/a")
+			pl0 = pl.duel.players[0].nickname
+			pl1 = pl.duel.players[1].nickname
 			who_output.append(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
 		elif pl.duel and "duel" in showing:
 			other = None
@@ -141,14 +129,13 @@ def who(caller):
 				other = pl.duel.players[1]
 			else:
 				other = pl.duel.players[0]
-			if other is None:
-				other = caller.connection._("n/a")
-			else:
-				other = other.nickname
+			other = other.nickname
 			if pl.duel.private is True:
 				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
 			else:
 				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
+		elif pl.room and "prepare" in showing:
+			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:
 			if "idle" in showing:
 				who_output.append(s)
@@ -173,6 +160,9 @@ def replay(caller):
 			if player0.duel or player1.duel:
 				caller.connection.notify(caller.connection._("One of the players is in a duel."))
 				return
+			if player0.room or player1.room:
+				pl.notify(pl._("At least one player is currently in a duel room."))
+				return
 			duel = Duel(line.get('seed', 0))
 			duel.load_deck(0, line['deck0'], shuffle=False)
 			duel.load_deck(1, line['deck1'], shuffle=False)
@@ -181,7 +171,7 @@ def replay(caller):
 			player1.duel = duel
 			player0.duel_player = 0
 			player1.duel_player = 1
-			duel.start()
+			duel.start(line.get('options', 0))
 		elif line['event_type'] == 'process':
 			process_duel_replay(duel)
 		elif line['event_type'] == 'set_responsei':
@@ -217,8 +207,9 @@ def lookup(caller):
 		return
 	caller.connection.notify(card.get_info(caller.connection.player))
 
-@LobbyParser.command(names='passwd')
+@LobbyParser.command(names='passwd', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def passwd(caller):
+
 	session = caller.connection.session
 	account = caller.connection.account
 	new_password = ""
@@ -349,8 +340,9 @@ def reply(caller):
 def soundpack_on(caller):
 	caller.connection.player.soundpack = True
 
-@LobbyParser.command(args_regexp=r'(.*)')
+@LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None)
 def watch(caller):
+
 	con = caller.connection
 	nick = caller.args[0]
 	if not nick:
@@ -433,17 +425,63 @@ def reboot(caller):
 	globals.server.check_reboot()
 
 # watchers and duelists in paused games need to see them too
-@LobbyParser.command(names=['sc', 'score'])
+@LobbyParser.command(names=['sc', 'score'], allowed = lambda c: c.connection.player.duel is not None)
 def score(caller):
-	if caller.connection.player.duel is None:
-		caller.connection.parser.huh(caller)
-		return
 	caller.connection.player.duel.show_score(caller.connection.player)
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def echo(caller):
 	caller.connection.notify(caller.args[0])
 
+@LobbyParser.command(names=['create'], allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None and c.connection.parser is LobbyParser)
+def create(caller):
+	r = Room(caller.connection.player)
+	r.join(caller.connection.player)
+	caller.connection.parser.prompt(caller.connection)
+
+@LobbyParser.command(names=['join'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None)
+def join(caller):
+
+	pl = caller.connection.player
+
+	if len(caller.args) == 0:
+		pl.notify("Usage: join <player>")
+		return
+
+	if caller.args[0] is None:
+		pl.notify(pl._("Invalid player name."))
+		return
+
+	players = globals.server.guess_players(caller.args[0], pl.nickname)
+
+	if len(players) == 0:
+		pl.notify(pl._("This player isn't online."))
+		return
+	elif len(players) > 1:
+		pl.notify(pl._("Multiple players match this name: %s")%(', '.join([p.nickname for p in players])))
+		return
+
+	target = players[0]  
+
+	if target.nickname in pl.ignores:
+		pl.notify(pl._("You're ignoring this player."))
+	elif pl.nickname in target.ignores:
+		pl.notify(pl._("This player ignores you."))
+	elif target.duel is not None:
+		pl.notify(pl._("This player is currently in a duel."))
+	elif target.room is None or target.room.open is not True or (target.room.private is True and not pl.nickname in target.room.invitations):
+		pl.notify(pl._("This player currently doesn't prepare to duel or you may not enter the room."))
+	elif target.room.creator.nickname in pl.ignores:
+		pl.notify(pl._("You're currently ignoring %s, who is the owner of this room.")%(target.room.creator.nickname))
+	elif pl.nickname in target.room.creator.ignores:
+		pl.notify(pl._("%s, who is the owner of this room, is ignoring you.")%(target.room.creator.nickname))
+	else:
+		target.room.join(pl)
+		caller.connection.parser.prompt(caller.connection)
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
-	DuelParser.commands[key] = LobbyParser.commands[key]
+	if not key in DuelParser.commands:
+		DuelParser.commands[key] = LobbyParser.commands[key]
+	if not key in RoomParser.commands:
+		RoomParser.commands[key] = LobbyParser.commands[key]

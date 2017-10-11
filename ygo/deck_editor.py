@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from gsb.intercept import Reader
 import json
-import natsort
 import re
 
 from .card import Card
@@ -24,22 +23,6 @@ class DeckEditor:
 		for deck in decks:
 			self.player.notify(deck.name)
 		self.player.connection.session.commit()
-
-	def load(self, name):
-		session = self.player.connection.session
-		account = self.player.connection.account
-		if name.startswith('public/'):
-			account = session.query(models.Account).filter_by(name='Public').first()
-			name = name[7:]
-		deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
-		if not deck:
-			self.player.notify(self.player._("Deck doesn't exist."))
-			session.commit()
-			return
-		content = json.loads(deck.content)
-		self.player.deck = content
-		session.commit()
-		self.player.notify(self.player._("Deck loaded with %d cards.") % len(content['cards']))
 
 	def clear(self, name):
 		account = self.player.connection.account
@@ -117,6 +100,7 @@ class DeckEditor:
 			self.show_deck_info()
 			con.notify(con._("u: up d: down /: search forward ?: search backward t: top"))
 			con.notify(con._("s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"))
+			con.notify(con._("c: check deck against banlist"))
 		def read():
 			info()
 			main, extra = self.player.count_deck_cards(cards)
@@ -216,6 +200,13 @@ class DeckEditor:
 					read()
 			elif caller.text == 'q':
 				con.notify(con._("Quit."))
+			elif caller.text.startswith('c'):
+				cm = re.search(r'c ?([a-zA-Z0-9\.\- ]+)', caller.text)
+				if cm:
+					self.check(cards, cm.group(1))
+				else:
+					self.check(None)
+				read()
 			else:
 				con.notify(con._("Invalid command."))
 				read()
@@ -283,19 +274,19 @@ class DeckEditor:
 		session.commit()
 		self.player.notify(self.player._("Deck created."))
 
-	def check(self, banlist = None):
+	def check(self, deck, banlist = None):
 		con = self.player.connection
 		if not banlist:
-			for k in natsort.natsorted(globals.lflist.keys(), reverse=True):
+			for k in globals.lflist.keys():
 				self.player.notify(k)
 			return
 		if banlist not in globals.lflist:
 			self.player.notify(self.player._("Invalid entry."))
 			return
-		codes = set(self.player.deck['cards'])
+		codes = set(deck)
 		errors = 0
 		for code in codes:
-			count = self.player.deck['cards'].count(code)
+			count = deck.count(code)
 			if code not in globals.lflist[banlist] or count <= globals.lflist[banlist][code]:
 				continue
 			card = Card(code)

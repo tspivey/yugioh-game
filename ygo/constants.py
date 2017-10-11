@@ -7,6 +7,17 @@ COMMAND_SUBSTITUTIONS = {
 	".": "chat",
 }
 
+LINK_MARKERS = {
+	0o0001: __("bottom left"),
+	0o0002: __("bottom"),
+	0o0004: __("bottom right"),
+	0o0010: __("left"),
+	0o0040: __("right"),
+	0o0100: __("top left"),
+	0o0200: __("top"),
+	0o0400: __("top right")
+}
+
 LOCATION_DECK = 1
 LOCATION_HAND = 2
 LOCATION_MZONE = 4
@@ -44,14 +55,18 @@ RACES = (
 	"Psycho", "Divine", "Creator god", "Wyrm", "Cyberse",
 )
 
+RE_NICKNAME = r'^([A-Za-z][a-zA-Z0-9]+)$'
+
 QUERY_CODE = 1
 QUERY_POSITION = 0x2
 QUERY_LEVEL = 0x10
+QUERY_RANK = 0x20
 QUERY_ATTACK = 0x100
 QUERY_DEFENSE = 0x200
 QUERY_EQUIP_CARD = 0x4000
 QUERY_OVERLAY_CARD = 0x10000
 QUERY_COUNTERS = 0x20000
+QUERY_LINK = 0x800000
 
 TYPE_MONSTER = 0x1
 TYPE_FUSION = 0x40

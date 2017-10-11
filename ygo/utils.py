@@ -1,23 +1,24 @@
 import collections
+import natsort
 
 from _duel import ffi, lib
 
 def parse_lflist(filename):
-	lst = collections.OrderedDict()
+	lst = {}
 	with open(filename, 'r', encoding='utf-8') as fp:
 		for line in fp:
 			line = line.rstrip('\n')
 			if not line or line.startswith('#'):
 				continue
 			elif line.startswith('!'):
-				section = line[1:]
+				section = line[1:].lower()
 				lst[section] = lst.get(section, {})
 			else:
 				code, num_allowed, *extra = line.split(' ', 2)
 				code = int(code)
 				num_allowed = int(num_allowed)
 				lst[section][code] = num_allowed
-	return lst
+	return collections.OrderedDict(natsort.natsorted(lst.items(), reverse=True))
 
 def process_duel(d):
 	while d.started:

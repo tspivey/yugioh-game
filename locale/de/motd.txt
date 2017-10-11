@@ -2,6 +2,6 @@ Willkommen im Spiel.
 Schau Dir die letzten Änderungen mit help changes an.
 Es gibt bereits einige vorgefertigte Decks, siehe help public decks.
 Für deckspezifische Befehle, siehe help deck.
-Um Dich mit einem Spieler zu duellieren, tippe duel spielername.
+Um einen Raum zu erstellen und ein Duell zu organisieren, tippe create, oder verwende join Spielername, um einem Raum eines Spielers beizutreten.
 Du kannst Dich mit allen Nutzern via .text (oder chat text) unterhalten.
 Und who zeigt Dir, wer gerade anwesend ist.

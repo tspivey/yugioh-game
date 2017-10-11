@@ -97,9 +97,14 @@ class Card(object):
 
 		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
 		if self.type & TYPE_MONSTER:
-			lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
+			if self.type & TYPE_LINK:
+				lst.append(pl._("Attack: %d Level: %d")%(self.attack, self.level))
+			else:
+				lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
 		if self.type & TYPE_PENDULUM:
 			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
+		elif self.type & TYPE_LINK:
+			lst.append(pl._("Link Markers: %s")%(self.get_link_markers(pl)))
 		lst.append(self.get_desc(pl))
 
 		try:
@@ -155,3 +160,13 @@ class Card(object):
 			s += "r"
 		s += str(self.sequence + 1)
 		return s
+
+	def get_link_markers(self, pl):
+
+		lst = []
+
+		for m in LINK_MARKERS.keys():
+			if self.defense & m:
+				lst.append(pl._(LINK_MARKERS[m]))
+
+		return ', '.join(lst)
