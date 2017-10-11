@@ -29,6 +29,11 @@ def card_reader_callback(code, data):
 	cd.rscale = (row['level'] >> 16) & 0xff
 	cd.attack = row['atk']
 	cd.defense = row['def']
+	if cd.type & TYPE_LINK:
+		cd.link_marker = cd.defense
+		cd.defense = 0
+	else:
+		cd.link_marker = 0
 	cd.race = row['race']
 	cd.attribute = row['attribute']
 	return 0
@@ -171,7 +176,7 @@ class Duel:
 
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS
+		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS | QUERY_LINK
 		bl = lib.query_field_card(self.duel, player, location, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
@@ -215,11 +220,21 @@ class Duel:
 			card.counters = []
 			for i in range(cs):
 				card.counters.append(self.read_u32(buf))
+
+			link = self.read_u32(buf)
+			link_marker = self.read_u32(buf)
+
+			if (link & 0xff) > 0:
+				card.level = link & 0xff
+
+			if link_marker > 0:
+				card.defense = link_marker
+
 			cards.append(card)
 		return cards
 
 	def get_card(self, player, loc, seq):
-		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK
+		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_LINK
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
@@ -238,6 +253,12 @@ class Duel:
 			card.level = rank & 0xff
 		card.attack = self.read_u32(buf)
 		card.defense = self.read_u32(buf)
+		link = self.read_u32(buf)
+		link_marker = self.read_u32(buf)
+		if (link & 0xff) > 0:
+			card.level = link & 0xff
+		if link_marker > 0:
+			card.defense = link_marker
 		return card
 
 	def unpack_location(self, loc):
@@ -382,8 +403,12 @@ class Duel:
 				s += card.get_position(pl)
 			else:
 				s += card.get_name(pl) + " "
-				s += (pl._("({attack}/{defense}) level {level}")
-					.format(attack=card.attack, defense=card.defense, level=card.level))
+				if card.type & TYPE_LINK:
+					s += (pl._("({attack}) level {level}")
+						.format(attack=card.attack, level=card.level))
+				else:
+					s += (pl._("({attack}/{defense}) level {level}")
+						.format(attack=card.attack, defense=card.defense, level=card.level))
 				s += " " + card.get_position(pl)
 
 				if len(card.xyz_materials):
@@ -424,10 +449,10 @@ class Duel:
 
 		for card in mz:
 			if card.type & TYPE_LINK:
-				zone = self.get_link_zone(card, pl)
+				zone = self.get_linked_zone(card)
 				if zone == '':
 					continue
-				pl.notify(pl._("Zone linked by %s (%s): %s")%(card.get_name(pl), card.get_spec(pl), zone))
+				pl.notify(pl._("Zone linked by %s (%s): %s")%(card.get_name(pl), card.get_spec(player), zone))
 
 	def show_cards_in_location(self, pl, player, location, hide_facedown=False):
 		cards = self.get_cards_in_location(player, location)
@@ -572,25 +597,21 @@ class Duel:
 		else:
 			pl.set_parser('DuelParser')
 
-	def get_linked_zone(self, card, pl):
+	def get_linked_zone(self, card):
 
 		lst = []
 
 		zone = lib.query_linked_zone(self.duel, card.controller, card.location, card.sequence)
-
-		if pl.duel_player != card.controller:
-			zone = zone >> 16
-
-		zone = zone & 0xff
-
-		if zone == 0:
-			return ""
 
 		i = 0
 
 		for i in range(8):
 			if zone & (1<<i):
 				lst.append('m'+str(i+1))
+
+		for i in range(16, 24, 1):
+			if zone & (1<<i):
+				lst.append('om'+str(i-15))
 
 		return ', '.join(lst)
 
