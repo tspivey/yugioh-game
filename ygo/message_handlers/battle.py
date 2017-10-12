@@ -1,5 +1,7 @@
 import io
 
+from ygo.constants import TYPE_LINK
+
 def msg_battle(self, data):
 	data = io.BytesIO(data[1:])
 	attacker = self.read_u32(data)
@@ -26,10 +28,21 @@ def battle(self, attacker, aa, ad, bd0, tloc, da, dd, bd1):
 	else:
 		target = None
 	for pl in self.players + self.watchers:
-		if target:
-			pl.notify(pl._("%s (%d/%d) attacks %s (%d/%d)") % (card.get_name(pl), aa, ad, target.get_name(pl), da, dd))
+		if card.type & TYPE_LINK:
+			attacker_points = "%d"%aa
 		else:
-			pl.notify(pl._("%s (%d/%d) attacks") % (card.get_name(pl), aa, ad))
+			attacker_points = "%d/%d"%(aa, ad)
+
+		if target:
+			if target.type & TYPE_LINK:
+				defender_points = "%d"%da
+			else:
+				defender_points = "%d/%d"%(da, dd)
+
+		if target:
+			pl.notify(pl._("%s (%s) attacks %s (%s)") % (card.get_name(pl), attacker_points, target.get_name(pl), defender_points))
+		else:
+			pl.notify(pl._("%s (%s) attacks") % (card.get_name(pl), attacker_points))
 
 MESSAGES = {111: msg_battle}
 

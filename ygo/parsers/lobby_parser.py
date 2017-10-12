@@ -92,10 +92,16 @@ def say(caller):
 	if not caller.connection.player.say:
 		caller.connection.player.say = True
 		caller.connection.notify(caller.connection._("Say on."))
-	if not caller.connection.player.duel:
-		caller.connection.notify(caller.connection._("Not in a duel."))
+	if not caller.connection.player.duel and not caller.connection.player.room:
+		caller.connection.notify(caller.connection._("Not in a duel or room."))
 		return
-	for pl in caller.connection.player.duel.players + caller.connection.player.duel.watchers:
+
+	if caller.connection.player.room:
+		players = caller.connection.player.room.get_all_players()
+	else:
+		players = caller.connection.player.duel.players+caller.connection.player.duel.watchers
+
+	for pl in players:
 		if caller.connection.player.nickname not in pl.ignores and pl.say:
 			pl.notify(pl._("%s says: %s") % (caller.connection.player.nickname, caller.args[0]))
 
@@ -134,7 +140,7 @@ def who(caller):
 				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
 			else:
 				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
-		elif pl.room and "prepare" in showing:
+		elif pl.room and pl.room.open and not pl.room.private and "prepare" in showing:
 			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:
 			if "idle" in showing:
