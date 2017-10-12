@@ -140,7 +140,7 @@ def who(caller):
 				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
 			else:
 				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
-		elif pl.room and "prepare" in showing:
+		elif pl.room and pl.room.open and not pl.room.private and "prepare" in showing:
 			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:
 			if "idle" in showing:
