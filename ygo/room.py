@@ -60,7 +60,8 @@ class Room:
 			player.notify(player._("The room was disbanded."))
 
 			for pl in globals.server.get_all_players():
-				globals.server.announce_challenge(pl, pl._("%s disbanded their duel room.")%(player.nickname))
+				if self.open and not self.private:
+					globals.server.announce_challenge(pl, pl._("%s disbanded their duel room.")%(player.nickname))
 
 	def set_banlist(self, list):
 
