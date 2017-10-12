@@ -92,10 +92,16 @@ def say(caller):
 	if not caller.connection.player.say:
 		caller.connection.player.say = True
 		caller.connection.notify(caller.connection._("Say on."))
-	if not caller.connection.player.duel:
-		caller.connection.notify(caller.connection._("Not in a duel."))
+	if not caller.connection.player.duel and not caller.connection.player.room:
+		caller.connection.notify(caller.connection._("Not in a duel or room."))
 		return
-	for pl in caller.connection.player.duel.players + caller.connection.player.duel.watchers:
+
+	if caller.connection.player.room:
+		players = caller.connection.player.room.get_all_players()
+	else:
+		players = caller.connection.player.duel.players+caller.connection.player.duel.watchers
+
+	for pl in players:
 		if caller.connection.player.nickname not in pl.ignores and pl.say:
 			pl.notify(pl._("%s says: %s") % (caller.connection.player.nickname, caller.args[0]))
 
