@@ -485,6 +485,20 @@ def join(caller):
 		target.room.join(pl)
 		caller.connection.parser.prompt(caller.connection)
 
+@LobbyParser.command(names=['giveup'], allowed = lambda c: c.connection.player.duel is not None)
+def giveup(caller):
+
+	duel = caller.connection.player.duel
+
+	for pl in duel.players+duel.watchers:
+		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
+
+	duel.end()
+
+	if not duel.private:
+		for pl in globals.server.get_all_players():
+			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, duel.players[1 - caller.connection.player.duel_player].nickname))
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DuelParser.commands:
