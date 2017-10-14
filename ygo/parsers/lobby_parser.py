@@ -203,7 +203,7 @@ def help(caller):
 	with open(fn, encoding='utf-8') as fp:
 		caller.connection.notify(fp.read().rstrip('\n'))
 
-@LobbyParser.command(names=['quit'])
+@LobbyParser.command(names=['quit'], allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def quit(caller):
 	caller.connection.notify(caller.connection._("Goodbye."))
 	globals.server.disconnect(caller.connection)
