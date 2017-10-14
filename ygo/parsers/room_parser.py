@@ -236,6 +236,13 @@ def deck(caller):
 	content = json.loads(deck.content)
 
 	# we parsed the deck now we execute several checks
+
+	# we filter all invalid cards first
+	invalid_cards = pl.get_invalid_cards_in_deck(content['cards'])
+	content['cards'] = [c for c in content['cards'] if c not in invalid_cards]
+	if len(invalid_cards):
+		con.notify(con._("Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."))
+
 	# we check card limits first
 	main, extra = pl.count_deck_cards(content['cards'])
 	if main < 40 or main > 200:

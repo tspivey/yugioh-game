@@ -51,7 +51,7 @@ class Player:
 	def count_deck_cards(self, deck = None):
 		if deck is None:
 			deck = self.deck['cards']
-		rows = self.cdb.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(deck)])))
+		rows = globals.server.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(deck)])))
 		main = 0
 		extra = 0
 		for row in rows:
@@ -61,6 +61,13 @@ class Player:
 				main += deck.count(row[0])
 
 		return (main, extra)
+
+	def get_invalid_cards_in_deck(self, deck=None):
+
+		if deck is None:
+			deck = self.deck['cards']
+
+		return set([c for c in deck if c not in globals.server.all_cards])
 
 	def set_parser(self, p):
 		p=p.lower()
