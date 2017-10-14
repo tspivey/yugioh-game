@@ -17,6 +17,7 @@ class Room:
 	def join(self, player):
 		player.set_parser('RoomParser')
 		player.room = self
+		player.deck = {'cards': []}
 		self.teams[0].append(player)
 		if player.nickname in self.invitations:
 			self.invitations.remove(player.nickname)
