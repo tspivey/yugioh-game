@@ -480,28 +480,28 @@ class Duel:
 
 	def show_score(self, pl):
 		player = pl.duel_player
-		deck = self.get_cards_in_location(player, LOCATION_DECK)
-		odeck = self.get_cards_in_location(1 - player, LOCATION_DECK)
-		grave = self.get_cards_in_location(player, LOCATION_GRAVE)
-		ograve = self.get_cards_in_location(1 - player, LOCATION_GRAVE)
-		hand = self.get_cards_in_location(player, LOCATION_HAND)
-		ohand = self.get_cards_in_location(1 - player, LOCATION_HAND)
-		removed = self.get_cards_in_location(player, LOCATION_REMOVED)
-		oremoved = self.get_cards_in_location(1 - player, LOCATION_REMOVED)
+		deck = lib.query_field_count(self.duel, player, LOCATION_DECK)
+		odeck = lib.query_field_count(self.duel, 1 - player, LOCATION_DECK)
+		grave = lib.query_field_count(self.duel, player, LOCATION_GRAVE)
+		ograve = lib.query_field_count(self.duel, 1 - player, LOCATION_GRAVE)
+		hand = lib.query_field_count(self.duel, player, LOCATION_HAND)
+		ohand = lib.query_field_count(self.duel, 1 - player, LOCATION_HAND)
+		removed = lib.query_field_count(self.duel, player, LOCATION_REMOVED)
+		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION_REMOVED)
 		if pl.watching:
 			nick0 = self.players[0].nickname
 			nick1 = self.players[1].nickname
 			pl.notify(pl._("LP: %s: %d %s: %d") % (nick0, self.lp[player], nick1, self.lp[1 - player]))
-			pl.notify(pl._("Hand: %s: %d %s: %d") % (nick0, len(hand), nick1, len(ohand)))
-			pl.notify(pl._("Deck: %s: %d %s: %d") % (nick0, len(deck), nick1, len(odeck)))
-			pl.notify(pl._("Grave: %s: %d %s: %d") % (nick0, len(grave), nick1, len(ograve)))
-			pl.notify(pl._("Removed: %s: %d %s: %d") % (nick0, len(removed), nick1, len(oremoved)))
+			pl.notify(pl._("Hand: %s: %d %s: %d") % (nick0, hand, nick1, ohand))
+			pl.notify(pl._("Deck: %s: %d %s: %d") % (nick0, deck, nick1, odeck))
+			pl.notify(pl._("Grave: %s: %d %s: %d") % (nick0, grave, nick1, ograve))
+			pl.notify(pl._("Removed: %s: %d %s: %d") % (nick0, removed, nick1, oremoved))
 		else:
 			pl.notify(pl._("Your LP: %d Opponent LP: %d") % (self.lp[player], self.lp[1 - player]))
-			pl.notify(pl._("Hand: You: %d Opponent: %d") % (len(hand), len(ohand)))
-			pl.notify(pl._("Deck: You: %d Opponent: %d") % (len(deck), len(odeck)))
-			pl.notify(pl._("Grave: You: %d Opponent: %d") % (len(grave), len(ograve)))
-			pl.notify(pl._("Removed: You: %d Opponent: %d") % (len(removed), len(oremoved)))
+			pl.notify(pl._("Hand: You: %d Opponent: %d") % (hand, ohand))
+			pl.notify(pl._("Deck: You: %d Opponent: %d") % (deck, odeck))
+			pl.notify(pl._("Grave: You: %d Opponent: %d") % (grave, ograve))
+			pl.notify(pl._("Removed: You: %d Opponent: %d") % (removed, oremoved))
 		if self.paused:
 			pl.notify(pl._("This duel is currently paused."))
 		else:
