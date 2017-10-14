@@ -14,6 +14,7 @@ from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
 from .duel_parser import DuelParser
 from .room_parser import RoomParser
+from .. import models
 
 LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
 
