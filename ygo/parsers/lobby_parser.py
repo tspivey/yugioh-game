@@ -1,6 +1,9 @@
+from babel.dates import format_timedelta
 import codecs
+import datetime
 import gsb
 import json
+import locale
 import natsort
 import os.path
 from twisted.internet import reactor
@@ -500,6 +503,12 @@ def giveup(caller):
 		for pl in globals.server.get_all_players():
 			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, duel.players[1 - caller.connection.player.duel_player].nickname))
 
+@LobbyParser.command(names=['uptime'])
+def uptime(caller):
+
+	delta = datetime.datetime.utcnow() - globals.server.started
+
+	caller.connection.notify(caller.connection._("This server is running since %s.")%(format_timedelta(delta, locale=locale.normalize(caller.connection.player.language).split('_')[0])))
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DuelParser.commands:
