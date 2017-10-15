@@ -1481,7 +1481,7 @@ msgstr "%s hat das Duell mit %s aufgegeben."
 
 #: ygo/parsers/lobby_parser.py:511
 #, python-format
-msgid "This server is running since %s."
+msgid "This server has been running for %s."
 msgstr "Dieser Server läuft seit %s."
 
 #: ygo/parsers/login_parser.py:102
