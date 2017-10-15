@@ -85,6 +85,10 @@ class DeckEditor:
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
+			invalid_cards = con.player.get_invalid_cards_in_deck()
+			con.player.deck['cards'] = [c for c in con.player.deck['cards'] if c not in invalid_cards]
+			if len(invalid_cards):
+				con.notify(con._("Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."))
 		else:
 			con.notify(con._("Creating new deck %s.") % deck_name)
 		cards = con.player.deck['cards']
