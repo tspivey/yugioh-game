@@ -8,11 +8,13 @@ import pkgutil
 import re
 import datetime
 import natsort
+from twisted.internet import reactor
 
 from . import callback_manager
 from .card import Card
 from .constants import *
 from .duel_reader import DuelReader
+from .utils import process_duel
 from . import globals
 from . import message_handlers
 
@@ -75,32 +77,76 @@ class Duel:
 		self.debug_mode = False
 		self.debug_fp = None
 		self.players = [None, None]
+		self.tag_players = [None, None]
 		self.lp = [8000, 8000]
 		self.started = False
 		self.message_map = {}
 		self.state = ''
 		self.cards = [None, None]
+		self.tag_cards = [None, None]
 		self.revealed = {}
 		self.bind_message_handlers()
 
-	def load_deck(self, player, cards, shuffle=True):
-		self.cards[player] = cards[:]
-		if shuffle:
-			random.shuffle(self.cards[player])
-		for c in self.cards[player][::-1]:
-			lib.new_card(self.duel, c, player, player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
+	def load_deck(self, player, shuffle=True, tag = False):
+		c = player.deck['cards'][:]
+		if shuffle is True:
+			random.shuffle(c)
+		if tag is True:
+			self.tag_cards[player.duel_player] = c
+		else:
+			self.cards[player.duel_player] = c
+		for sc in c[::-1]:
+			if tag is True:
+				lib.new_tag_card(self.duel, sc, player.duel_player, LOCATION_DECK)
+			else:
+				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE)
+
+	def add_players(self, players, shuffle=True):
+		if len(players) == 4:
+			teams = [[players[0], players[1]], [players[2], players[3]]]
+			random.shuffle(teams)
+			random.shuffle(teams[0])
+			random.shuffle(teams[1])
+			self.players = [teams[0][0], teams[1][0]]
+			self.tag_players = [teams[0][1], teams[1][1]]
+		else:
+			self.players = list(players)
+			random.shuffle(self.players)
+
+		self.watchers = self.tag_players[:]
+
+		for i in range(2):
+			self.players[i].duel_player = i
+			self.players[i].duel = self
+			self.players[i].set_parser('DuelParser')
+			self.load_deck(self.players[i], shuffle)
+			if self.tag_players[i] is not None:
+				self.tag_players[i].duel_player = i
+				self.tag_players[i].duel = self
+				self.tag_players[i].set_parser('DuelParser')
+				self.load_deck(self.tag_players[i], shuffle, True)
 
 	def start(self, options):
 		if os.environ.get('DEBUG', 0):
 			self.start_debug(options)
 		lib.start_duel(self.duel, options)
 		self.started = True
+		for i, pl in enumerate(self.players):
+			pl.notify(pl._("Duel created. You are player %d.") % i)
+			pl.notify(pl._("Type help dueling for a list of usable commands."))
+			if self.tag_players[i] is not None:
+				pl = self.tag_players[i]
+				pl.notify(pl._("Duel created. You are player %d.") % i)
+				pl.notify(pl._("Type help dueling for a list of usable commands."))
+				pl.notify(pl._("%s will go first.")%(self.players[i].nickname))
+		reactor.callLater(0, process_duel, self)
 
 	def end(self):
 		lib.end_duel(self.duel)
 		self.started = False
 		for pl in self.players + self.watchers:
 			pl.duel = None
+			pl.duel_player = 0
 			pl.intercept = None
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():

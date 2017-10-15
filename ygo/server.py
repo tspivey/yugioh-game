@@ -1,13 +1,10 @@
 import re
-import random
 import sqlite3
 import gsb
 
 from twisted.internet import reactor
 
 from .card import Card
-from .duel import Duel
-from .utils import process_duel
 from . import globals
 from . import models
 
@@ -60,23 +57,6 @@ class Server(gsb.Server):
 			del(self.players[nick.lower()])
 		except KeyError:
 			pass
-
-	def start_duel(self, options, rules, *players):
-		players = list(players)
-		random.shuffle(players)
-		duel = Duel()
-		duel.orig_nicknames = (players[0].nickname, players[1].nickname)
-		duel.load_deck(0, players[0].deck['cards'])
-		duel.load_deck(1, players[1].deck['cards'])
-		for i, pl in enumerate(players):
-			pl.notify(pl._("Duel created. You are player %d.") % i)
-			pl.notify(pl._("Type help dueling for a list of usable commands."))
-			pl.duel = duel
-			pl.duel_player = i
-			pl.set_parser('DuelParser')
-		duel.players = players
-		duel.start(((rules&0xff)<<16)+(options&0xffff))
-		reactor.callLater(0, process_duel, duel)
 
 	# me being the caller (we don't want to address me)
 	def guess_players(self, name, me):
