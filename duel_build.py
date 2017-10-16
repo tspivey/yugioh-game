@@ -97,6 +97,7 @@ void get_log_message(ptr pduel, byte* buf);
 int32 get_message(ptr pduel, byte* buf);
 int32 process(ptr pduel);
 void new_card(ptr pduel, uint32 code, uint8 owner, uint8 playerid, uint8 location, uint8 sequence, uint8 position);
+void new_tag_card(ptr pduel, uint32 code, uint8 owner, uint8 location);
 void set_player_info(ptr pduel, int32 playerid, int32 lp, int32 startcount, int32 drawcount);
 void set_responsei(ptr pduel, int32 value);
 void set_responseb(ptr pduel, byte *value);

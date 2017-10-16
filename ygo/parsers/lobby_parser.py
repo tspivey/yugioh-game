@@ -130,20 +130,29 @@ def who(caller):
 		if pl.afk is True:
 			s += " " + caller.connection._("[AFK]")
 		if pl.watching and "watch" in showing:
-			pl0 = pl.duel.players[0].nickname
-			pl1 = pl.duel.players[1].nickname
+			if pl.duel.tag is True:
+				pl0 = pl._("team %s")%(pl.duel.players[0].nickname+", "+pl.duel.tag_players[0].nickname)
+				pl1 = pl._("team %s")%(pl.duel.players[1].nickname+", "+pl.duel.tag_players[1].nickname)
+			else:
+				pl0 = pl.duel.players[0].nickname
+				pl1 = pl.duel.players[1].nickname
 			who_output.append(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
 		elif pl.duel and "duel" in showing:
-			other = None
-			if pl.duel.players[0] is pl:
-				other = pl.duel.players[1]
+			if pl.duel.tag is True:
+				plteam = [pl.duel.players[pl.duel_player], pl.duel.tag_players[pl.duel_player]]
+				plopponents = [pl.duel.players[1 - pl.duel_player], pl.duel.tag_players[1 - pl.duel_player]]
+				partner = plteam[1 - plteam.index(pl)].nickname
+				other = pl._("team %s")%(plopponents[0].nickname+", "+plopponents[1].nickname)
+				if pl.duel.private is True:
+					who_output.append(pl._("%s (privately dueling %s together with %s")%(pl.nickname, other, partner))
+				else:
+					who_output.append(pl._("%s (dueling %s together with %s)")%(pl.nickname, other, partner))
 			else:
-				other = pl.duel.players[0]
-			other = other.nickname
-			if pl.duel.private is True:
-				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
-			else:
-				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
+				other = pl.duel.players[1 - pl.duel_player].nickname
+				if pl.duel.private is True:
+					who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
+				else:
+					who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
 		elif pl.room and pl.room.open and not pl.room.private and "prepare" in showing:
 			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:
@@ -152,7 +161,7 @@ def who(caller):
 	for pl in who_output:
 		caller.connection.notify(pl)
 
-@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-]+)(?:=(\d+))?', allowed=lambda caller: caller.connection.player.is_admin)
+@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-,]+)(?:=(\d+))?', allowed=lambda caller: caller.connection.player.is_admin)
 def replay(caller):
 	with open(os.path.join('duels', caller.args[0])) as fp:
 		lines = [json.loads(line) for line in fp]
@@ -162,25 +171,23 @@ def replay(caller):
 		limit = len(lines)
 	for line in lines[:limit]:
 		if line['event_type'] == 'start':
-			player0 = globals.server.get_player(line['player0'])
-			player1 = globals.server.get_player(line['player1'])
-			if not player0 or not player1:
-				caller.connection.notify(caller.connection._("One of the players is not logged in."))
-				return
-			if player0.duel or player1.duel:
-				caller.connection.notify(caller.connection._("One of the players is in a duel."))
-				return
-			if player0.room or player1.room:
-				pl.notify(pl._("At least one player is currently in a duel room."))
-				return
+			players = line.get('players', [])
+			decks = line.get('decks', [[]]*len(players))
+			for i, pl in enumerate(players):
+				p = globals.server.get_player(pl)
+				if p is None:
+					caller.connection.notify(caller.connection._("%s is not logged in.")%(pl))
+					return
+				if p.duel is not None:
+					caller.connection.notify(caller.connection._("%s is already dueling.")%(p.nickname))
+					return
+				if p.room is not None:
+					caller.connection.player.notify(caller.connection.player._("%s is currently in a duel room.")%(p.nickname))
+					return
+				players[i] = p
+				p.deck = {'cards': decks[i]}
 			duel = Duel(line.get('seed', 0))
-			duel.load_deck(0, line['deck0'], shuffle=False)
-			duel.load_deck(1, line['deck1'], shuffle=False)
-			duel.players = [player0, player1]
-			player0.duel = duel
-			player1.duel = duel
-			player0.duel_player = 0
-			player1.duel_player = 1
+			duel.add_players(players, shuffle = False)
 			duel.start(line.get('options', 0))
 		elif line['event_type'] == 'process':
 			process_duel_replay(duel)
@@ -497,11 +504,15 @@ def giveup(caller):
 	for pl in duel.players+duel.watchers:
 		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
 
-	duel.end()
-
 	if not duel.private:
 		for pl in globals.server.get_all_players():
-			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, duel.players[1 - caller.connection.player.duel_player].nickname))
+			if duel.tag is True:
+				op = pl._("team %s")%(duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname)
+			else:
+				op = duel.players[1 - caller.connection.player.duel_player].nickname
+			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, op))
+
+	duel.end()
 
 @LobbyParser.command(names=['uptime'])
 def uptime(caller):

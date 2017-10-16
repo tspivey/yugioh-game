@@ -44,8 +44,15 @@ def process_duel_replay(duel):
 		duel.lp[player] += amount
 	def damage(player, amount):
 		duel.lp[player] -= amount
+	def tag_swap(player):
+		c = duel.players[player]
+		n = duel.tag_players[player]
+		duel.players[player] = n
+		duel.watchers[player] = c
+		duel.tag_players[player] = c
 	duel.cm.register_callback('recover', recover)
 	duel.cm.register_callback('damage', damage)
+	duel.cm.register_callback('tag_swap', tag_swap)
 	duel.process_messages(data)
 	duel.cm.callbacks = cb
 	return data

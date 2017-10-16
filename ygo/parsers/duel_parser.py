@@ -1,4 +1,5 @@
 import gsb
+import natsort
 
 from ..constants import *
 from .. import globals
@@ -57,11 +58,12 @@ def extra2(caller):
 
 @DuelParser.command(names=['watchers'])
 def show_watchers(caller):
-	if caller.connection.player.duel.watchers==[]:
+	watchers = [w for w in caller.connection.player.duel.watchers if w.watching is True]
+	if len(watchers) == 0:
 		caller.connection.notify(caller.connection._("No one is watching this duel."))
 	else:
 		caller.connection.notify(caller.connection._("People watching this duel:"))
-		for pl in sorted(caller.connection.player.duel.watchers, key=lambda x: x.nickname):
+		for pl in natsort.natsorted(watchers, key=lambda x: x.nickname):
 			caller.connection.notify(pl.nickname)
 
 @DuelParser.command(names=['info'], args_regexp=r'(.*)')

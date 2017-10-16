@@ -8,11 +8,13 @@ import pkgutil
 import re
 import datetime
 import natsort
+from twisted.internet import reactor
 
 from . import callback_manager
 from .card import Card
 from .constants import *
 from .duel_reader import DuelReader
+from .utils import process_duel
 from . import globals
 from . import message_handlers
 
@@ -75,33 +77,82 @@ class Duel:
 		self.debug_mode = False
 		self.debug_fp = None
 		self.players = [None, None]
+		self.tag_players = []
 		self.lp = [8000, 8000]
 		self.started = False
 		self.message_map = {}
 		self.state = ''
 		self.cards = [None, None]
+		self.tag_cards = [None, None]
 		self.revealed = {}
 		self.bind_message_handlers()
 
-	def load_deck(self, player, cards, shuffle=True):
-		self.cards[player] = cards[:]
-		if shuffle:
-			random.shuffle(self.cards[player])
-		for c in self.cards[player][::-1]:
-			lib.new_card(self.duel, c, player, player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
+	def load_deck(self, player, shuffle=True, tag = False):
+		c = player.deck['cards'][:]
+		if shuffle is True:
+			random.shuffle(c)
+		if tag is True:
+			self.tag_cards[player.duel_player] = c
+		else:
+			self.cards[player.duel_player] = c
+		for sc in c[::-1]:
+			if tag is True:
+				lib.new_tag_card(self.duel, sc, player.duel_player, LOCATION_DECK)
+			else:
+				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE)
+
+	def add_players(self, players, shuffle=True):
+		if len(players) == 4:
+			teams = [[players[0], players[1]], [players[2], players[3]]]
+			if shuffle is True:
+				random.shuffle(teams)
+				random.shuffle(teams[0])
+				random.shuffle(teams[1])
+			self.players = [teams[0][0], teams[1][0]]
+			self.tag_players = [teams[0][1], teams[1][1]]
+		else:
+			self.players = list(players)
+			if shuffle is True:
+				random.shuffle(self.players)
+
+		self.watchers = self.tag_players[:]
+
+		for i in range(2):
+			self.players[i].duel_player = i
+			self.players[i].duel = self
+			self.players[i].set_parser('DuelParser')
+			self.load_deck(self.players[i], shuffle)
+			if len(self.tag_players) > i:
+				self.tag_players[i].duel_player = i
+				self.tag_players[i].duel = self
+				self.tag_players[i].set_parser('DuelParser')
+				self.load_deck(self.tag_players[i], shuffle, True)
 
 	def start(self, options):
 		if os.environ.get('DEBUG', 0):
 			self.start_debug(options)
 		lib.start_duel(self.duel, options)
 		self.started = True
+		for i, pl in enumerate(self.players):
+			pl.notify(pl._("Duel created. You are player %d.") % i)
+			pl.notify(pl._("Type help dueling for a list of usable commands."))
+			if len(self.tag_players) > i:
+				pl = self.tag_players[i]
+				pl.notify(pl._("Duel created. You are player %d.") % i)
+				pl.notify(pl._("Type help dueling for a list of usable commands."))
+				pl.notify(pl._("%s will go first.")%(self.players[i].nickname))
+		reactor.callLater(0, process_duel, self)
 
 	def end(self):
 		lib.end_duel(self.duel)
 		self.started = False
 		for pl in self.players + self.watchers:
 			pl.duel = None
+			pl.duel_player = 0
 			pl.intercept = None
+			pl.watching = False
+			pl.card_list = []
+			pl.deck = {'cards': []}
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():
 					opl.notify(opl._("%s logged out.")%(pl.nickname))
@@ -111,10 +162,9 @@ class Duel:
 				if isinstance(op, DuelReader):
 					op.done = lambda caller: None
 				pl.set_parser('LobbyParser')
-				pl.watching = False
-				pl.card_list = []
 		for pl in self.watchers:
-			pl.notify(pl._("Watching stopped."))
+			if pl.watching is True:
+				pl.notify(pl._("Watching stopped."))
 		if self.debug_mode is True and self.debug_fp is not None:
 			self.debug_fp.close()
 		globals.server.check_reboot()
@@ -489,8 +539,12 @@ class Duel:
 		removed = lib.query_field_count(self.duel, player, LOCATION_REMOVED)
 		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION_REMOVED)
 		if pl.watching:
-			nick0 = self.players[0].nickname
-			nick1 = self.players[1].nickname
+			if self.tag is True:
+				nick0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
+				nick1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+			else:
+				nick0 = self.players[0].nickname
+				nick1 = self.players[1].nickname
 			pl.notify(pl._("LP: %s: %d %s: %d") % (nick0, self.lp[player], nick1, self.lp[1 - player]))
 			pl.notify(pl._("Hand: %s: %d %s: %d") % (nick0, hand, nick1, ohand))
 			pl.notify(pl._("Deck: %s: %d %s: %d") % (nick0, deck, nick1, odeck))
@@ -505,7 +559,7 @@ class Duel:
 		if self.paused:
 			pl.notify(pl._("This duel is currently paused."))
 		else:
-			if not pl.watching and pl.duel_player == self.tp:
+			if not pl.watching and pl.duel_player == self.tp and pl in self.players:
 				pl.notify(pl._("It's your turn."))
 			else:
 				pl.notify(pl._("It's %s's turn.")%(self.players[self.tp].nickname))
@@ -536,40 +590,53 @@ class Duel:
 	def start_debug(self, options):
 		self.debug_mode = True
 		lt = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-		fn = lt+"_"+self.players[0].nickname+"_"+self.players[1].nickname
+		if self.tag is True:
+			pl0 = self.players[0].nickname+","+self.tag_players[0].nickname
+			pl1 = self.players[1].nickname+","+self.tag_players[1].nickname
+		else:
+			pl0 = self.players[0].nickname
+			pl1 = self.players[1].nickname
+		fn = lt+"_"+pl0+"_"+pl1
 		self.debug_fp = open(os.path.join('duels', fn), 'w')
-		self.debug(event_type='start', player0=self.players[0].nickname, player1=self.players[1].nickname,
-		deck0=self.cards[0], deck1=self.cards[1], seed=self.seed, options = options)
+		if self.tag is True:
+			players = [self.players[0].nickname, self.tag_players[0].nickname, self.players[1].nickname, self.tag_players[1].nickname]
+			decks = [self.cards[0], self.tag_cards[0], self.cards[1], self.tag_cards[1]]
+		else:
+			players = [self.players[0].nickname, self.players[1].nickname]
+			decks = [self.cards[0], self.cards[1]]
+		self.debug(event_type='start', players=players, decks=decks, seed=self.seed, options = options)
 
 	def player_disconnected(self, player):
 		if not self.paused:
-			# all players returned successfully
 			self.pause()
-		else:
-			# the player returned, but there are players left who need to reconnect
-			player.set_parser('LobbyParser')
 
 	def player_reconnected(self, pl):
 		if not self.paused:
+			# all players returned successfully
 			self.unpause()
+		else:
+			# the player returned, but there are players left who need to reconnect
+			pl.set_parser('LobbyParser')
 
 	def pause(self):
 		for pl in self.players + self.watchers:
 			pl.notify(pl._("Duel paused until all duelists reconnect."))
-		for pl in self.players:
+		for pl in self.players+self.tag_players:
 			if pl.connection is not None:
 				pl.paused_parser = pl.connection.parser
 				pl.set_parser('LobbyParser')
 
 		for w in self.watchers:
-			w.set_parser('LobbyParser')
+			if w.watching is True:
+				w.set_parser('LobbyParser')
 
 	def unpause(self):
-		for pl in self.players:
+		for pl in self.players+self.tag_players:
 			pl.connection.parser = pl.paused_parser
 			pl.paused_parser = None
 		for w in self.watchers:
-			w.set_parser('DuelParser')
+			if w.watching is True:
+				w.set_parser('DuelParser')
 
 		for pl in self.players+self.watchers:
 			pl.notify(pl._("Duel continues."))
@@ -591,7 +658,13 @@ class Duel:
 		pl.duel = self
 		pl.duel_player = 0
 		pl.watching = True
-		pl.notify(pl._("Watching duel between %s and %s.")%(self.players[0].nickname, self.players[1].nickname))
+		if self.tag is True:
+			pl0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
+			pl1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+		else:
+			pl0 = self.players[0].nickname
+			pl1 = self.players[1].nickname
+		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
 		self.watchers.append(pl)
 		for p in self.players+self.watchers:
 			if p.watch and p is not pl:
@@ -622,3 +695,7 @@ class Duel:
 	@property
 	def paused(self):
 		return len(self.players) != len([p for p in self.players if p.connection is not None])
+
+	@property
+	def tag(self):
+		return len(self.tag_players) > 0
