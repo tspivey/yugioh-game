@@ -536,8 +536,12 @@ class Duel:
 		removed = lib.query_field_count(self.duel, player, LOCATION_REMOVED)
 		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION_REMOVED)
 		if pl.watching:
-			nick0 = self.players[0].nickname
-			nick1 = self.players[1].nickname
+			if self.tag is True:
+				nick0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
+				nick1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+			else:
+				nick0 = self.players[0].nickname
+				nick1 = self.players[1].nickname
 			pl.notify(pl._("LP: %s: %d %s: %d") % (nick0, self.lp[player], nick1, self.lp[1 - player]))
 			pl.notify(pl._("Hand: %s: %d %s: %d") % (nick0, hand, nick1, ohand))
 			pl.notify(pl._("Deck: %s: %d %s: %d") % (nick0, deck, nick1, odeck))
@@ -552,7 +556,7 @@ class Duel:
 		if self.paused:
 			pl.notify(pl._("This duel is currently paused."))
 		else:
-			if not pl.watching and pl.duel_player == self.tp:
+			if not pl.watching and pl.duel_player == self.tp and pl in self.players:
 				pl.notify(pl._("It's your turn."))
 			else:
 				pl.notify(pl._("It's %s's turn.")%(self.players[self.tp].nickname))
