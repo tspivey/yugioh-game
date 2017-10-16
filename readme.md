@@ -18,7 +18,6 @@ ln -s ../ygopro-scripts script
 ```
 
 ## Running
-The file format is just card codes separated by newlines.
 ```
 python3 ygo.py
 ```

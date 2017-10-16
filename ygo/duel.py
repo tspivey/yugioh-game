@@ -583,10 +583,21 @@ class Duel:
 	def start_debug(self, options):
 		self.debug_mode = True
 		lt = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-		fn = lt+"_"+self.players[0].nickname+"_"+self.players[1].nickname
+		if self.tag is True:
+			pl0 = self.players[0].nickname+","+self.tag_players[1].nickname
+			pl1 = self.players[1].nickname+","+self.tag_players[1].nickname
+		else:
+			pl0 = self.players[0].nickname
+			pl1 = self.players[1].nickname
+		fn = lt+"_"+pl0+"_"+pl1
 		self.debug_fp = open(os.path.join('duels', fn), 'w')
-		self.debug(event_type='start', player0=self.players[0].nickname, player1=self.players[1].nickname,
-		deck0=self.cards[0], deck1=self.cards[1], seed=self.seed, options = options)
+		if self.tag is True:
+			players = [self.players[0].nickname, self.tag_players[0].nickname, self.players[1].nickname, self.tag_players[1].nickname]
+			decks = [self.cards[0], self.tag_cards[0], self.cards[1], self.tag_cards[1]]
+		else:
+			players = [self.players[0].nickname, self.players[1].nickname]
+			decks = [self.cards[0], self.cards[1]]
+		self.debug(event_type='start', players=players, decks=decks, seed=self.seed, options = options)
 
 	def player_disconnected(self, player):
 		if not self.paused:

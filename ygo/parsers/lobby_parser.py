@@ -171,25 +171,23 @@ def replay(caller):
 		limit = len(lines)
 	for line in lines[:limit]:
 		if line['event_type'] == 'start':
-			player0 = globals.server.get_player(line['player0'])
-			player1 = globals.server.get_player(line['player1'])
-			if not player0 or not player1:
-				caller.connection.notify(caller.connection._("One of the players is not logged in."))
-				return
-			if player0.duel or player1.duel:
-				caller.connection.notify(caller.connection._("One of the players is in a duel."))
-				return
-			if player0.room or player1.room:
-				pl.notify(pl._("At least one player is currently in a duel room."))
-				return
+			players = line.get('players', [])
+			decks = line.get('decks', [[]]*len(players))
+			for i, pl in enumerate(players):
+				p = globals.server.get_player(pl)
+				if p is None:
+					caller.connection.notify(caller.connection._("%s is not logged in.")%(pl))
+					return
+				if p.duel is not None:
+					caller.connection.notify(caller.connection._("%s is already dueling.")%(p.nickname))
+					return
+				if p.room is not None:
+					caller.connection.player.notify(caller.connection.player._("%s is currently in a duel room.")%(p.nickname))
+					return
+				players[i] = p
+				p.deck = {'cards': decks[i]}
 			duel = Duel(line.get('seed', 0))
-			duel.load_deck(0, line['deck0'], shuffle=False)
-			duel.load_deck(1, line['deck1'], shuffle=False)
-			duel.players = [player0, player1]
-			player0.duel = duel
-			player1.duel = duel
-			player0.duel_player = 0
-			player1.duel_player = 1
+			duel.add_players(players, shuffle = False)
 			duel.start(line.get('options', 0))
 		elif line['event_type'] == 'process':
 			process_duel_replay(duel)
