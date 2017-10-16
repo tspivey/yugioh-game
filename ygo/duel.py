@@ -614,7 +614,7 @@ class Duel:
 			self.unpause()
 		else:
 			# the player returned, but there are players left who need to reconnect
-			player.set_parser('LobbyParser')
+			pl.set_parser('LobbyParser')
 
 	def pause(self):
 		for pl in self.players + self.watchers:
