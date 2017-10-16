@@ -39,6 +39,8 @@ class Server(gsb.Server):
 		else:
 			if con.player.watching:
 				con.player.duel.remove_watcher(con.player)
+			elif con.player.room is not None:
+				con.player.room.leave(con.player)
 			self.remove_player(con.player.nickname)
 			for pl in self.get_all_players():
 				pl.notify(pl._("%s logged out.") % con.player.nickname)
