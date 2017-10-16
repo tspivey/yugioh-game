@@ -651,7 +651,13 @@ class Duel:
 		pl.duel = self
 		pl.duel_player = 0
 		pl.watching = True
-		pl.notify(pl._("Watching duel between %s and %s.")%(self.players[0].nickname, self.players[1].nickname))
+		if self.tag is True:
+			pl0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
+			pl1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+		else:
+			pl0 = self.players[0].nickname
+			pl1 = self.players[1].nickname
+		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
 		self.watchers.append(pl)
 		for p in self.players+self.watchers:
 			if p.watch and p is not pl:
