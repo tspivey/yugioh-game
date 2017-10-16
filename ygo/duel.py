@@ -148,6 +148,9 @@ class Duel:
 			pl.duel = None
 			pl.duel_player = 0
 			pl.intercept = None
+			pl.watching = False
+			pl.card_list = []
+			pl.deck = {'cards': []}
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():
 					opl.notify(opl._("%s logged out.")%(pl.nickname))
@@ -157,8 +160,6 @@ class Duel:
 				if isinstance(op, DuelReader):
 					op.done = lambda caller: None
 				pl.set_parser('LobbyParser')
-				pl.watching = False
-				pl.card_list = []
 		for pl in self.watchers:
 			pl.notify(pl._("Watching stopped."))
 		if self.debug_mode is True and self.debug_fp is not None:

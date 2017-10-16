@@ -506,11 +506,15 @@ def giveup(caller):
 	for pl in duel.players+duel.watchers:
 		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
 
-	duel.end()
-
 	if not duel.private:
 		for pl in globals.server.get_all_players():
-			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, duel.players[1 - caller.connection.player.duel_player].nickname))
+			if duel.tag is True:
+				op = pl._("team %s")%(duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname)
+			else:
+				op = duel.players[1 - caller.connection.player.duel_player].nickname
+			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, op))
+
+	duel.end()
 
 @LobbyParser.command(names=['uptime'])
 def uptime(caller):

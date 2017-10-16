@@ -310,21 +310,27 @@ def start(caller):
 		else:
 			p.notify(p._("%s starts the duel.")%(pl.nickname))
 
-	if not room.private:
-		for p in globals.server.get_all_players():
-			# TODO: show all players if tag duels are in
-			globals.server.announce_challenge(p, p._("The duel between %s and %s has begun!") % (room.teams[1][0].nickname, room.teams[2][0].nickname))
-
 	# launch the duel
 	duel = Duel()
 	duel.add_players(room.teams[1]+room.teams[2])
+
+	if not room.private:
+		for p in globals.server.get_all_players():
+			if duel.tag is True:
+				pl0 = p._("team %s")%(duel.players[0].nickname+", "+duel.tag_players[0].nickname)
+				pl1 = p._("team %s")%(duel.players[1].nickname+", "+duel.tag_players[1].nickname)
+			else:
+				pl0 = duel.players[0].nickname
+				pl1 = duel.players[1].nickname
+			globals.server.announce_challenge(p, p._("The duel between %s and %s has begun!") % (pl0, pl1))
+
 	duel.start(((room.rules&0xff)<<16)+(room.options&0xffff))
 
-	room.teams[1][0].duel.private = room.private
+	duel.private = room.private
 
 	# move all 	players without a team into the duel as watchers
 	for p in room.teams[0]:
-		room.teams[1][0].duel.add_watcher(p)
+		duel.add_watcher(p)
 
 	# remove the room from all players
 	for p in room.get_all_players():
