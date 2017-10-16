@@ -602,20 +602,22 @@ class Duel:
 	def pause(self):
 		for pl in self.players + self.watchers:
 			pl.notify(pl._("Duel paused until all duelists reconnect."))
-		for pl in self.players:
+		for pl in self.players+self.tag_players:
 			if pl.connection is not None:
 				pl.paused_parser = pl.connection.parser
 				pl.set_parser('LobbyParser')
 
 		for w in self.watchers:
-			w.set_parser('LobbyParser')
+			if w.watching is True:
+				w.set_parser('LobbyParser')
 
 	def unpause(self):
-		for pl in self.players:
+		for pl in self.players+self.tag_players:
 			pl.connection.parser = pl.paused_parser
 			pl.paused_parser = None
 		for w in self.watchers:
-			w.set_parser('DuelParser')
+			if w.watching is True:
+				w.set_parser('DuelParser')
 
 		for pl in self.players+self.watchers:
 			pl.notify(pl._("Duel continues."))
