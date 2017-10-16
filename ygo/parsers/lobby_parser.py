@@ -508,7 +508,7 @@ def uptime(caller):
 
 	delta = datetime.datetime.utcnow() - globals.server.started
 
-	caller.connection.notify(caller.connection._("This server is running since %s.")%(format_timedelta(delta, locale=locale.normalize(caller.connection.player.language).split('_')[0])))
+	caller.connection.notify(caller.connection._("This server has been running for %s.")%(format_timedelta(delta, locale=locale.normalize(caller.connection.player.language).split('_')[0])))
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DuelParser.commands:
