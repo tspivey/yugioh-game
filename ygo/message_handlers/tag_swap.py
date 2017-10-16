@@ -19,7 +19,7 @@ def msg_tag_swap(self, data):
 	self.cm.call_callbacks('tag_swap', player)
 	if top_card > 0:
 		self.cm.call_callbacks('decktop', player, Card(top_card))
-	return data[1:]
+	return data.read()
 
 def tag_swap(self, player):
 

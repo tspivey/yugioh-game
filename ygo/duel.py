@@ -161,7 +161,8 @@ class Duel:
 					op.done = lambda caller: None
 				pl.set_parser('LobbyParser')
 		for pl in self.watchers:
-			pl.notify(pl._("Watching stopped."))
+			if pl.watching is True:
+				pl.notify(pl._("Watching stopped."))
 		if self.debug_mode is True and self.debug_fp is not None:
 			self.debug_fp.close()
 		globals.server.check_reboot()
@@ -588,7 +589,7 @@ class Duel:
 		self.debug_mode = True
 		lt = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 		if self.tag is True:
-			pl0 = self.players[0].nickname+","+self.tag_players[1].nickname
+			pl0 = self.players[0].nickname+","+self.tag_players[0].nickname
 			pl1 = self.players[1].nickname+","+self.tag_players[1].nickname
 		else:
 			pl0 = self.players[0].nickname
@@ -695,4 +696,4 @@ class Duel:
 
 	@property
 	def tag(self):
-		return len([p for self.tag_players if p is not None]) > 0
+		return len([p for p in self.tag_players if p is not None]) > 0
