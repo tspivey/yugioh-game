@@ -77,7 +77,7 @@ class Duel:
 		self.debug_mode = False
 		self.debug_fp = None
 		self.players = [None, None]
-		self.tag_players = [None, None]
+		self.tag_players = []
 		self.lp = [8000, 8000]
 		self.started = False
 		self.message_map = {}
@@ -120,7 +120,7 @@ class Duel:
 			self.players[i].duel = self
 			self.players[i].set_parser('DuelParser')
 			self.load_deck(self.players[i], shuffle)
-			if self.tag_players[i] is not None:
+			if len(self.tag_players) > i:
 				self.tag_players[i].duel_player = i
 				self.tag_players[i].duel = self
 				self.tag_players[i].set_parser('DuelParser')
@@ -134,7 +134,7 @@ class Duel:
 		for i, pl in enumerate(self.players):
 			pl.notify(pl._("Duel created. You are player %d.") % i)
 			pl.notify(pl._("Type help dueling for a list of usable commands."))
-			if self.tag_players[i] is not None:
+			if len(self.tag_players) > i:
 				pl = self.tag_players[i]
 				pl.notify(pl._("Duel created. You are player %d.") % i)
 				pl.notify(pl._("Type help dueling for a list of usable commands."))
@@ -606,15 +606,15 @@ class Duel:
 
 	def player_disconnected(self, player):
 		if not self.paused:
-			# all players returned successfully
 			self.pause()
-		else:
-			# the player returned, but there are players left who need to reconnect
-			player.set_parser('LobbyParser')
 
 	def player_reconnected(self, pl):
 		if not self.paused:
+			# all players returned successfully
 			self.unpause()
+		else:
+			# the player returned, but there are players left who need to reconnect
+			player.set_parser('LobbyParser')
 
 	def pause(self):
 		for pl in self.players + self.watchers:
@@ -696,4 +696,4 @@ class Duel:
 
 	@property
 	def tag(self):
-		return len([p for p in self.tag_players if p is not None]) > 0
+		return len(self.tag_players) > 0
