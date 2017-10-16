@@ -130,20 +130,29 @@ def who(caller):
 		if pl.afk is True:
 			s += " " + caller.connection._("[AFK]")
 		if pl.watching and "watch" in showing:
-			pl0 = pl.duel.players[0].nickname
-			pl1 = pl.duel.players[1].nickname
+			if pl.duel.tag is True:
+				pl0 = pl._("team %s")%(pl.duel.players[0].nickname+", "+pl.duel.tag_players[0].nickname)
+				pl1 = pl._("team %s")%(pl.duel.players[1].nickname+", "+pl.duel.tag_players[1].nickname)
+			else:
+				pl0 = pl.duel.players[0].nickname
+				pl1 = pl.duel.players[1].nickname
 			who_output.append(caller.connection._("%s (Watching duel with %s and %s)") %(s, pl0, pl1))
 		elif pl.duel and "duel" in showing:
-			other = None
-			if pl.duel.players[0] is pl:
-				other = pl.duel.players[1]
+			if pl.duel.tag is True:
+				plteam = [pl.duel.players[pl.duel_player], pl.duel.tag_players[pl.duel_player]]
+				plopponents = [pl.duel.players[1 - pl.duel_player], pl.duel.tag_players[1 - pl.duel_player]]
+				partner = plteam[1 - plteam.index(pl)].nickname
+				other = pl._("team %s")%(plopponents[0].nickname+", "+plopponents[1].nickname)
+				if pl.duel.private is True:
+					who_output.append(pl._("%s (privately dueling %s together with %s")%(pl.nickname, other, partner))
+				else:
+					who_output.append(pl._("%s (dueling %s together with %s)")%(pl.nickname, other, partner))
 			else:
-				other = pl.duel.players[0]
-			other = other.nickname
-			if pl.duel.private is True:
-				who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
-			else:
-				who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
+				other = pl.duel.players[1 - pl.duel_player].nickname
+				if pl.duel.private is True:
+					who_output.append(caller.connection._("%s (privately dueling %s)") %(pl.nickname, other))
+				else:
+					who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
 		elif pl.room and pl.room.open and not pl.room.private and "prepare" in showing:
 			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:

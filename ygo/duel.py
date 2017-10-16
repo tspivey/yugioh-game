@@ -670,3 +670,7 @@ class Duel:
 	@property
 	def paused(self):
 		return len(self.players) != len([p for p in self.players if p.connection is not None])
+
+	@property
+	def tag(self):
+		return len([p for self.tag_players if p is not None]) > 0
