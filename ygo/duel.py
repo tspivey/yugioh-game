@@ -104,14 +104,16 @@ class Duel:
 	def add_players(self, players, shuffle=True):
 		if len(players) == 4:
 			teams = [[players[0], players[1]], [players[2], players[3]]]
-			random.shuffle(teams)
-			random.shuffle(teams[0])
-			random.shuffle(teams[1])
+			if shuffle is True:
+				random.shuffle(teams)
+				random.shuffle(teams[0])
+				random.shuffle(teams[1])
 			self.players = [teams[0][0], teams[1][0]]
 			self.tag_players = [teams[0][1], teams[1][1]]
 		else:
 			self.players = list(players)
-			random.shuffle(self.players)
+			if shuffle is True:
+				random.shuffle(self.players)
 
 		self.watchers = self.tag_players[:]
 

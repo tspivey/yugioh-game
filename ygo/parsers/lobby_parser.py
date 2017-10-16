@@ -161,7 +161,7 @@ def who(caller):
 	for pl in who_output:
 		caller.connection.notify(pl)
 
-@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-]+)(?:=(\d+))?', allowed=lambda caller: caller.connection.player.is_admin)
+@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-,]+)(?:=(\d+))?', allowed=lambda caller: caller.connection.player.is_admin)
 def replay(caller):
 	with open(os.path.join('duels', caller.args[0])) as fp:
 		lines = [json.loads(line) for line in fp]
