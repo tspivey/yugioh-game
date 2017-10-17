@@ -16,21 +16,31 @@ def hand(caller):
 @DuelParser.command(names=['tab'])
 def tab(caller):
 	duel = caller.connection.player.duel
+	me = caller.connection.player.duel_player
 	if caller.connection.player.watching:
-		caller.connection.notify(caller.connection._("%s's table:") % duel.players[0].nickname)
-		duel.show_table(caller.connection.player, caller.connection.player.duel_player, True)
+		if duel.tag is True:
+			o = caller.connection._("team %s")%(duel.players[me].nickname+", "+duel.tag_players[me].nickname)
+		else:
+			o = duel.players[me].nickname
+		caller.connection.notify(caller.connection._("%s's table:") % o)
+		duel.show_table(caller.connection.player, me, True)
 	else:
 		caller.connection.notify(caller.connection._("Your table:"))
-		duel.show_table(caller.connection.player, caller.connection.player.duel_player)
+		duel.show_table(caller.connection.player, me)
 
 @DuelParser.command(names=['tab2'])
 def tab2(caller):
 	duel = caller.connection.player.duel
+	me = caller.connection.player.duel_player
 	if caller.connection.player.watching:
-		caller.connection.notify(caller.connection._("%s's table:") % duel.players[1].nickname)
+		if duel.tag is True:
+			o = caller.connection._("team %s")%(duel.players[1 - me].nickname+", "+duel.tag_players[1 - me].nickname)
+		else:
+			o = duel.players[1 - me].nickname
+		caller.connection.notify(caller.connection._("%s's table:") % o)
 	else:
 		caller.connection.notify(caller.connection._("Opponent's table:"))
-	duel.show_table(caller.connection.player, 1 - caller.connection.player.duel_player, True)
+	duel.show_table(caller.connection.player, 1 - me, True)
 
 @DuelParser.command(names=['grave'])
 def grave(caller):
