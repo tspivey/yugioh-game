@@ -107,9 +107,6 @@ class login_parser(gsb.Parser):
 				pl.detach_connection()
 				connection.player = pl
 				pl.attach_connection(connection)
-				if pl.duel is None:
-					pl.set_parser('LobbyParser')
-					pl.paused_parser = None
 			else:
 				connection.notify(pl._("Reconnecting..."))
 				for opl in [p for p in globals.server.get_all_players() if p is not pl]:

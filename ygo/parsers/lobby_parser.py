@@ -131,8 +131,8 @@ def who(caller):
 			s += " " + caller.connection._("[AFK]")
 		if pl.watching and "watch" in showing:
 			if pl.duel.tag is True:
-				pl0 = pl._("team %s")%(pl.duel.players[0].nickname+", "+pl.duel.tag_players[0].nickname)
-				pl1 = pl._("team %s")%(pl.duel.players[1].nickname+", "+pl.duel.tag_players[1].nickname)
+				pl0 = caller.connection._("team %s")%(pl.duel.players[0].nickname+", "+pl.duel.tag_players[0].nickname)
+				pl1 = caller.connection._("team %s")%(pl.duel.players[1].nickname+", "+pl.duel.tag_players[1].nickname)
 			else:
 				pl0 = pl.duel.players[0].nickname
 				pl1 = pl.duel.players[1].nickname
@@ -142,11 +142,11 @@ def who(caller):
 				plteam = [pl.duel.players[pl.duel_player], pl.duel.tag_players[pl.duel_player]]
 				plopponents = [pl.duel.players[1 - pl.duel_player], pl.duel.tag_players[1 - pl.duel_player]]
 				partner = plteam[1 - plteam.index(pl)].nickname
-				other = pl._("team %s")%(plopponents[0].nickname+", "+plopponents[1].nickname)
+				other = caller.connection._("team %s")%(plopponents[0].nickname+", "+plopponents[1].nickname)
 				if pl.duel.private is True:
-					who_output.append(pl._("%s (privately dueling %s together with %s")%(pl.nickname, other, partner))
+					who_output.append(caller.connection._("%s (privately dueling %s together with %s")%(pl.nickname, other, partner))
 				else:
-					who_output.append(pl._("%s (dueling %s together with %s)")%(pl.nickname, other, partner))
+					who_output.append(caller.connection._("%s (dueling %s together with %s)")%(pl.nickname, other, partner))
 			else:
 				other = pl.duel.players[1 - pl.duel_player].nickname
 				if pl.duel.private is True:
