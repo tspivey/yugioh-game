@@ -97,7 +97,11 @@ class Duel:
 			self.cards[player.duel_player] = c
 		for sc in c[::-1]:
 			if tag is True:
-				lib.new_tag_card(self.duel, sc, player.duel_player, LOCATION_DECK)
+				if Card(sc).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK):
+					location = LOCATION_EXTRA
+				else:
+					location = LOCATION_DECK
+				lib.new_tag_card(self.duel, sc, player.duel_player, location)
 			else:
 				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE)
 
