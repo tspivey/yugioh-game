@@ -7,11 +7,14 @@ from twisted.internet import reactor
 from .card import Card
 from . import globals
 from . import models
+from .channels.chat import Chat
 
 class Server(gsb.Server):
 
 	def __init__(self, *args, **kwargs):
 		gsb.Server.__init__(self, *args, **kwargs)
+
+		self.chat = Chat()
 		self.db = sqlite3.connect('locale/en/cards.cdb')
 		self.db.row_factory = sqlite3.Row
 		self.players = {}
@@ -53,9 +56,11 @@ class Server(gsb.Server):
 
 	def add_player(self, player):
 		self.players[player.nickname.lower()] = player
+		self.chat.add_recipient(player)
 
 	def remove_player(self, nick):
 		try:
+			self.chat.remove_recipient(self.players[nick.lower()])
 			del(self.players[nick.lower()])
 		except KeyError:
 			pass

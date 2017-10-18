@@ -16,7 +16,6 @@ class Player:
 		self.afk = False
 		self.card_list = []
 		self.challenge = True
-		self.chat = True
 		self.connection = None
 		self.deck = {'cards': []}
 		self.deck_editor = DeckEditor(self)

@@ -38,6 +38,9 @@ class Channel:
 	# sends any message and will deliver it to all recipients
 	def send_message(self, sender, message):
 
+		if not self.is_recipient(sender):
+			return
+
 		for r in self.recipients:
 			if self.is_ignoring(r, sender):
 				continue

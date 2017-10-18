@@ -70,18 +70,17 @@ def deck(caller):
 def chat(caller):
 	text = caller.args[0]
 	if not text:
-		caller.connection.player.chat = not caller.connection.player.chat
-		if caller.connection.player.chat:
-			caller.connection.notify(caller.connection._("Chat on."))
-		else:
+		if globals.server.chat.is_recipient(caller.connection.player):
+			globals.server.chat.remove_recipient(caller.connection.player)
 			caller.connection.notify(caller.connection._("Chat off."))
+		else:
+			globals.server.chat.add_recipient(caller.connection.player)
+			caller.connection.notify(caller.connection._("Chat on."))
 		return
-	if not caller.connection.player.chat:
-		caller.connection.player.chat = True
+	if not globals.server.chat.is_recipient(caller.connection.player):
+		globals.server.chat.add_recipient(caller.connection.player)
 		caller.connection.notify(caller.connection._("Chat on."))
-	for pl in globals.server.get_all_players():
-		if pl.chat and caller.connection.player.nickname not in pl.ignores:
-			pl.notify(pl._("%s chats: %s") % (caller.connection.player.nickname, caller.args[0]))
+	globals.server.chat.send_message(caller.connection.player, text)
 
 @LobbyParser.command(names=["say"], args_regexp=r'(.*)')
 def say(caller):
