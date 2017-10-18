@@ -334,6 +334,7 @@ def start(caller):
 
 	# remove the room from all players
 	for p in room.get_all_players():
+		p.room.say.remove_recipient(p)
 		p.room = None
 
 @RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)

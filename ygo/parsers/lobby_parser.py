@@ -82,31 +82,28 @@ def chat(caller):
 		caller.connection.notify(caller.connection._("Chat on."))
 	globals.server.chat.send_message(caller.connection.player, text)
 
-@LobbyParser.command(names=["say"], args_regexp=r'(.*)')
+@LobbyParser.command(names=["say"], args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is not None or c.connection.player.duel is not None)
 def say(caller):
 	text = caller.args[0]
+	if caller.connection.player.room is not None:
+		c = caller.connection.player.room.say
+	elif caller.connection.player.duel is not None:
+		c = caller.connection.player.duel.say
+
 	if not text:
-		caller.connection.player.say = not caller.connection.player.say
-		if caller.connection.player.say:
-			caller.connection.notify(caller.connection._("Say on."))
-		else:
+		if c.is_recipient(caller.connection.player):
+			c.remove_recipient(caller.connection.player)
 			caller.connection.notify(caller.connection._("Say off."))
+		else:
+			c.add_recipient(caller.connection.player)
+			caller.connection.notify(caller.connection._("Say on."))
 		return
-	if not caller.connection.player.say:
-		caller.connection.player.say = True
+
+	if not c.is_recipient(caller.connection.player):
+		c.add_recipient(caller.connection.player)
 		caller.connection.notify(caller.connection._("Say on."))
-	if not caller.connection.player.duel and not caller.connection.player.room:
-		caller.connection.notify(caller.connection._("Not in a duel or room."))
-		return
 
-	if caller.connection.player.room:
-		players = caller.connection.player.room.get_all_players()
-	else:
-		players = caller.connection.player.duel.players+caller.connection.player.duel.watchers
-
-	for pl in players:
-		if caller.connection.player.nickname not in pl.ignores and pl.say:
-			pl.notify(pl._("%s says: %s") % (caller.connection.player.nickname, caller.args[0]))
+	c.send_message(caller.connection.player, text)
 
 @LobbyParser.command(names=['who'], args_regexp=r'(.*)')
 def who(caller):

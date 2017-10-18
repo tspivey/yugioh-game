@@ -27,7 +27,6 @@ class Player:
 		self.paused_parser = None
 		self.room = None
 		self.reply_to = ""
-		self.say = True
 		self.seen_waiting = None
 		self.soundpack = False
 		self.watch = True

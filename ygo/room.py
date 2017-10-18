@@ -1,4 +1,5 @@
 from . import globals
+from .channels.say import Say
 
 class Room:
 	def __init__(self, creator):
@@ -10,6 +11,7 @@ class Room:
 		self.rules = 0
 		self.invitations = []
 		self.banlist = 'tcg'
+		self.say = Say()
 
 	def get_all_players(self):
 		return self.teams[0]+self.teams[1]+self.teams[2]
@@ -19,6 +21,7 @@ class Room:
 		player.room = self
 		player.deck = {'cards': []}
 		self.teams[0].append(player)
+		self.say.add_recipient(player)
 		if player.nickname in self.invitations:
 			self.invitations.remove(player.nickname)
 		for pl in self.get_all_players():
@@ -44,6 +47,7 @@ class Room:
 		player.set_parser('LobbyParser')
 		player.room = None
 		player.deck = {'cards': []}
+		self.say.remove_recipient(player)
 
 		player.notify(player._("You left the room."))
 
@@ -56,6 +60,8 @@ class Room:
 				pl.set_parser('LobbyParser')
 				pl.room = None
 				pl.deck = {'cards': []}
+				self.say.remove_recipient(pl)
+
 				pl.notify(pl._("The room creator disbanded the room."))
 
 			player.notify(player._("The room was disbanded."))

@@ -17,6 +17,7 @@ from .duel_reader import DuelReader
 from .utils import process_duel
 from . import globals
 from . import message_handlers
+from .channels.say import Say
 
 @ffi.def_extern()
 def card_reader_callback(code, data):
@@ -85,6 +86,7 @@ class Duel:
 		self.cards = [None, None]
 		self.tag_cards = [None, None]
 		self.revealed = {}
+		self.say = Say()
 		self.bind_message_handlers()
 
 	def load_deck(self, player, shuffle=True, tag = False):
@@ -125,11 +127,13 @@ class Duel:
 			self.players[i].duel_player = i
 			self.players[i].duel = self
 			self.players[i].set_parser('DuelParser')
+			self.say.add_recipient(self.players[i])
 			self.load_deck(self.players[i], shuffle)
 			if len(self.tag_players) > i:
 				self.tag_players[i].duel_player = i
 				self.tag_players[i].duel = self
 				self.tag_players[i].set_parser('DuelParser')
+				self.say.add_recipient(self.tag_players[i])
 				self.load_deck(self.tag_players[i], shuffle, True)
 
 	def start(self, options):
@@ -157,6 +161,7 @@ class Duel:
 			pl.watching = False
 			pl.card_list = []
 			pl.deck = {'cards': []}
+			self.say.remove_recipient(pl)
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():
 					opl.notify(opl._("%s logged out.")%(pl.nickname))
@@ -653,6 +658,7 @@ class Duel:
 					p.notify(p._("%s is no longer watching this duel.")%(pl.nickname))
 			pl.duel = None
 			pl.watching = False
+			self.say.remove_recipient(pl)
 			pl.notify(pl._("Watching stopped."))
 			pl.set_parser('LobbyParser')
 		except ValueError:
@@ -662,6 +668,7 @@ class Duel:
 		pl.duel = self
 		pl.duel_player = 0
 		pl.watching = True
+		self.say.add_recipient(pl)
 		if self.tag is True:
 			pl0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
 			pl1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
