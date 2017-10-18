@@ -70,15 +70,14 @@ def deck(caller):
 def chat(caller):
 	text = caller.args[0]
 	if not text:
-		if globals.server.chat.is_recipient(caller.connection.player):
-			globals.server.chat.remove_recipient(caller.connection.player)
-			caller.connection.notify(caller.connection._("Chat off."))
-		else:
-			globals.server.chat.add_recipient(caller.connection.player)
+		caller.connection.player.chat = not caller.connection.player.chat
+		if caller.connection.player.chat:
 			caller.connection.notify(caller.connection._("Chat on."))
+		else:
+			caller.connection.notify(caller.connection._("Chat off."))
 		return
-	if not globals.server.chat.is_recipient(caller.connection.player):
-		globals.server.chat.add_recipient(caller.connection.player)
+	if not caller.connection.player.chat:
+		caller.connection.player.chat = True
 		caller.connection.notify(caller.connection._("Chat on."))
 	globals.server.chat.send_message(caller.connection.player, text)
 
@@ -91,16 +90,15 @@ def say(caller):
 		c = caller.connection.player.duel.say
 
 	if not text:
-		if c.is_recipient(caller.connection.player):
-			c.remove_recipient(caller.connection.player)
-			caller.connection.notify(caller.connection._("Say off."))
-		else:
-			c.add_recipient(caller.connection.player)
+		caller.connection.player.say = not caller.connection.player.say
+		if caller.connection.player.say:
 			caller.connection.notify(caller.connection._("Say on."))
+		else:
+			caller.connection.notify(caller.connection._("Say off."))
 		return
 
-	if not c.is_recipient(caller.connection.player):
-		c.add_recipient(caller.connection.player)
+	if not caller.connection.player.say:
+		caller.connection.player.say = True
 		caller.connection.notify(caller.connection._("Say on."))
 
 	c.send_message(caller.connection.player, text)
@@ -516,6 +514,32 @@ def uptime(caller):
 	delta = datetime.datetime.utcnow() - globals.server.started
 
 	caller.connection.notify(caller.connection._("This server has been running for %s.")%(format_timedelta(delta, locale=locale.normalize(caller.connection.player.language).split('_')[0])))
+
+@LobbyParser.command(names=['chathistory'], args_regexp=r'(\d*)')
+def chathistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+
+	globals.server.chat.print_history(caller.connection.player, count)
+
+@LobbyParser.command(names=['sayhistory'], args_regexp=r'(\d*)', allowed = lambda c: c.connection.player.room is not None or c.connection.player.duel is not None)
+def sayhistory(caller):
+
+	if caller.connection.player.room is not None:
+		c = caller.connection.player.room.say
+	elif caller.connection.player.duel is not None:
+		c = caller.connection.player.duel.say
+	
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+	
+	c.print_history(caller.connection.player, count)
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DuelParser.commands:

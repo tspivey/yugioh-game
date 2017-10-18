@@ -16,6 +16,7 @@ class Player:
 		self.afk = False
 		self.card_list = []
 		self.challenge = True
+		self.chat = True
 		self.connection = None
 		self.deck = {'cards': []}
 		self.deck_editor = DeckEditor(self)
@@ -27,6 +28,7 @@ class Player:
 		self.paused_parser = None
 		self.room = None
 		self.reply_to = ""
+		self.say = True
 		self.seen_waiting = None
 		self.soundpack = False
 		self.watch = True
