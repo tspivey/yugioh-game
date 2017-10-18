@@ -18,6 +18,9 @@ from .utils import process_duel
 from . import globals
 from . import message_handlers
 from .channels.say import Say
+from .channels.watchers import Watchers
+
+__ = lambda x: x
 
 @ffi.def_extern()
 def card_reader_callback(code, data):
@@ -87,6 +90,7 @@ class Duel:
 		self.tag_cards = [None, None]
 		self.revealed = {}
 		self.say = Say()
+		self.watch = Watchers()
 		self.bind_message_handlers()
 
 	def load_deck(self, player, shuffle=True, tag = False):
@@ -128,12 +132,14 @@ class Duel:
 			self.players[i].duel = self
 			self.players[i].set_parser('DuelParser')
 			self.say.add_recipient(self.players[i])
+			self.watch.add_recipient(self.players[i])
 			self.load_deck(self.players[i], shuffle)
 			if len(self.tag_players) > i:
 				self.tag_players[i].duel_player = i
 				self.tag_players[i].duel = self
 				self.tag_players[i].set_parser('DuelParser')
 				self.say.add_recipient(self.tag_players[i])
+				self.watch.add_recipient(self.tag_players[i])
 				self.load_deck(self.tag_players[i], shuffle, True)
 
 	def start(self, options):
@@ -162,6 +168,7 @@ class Duel:
 			pl.card_list = []
 			pl.deck = {'cards': []}
 			self.say.remove_recipient(pl)
+			self.watch.remove_recipient(pl)
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():
 					opl.notify(opl._("%s logged out.")%(pl.nickname))
@@ -653,9 +660,8 @@ class Duel:
 	def remove_watcher(self, pl):
 		try:
 			self.watchers.remove(pl)
-			for p in self.players+self.watchers:
-				if p.watch:
-					p.notify(p._("%s is no longer watching this duel.")%(pl.nickname))
+			self.watch.remove_recipient(pl)
+			self.watch.send_message(pl, __("{player} is no longer watching this duel."))
 			pl.duel = None
 			pl.watching = False
 			self.say.remove_recipient(pl)
@@ -677,9 +683,8 @@ class Duel:
 			pl1 = self.players[1].nickname
 		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
 		self.watchers.append(pl)
-		for p in self.players+self.watchers:
-			if p.watch and p is not pl:
-				p.notify(p._("%s is now watching this duel.")%(pl.nickname))
+		self.watch.send_message(pl, __("{player} is now watching this duel."))
+		self.watch.add_recipient(pl)
 		if self.paused:
 			pl.notify(pl._("The duel is currently paused due to not all players being connected."))
 		else:
