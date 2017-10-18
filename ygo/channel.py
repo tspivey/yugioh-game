@@ -56,6 +56,6 @@ class Channel:
 			player.notify(player._("You currently don't receive messages from this channel, so you may not see the history."))
 			return
 			
-		for i in range(len(self.buffer)-1, -1, -1):
+		for i in range(min(len(self.buffer), count)-1, -1, -1):
 			if i < count:
 				player.notify(self.format_history_message(player, self.buffer[i]))
