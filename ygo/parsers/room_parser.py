@@ -2,7 +2,7 @@ import gsb
 import json
 
 from ..card import Card
-from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME
+from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME, __
 from ..duel import Duel
 from .. import globals
 from .. import models
@@ -86,9 +86,7 @@ def finish(caller):
 		pl.notify(pl._("You can now invite players to join this room."))
 	else:
 		pl.notify(pl._("Players can now join this room, or you can invite them to join you."))
-		for p in globals.server.get_all_players():
-			if not pl.nickname in p.ignores:
-				globals.server.announce_challenge(p, p._("%s created a new duel room.")%(pl.nickname))
+		globals.server.challenge.send_message(None, __("{player} created a new duel room."), player = pl.nickname)
 
 @RoomParser.command(names=['leave'])
 def leave(caller):
@@ -315,14 +313,13 @@ def start(caller):
 	duel.add_players(room.teams[1]+room.teams[2])
 
 	if not room.private:
-		for p in globals.server.get_all_players():
-			if duel.tag is True:
-				pl0 = p._("team %s")%(duel.players[0].nickname+", "+duel.tag_players[0].nickname)
-				pl1 = p._("team %s")%(duel.players[1].nickname+", "+duel.tag_players[1].nickname)
-			else:
-				pl0 = duel.players[0].nickname
-				pl1 = duel.players[1].nickname
-			globals.server.announce_challenge(p, p._("The duel between %s and %s has begun!") % (pl0, pl1))
+		if duel.tag is True:
+			pl0 = "team "+duel.players[0].nickname+", "+duel.tag_players[0].nickname
+			pl1 = "team "+duel.players[1].nickname+", "+duel.tag_players[1].nickname
+		else:
+			pl0 = duel.players[0].nickname
+			pl1 = duel.players[1].nickname
+		globals.server.challenge.send_message(None, __("The duel between {player1} and {player2} has begun!"), player1 = pl0, player2 = pl1)
 
 	duel.start(((room.rules&0xff)<<16)+(room.options&0xffff))
 

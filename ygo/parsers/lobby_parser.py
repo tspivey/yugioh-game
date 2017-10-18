@@ -499,12 +499,11 @@ def giveup(caller):
 		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
 
 	if not duel.private:
-		for pl in globals.server.get_all_players():
-			if duel.tag is True:
-				op = pl._("team %s")%(duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname)
-			else:
-				op = duel.players[1 - caller.connection.player.duel_player].nickname
-			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, op))
+		if duel.tag is True:
+			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
+		else:
+			op = duel.players[1 - caller.connection.player.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
 
 	duel.end()
 
@@ -539,6 +538,16 @@ def sayhistory(caller):
 		count = int(caller.args[0])
 	
 	c.print_history(caller.connection.player, count)
+
+@LobbyParser.command(names=['challengehistory'], args_regexp=r'(\d*)')
+def challengehistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+	
+	globals.server.challenge.print_history(caller.connection.player, count)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():

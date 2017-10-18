@@ -7,6 +7,7 @@ from twisted.internet import reactor
 from .card import Card
 from . import globals
 from . import models
+from .channels.challenge import Challenge
 from .channels.chat import Chat
 
 class Server(gsb.Server):
@@ -14,6 +15,7 @@ class Server(gsb.Server):
 	def __init__(self, *args, **kwargs):
 		gsb.Server.__init__(self, *args, **kwargs)
 
+		self.challenge = Challenge()
 		self.chat = Chat()
 		self.db = sqlite3.connect('locale/en/cards.cdb')
 		self.db.row_factory = sqlite3.Row
@@ -56,10 +58,12 @@ class Server(gsb.Server):
 
 	def add_player(self, player):
 		self.players[player.nickname.lower()] = player
+		self.challenge.add_recipient(player)
 		self.chat.add_recipient(player)
 
 	def remove_player(self, nick):
 		try:
+			self.challenge.remove_recipient(self.players[nick.lower()])
 			self.chat.remove_recipient(self.players[nick.lower()])
 			del(self.players[nick.lower()])
 		except KeyError:
@@ -85,11 +89,6 @@ class Server(gsb.Server):
 		players.sort(key=lambda p: p.nickname)
 
 		return players
-
-	def announce_challenge(self, pl, text):
-		if not pl.challenge:
-			return
-		pl.notify("Challenge: " + text)
 
 	def get_card_by_name(self, pl, name):
 		r = re.compile(r'^(\d+)\.(.+)$')

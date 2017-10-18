@@ -1,3 +1,4 @@
+from .constants import __
 from . import globals
 from .channels.say import Say
 
@@ -66,9 +67,9 @@ class Room:
 
 			player.notify(player._("The room was disbanded."))
 
-			for pl in globals.server.get_all_players():
-				if self.open and not self.private:
-					globals.server.announce_challenge(pl, pl._("%s disbanded their duel room.")%(player.nickname))
+
+			if self.open and not self.private:
+				globals.server.challenge.send_message(None, __("{player} disbanded their duel room."), player = player.nickname)
 
 	def set_banlist(self, list):
 
