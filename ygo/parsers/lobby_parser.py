@@ -322,14 +322,19 @@ def tell(caller):
 	else:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
-	if caller.connection.player.nickname in player.ignores:
-		caller.connection.notify(caller.connection._("%s is ignoring you.") % player.nickname)
+	# need to handle ignorings here externally, to prevent buffering
+	if player.nickname in caller.connection.player.ignores:
+		caller.connection.notify(caller.connection._("You are ignoring %s.")%(player.nickname))
 		return
-	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
+	elif caller.connection.player.nickname in player.ignores:
+		caller.connection.notify(caller.connection._("%s is ignoring you.")%(player.nickname))
+		return
 	if player.afk is True:
 		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
-	player.notify(player._("%s tells you: %s") % (caller.connection.player.nickname, args[1]))
-	player.reply_to = caller.connection.player.nickname
+	res = player.tell.send_message(caller.connection.player, args[1])
+	if res == 1:
+		caller.connection.player.tell.send_message(None, args[1], receiving_player = player.nickname)
+		player.reply_to = caller.connection.player.nickname
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def reply(caller):
@@ -343,9 +348,19 @@ def reply(caller):
 	if not player:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
-	caller.connection.notify(caller.connection._("You reply to %s: %s") % (player.nickname, caller.args[0]))
-	player.notify(player._("%s replies: %s") % (caller.connection.player.nickname, caller.args[0]))
-	player.reply_to = caller.connection.player.nickname
+	# see above
+	if player.nickname in caller.connection.player.ignores:
+		caller.connection.notify(caller.connection._("You are ignoring %s.")%(player.nickname))
+		return
+	elif caller.connection.player.nickname in player.ignores:
+		caller.connection.notify(caller.connection._("%s is ignoring you.")%(player.nickname))
+		return
+	if player.afk is True:
+		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
+	res = player.tell.send_message(caller.connection.player, caller.args[0])
+	if res == 1:
+		caller.connection.player.tell.send_message(None, caller.args[0], receiving_player = player.nickname)
+		player.reply_to = caller.connection.player.nickname
 
 @LobbyParser.command
 def soundpack_on(caller):
@@ -548,6 +563,16 @@ def challengehistory(caller):
 		count = int(caller.args[0])
 	
 	globals.server.challenge.print_history(caller.connection.player, count)
+
+@LobbyParser.command(names=['tellhistory'], args_regexp=r'(\d*)')
+def tellhistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+		
+	caller.connection.player.tell.print_history(caller.connection.player)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():

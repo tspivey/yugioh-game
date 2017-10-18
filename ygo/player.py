@@ -1,5 +1,6 @@
 import gettext
 
+from .channels.tell import Tell
 from .constants import *
 from . import globals
 from .deck_editor import DeckEditor
@@ -31,8 +32,10 @@ class Player:
 		self.say = True
 		self.seen_waiting = None
 		self.soundpack = False
+		self.tell = Tell()
 		self.watch = True
 		self.watching = False
+		self.tell.add_recipient(self)
 
 	def set_language(self, lang):
 		i18n_set_language(self, lang)
@@ -77,3 +80,6 @@ class Player:
 			self.connection.parser = DuelParser
 		elif p == 'roomparser':
 			self.connection.parser = RoomParser
+
+	def __del__(self):
+		self.tell.remove_recipient(self)

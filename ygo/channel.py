@@ -48,12 +48,17 @@ class Channel:
 		if not self.is_recipient(sender):
 			return
 
+		success = 0
+		
 		for r in self.recipients:
 			if not self.is_enabled(r) or self.is_ignoring(r, sender):
 				continue
 			r.notify(self.format_message(r, sender, message, kwargs))
+			success += 1
 		
 		self.buffer.append(self.format_buffer_entry(sender, message, kwargs))
+		
+		return success
 	
 	# formats the message printed in the history
 	def format_history_message(self, recipient, buffer_entry):
