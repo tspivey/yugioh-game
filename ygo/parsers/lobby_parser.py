@@ -19,6 +19,8 @@ from .duel_parser import DuelParser
 from .room_parser import RoomParser
 from .. import models
 
+__ = lambda x: x
+
 LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
 
 @LobbyParser.command(names=['afk'])
