@@ -79,13 +79,16 @@ def chat(caller):
 	if not caller.connection.player.chat:
 		caller.connection.player.chat = True
 		caller.connection.notify(caller.connection._("Chat on."))
-	for pl in globals.server.get_all_players():
-		if pl.chat and caller.connection.player.nickname not in pl.ignores:
-			pl.notify(pl._("%s chats: %s") % (caller.connection.player.nickname, caller.args[0]))
+	globals.server.chat.send_message(caller.connection.player, text)
 
-@LobbyParser.command(names=["say"], args_regexp=r'(.*)')
+@LobbyParser.command(names=["say"], args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is not None or c.connection.player.duel is not None)
 def say(caller):
 	text = caller.args[0]
+	if caller.connection.player.room is not None:
+		c = caller.connection.player.room.say
+	elif caller.connection.player.duel is not None:
+		c = caller.connection.player.duel.say
+
 	if not text:
 		caller.connection.player.say = not caller.connection.player.say
 		if caller.connection.player.say:
@@ -93,21 +96,12 @@ def say(caller):
 		else:
 			caller.connection.notify(caller.connection._("Say off."))
 		return
+
 	if not caller.connection.player.say:
 		caller.connection.player.say = True
 		caller.connection.notify(caller.connection._("Say on."))
-	if not caller.connection.player.duel and not caller.connection.player.room:
-		caller.connection.notify(caller.connection._("Not in a duel or room."))
-		return
 
-	if caller.connection.player.room:
-		players = caller.connection.player.room.get_all_players()
-	else:
-		players = caller.connection.player.duel.players+caller.connection.player.duel.watchers
-
-	for pl in players:
-		if caller.connection.player.nickname not in pl.ignores and pl.say:
-			pl.notify(pl._("%s says: %s") % (caller.connection.player.nickname, caller.args[0]))
+	c.send_message(caller.connection.player, text)
 
 @LobbyParser.command(names=['who'], args_regexp=r'(.*)')
 def who(caller):
@@ -328,14 +322,19 @@ def tell(caller):
 	else:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
-	if caller.connection.player.nickname in player.ignores:
-		caller.connection.notify(caller.connection._("%s is ignoring you.") % player.nickname)
+	# need to handle ignorings here externally, to prevent buffering
+	if player.nickname in caller.connection.player.ignores:
+		caller.connection.notify(caller.connection._("You are ignoring %s.")%(player.nickname))
 		return
-	caller.connection.notify(caller.connection._("You tell %s: %s") % (player.nickname, args[1]))
+	elif caller.connection.player.nickname in player.ignores:
+		caller.connection.notify(caller.connection._("%s is ignoring you.")%(player.nickname))
+		return
 	if player.afk is True:
 		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
-	player.notify(player._("%s tells you: %s") % (caller.connection.player.nickname, args[1]))
-	player.reply_to = caller.connection.player.nickname
+	res = player.tell.send_message(caller.connection.player, args[1])
+	if res == 1:
+		caller.connection.player.tell.send_message(None, args[1], receiving_player = player.nickname)
+		player.reply_to = caller.connection.player.nickname
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def reply(caller):
@@ -349,9 +348,19 @@ def reply(caller):
 	if not player:
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
-	caller.connection.notify(caller.connection._("You reply to %s: %s") % (player.nickname, caller.args[0]))
-	player.notify(player._("%s replies: %s") % (caller.connection.player.nickname, caller.args[0]))
-	player.reply_to = caller.connection.player.nickname
+	# see above
+	if player.nickname in caller.connection.player.ignores:
+		caller.connection.notify(caller.connection._("You are ignoring %s.")%(player.nickname))
+		return
+	elif caller.connection.player.nickname in player.ignores:
+		caller.connection.notify(caller.connection._("%s is ignoring you.")%(player.nickname))
+		return
+	if player.afk is True:
+		caller.connection.notify(caller.connection._("%s is AFK and may not be paying attention.") %(player.nickname))
+	res = player.tell.send_message(caller.connection.player, caller.args[0])
+	if res == 1:
+		caller.connection.player.tell.send_message(None, caller.args[0], receiving_player = player.nickname)
+		player.reply_to = caller.connection.player.nickname
 
 @LobbyParser.command
 def soundpack_on(caller):
@@ -505,12 +514,11 @@ def giveup(caller):
 		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
 
 	if not duel.private:
-		for pl in globals.server.get_all_players():
-			if duel.tag is True:
-				op = pl._("team %s")%(duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname)
-			else:
-				op = duel.players[1 - caller.connection.player.duel_player].nickname
-			globals.server.announce_challenge(pl, pl._("%s has cowardly submitted to %s.")%(caller.connection.player.nickname, op))
+		if duel.tag is True:
+			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
+		else:
+			op = duel.players[1 - caller.connection.player.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
 
 	duel.end()
 
@@ -520,6 +528,52 @@ def uptime(caller):
 	delta = datetime.datetime.utcnow() - globals.server.started
 
 	caller.connection.notify(caller.connection._("This server has been running for %s.")%(format_timedelta(delta, locale=locale.normalize(caller.connection.player.language).split('_')[0])))
+
+@LobbyParser.command(names=['chathistory'], args_regexp=r'(\d*)')
+def chathistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+
+	globals.server.chat.print_history(caller.connection.player, count)
+
+@LobbyParser.command(names=['sayhistory'], args_regexp=r'(\d*)', allowed = lambda c: c.connection.player.room is not None or c.connection.player.duel is not None)
+def sayhistory(caller):
+
+	if caller.connection.player.room is not None:
+		c = caller.connection.player.room.say
+	elif caller.connection.player.duel is not None:
+		c = caller.connection.player.duel.say
+	
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+	
+	c.print_history(caller.connection.player, count)
+
+@LobbyParser.command(names=['challengehistory'], args_regexp=r'(\d*)')
+def challengehistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+	
+	globals.server.challenge.print_history(caller.connection.player, count)
+
+@LobbyParser.command(names=['tellhistory'], args_regexp=r'(\d*)')
+def tellhistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+		
+	caller.connection.player.tell.print_history(caller.connection.player)
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DuelParser.commands:

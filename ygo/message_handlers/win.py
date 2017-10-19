@@ -1,5 +1,6 @@
 import io
 
+from ygo.constants import __
 from ygo import globals
 
 def msg_win(self, data):
@@ -12,14 +13,13 @@ def msg_win(self, data):
 def win(self, player, reason):
 	if player == 2:
 		if self.tag is True:
-			pl0 = self.players[0].nickname+", "+self.tag_players[0].nickname
-			pl1 = self.players[1].nickname+", "+self.tag_players[1].nickname
+			pl0 = "team "+self.players[0].nickname+", "+self.tag_players[0].nickname
+			pl1 = "team "+self.players[1].nickname+", "+self.tag_players[1].nickname
 		else:
 			pl0 = self.players[0].nickname
 			pl1 = self.players[1].nickname
 		if not self.private:
-			for pl in globals.server.get_all_players():
-				globals.server.announce_challenge(pl, pl._("%s and %s ended up in a draw.")%(pl._("team %s")%(pl0), pl._("team %s")%(pl1)))
+			globals.server.challenge.send_message(None, __("{player1} and {player2} ended up in a draw."), player1 = pl0, player2 = pl1)
 
 		self.end()
 		return
@@ -30,37 +30,33 @@ def win(self, player, reason):
 	else:
 		winners = [self.players[player]]
 		losers = [self.players[1 - player]]
+	l_reason = lambda p: globals.strings[p.language]['victory'][reason]
 	for w in winners:
-		reason_str = globals.strings[w.language]['victory'][reason]
 		if self.tag:
-			w.notify(w._("%s and you won (%s).")%(winners[1 - winners.index(w)].nickname, reason_str))
+			w.notify(w._("%s and you won (%s).")%(winners[1 - winners.index(w)].nickname, l_reason(w)))
 		else:
-			w.notify(w._("You won (%s).") % reason_str)
+			w.notify(w._("You won (%s).") % l_reason(w))
 	for l in losers:
-		reason_str = globals.strings[l.language]['victory'][reason]
 		if self.tag is True:
-			l.notify(l._("%s and you lost (%s).")%(losers[1 - losers.index(l)].nickname, reason_str))
+			l.notify(l._("%s and you lost (%s).")%(losers[1 - losers.index(l)].nickname, l_reason(l)))
 		else:
-			l.notify(l._("You lost (%s).") % reason_str)
+			l.notify(l._("You lost (%s).") % l_reason(l))
 
 	for pl in self.watchers:
 		if pl.watching is True:
-			reason_str = globals.strings[pl.language]['victory'][reason]
 			if self.tag is True:
-				w = pl._("team %s")%(winners[0].nickname+", "+winners[1].nickname)
+				w = "team "+winners[0].nickname+", "+winners[1].nickname
 			else:
 				w = winners[0].nickname
-			pl.notify(pl._("%s won (%s).") % (w, reason_str))
+			pl.notify(pl._("%s won (%s).") % (w, l_reason(pl)))
 	if not self.private:
-		for pl in globals.server.get_all_players():
-			reason_str = globals.strings[pl.language]['victory'][reason]
-			if self.tag is True:
-				w = pl._("team %s")%(winners[0].nickname+", "+winners[1].nickname)
-				l = pl._("team %s")%(losers[0].nickname+", "+losers[1].nickname)
-			else:
-				w = winners[0].nickname
-				l = losers[0].nickname
-			globals.server.announce_challenge(pl, pl._("%s won the duel between %s and %s (%s).") % (w, w, l, reason_str))
+		if self.tag is True:
+			w = "team "+winners[0].nickname+", "+winners[1].nickname
+			l = "team "+losers[0].nickname+", "+losers[1].nickname
+		else:
+			w = winners[0].nickname
+			l = losers[0].nickname
+		globals.server.challenge.send_message(None, __("{winner} won the duel between {player1} and {player2} ({reason})."), winner = w, player1 = w, player2 = l, reason = l_reason)
 	self.end()
 
 MESSAGES = {5: msg_win}
