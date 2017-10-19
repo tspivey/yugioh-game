@@ -1583,11 +1583,11 @@ msgstr "Teclea ? para ver las órdenes y las preferencias de la sala."
 
 #: ygo/parsers/room_parser.py:16
 msgid "This command isn't available right now."
-msgstr ""
+msgstr "Este comando no está disponible ahora."
 
 #: ygo/parsers/room_parser.py:36
 msgid "The following settings are defined for this room:"
-msgstr ""
+msgstr "La sala tiene definida las siguientes configuraciones:"
 
 #: ygo/parsers/room_parser.py:38
 #, python-format
@@ -1596,7 +1596,7 @@ msgstr ""
 
 #: ygo/parsers/room_parser.py:40
 msgid "Duel Rules:"
-msgstr ""
+msgstr "Reglas de duelo:"
 
 #: ygo/parsers/room_parser.py:43 ygo/parsers/room_parser.py:204
 msgid "Link"
@@ -1625,7 +1625,7 @@ msgstr ""
 
 #: ygo/parsers/room_parser.py:53
 msgid "The following commands are available for you:"
-msgstr ""
+msgstr "Los siguientes comandos están disponibles para ti:"
 
 #: ygo/parsers/room_parser.py:56
 msgid "banlist - define banlist"
