@@ -203,7 +203,7 @@ class DeckEditor:
 				if search_pos >= len(globals.server.all_cards):
 					search_pos = 0
 				pos = self.find_next(text, search_pos)
-				if not pos:
+				if pos is None:
 					con.notify(con._("Not found."))
 				else:
 					self.deck_edit_pos = pos
@@ -215,7 +215,7 @@ class DeckEditor:
 				if search_start < 0:
 					search_start = len(globals.server.all_cards) - 1
 				pos = self.find_prev(text, search_start)
-				if not pos:
+				if pos is None:
 					con.notify(con._("Not found."))
 				else:
 					self.deck_edit_pos = pos
@@ -298,29 +298,27 @@ class DeckEditor:
 		self.player.notify(card.get_info(self.player))
 
 	def find_next(self, text, start, limit=None, wrapped=False):
+		sql = 'SELECT id FROM texts WHERE UPPER(name) LIKE ? and id in (%s) ORDER BY id ASC LIMIT 1'
 		if limit:
 			cards = globals.server.all_cards[start:start+limit]
 		else:
 			cards = globals.server.all_cards[start:]
-		for i, code in enumerate(cards):
-			card = Card(code)
-			if text.lower() in card.get_name(self.player).lower():
-				return start + i
+		row = self.player.cdb.execute(sql % (', '.join([str(c) for c in cards])), ('%'+text.upper()+'%', )).fetchone()
+		if row is not None:
+			return globals.server.all_cards.index(row[0])
 		if wrapped:
 			return
 		return self.find_next(text, 0, start, wrapped=True)
 
 	def find_prev(self, text, start, end=None, wrapped=False):
-		text = text.lower()
+		sql = 'SELECT id FROM texts WHERE UPPER(name) LIKE ? AND id IN (%s) ORDER BY id DESC LIMIT 1'
 		pos = start
 		if end is None:
 			end = 0
-		while pos >= end:
-			card = Card(globals.server.all_cards[pos])
-			name = card.get_name(self.player).lower()
-			if text in name:
-				return pos
-			pos -= 1
+		cards = globals.server.all_cards[end:start]
+		row = self.player.cdb.execute(sql % (', '.join([str(c) for c in cards])), ('%'+text.upper()+'%', )).fetchone()
+		if row is not None:
+			return globals.server.all_cards.index(row[0])
 		if wrapped:
 			return
 		return self.find_prev(text, len(globals.server.all_cards) - 1, start, wrapped=True)
