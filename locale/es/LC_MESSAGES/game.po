@@ -1,4 +1,4 @@
-# Spanish translations for PROJECT.
+# Spanish translations for PROJECT.
 # Copyright (C) 2017 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
@@ -35,7 +35,7 @@ msgstr "Ataque: %d Defensa: %d Nivel: %d"
 #: ygo/card.py:105
 #, python-format
 msgid "Pendulum scale: %d/%d"
-msgstr "Escala de péndulo: %d"
+msgstr "Escala de péndulo: %d/%d"
 
 #: ygo/card.py:107
 #, python-format
