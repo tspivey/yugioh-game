@@ -52,7 +52,11 @@ def grave2(caller):
 
 @DuelParser.command
 def removed(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION_REMOVED)
+	if caller.connection.player.watching is True:
+		hide = True
+	else:
+		hide = False
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION_REMOVED, hide)
 
 @DuelParser.command
 def removed2(caller):
