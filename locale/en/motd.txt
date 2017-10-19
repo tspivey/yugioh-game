@@ -1,7 +1,7 @@
 Welcome to the game.
 For latest changes, type help changes.
-A starter "deck is available, type deck load public/starter" to load it.
-If you want to create your own deck, deck edit deckname.
-duel player will try to start a duel with that player.
+There are several public decks available, type help public decks to get a list.
+See help deck for a list of available deck commands.
+Create a new duel room by using create, or join player to join an existing room.
 chat text (or .text with a leading dot) will chat that text to all users.
 who shows who is online.

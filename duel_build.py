@@ -4,6 +4,8 @@ ffibuilder.set_source("_duel",
 	r"""
 #include "ocgapi.h"
 #include "card.h"
+#include "duel.h"
+#include "field.h"
 #include <vector>
 int32 is_declarable(card_data const& cd, const std::vector<uint32>& opcode);
 int32 declarable(card_data *cd, int32 size, uint32 *array) {
@@ -12,6 +14,41 @@ int32 declarable(card_data *cd, int32 size, uint32 *array) {
 	v.push_back(array[i]);
 	}
 	return is_declarable(*cd, v);
+}
+// modified from query_card()
+uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence) {
+	if(playerid != 0 && playerid != 1)
+		return 0;
+	duel* ptduel = (duel*)pduel;
+	card* pcard = 0;
+	location &= 0x7f;
+	if(location & LOCATION_ONFIELD)
+		pcard = ptduel->game_field->get_field_card(playerid, location, sequence);
+	else {
+		field::card_vector* lst = 0;
+		if(location == LOCATION_HAND )
+			lst = &ptduel->game_field->player[playerid].list_hand;
+		else if(location == LOCATION_GRAVE )
+			lst = &ptduel->game_field->player[playerid].list_grave;
+		else if(location == LOCATION_REMOVED )
+			lst = &ptduel->game_field->player[playerid].list_remove;
+		else if(location == LOCATION_EXTRA )
+			lst = &ptduel->game_field->player[playerid].list_extra;
+		else if(location == LOCATION_DECK )
+			lst = &ptduel->game_field->player[playerid].list_main;
+		if(!lst || sequence > lst->size())
+			pcard = 0;
+		else {
+			auto cit = lst->begin();
+			for(uint32 i = 0; i < sequence; ++i, ++cit);
+			pcard = *cit;
+		}
+	}
+	if(pcard)
+		return pcard->get_linked_zone();
+	else {
+		return 0;
+	}
 }
 """,
 libraries = ['ygo'],
@@ -60,12 +97,14 @@ void get_log_message(ptr pduel, byte* buf);
 int32 get_message(ptr pduel, byte* buf);
 int32 process(ptr pduel);
 void new_card(ptr pduel, uint32 code, uint8 owner, uint8 playerid, uint8 location, uint8 sequence, uint8 position);
+void new_tag_card(ptr pduel, uint32 code, uint8 owner, uint8 location);
 void set_player_info(ptr pduel, int32 playerid, int32 lp, int32 startcount, int32 drawcount);
 void set_responsei(ptr pduel, int32 value);
 void set_responseb(ptr pduel, byte *value);
 int32 query_card(ptr pduel, uint8 playerid, uint8 location, uint8 sequence, int32 query_flag, byte* buf, int32 use_cache);
 int32 query_field_count(ptr pduel, uint8 playerid, uint8 location);
 int32 query_field_card(ptr pduel, uint8 playerid, uint8 location, int32 query_flag, byte* buf, int32 use_cache);
+uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence);
 int32 declarable(struct card_data *cd, int32 size, uint32 *array);
 """)
 
