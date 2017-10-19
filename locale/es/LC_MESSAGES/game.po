@@ -1726,12 +1726,12 @@ msgstr ""
 
 #: ygo/parsers/room_parser.py:134
 msgid "No remaining players in this room."
-msgstr ""
+msgstr "No quedan jugadores en esta sala."
 
 #: ygo/parsers/room_parser.py:136
 #, python-format
 msgid "Players not yet in a team: %s"
-msgstr ""
+msgstr "Al equipo %s le faltan jugadores."
 
 #: ygo/parsers/room_parser.py:145
 msgid "You can move yourself into team 0, 1 or 2, where 0 means that you remove yourself from any team."
