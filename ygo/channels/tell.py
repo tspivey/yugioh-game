@@ -1,10 +1,10 @@
 from babel.dates import format_time
 
-from ..channel import Channel
+from ..channel import Channel, NO_SEND_CHECK
 
 class Tell(Channel):
-	def is_recipient(self, player):
-		return True # needed so everyone can post on here
+	def __init__(self):
+		Channel.__init__(self, flags = NO_SEND_CHECK)
 	
 	def format_message(self, recipient, sender, message, params):
 		if sender is None:

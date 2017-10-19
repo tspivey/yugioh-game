@@ -3,10 +3,16 @@ from collections import deque
 import datetime
 import locale
 
+NO_SEND_CHECK = 0x1
+
 class Channel:
 	# buffer_size: amount of messages stored for history
-	def __init__(self, buffer_size=100):
+	# flags: possible values
+	#   NO_SEND_CHECK - don't check if player is a recipient of this channel when
+	#                   sending a message
+	def __init__(self, buffer_size=100, flags = 0):
 		self.buffer = deque(maxlen = buffer_size)
+		self.flags = flags
 		self.recipients = []
 	
 	# derive to add additional checks
@@ -19,7 +25,7 @@ class Channel:
 
 	# adds a recipient into the list
 	def add_recipient(self, player):
-		if player not in self.recipients:
+		if not self.is_recipient(player):
 			self.recipients.append(player)
 	
 	# removes recipient from channel
@@ -45,7 +51,7 @@ class Channel:
 	# message.format()
 	def send_message(self, sender, message, **kwargs):
 
-		if not self.is_recipient(sender):
+		if not self.flags & NO_SEND_CHECK and not self.is_recipient(sender):
 			return
 
 		success = 0
