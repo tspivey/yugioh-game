@@ -890,7 +890,7 @@ msgstr "Card {spec} ({name}) devuelta a tu mano."
 
 #: ygo/message_handlers/move.py:73
 msgid "Face-down card"
-msgstr "Carta boca abajo."
+msgstr "carta boca abajo"
 
 #: ygo/message_handlers/move.py:77
 msgid "{plname}'s card {spec} ({name}) returned to their hand."
