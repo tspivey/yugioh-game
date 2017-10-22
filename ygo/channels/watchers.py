@@ -1,8 +1,11 @@
 from babel.dates import format_time
 
-from ..channel import Channel
+from ..channel import Channel, NO_SEND_CHECK
 
 class Watchers(Channel):
+	def __init__(self):
+		Channel.__init__(self, flags = NO_SEND_CHECK)
+	
 	def is_enabled(self, recipient):
 		return recipient.watch
 	
