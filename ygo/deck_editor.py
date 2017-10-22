@@ -262,7 +262,7 @@ class DeckEditor:
 						i += 1
 				read()
 			elif caller.text.startswith('g'):
-				cnt = group_cards(cards)
+				cnt = group_cards_combined(cards.copy())
 				gm = re.search(r'^g(\d+)', caller.text)
 				if gm:
 					n = int(gm.group(1)) - 1
