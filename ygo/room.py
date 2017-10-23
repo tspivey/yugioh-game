@@ -13,6 +13,7 @@ class Room:
 		self.invitations = []
 		self.banlist = 'tcg'
 		self.say = Say()
+		self.lp = [8000, 8000]
 
 	def get_all_players(self):
 		return self.teams[0]+self.teams[1]+self.teams[2]
@@ -66,7 +67,6 @@ class Room:
 				pl.notify(pl._("The room creator disbanded the room."))
 
 			player.notify(player._("The room was disbanded."))
-
 
 			if self.open and not self.private:
 				globals.server.challenge.send_message(None, __("{player} disbanded their duel room."), player = player.nickname)

@@ -169,6 +169,7 @@ def replay(caller):
 		if line['event_type'] == 'start':
 			players = line.get('players', [])
 			decks = line.get('decks', [[]]*len(players))
+			lp = line.get('lp', [8000, 8000])
 			for i, pl in enumerate(players):
 				p = globals.server.get_player(pl)
 				if p is None:
@@ -184,6 +185,8 @@ def replay(caller):
 				p.deck = {'cards': decks[i]}
 			duel = Duel(line.get('seed', 0))
 			duel.add_players(players, shuffle = False)
+			duel.set_player_info(0, lp[0])
+			duel.set_player_info(1, lp[1])
 			duel.start(line.get('options', 0))
 		elif line['event_type'] == 'process':
 			process_duel_replay(duel)
@@ -402,7 +405,7 @@ def watch(caller):
 	elif players[0].duel.private:
 		con.notify(con._("That duel is private."))
 		return
-	players[0].duel.add_watcher(con.player)
+	players[0].duel.add_watcher(con.player, players[0].duel_player)
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def ignore(caller):

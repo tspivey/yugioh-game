@@ -18,6 +18,7 @@ from .utils import process_duel
 from . import globals
 from . import message_handlers
 from .channels.say import Say
+from .channels.tag import Tag
 from .channels.watchers import Watchers
 
 __ = lambda x: x
@@ -68,8 +69,6 @@ class Duel:
 			seed = random.randint(0, 0xffffffff)
 		self.seed = seed
 		self.duel = lib.create_duel(seed)
-		lib.set_player_info(self.duel, 0, 8000, 5, 1)
-		lib.set_player_info(self.duel, 1, 8000, 5, 1)
 		self.cm = callback_manager.CallbackManager()
 		self.keep_processing = False
 		self.to_ep = False
@@ -91,7 +90,12 @@ class Duel:
 		self.revealed = {}
 		self.say = Say()
 		self.watch = Watchers()
+		self.tags = [Tag(), Tag()]
 		self.bind_message_handlers()
+
+	def set_player_info(self, player, lp):
+		self.lp[player] = lp
+		lib.set_player_info(self.duel, player, lp, 5, 1)
 
 	def load_deck(self, player, shuffle=True, tag = False):
 		c = player.deck['cards'][:]
@@ -133,6 +137,7 @@ class Duel:
 			self.players[i].set_parser('DuelParser')
 			self.say.add_recipient(self.players[i])
 			self.watch.add_recipient(self.players[i])
+			self.tags[i].add_recipient(self.players[i])
 			self.load_deck(self.players[i], shuffle)
 			if len(self.tag_players) > i:
 				self.tag_players[i].duel_player = i
@@ -140,6 +145,7 @@ class Duel:
 				self.tag_players[i].set_parser('DuelParser')
 				self.say.add_recipient(self.tag_players[i])
 				self.watch.add_recipient(self.tag_players[i])
+				self.tags[i].add_recipient(self.tag_players[i])
 				self.load_deck(self.tag_players[i], shuffle, True)
 
 	def start(self, options):
@@ -169,6 +175,8 @@ class Duel:
 			pl.deck = {'cards': []}
 			self.say.remove_recipient(pl)
 			self.watch.remove_recipient(pl)
+			self.tags[0].remove_recipient(pl)
+			self.tags[1].remove_recipient(pl)
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():
 					opl.notify(opl._("%s logged out.")%(pl.nickname))
@@ -523,26 +531,19 @@ class Duel:
 	def show_cards_in_location(self, pl, player, location, hide_facedown=False):
 		cards = self.get_cards_in_location(player, location)
 		if not cards:
-			pl.notify(pl._("Table is empty."))
+			pl.notify(pl._("No cards."))
 			return
 		for card in cards:
 			s = card.get_spec(player) + " "
-			if hide_facedown and card.position in (0x8, 0xa):
+			if hide_facedown and card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
 				s += card.get_position(pl)
 			else:
-				s += card.get_name(pl) + " "
-				s += card.get_position(pl)
+				s += card.get_name(pl)
+				if location != LOCATION_HAND:
+					s += " " + card.get_position(pl)
 				if card.type & TYPE_MONSTER:
 					s += " " + pl._("level %d") % card.level
 			pl.notify(s)
-
-	def show_hand(self, pl, player):
-		h = self.get_cards_in_location(player, LOCATION_HAND)
-		if not h:
-			pl.notify(pl._("Your hand is empty."))
-			return
-		for c in h:
-			pl.notify("h%d: %s" % (c.sequence + 1, c.get_name(pl)))
 
 	def show_score(self, pl):
 		player = pl.duel_player
@@ -620,7 +621,7 @@ class Duel:
 		else:
 			players = [self.players[0].nickname, self.players[1].nickname]
 			decks = [self.cards[0], self.cards[1]]
-		self.debug(event_type='start', players=players, decks=decks, seed=self.seed, options = options)
+		self.debug(event_type='start', players=players, decks=decks, seed=self.seed, options = options, lp = self.lp)
 
 	def player_disconnected(self, player):
 		if not self.paused:
@@ -659,17 +660,17 @@ class Duel:
 		except ValueError:
 			pass
 
-	def add_watcher(self, pl):
+	def add_watcher(self, pl, player = 0):
 		pl.duel = self
-		pl.duel_player = 0
+		pl.duel_player = player
 		pl.watching = True
 		self.say.add_recipient(pl)
 		if self.tag is True:
-			pl0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
-			pl1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+			pl0 = pl._("team %s")%(self.players[player].nickname+", "+self.tag_players[player].nickname)
+			pl1 = pl._("team %s")%(self.players[1 - player].nickname+", "+self.tag_players[1 - player].nickname)
 		else:
-			pl0 = self.players[0].nickname
-			pl1 = self.players[1].nickname
+			pl0 = self.players[player].nickname
+			pl1 = self.players[1 - player].nickname
 		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
 		self.watchers.append(pl)
 		self.watch.send_message(pl, __("{player} is now watching this duel."))

@@ -9,9 +9,12 @@ DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 @DuelParser.command(names=['h', 'hand'])
 def hand(caller):
 	pl = caller.connection.player
-	if pl.watching:
-		return
-	pl.duel.show_hand(pl, pl.duel_player)
+	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION_HAND, pl.watching)
+
+@DuelParser.command(names=['hand2'])
+def hand2(caller):
+
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_HAND, True)
 
 @DuelParser.command(names=['tab'])
 def tab(caller):
@@ -101,7 +104,19 @@ def giveup(caller):
 
 	duel.end()
 
-# watchers and duelists in paused games need to see them too
 @DuelParser.command(names=['sc', 'score'])
 def score(caller):
 	caller.connection.player.duel.show_score(caller.connection.player)
+
+@DuelParser.command(names=['tag'], args_regexp=r'(.*)', allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
+def tag(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		caller.connection.notify(caller.connection._("You need to send some text to this channel."))
+		return
+	
+	caller.connection.player.duel.tags[caller.connection.player.duel_player].send_message(caller.connection.player, caller.args[0])
+
+@DuelParser.command(names=['taghistory'], allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
+def taghistory(caller):
+	caller.connection.player.duel.tags[caller.connection.player.duel_player].print_history(caller.connection.player)
