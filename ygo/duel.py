@@ -663,17 +663,17 @@ class Duel:
 		except ValueError:
 			pass
 
-	def add_watcher(self, pl):
+	def add_watcher(self, pl, player = 0):
 		pl.duel = self
-		pl.duel_player = 0
+		pl.duel_player = player
 		pl.watching = True
 		self.say.add_recipient(pl)
 		if self.tag is True:
-			pl0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
-			pl1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+			pl0 = pl._("team %s")%(self.players[player].nickname+", "+self.tag_players[player].nickname)
+			pl1 = pl._("team %s")%(self.players[1 - player].nickname+", "+self.tag_players[1 - player].nickname)
 		else:
-			pl0 = self.players[0].nickname
-			pl1 = self.players[1].nickname
+			pl0 = self.players[player].nickname
+			pl1 = self.players[1 - player].nickname
 		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
 		self.watchers.append(pl)
 		self.watch.send_message(pl, __("{player} is now watching this duel."))
