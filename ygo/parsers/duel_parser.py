@@ -87,6 +87,27 @@ def show_watchers(caller):
 def info(caller):
 	caller.connection.player.duel.show_info_cmd(caller.connection.player, caller.args[0])
 
+@DuelParser.command(names=['giveup'], allowed = lambda c: c.connection.player.watching is False)
+def giveup(caller):
+
+	duel = caller.connection.player.duel
+
+	for pl in duel.players+duel.watchers:
+		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
+
+	if not duel.private:
+		if duel.tag is True:
+			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
+		else:
+			op = duel.players[1 - caller.connection.player.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
+
+	duel.end()
+
+@DuelParser.command(names=['sc', 'score'])
+def score(caller):
+	caller.connection.player.duel.show_score(caller.connection.player)
+
 @DuelParser.command(names=['tag'], args_regexp=r'(.*)', allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
 def tag(caller):
 
