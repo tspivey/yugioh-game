@@ -69,8 +69,6 @@ class Duel:
 			seed = random.randint(0, 0xffffffff)
 		self.seed = seed
 		self.duel = lib.create_duel(seed)
-		lib.set_player_info(self.duel, 0, 8000, 5, 1)
-		lib.set_player_info(self.duel, 1, 8000, 5, 1)
 		self.cm = callback_manager.CallbackManager()
 		self.keep_processing = False
 		self.to_ep = False
@@ -94,6 +92,10 @@ class Duel:
 		self.watch = Watchers()
 		self.tags = [Tag(), Tag()]
 		self.bind_message_handlers()
+
+	def set_player_info(self, player, lp):
+		self.lp[player] = lp
+		lib.set_player_info(self.duel, player, lp, 5, 1)
 
 	def load_deck(self, player, shuffle=True, tag = False):
 		c = player.deck['cards'][:]
@@ -619,7 +621,7 @@ class Duel:
 		else:
 			players = [self.players[0].nickname, self.players[1].nickname]
 			decks = [self.cards[0], self.cards[1]]
-		self.debug(event_type='start', players=players, decks=decks, seed=self.seed, options = options)
+		self.debug(event_type='start', players=players, decks=decks, seed=self.seed, options = options, lp = self.lp)
 
 	def player_disconnected(self, player):
 		if not self.paused:

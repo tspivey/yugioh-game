@@ -48,6 +48,8 @@ def list(caller):
 
 	pl.notify(s)
 
+	pl.notify(pl._("Lifepoints - %s: %d, %s: %d")%(pl._("team %d")%(1), room.lp[0], pl._("team %d")%(2), room.lp[1]))
+
 	pl.notify(pl._("Privacy: %s")%(pl._("private") if room.private is True else pl._("public")))
 
 	pl.notify(pl._("The following commands are available for you:"))
@@ -55,6 +57,7 @@ def list(caller):
 	if not room.open:
 		pl.notify(pl._("banlist - define banlist"))
 		pl.notify(pl._("finish - finish room creation and open it to other players"))
+		pl.notify(pl._("lifepoints - set lifepoints per team"))
 		pl.notify(pl._("private - toggles privacy"))
 		pl.notify(pl._("rules - define duel rules"))
 
@@ -311,6 +314,8 @@ def start(caller):
 	# launch the duel
 	duel = Duel()
 	duel.add_players(room.teams[1]+room.teams[2])
+	duel.set_player_info(0, room.lp[0])
+	duel.set_player_info(1, room.lp[1])
 
 	if not room.private:
 		if duel.tag is True:
@@ -380,3 +385,17 @@ def invite(caller):
 	target.notify(target._("%s invites you to join his duel room. Type join %s to do so.")%(pl.nickname, pl.nickname))
 
 	pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))
+
+@RoomParser.command(names=['lifepoints'], args_regexp=r'([1-2]) (\d+)', allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
+def lifepoints(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+	
+	if len(caller.args) == 0 or caller.args[0] is None or caller.args[1] is None:
+		pl.notify(pl._("Usage: lifepoints <team> <lp>"))
+		return
+	
+	room.lp[int(caller.args[0])-1] = int(caller.args[1])
+	
+	pl.notify(pl._("Lifepoints for %s set to %d.")%(pl._("team %d")%(int(caller.args[0])), room.lp[int(caller.args[0])-1]))
