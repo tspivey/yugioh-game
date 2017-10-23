@@ -93,6 +93,6 @@ def tag(caller):
 	
 	caller.connection.player.duel.tags[caller.connection.player.duel_player].send_message(caller.connection.player, caller.args[0])
 
-@RoomParser.command(names=['taghistory'], allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
+@DuelParser.command(names=['taghistory'], allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
 def taghistory(caller):
 	caller.connection.player.duel.tags[caller.connection.player.duel_player].print_history(caller.connection.player)
