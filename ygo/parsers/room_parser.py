@@ -387,15 +387,15 @@ def invite(caller):
 	pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))
 
 @RoomParser.command(names=['lifepoints'], args_regexp=r'([1-2]) (\d+)', allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
-def lifepoints(caller)
+def lifepoints(caller):
 
-	pl = caller.connections.player
+	pl = caller.connection.player
 	room = pl.room
 	
 	if len(caller.args) == 0 or caller.args[0] is None or caller.args[1] is None:
 		pl.notify(pl._("Usage: lifepoints <team> <lp>"))
 		return
 	
-	room.lp[int(caller.args[0])] = int(caller.args[1])
+	room.lp[int(caller.args[0])-1] = int(caller.args[1])
 	
-	pl.notify(pl._("Lifepoints for %s set to %d.")%(pl._("team %d")%(int(caller.args[0])), room.lp[int(caller.args[0])]))
+	pl.notify(pl._("Lifepoints for %s set to %d.")%(pl._("team %d")%(int(caller.args[0])), room.lp[int(caller.args[0])-1]))
