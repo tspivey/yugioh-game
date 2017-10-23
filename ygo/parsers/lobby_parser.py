@@ -452,11 +452,6 @@ def reboot(caller):
 	globals.rebooting = True
 	globals.server.check_reboot()
 
-# watchers and duelists in paused games need to see them too
-@LobbyParser.command(names=['sc', 'score'], allowed = lambda c: c.connection.player.duel is not None)
-def score(caller):
-	caller.connection.player.duel.show_score(caller.connection.player)
-
 @LobbyParser.command(args_regexp=r'(.*)')
 def echo(caller):
 	caller.connection.notify(caller.args[0])
@@ -506,23 +501,6 @@ def join(caller):
 	else:
 		target.room.join(pl)
 		caller.connection.parser.prompt(caller.connection)
-
-@LobbyParser.command(names=['giveup'], allowed = lambda c: c.connection.player.duel is not None)
-def giveup(caller):
-
-	duel = caller.connection.player.duel
-
-	for pl in duel.players+duel.watchers:
-		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
-
-	if not duel.private:
-		if duel.tag is True:
-			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
-		else:
-			op = duel.players[1 - caller.connection.player.duel_player].nickname
-		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
-
-	duel.end()
 
 @LobbyParser.command(names=['uptime'])
 def uptime(caller):

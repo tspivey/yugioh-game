@@ -627,12 +627,9 @@ class Duel:
 			self.pause()
 
 	def player_reconnected(self, pl):
+		pl.set_parser('DuelParser')
 		if not self.paused:
-			# all players returned successfully
 			self.unpause()
-		else:
-			# the player returned, but there are players left who need to reconnect
-			pl.set_parser('LobbyParser')
 
 	def pause(self):
 		for pl in self.players + self.watchers:
@@ -640,20 +637,12 @@ class Duel:
 		for pl in self.players+self.tag_players:
 			if pl.connection is not None:
 				pl.paused_parser = pl.connection.parser
-				pl.set_parser('LobbyParser')
-
-		for w in self.watchers:
-			if w.watching is True:
-				w.set_parser('LobbyParser')
+				pl.set_parser('DuelParser')
 
 	def unpause(self):
 		for pl in self.players+self.tag_players:
 			pl.connection.parser = pl.paused_parser
 			pl.paused_parser = None
-		for w in self.watchers:
-			if w.watching is True:
-				w.set_parser('DuelParser')
-
 		for pl in self.players+self.watchers:
 			pl.notify(pl._("Duel continues."))
 
@@ -685,10 +674,9 @@ class Duel:
 		self.watchers.append(pl)
 		self.watch.send_message(pl, __("{player} is now watching this duel."))
 		self.watch.add_recipient(pl)
+		pl.set_parser('DuelParser')
 		if self.paused:
 			pl.notify(pl._("The duel is currently paused due to not all players being connected."))
-		else:
-			pl.set_parser('DuelParser')
 
 	def get_linked_zone(self, card):
 
