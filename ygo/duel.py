@@ -523,26 +523,19 @@ class Duel:
 	def show_cards_in_location(self, pl, player, location, hide_facedown=False):
 		cards = self.get_cards_in_location(player, location)
 		if not cards:
-			pl.notify(pl._("Table is empty."))
+			pl.notify(pl._("No cards."))
 			return
 		for card in cards:
 			s = card.get_spec(player) + " "
-			if hide_facedown and card.position in (0x8, 0xa):
+			if hide_facedown and card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
 				s += card.get_position(pl)
 			else:
-				s += card.get_name(pl) + " "
-				s += card.get_position(pl)
+				s += card.get_name(pl)
+				if location != LOCATION_HAND:
+					s += " " + card.get_position(pl)
 				if card.type & TYPE_MONSTER:
 					s += " " + pl._("level %d") % card.level
 			pl.notify(s)
-
-	def show_hand(self, pl, player):
-		h = self.get_cards_in_location(player, LOCATION_HAND)
-		if not h:
-			pl.notify(pl._("Your hand is empty."))
-			return
-		for c in h:
-			pl.notify("h%d: %s" % (c.sequence + 1, c.get_name(pl)))
 
 	def show_score(self, pl):
 		player = pl.duel_player
