@@ -2,6 +2,7 @@ from babel.dates import format_timedelta
 import codecs
 import datetime
 import gsb
+from gsb.intercept import Reader
 import json
 import locale
 import natsort
