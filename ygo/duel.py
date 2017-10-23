@@ -530,8 +530,9 @@ class Duel:
 			if hide_facedown and card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
 				s += card.get_position(pl)
 			else:
-				s += card.get_name(pl) + " "
-				s += card.get_position(pl)
+				s += card.get_name(pl)
+				if location != LOCATION_HAND:
+					s += " " + card.get_position(pl)
 				if card.type & TYPE_MONSTER:
 					s += " " + pl._("level %d") % card.level
 			pl.notify(s)

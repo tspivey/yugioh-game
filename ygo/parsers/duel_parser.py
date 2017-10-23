@@ -11,7 +11,7 @@ def hand(caller):
 	pl = caller.connection.player
 	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION_HAND, pl.watching)
 
-@DuelParser.command(names=['h2', 'hand2'])
+@DuelParser.command(names=['hand2'])
 def hand2(caller):
 
 	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_HAND, True)
