@@ -18,6 +18,7 @@ from .utils import process_duel
 from . import globals
 from . import message_handlers
 from .channels.say import Say
+from .channels.tag import Tag
 from .channels.watchers import Watchers
 
 __ = lambda x: x
@@ -91,6 +92,7 @@ class Duel:
 		self.revealed = {}
 		self.say = Say()
 		self.watch = Watchers()
+		self.tags = [Tag(), Tag()]
 		self.bind_message_handlers()
 
 	def load_deck(self, player, shuffle=True, tag = False):
@@ -133,6 +135,7 @@ class Duel:
 			self.players[i].set_parser('DuelParser')
 			self.say.add_recipient(self.players[i])
 			self.watch.add_recipient(self.players[i])
+			self.tags[i].add_recipient(self.players[i])
 			self.load_deck(self.players[i], shuffle)
 			if len(self.tag_players) > i:
 				self.tag_players[i].duel_player = i
@@ -140,6 +143,7 @@ class Duel:
 				self.tag_players[i].set_parser('DuelParser')
 				self.say.add_recipient(self.tag_players[i])
 				self.watch.add_recipient(self.tag_players[i])
+				self.tags[i].add_recipient(self.tag_players[i])
 				self.load_deck(self.tag_players[i], shuffle, True)
 
 	def start(self, options):
@@ -169,6 +173,8 @@ class Duel:
 			pl.deck = {'cards': []}
 			self.say.remove_recipient(pl)
 			self.watch.remove_recipient(pl)
+			self.tags[0].remove_recipient(pl)
+			self.tags[1].remove_recipient(pl)
 			if pl.connection is None:
 				for opl in globals.server.get_all_players():
 					opl.notify(opl._("%s logged out.")%(pl.nickname))
