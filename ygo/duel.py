@@ -680,7 +680,7 @@ class Duel:
 			pl1 = pl._("team %s")%(self.players[1 - player].nickname+", "+self.tag_players[1 - player].nickname)
 		else:
 			pl0 = self.players[player].nickname
-			pl1 = self.players[player].nickname
+			pl1 = self.players[1 - player].nickname
 		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
 		self.watchers.append(pl)
 		self.watch.send_message(pl, __("{player} is now watching this duel."))
