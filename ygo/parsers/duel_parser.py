@@ -2,6 +2,7 @@ import gsb
 import natsort
 
 from ..constants import *
+from ..constants import __
 from .. import globals
 
 DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
