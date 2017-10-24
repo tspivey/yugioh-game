@@ -79,7 +79,7 @@ def remove(caller):
 		if n < 0 or n > len(cnt) - 1:
 			pl.notify(pl._("Invalid card."))
 			return
-		code = cnt.keys()[n]
+		code = list(cnt.keys())[n]
 	
 	if cards.count(code) == 0:
 		pl.notify(pl._("This card isn't in your deck."))
@@ -130,7 +130,7 @@ def search_backward(caller):
 		editor.deck_edit_pos = pos
 
 @DeckEditorParser.command(names=['l'])
-def list(caller):
+def cmd_list(caller):
 	pl = caller.connection.player
 	editor = pl.deck_editor
 	cards = pl.deck['cards']
@@ -138,7 +138,7 @@ def list(caller):
 	monsters, spells, traps, extra, other = groups
 	i = 1
 	if len(monsters):
-		pl.notify(pl._("monsters (%d):")%(len(monsters)))
+		pl.notify(pl._("monsters (%d):")%(sum(monsters.values())))
 		for code, count in monsters.items():
 			card = Card(code)
 			if count > 1:
@@ -147,7 +147,7 @@ def list(caller):
 				pl.notify("%d: %s" % (i, card.get_name(pl)))
 			i += 1
 	if len(spells):
-		pl.notify(pl._("spells (%d):")%(len(spells)))
+		pl.notify(pl._("spells (%d):")%(sum(spells.values())))
 		for code, count in spells.items():
 			card = Card(code)
 			if count > 1:
@@ -156,7 +156,7 @@ def list(caller):
 				pl.notify("%d: %s" % (i, card.get_name(pl)))
 			i += 1
 	if len(traps):
-		pl.notify(pl._("traps (%d):")%(len(traps)))
+		pl.notify(pl._("traps (%d):")%(sum(traps.values())))
 		for code, count in traps.items():
 			card = Card(code)
 			if count > 1:
@@ -165,7 +165,7 @@ def list(caller):
 				pl.notify("%d: %s" % (i, card.get_name(pl)))
 			i += 1
 	if len(extra):
-		pl.notify(pl._("extra (%d):")%(len(extra)))
+		pl.notify(pl._("extra (%d):")%(sum(extra.values())))
 		for code, count in extra.items():
 			card = Card(code)
 			if count > 1:
@@ -185,7 +185,7 @@ def goto(caller):
 	if n < 0 or n > len(cnt) - 1:
 		pl.notify(pl._("Invalid card."))
 		return
-	code = cnt.keys()[n]
+	code = list(cnt.keys())[n]
 	editor.deck_edit_pos = globals.server.all_cards.index(code)
 
 @DeckEditorParser.command(names=['q'])

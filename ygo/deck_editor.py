@@ -94,7 +94,8 @@ class DeckEditor:
 		else:
 			con.notify(con._("Creating new deck %s.") % deck_name)
 		self.deck_name = deck_name
-
+		con.parser.prompt(con)
+	
 	@staticmethod
 	def group_cards(cardlist):
 		"""
