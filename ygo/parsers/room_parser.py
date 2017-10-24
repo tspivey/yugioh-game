@@ -109,8 +109,7 @@ def banlist(caller):
 		pl.notify(pl._("You can set the banlist to ocg or tcg, which will automatically select the newest tcg/ocg banlist for you."))
 
 		pl.notify(pl._("You can also set the banlist to none or one of the following:"))
-		for k in globals.lflist.keys():
-			pl.notify(k)
+		pl.deck_editor.check(None)
 
 	elif len(caller.args) == 1 and caller.args[0] == None:
 		pl.notify(pl._("Invalid banlist specified."))
