@@ -21,6 +21,8 @@ class Account(Base):
 	is_admin = Column(Boolean, nullable=False, default=False)
 	decks = relationship('Deck')
 	ignores = relationship('Ignore', cascade='all, delete-orphan', foreign_keys='Ignore.account_id')
+	duel_rules = Column(Integer, nullable=False, default=0)
+	banlist = Column(String(50), nullable = False, default = 'tcg')
 
 	def set_password(self, password):
 		self.password = pbkdf2_sha256.hash(password)
