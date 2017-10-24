@@ -17,6 +17,23 @@ python3 duel_build.py
 ln -s ../ygopro-scripts script
 ```
 
+## Compile language catalogues
+This game supports multiple languages (english, spanish, german and japanese right now).
+To compile the language catalogues, run the following:
+```
+./compile.sh de
+./compile.sh es
+./compile.sh ja
+```
+
+To update the plain text files into human-readable format, run the following:
+```
+./update.sh de
+./update.sh es
+./update.sh ja
+```
+The generated files in locale/<language code>/LC_MESSAGES/game.po can be given to translators afterwards.
+
 ## Running
 ```
 python3 ygo.py
