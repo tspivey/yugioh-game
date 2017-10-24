@@ -1,5 +1,6 @@
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 import json
+import natsort
 
 from .card import Card
 from . import globals
@@ -103,14 +104,9 @@ class DeckEditor:
 
 		This provides output like foo, bar(x3) etc.
 		"""
-		cnt = OrderedDict()
-		for code in cardlist:
-			if not code in cnt:
-				cnt[code] = 1
-			else:
-				cnt[code] += 1
-		return cnt
-
+		cnt = Counter(cardlist)
+		return OrderedDict(natsort.natsorted(dict(cnt).items()))
+	
 	def group_sort_cards(self, cardlist):
 		"""
 		Use the above function to group all cards, then sort them into groups.
