@@ -60,6 +60,7 @@ def list(caller):
 		pl.notify(pl._("lifepoints - set lifepoints per team"))
 		pl.notify(pl._("private - toggles privacy"))
 		pl.notify(pl._("rules - define duel rules"))
+		pl.notify(pl._("save - save settings for all your future rooms"))
 
 	if room.open:
 		pl.notify(pl._("deck - select a deck to duel with"))
@@ -399,3 +400,15 @@ def lifepoints(caller):
 	room.lp[int(caller.args[0])-1] = int(caller.args[1])
 	
 	pl.notify(pl._("Lifepoints for %s set to %d.")%(pl._("team %d")%(int(caller.args[0])), room.lp[int(caller.args[0])-1]))
+
+@RoomParser.command(names=['save'])
+def save(caller):
+
+	con = caller.connection
+	room = con.player.room
+	
+	con.account.banlist = room.banlist
+	con.account.duel_rules = room.rules
+	con.session.commit()
+	
+	con.notify(con._("Settings saved."))

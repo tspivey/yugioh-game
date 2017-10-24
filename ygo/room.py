@@ -9,9 +9,9 @@ class Room:
 		self.teams = ([], [], [])
 		self.creator = creator
 		self.options = 0
-		self.rules = 0
+		self.rules = creator.connection.account.duel_rules
 		self.invitations = []
-		self.banlist = 'tcg'
+		self.banlist = creator.connection.account.banlist
 		self.say = Say()
 		self.lp = [8000, 8000]
 
