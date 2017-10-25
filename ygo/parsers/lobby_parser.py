@@ -578,11 +578,14 @@ def finger(caller):
 	else:
 		pl.notify(pl._("Last logged in on %s")%(format_date(account.last_logged_in, format='medium', locale=pl.get_locale())))
 
-	pl.notify(pl._("Duel statistics:"))
-
 	stats = account.statistics
 
 	stats = natsort.natsorted(stats, key=lambda s: s.opponent.name)
+
+	if len(stats) == 0:
+		return
+
+	pl.notify(pl._("Duel statistics:"))
 
 	for stat in stats:
 
