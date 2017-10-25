@@ -30,7 +30,7 @@ class deck_editor_parser(gsb.Parser):
 		main, extra = pl.count_deck_cards(pl.deck['cards'])
 		pl.notify(pl._("Command (%d cards in main deck, %d cards in extra deck):") % (main, extra))
 
-DeckEditorParser = deck_editor_parser()
+DeckEditorParser = deck_editor_parser(command_substitutions={"/": "/", "?": "?"})
 
 @DeckEditorParser.command(names=['d'])
 def down(caller):
