@@ -61,7 +61,7 @@ def send(caller):
 		caller.connection.notify(caller.connection._("You already have 3 of this card in your deck."))
 		return
 	cards.append(code)
-	caller.connection.player.deck_editor.save(caller.connection.player.deck, caller.connection.session, caller.connection.account, caller.connection.player.deck_editor.deck_name)
+	caller.connection.player.deck_editor.save()
 	caller.connection.session.commit()
 
 @DeckEditorParser.command(names=['r'], args_regexp=r'(\d+)?')
@@ -86,7 +86,7 @@ def remove(caller):
 		return
 	cards.remove(code)
 	pl.notify(pl._("Removed %s from your deck." %(Card(code).get_name(pl))))
-	editor.save(pl.deck, caller.connection.session, caller.connection.account, editor.deck_name)
+	editor.save()
 	caller.connection.session.commit()
 
 @DeckEditorParser.command(names=['/'], args_regexp=r'(.*)')

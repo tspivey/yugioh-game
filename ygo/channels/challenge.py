@@ -11,7 +11,7 @@ class Challenge(Channel):
 		return recipient.challenge
 	
 	def format_history_message(self, recipient, buffer_entry):
-		return format_time(buffer_entry['time'], format='short', locale=self.get_locale_for_recipient(recipient))+' - '+recipient._(buffer_entry['message']).format(**self.resolve_closures(recipient, buffer_entry['params']))
+		return format_time(buffer_entry['time'], format='short', locale=recipient.get_locale())+' - '+recipient._(buffer_entry['message']).format(**self.resolve_closures(recipient, buffer_entry['params']))
 
 	def resolve_closures(self, recipient, params):
 		params = copy.copy(params)

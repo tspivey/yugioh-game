@@ -13,4 +13,4 @@ class Watchers(Channel):
 		return recipient._(message).format(player = sender.nickname)
 	
 	def format_history_message(self, recipient, buffer_entry):
-		return format_time(buffer_entry['time'], format='short', locale=self.get_locale_for_recipient(recipient))+" - "+recipient._(buffer_entry['message']).format(buffer_entry['sender'])
+		return format_time(buffer_entry['time'], format='short', locale=recipient.get_locale())+" - "+recipient._(buffer_entry['message']).format(buffer_entry['sender'])

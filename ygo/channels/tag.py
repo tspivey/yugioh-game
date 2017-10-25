@@ -7,7 +7,7 @@ class Tag(Channel):
 		return recipient._("%s tags: %s")%(sender.nickname, message)
 
 	def format_history_message(self, recipient, buffer_entry):
-		return format_time(buffer_entry['time'], format='short', locale=self.get_locale_for_recipient(recipient))+' - '+buffer_entry['sender']+': '+buffer_entry['message']
+		return format_time(buffer_entry['time'], format='short', locale=recipient.get_locale())+' - '+buffer_entry['sender']+': '+buffer_entry['message']
 
 	def is_ignoring(self, recipient, sender):
 		return False

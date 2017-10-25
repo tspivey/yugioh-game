@@ -1,4 +1,4 @@
-from babel.dates import format_timedelta
+from babel.dates import format_timedelta, format_date
 import codecs
 import datetime
 import gsb
@@ -228,13 +228,12 @@ def lookup(caller):
 def passwd(caller):
 
 	session = caller.connection.session
-	account = caller.connection.account
+	account = caller.connection.player.get_account()
 	new_password = ""
 	old_parser = caller.connection.parser
 	def r(caller):
 		if not account.check_password(caller.text):
 			caller.connection.notify(caller.connection._("Incorrect password."))
-			session.commit()
 			return
 		caller.connection.notify(Reader, r2, prompt=caller.connection._("New password:"), no_abort=caller.connection._("Invalid command."), restore_parser=old_parser)
 	def r2(caller):
@@ -248,7 +247,6 @@ def passwd(caller):
 	def r3(caller):
 		if new_password != caller.text:
 			caller.connection.notify(caller.connection._("Passwords don't match."))
-			session.commit()
 			return
 		account.set_password(caller.text)
 		session.commit()
@@ -269,8 +267,6 @@ def language(caller):
 		caller.connection.player.set_language('ja')
 	elif lang == 'spanish':
 		caller.connection.player.set_language('es')
-	caller.connection.account.language = caller.connection.player.language
-	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Language set."))
 
 @LobbyParser.command(args_regexp=r'(.*)')
@@ -287,7 +283,7 @@ def encoding(caller):
 		return
 	caller.connection.encode_args = (caller.args[0], 'replace')
 	caller.connection.decode_args = (caller.args[0], 'ignore')
-	caller.connection.account.encoding = caller.args[0]
+	caller.connection.player.get_account().encoding = caller.args[0]
 	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Encoding set."))
 
@@ -414,9 +410,8 @@ def ignore(caller):
 	name = caller.args[0]
 	if not name:
 		con.notify(con._("Ignored accounts:"))
-		for account in con.account.ignores:
+		for account in con.player.get_account().ignores:
 			con.notify(account.ignored_account.name)
-		con.session.commit()
 		return
 	name = name.capitalize()
 	if name == con.player.nickname.capitalize():
@@ -425,22 +420,19 @@ def ignore(caller):
 	account = con.session.query(models.Account).filter_by(name=name).first()
 	if not account:
 		con.notify(con._("That account doesn't exist. Make sure you enter the full name (no auto-completion for security reasons)."))
-		con.session.commit()
 		return
-	ignore = con.session.query(models.Ignore).filter_by(account_id=con.account.id, ignored_account_id=account.id).first()
+	con_account = con.player.get_account()
+	ignore = con.session.query(models.Ignore).filter_by(account_id=con_account.id, ignored_account_id=account.id).first()
 	if not ignore:
-		i = models.Ignore(account_id=con.account.id, ignored_account_id=account.id)
-		con.account.ignores.append(i)
-		con.session.add(i)
+		i = models.Ignore(account_id=con_account.id, ignored_account_id=account.id)
+		con_account.ignores.append(i)
 		con.notify(con._("Ignoring %s.") % name)
 		con.player.ignores.add(name)
-		con.session.commit()
-		return
 	else:
-		con.session.delete(ignore)
+		con_account.ignores.remove(ignore)
 		con.notify(con._("Stopped ignoring %s.") % name)
 		con.player.ignores.discard(name)
-		con.session.commit()
+	con.session.commit()
 
 @LobbyParser.command
 def challenge(caller):
@@ -557,6 +549,62 @@ def tellhistory(caller):
 		count = int(caller.args[0])
 		
 	caller.connection.player.tell.print_history(caller.connection.player)
+
+@LobbyParser.command(names=['finger'], args_regexp=RE_NICKNAME)
+def finger(caller):
+
+	pl = caller.connection.player
+	session = pl.connection.session
+
+	name = caller.args[0]
+	name = name[0].upper()+name[1:].lower()
+	
+	fp = globals.server.get_player(name)
+	
+	if fp is None:
+		account = session.query(models.Account).filter_by(name=name).first()
+		if account is None:
+			pl.notify(pl._("No player with that name found."))
+			return
+	else:
+		account = fp.get_account(session)
+
+	pl.notify(pl._("Finger report for %s")%(account.name))
+
+	pl.notify(pl._("Created on %s")%(format_date(account.created, format='medium', locale=pl.get_locale())))
+
+	if fp is not None:
+		pl.notify(pl._("Currently logged in"))
+	else:
+		pl.notify(pl._("Last logged in on %s")%(format_date(account.last_logged_in, format='medium', locale=pl.get_locale())))
+
+	stats = account.statistics
+
+	stats = natsort.natsorted(stats, key=lambda s: s.opponent.name)
+
+	if len(stats) == 0:
+		return
+
+	pl.notify(pl._("Duel statistics:"))
+
+	for stat in stats:
+
+		pl.notify(pl._("%s - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(stat.opponent.name, stat.win, stat.lose, stat.draw, stat.giveup))
+
+	won = sum([s.win for s in stats])
+	lost = sum([s.lose for s in stats])
+	drawn = sum([s.draw for s in stats])
+	surrendered = sum([s.giveup for s in stats])
+
+	pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(won, lost, drawn, surrendered))
+
+	if won+lost > 0:
+		if lost == 0:
+			average = 100.0
+		else:
+			average = float(won)/float(lost)
+
+		pl.notify(pl._("%.2f%% Success.")%(average))
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():

@@ -225,14 +225,13 @@ def deck(caller):
 	# first the loading algorithm
 	# parsing the string, loading from database
 	session = caller.connection.session
-	account = caller.connection.account
+	account = caller.connection.player.get_account()
 	if name.startswith('public/'):
 		account = session.query(models.Account).filter_by(name='Public').first()
 		name = name[7:]
-	deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
+	deck = models.Deck.find(session, account, name)
 	if not deck:
 		pl.notify(pl._("Deck doesn't exist."))
-		session.commit()
 		return
 
 	content = json.loads(deck.content)
@@ -272,7 +271,6 @@ def deck(caller):
 			return
 
 	pl.deck = content
-	session.commit()
 	pl.notify(pl._("Deck loaded with %d cards.") % len(content['cards']))
 
 	for p in room.get_all_players():
@@ -405,9 +403,10 @@ def save(caller):
 
 	con = caller.connection
 	room = con.player.room
+	account = con.player.get_account()
 	
-	con.account.banlist = room.banlist
-	con.account.duel_rules = room.rules
+	account.banlist = room.banlist
+	account.duel_rules = room.rules
 	con.session.commit()
 	
 	con.notify(con._("Settings saved."))
