@@ -86,5 +86,42 @@ class Player:
 	def __del__(self):
 		self.tell.remove_recipient(self)
 
-	def get_account(self):
-		return self.connection.session.query(models.Account).filter_by(name=self.nickname).first()
+	def get_account(self, session = None):
+		if session is None:
+			if self.connection is None:
+				session = globals.server.session_factory()
+			else:
+				session = self.connection.session
+		return session.query(models.Account).filter_by(name=self.nickname).first()
+
+	def __statistics(self, player, win = 0, lose = 0, draw = 0, giveup = 0):
+		if self.connection is not None:
+			session = self.connection.session
+		elif player.connection is not None:
+			session = player.connection.session
+		else:
+			return
+		me = self.get_account(session)
+		op = player.get_account(session)
+		try:
+			stat = [s for s in me.statistics if s.account_id == me.id and s.opponent_id == op.id][0]
+		except IndexError:
+			stat = models.Statistics(account_id = me.id, opponent_id = op.id)
+			session.add(stat)
+		stat.win += win
+		stat.lose += lose
+		stat.draw += draw
+		stat.giveup += giveup
+		session.commit()
+
+	def win_against(self, player):
+		return self.__statistics(player, win = 1)
+
+	def lose_against(self, player):
+		return self.__statistics(player, lose = 1)
+
+	def draw_against(self, player):
+		return self.__statistics(player, draw = 1)
+
+	def giveup_against(self, player):
+		return self.__statistics(player, giveup = 1)
