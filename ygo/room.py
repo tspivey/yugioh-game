@@ -4,14 +4,15 @@ from .channels.say import Say
 
 class Room:
 	def __init__(self, creator):
+		creator_account = creator.get_account()
 		self.open = False
 		self.private = False
 		self.teams = ([], [], [])
 		self.creator = creator
 		self.options = 0
-		self.rules = creator.connection.account.duel_rules
+		self.rules = creator_account.duel_rules
 		self.invitations = []
-		self.banlist = creator.connection.account.banlist
+		self.banlist = creator_account.banlist
 		self.say = Say()
 		self.lp = [8000, 8000]
 

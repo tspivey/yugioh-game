@@ -39,6 +39,8 @@ class Player:
 
 	def set_language(self, lang):
 		i18n_set_language(self, lang)
+		self.get_account().language = self.language
+		self.connection.session.commit()
 
 	def attach_connection(self, connection):
 		self.connection = connection
@@ -83,3 +85,6 @@ class Player:
 
 	def __del__(self):
 		self.tell.remove_recipient(self)
+
+	def get_account(self):
+		return self.connection.session.query(models.Account).filter_by(name=self.nickname).first()

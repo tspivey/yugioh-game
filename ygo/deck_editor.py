@@ -16,35 +16,31 @@ class DeckEditor:
 		self.player = player
 
 	def list(self):
-		decks = self.player.connection.account.decks
+		decks = self.player.get_account().decks
 		if not decks:
 			self.player.notify(self.player._("No decks."))
-			self.player.connection.session.commit()
 			return
 		self.player.notify(self.player._("You own %d decks:")%(len(decks)))
 		for deck in decks:
 			self.player.notify(deck.name)
-		self.player.connection.session.commit()
 
 	def clear(self, name):
-		account = self.player.connection.account
+		account = self.player.get_account()
 		session = self.player.connection.session
 		deck = models.Deck.find(session, account, name)
 		if not deck:
 			self.player.notify(self.player._("Deck not found."))
-			session.commit()
 			return
 		deck.content = json.dumps({'cards': []})
 		session.commit()
 		self.player.notify(self.player._("Deck cleared."))
 
 	def delete(self, name):
-		account = self.player.connection.account
+		account = self.player.get_account()
 		session = self.player.connection.session
 		deck = models.Deck.find(session, account, name)
 		if not deck:
 			self.player.notify(self.player._("Deck not found."))
-			session.commit()
 			return
 		session.delete(deck)
 		session.commit()
@@ -63,17 +59,15 @@ class DeckEditor:
 		if '=' in dest:
 			self.player.notify(self.player._("Deck names may not contain =."))
 			return
-		account = self.player.connection.account
+		account = self.player.get_account()
 		session = self.player.connection.session
 		deck = models.Deck.find(session, account, name)
 		if not deck:
 			self.player.notify(self.player._("Deck not found."))
-			session.commit()
 			return
 		dest_deck = models.Deck.find(session, account, dest)
 		if dest_deck:
 			self.player.notify(self.player._("Destination deck already exists"))
-			session.commit()
 			return
 		deck.name = dest
 		session.commit()
@@ -83,8 +77,8 @@ class DeckEditor:
 		con = self.player.connection
 		con.player.paused_parser = con.parser
 		con.parser = DeckEditorParser
-		account = con.account
-		deck = con.session.query(models.Deck).filter_by(account_id=con.account.id, name=deck_name).first()
+		account = con.player.get_account()
+		deck = models.Deck.find(con.session, account, deck_name)
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
@@ -168,26 +162,28 @@ class DeckEditor:
 			return
 		return self.find_prev(text, len(globals.server.all_cards) - 1, start, wrapped=True)
 
-	def save(self, deck, session, account, name):
-		deck = json.dumps(deck)
-		existing_deck = session.query(models.Deck).filter_by(account_id=account.id, name=name).first()
+	def save(self):
+		deck = json.dumps(self.player.deck)
+		session = self.player.connection.session
+		account = self.player.get_account()
+		existing_deck = models.Deck.find(session, account, self.deck_name)
 		if existing_deck:
 			new_deck = existing_deck
 		else:
-			new_deck = models.Deck(account_id=account.id, name=name)
-			session.add(new_deck)
+			new_deck = models.Deck(account_id=account.id, name=self.deck_name)
+			account.decks.append(new_deck)
 		new_deck.content = deck
+		session.commit()
 
 	def new(self, name):
-		account = self.player.connection.account
+		account = self.player.get_account()
 		session = self.player.connection.session
 		deck = models.Deck.find(session, account, name)
 		if deck:
 			self.player.notify(self.player._("That deck already exists."))
-			session.commit()
 			return
 		deck = models.Deck(account_id=account.id, name=name)
-		session.add(deck)
+		account.decks.append(deck)
 		deck.content = json.dumps({'cards': []})
 		session.commit()
 		self.player.notify(self.player._("Deck created."))
