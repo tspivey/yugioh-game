@@ -103,9 +103,9 @@ def giveup(caller):
 			op = duel.players[1 - caller.connection.player.duel_player].nickname
 		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
 
-		if not self.paused:
-			for pl in self.players+self.tag_players:
-				for op in self.players+self.tag_players:
+		if not duel.paused:
+			for pl in duel.players+duel.tag_players:
+				for op in duel.players+duel.tag_players:
 					if pl is not op:
 						pl.giveup_against(op)
 

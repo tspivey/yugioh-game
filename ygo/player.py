@@ -107,6 +107,10 @@ class Player:
 			stat = [s for s in me.statistics if s.account_id == me.id and s.opponent_id == op.id][0]
 		except IndexError:
 			stat = models.Statistics(account_id = me.id, opponent_id = op.id)
+			stat.win = 0
+			stat.lose = 0
+			stat.draw = 0
+			stat.giveup = 0
 			session.add(stat)
 		stat.win += win
 		stat.lose += lose
