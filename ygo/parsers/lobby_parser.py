@@ -1,4 +1,4 @@
-from babel.dates import format_timedelta
+from babel.dates import format_timedelta, format_date
 import codecs
 import datetime
 import gsb
@@ -549,6 +549,59 @@ def tellhistory(caller):
 		count = int(caller.args[0])
 		
 	caller.connection.player.tell.print_history(caller.connection.player)
+
+@LobbyParser.command(names=['finger'], args_regexp=RE_NICKNAME)
+def finger(caller):
+
+	pl = caller.connection.player
+	session = pl.connection.session
+
+	name = caller.args[0]
+	name = name[0].upper()+name[1:].lower()
+	
+	fp = globals.server.get_player(name)
+	
+	if fp is None:
+		account = session.query(models.Account).filter_by(name=name).first()
+		if account is None:
+			pl.notify(pl._("No player with that name found."))
+			return
+	else:
+		account = fp.get_account(session)
+
+	pl.notify(pl._("Finger report for %s")%(account.name))
+
+	pl.notify(pl._("Created on %s")%(format_date(account.created, format='medium', locale=pl.get_locale())))
+
+	if fp is not None:
+		pl.notify(pl._("Currently logged in"))
+	else:
+		pl.notify(pl._("Last logged in on %s")%(format_date(account.last_logged_in, format='medium', locale=pl.get_locale())))
+
+	pl.notify(pl._("Duel statistics:"))
+
+	stats = account.statistics
+
+	stats = natsort.natsorted(stats, key=lambda s: s.opponent.name)
+
+	for stat in stats:
+
+		pl.notify(pl._("%s - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(stat.opponent.name, stat.win, stat.lose, stat.draw, stat.giveup))
+
+	won = sum([s.win for s in stats])
+	lost = sum([s.lose for s in stats])
+	drawn = sum([s.draw for s in stats])
+	surrendered = sum([s.giveup for s in stats])
+
+	pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(won, lost, drawn, surrendered))
+
+	if won+lost > 0:
+		if lost == 0:
+			average = 100.0
+		else:
+			average = float(won)/float(lost)
+
+		pl.notify(pl._("%.2f%% Success.")%(average))
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():

@@ -1,4 +1,5 @@
 import gettext
+import locale
 
 from .channels.tell import Tell
 from .constants import *
@@ -129,3 +130,6 @@ class Player:
 
 	def giveup_against(self, player):
 		return self.__statistics(player, giveup = 1)
+
+	def get_locale(self):
+		return locale.normalize(self.language).split('_')[0]

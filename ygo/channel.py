@@ -1,7 +1,6 @@
 from babel.dates import format_time
 from collections import deque
 import datetime
-import locale
 
 NO_SEND_CHECK = 0x1
 
@@ -68,7 +67,7 @@ class Channel:
 	
 	# formats the message printed in the history
 	def format_history_message(self, recipient, buffer_entry):
-		return format_time(buffer_entry['time'], format='short', locale=self.get_locale_for_recipient(recipient))+" - "+buffer_entry['sender']+": "+buffer_entry['message'].format(buffer_entry['params'])
+		return format_time(buffer_entry['time'], format='short', locale=recipient.get_locale())+" - "+buffer_entry['sender']+": "+buffer_entry['message'].format(buffer_entry['params'])
 	
 	# prints the history to a player
 	# perform recipient check (player not a recipient, error message)
@@ -87,7 +86,3 @@ class Channel:
 
 		for i in range(start, start+amount):
 			player.notify(self.format_history_message(player, self.buffer[i]))
-
-	@staticmethod
-	def get_locale_for_recipient(recipient):
-		return locale.normalize(recipient.language).split('_')[0]
