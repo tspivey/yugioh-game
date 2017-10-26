@@ -20,6 +20,12 @@ def win(self, player, reason):
 			pl1 = self.players[1].nickname
 		if not self.private:
 			globals.server.challenge.send_message(None, __("{player1} and {player2} ended up in a draw."), player1 = pl0, player2 = pl1)
+			for i in (0, 1):
+				self.players[i].draw_against(self.players[1 - i])
+				if self.tag is True:
+					self.players[i].draw_against(self.tag_players[1 - i])
+					self.tag_players[i].draw_against(self.players[1 - i])
+					self.tag_players[i].draw_against(self.tag_players[1 - i])
 
 		self.end()
 		return
@@ -36,11 +42,17 @@ def win(self, player, reason):
 			w.notify(w._("%s and you won (%s).")%(winners[1 - winners.index(w)].nickname, l_reason(w)))
 		else:
 			w.notify(w._("You won (%s).") % l_reason(w))
+		if not self.private:
+			for l in losers:
+				w.win_against(l)
 	for l in losers:
 		if self.tag is True:
 			l.notify(l._("%s and you lost (%s).")%(losers[1 - losers.index(l)].nickname, l_reason(l)))
 		else:
 			l.notify(l._("You lost (%s).") % l_reason(l))
+		if not self.private:
+			for w in winners:
+				l.lose_against(w)
 
 	for pl in self.watchers:
 		if pl.watching is True:

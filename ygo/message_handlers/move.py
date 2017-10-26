@@ -100,7 +100,7 @@ def move(self, code, location, newloc, reason):
 		pl.notify(pl._("your card {spec} ({name}) was banished.").format(spec=plspec, name=card.get_name(pl)))
 		for w in self.watchers+[op]:
 			if card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
-				name = w._("Face-down defense")
+				name = w._("%s card")%(card.get_position(w))
 			else:
 				name = card.get_name(w)
 			s = card.get_spec(w.duel_player)

@@ -2,6 +2,7 @@ import gsb
 import natsort
 
 from ..constants import *
+from ..constants import __
 from .. import globals
 
 DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
@@ -9,9 +10,12 @@ DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 @DuelParser.command(names=['h', 'hand'])
 def hand(caller):
 	pl = caller.connection.player
-	if pl.watching:
-		return
-	pl.duel.show_hand(pl, pl.duel_player)
+	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION_HAND, pl.watching)
+
+@DuelParser.command(names=['hand2'])
+def hand2(caller):
+
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_HAND, True)
 
 @DuelParser.command(names=['tab'])
 def tab(caller):
@@ -83,3 +87,43 @@ def show_watchers(caller):
 @DuelParser.command(names=['info'], args_regexp=r'(.*)')
 def info(caller):
 	caller.connection.player.duel.show_info_cmd(caller.connection.player, caller.args[0])
+
+@DuelParser.command(names=['giveup'], allowed = lambda c: c.connection.player.watching is False)
+def giveup(caller):
+
+	duel = caller.connection.player.duel
+
+	for pl in duel.players+duel.watchers:
+		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
+
+	if not duel.private:
+		if duel.tag is True:
+			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
+		else:
+			op = duel.players[1 - caller.connection.player.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
+
+		if not duel.paused:
+			for pl in duel.players+duel.tag_players:
+				for op in duel.players+duel.tag_players:
+					if pl is not op:
+						pl.giveup_against(op)
+
+	duel.end()
+
+@DuelParser.command(names=['sc', 'score'])
+def score(caller):
+	caller.connection.player.duel.show_score(caller.connection.player)
+
+@DuelParser.command(names=['tag'], args_regexp=r'(.*)', allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
+def tag(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		caller.connection.notify(caller.connection._("You need to send some text to this channel."))
+		return
+	
+	caller.connection.player.duel.tags[caller.connection.player.duel_player].send_message(caller.connection.player, caller.args[0])
+
+@DuelParser.command(names=['taghistory'], allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
+def taghistory(caller):
+	caller.connection.player.duel.tags[caller.connection.player.duel_player].print_history(caller.connection.player)

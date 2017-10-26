@@ -8,6 +8,21 @@ from passlib.hash import pbkdf2_sha256
 
 Base = declarative_base()
 
+class Statistics(Base):
+	__tablename__ = 'statistics'
+	account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+	opponent_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+	win = Column(Integer, nullable=False, default='0')
+	lose = Column(Integer, nullable=False, default='0')
+	draw = Column(Integer, nullable=False, default='0')
+	giveup = Column(Integer, nullable=False, default='0')
+	account = relationship('Account', foreign_keys=[account_id])
+	opponent = relationship('Account', foreign_keys=[opponent_id])
+	__table_args__ = (
+		PrimaryKeyConstraint('account_id', 'opponent_id'),
+		Index('account_statistics', 'account_id', 'opponent_id', unique=True),
+	)
+
 class Account(Base):
 	__tablename__ = 'accounts'
 	id = Column(Integer, primary_key=True)
@@ -21,6 +36,9 @@ class Account(Base):
 	is_admin = Column(Boolean, nullable=False, default=False)
 	decks = relationship('Deck')
 	ignores = relationship('Ignore', cascade='all, delete-orphan', foreign_keys='Ignore.account_id')
+	duel_rules = Column(Integer, nullable=False, default=0)
+	banlist = Column(String(50), nullable = False, default = 'tcg')
+	statistics = relationship('Statistics', cascade='all, delete-orphan', foreign_keys=[Statistics.account_id])
 
 	def set_password(self, password):
 		self.password = pbkdf2_sha256.hash(password)
