@@ -17,4 +17,4 @@ class Tell(Channel):
 			msg = recipient._("You tell %s: %s")%(buffer_entry['params']['receiving_player'], buffer_entry['message'])
 		else:
 			msg = recipient._("%s tells you: %s")%(buffer_entry['sender'], buffer_entry['message'])
-		return format_time(buffer_entry['time'], format='short', locale=self.get_locale_for_recipient(recipient))+" - "+msg
+		return format_time(buffer_entry['time'], format='short', locale=recipient.get_locale())+" - "+msg

@@ -132,7 +132,7 @@ class login_parser(gsb.Parser):
 			if os.path.exists(motd_file):
 				with open(motd_file, 'r') as fp:
 					connection.notify(fp.read())
-		connection.account = account
+		connection.account = None
 		account.last_logged_in = func.now()
 		connection.session.commit()
 
