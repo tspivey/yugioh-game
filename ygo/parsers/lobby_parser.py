@@ -599,10 +599,7 @@ def finger(caller):
 	pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(won, lost, drawn, surrendered))
 
 	if won+lost > 0:
-		if lost == 0:
-			average = 100.0
-		else:
-			average = float(won)/float(lost)
+		average = float(won)*100/(float(won)+float(lost))
 
 		pl.notify(pl._("%.2f%% Success.")%(average))
 
