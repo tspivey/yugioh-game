@@ -19,10 +19,10 @@ class deck_editor_parser(gsb.Parser):
 		cards = pl.deck['cards']
 		pos = editor.deck_edit_pos
 		code = globals.server.all_cards[pos]
-		card = Card(code)
-		in_deck = cards.count(card.alias)
+		in_deck = cards.count(code)
 		if in_deck > 0:
 			pl.notify(pl._("%d in deck.") % in_deck)
+		card = Card(code)
 		pl.notify(card.get_info(pl))
 		pl.notify(pl._("u: up d: down /: search forward ?: search backward t: top"))
 		pl.notify(pl._("s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"))
@@ -57,8 +57,7 @@ def top(caller):
 def send(caller):
 	cards = caller.connection.player.deck['cards']
 	code = globals.server.all_cards[caller.connection.player.deck_editor.deck_edit_pos]
-	card = Card(code)
-	if cards.count(card.alias) == 3:
+	if cards.count(code) == 3:
 		caller.connection.notify(caller.connection._("You already have 3 of this card in your deck."))
 		return
 	cards.append(code)
@@ -81,14 +80,12 @@ def remove(caller):
 			pl.notify(pl._("Invalid card."))
 			return
 		code = list(cnt.keys())[n]
-	card = Card(code)
-	code = card.alias
 	
 	if cards.count(code) == 0:
 		pl.notify(pl._("This card isn't in your deck."))
 		return
 	cards.remove(code)
-	pl.notify(pl._("Removed %s from your deck." %(card.get_name(pl))))
+	pl.notify(pl._("Removed %s from your deck." %(Card(code).get_name(pl))))
 	editor.save()
 	caller.connection.session.commit()
 
