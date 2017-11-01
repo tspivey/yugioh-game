@@ -87,3 +87,4 @@ def connect_db(path):
 	db = sqlite3.connect(path)
 	db.row_factory = sqlite3.Row
 	db.create_function('UPPERCASE', 1, lambda s: s.upper())
+	return db
