@@ -1,6 +1,7 @@
 import gsb
 
 from ..card import Card
+from ..constants import COMMAND_SUBSTITUTIONS
 from .. import globals
 
 class deck_editor_parser(gsb.Parser):
@@ -30,9 +31,25 @@ class deck_editor_parser(gsb.Parser):
 		main, extra = pl.count_deck_cards(pl.deck['cards'])
 		pl.notify(pl._("Command (%d cards in main deck, %d cards in extra deck):") % (main, extra))
 
-DeckEditorParser = deck_editor_parser(command_substitutions={"/": "/", "?": "?"})
+substitutions = {
+	'/': 'search_forward',
+	'?': 'search_backward',
+	'c': 'check',
+	'd': 'down',
+	'g': 'goto',
+	'l': 'cmd_list',
+	'q': 'quit',
+	'r': 'remove',
+	's': 'send',
+	't': 'top',
+	'u': 'up'
+}
 
-@DeckEditorParser.command(names=['d'])
+substitutions.update(COMMAND_SUBSTITUTIONS)
+
+DeckEditorParser = deck_editor_parser(command_substitutions=substitutions)
+
+@DeckEditorParser.command
 def down(caller):
 
 	caller.connection.player.deck_editor.deck_edit_pos += 1
@@ -40,7 +57,7 @@ def down(caller):
 		caller.connection.player.deck_editor.deck_edit_pos = len(globals.server.all_cards) - 1
 		caller.connection.notify(caller.connection._("bottom of list."))
 
-@DeckEditorParser.command(names=['u'])
+@DeckEditorParser.command
 def up(caller):
 
 	if caller.connection.player.deck_editor.deck_edit_pos == 0:
@@ -48,12 +65,12 @@ def up(caller):
 		return
 	caller.connection.player.deck_editor.deck_edit_pos -= 1
 
-@DeckEditorParser.command(names=['t'])
+@DeckEditorParser.command
 def top(caller):
 	caller.connection.player.deck_editor.deck_edit_pos = 0
 	caller.connection.notify(caller.connection._("Top."))
 
-@DeckEditorParser.command(names=['s'])
+@DeckEditorParser.command
 def send(caller):
 	cards = caller.connection.player.deck['cards']
 	code = globals.server.all_cards[caller.connection.player.deck_editor.deck_edit_pos]
@@ -64,7 +81,7 @@ def send(caller):
 	caller.connection.player.deck_editor.save()
 	caller.connection.session.commit()
 
-@DeckEditorParser.command(names=['r'], args_regexp=r'(\d+)?')
+@DeckEditorParser.command(args_regexp=r'(\d+)?')
 def remove(caller):
 
 	pl = caller.connection.player
@@ -89,7 +106,7 @@ def remove(caller):
 	editor.save()
 	caller.connection.session.commit()
 
-@DeckEditorParser.command(names=['/'], args_regexp=r'(.*)')
+@DeckEditorParser.command(args_regexp=r'(.*)')
 def search_forward(caller):
 
 	pl = caller.connection.player
@@ -109,7 +126,7 @@ def search_forward(caller):
 	else:
 		editor.deck_edit_pos = pos
 
-@DeckEditorParser.command(names=['?'], args_regexp=r'(.*)')
+@DeckEditorParser.command(args_regexp=r'(.*)')
 def search_backward(caller):
 
 	pl = caller.connection.player
@@ -129,7 +146,7 @@ def search_backward(caller):
 	else:
 		editor.deck_edit_pos = pos
 
-@DeckEditorParser.command(names=['l'])
+@DeckEditorParser.command
 def cmd_list(caller):
 	pl = caller.connection.player
 	editor = pl.deck_editor
@@ -174,7 +191,7 @@ def cmd_list(caller):
 				pl.notify("%d: %s" % (i, card.get_name(pl)))
 			i += 1
 
-@DeckEditorParser.command(names=['g'], args_regexp=r'(\d+)')
+@DeckEditorParser.command(args_regexp=r'(\d+)')
 def goto(caller):
 
 	pl = caller.connection.player
@@ -188,7 +205,7 @@ def goto(caller):
 	code = list(cnt.keys())[n]
 	editor.deck_edit_pos = globals.server.all_cards.index(code)
 
-@DeckEditorParser.command(names=['q'])
+@DeckEditorParser.command
 def quit(caller):
 
 	pl = caller.connection.player
@@ -199,7 +216,7 @@ def quit(caller):
 	pl.connection.parser = pl.paused_parser
 	pl.paused_parser = None
 
-@DeckEditorParser.command(names=['c'], args_regexp='([a-zA-Z0-9\.\- ]+)?')
+@DeckEditorParser.command(args_regexp='([a-zA-Z0-9\.\- ]+)?')
 def check(caller):
 
 	pl = caller.connection.player
