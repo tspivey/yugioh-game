@@ -21,7 +21,7 @@ class Server(gsb.Server):
 		self.db.row_factory = sqlite3.Row
 		self.players = {}
 		self.session_factory = models.setup()
-		self.all_cards = [int(row[0]) for row in self.db.execute("select id from datas where id = alias or alias = 0 order by id asc")]
+		self.all_cards = [int(row[0]) for row in self.db.execute("select id from datas order by id asc")]
 
 	def on_connect(self, caller):
 		### for backwards compatibility ###
