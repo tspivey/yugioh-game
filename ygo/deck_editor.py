@@ -207,3 +207,14 @@ class DeckEditor:
 			self.player.notify(self.player._("%s: limit %d, found %d.") % (card.get_name(self.player), globals.lflist[banlist][code], count))
 			errors += 1
 		self.player.notify(self.player._("Check completed with %d errors.") % errors)
+
+	def count_occurrence_in_deck(self, code):
+		card = Card(code)
+		if card.alias == 0:
+			possible_cards = globals.server.db.execute('SELECT id FROM datas WHERE id = ? OR alias = ?', (code, code, )).fetchall()
+		else:
+			possible_cards = globals.server.db.execute('SELECT id FROM datas WHERE id = ? OR alias = ? OR id = ?', (code, card.alias, card.alias, )).fetchall()
+		found = 0
+		for c in possible_cards:
+			found += self.player.deck['cards'].count(c[0])
+		return found
