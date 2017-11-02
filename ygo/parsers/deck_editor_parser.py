@@ -17,10 +17,9 @@ class deck_editor_parser(gsb.Parser):
 	def prompt(self, connection):
 		pl = connection.player
 		editor = pl.deck_editor
-		cards = pl.deck['cards']
 		pos = editor.deck_edit_pos
 		code = globals.server.all_cards[pos]
-		in_deck = cards.count(code)
+		in_deck = pl.deck['cards'].count(code)
 		if in_deck > 0:
 			pl.notify(pl._("%d in deck.") % in_deck)
 		card = Card(code)
@@ -72,10 +71,10 @@ def top(caller):
 
 @DeckEditorParser.command
 def send(caller):
-	cards = caller.connection.player.deck['cards']
 	code = globals.server.all_cards[caller.connection.player.deck_editor.deck_edit_pos]
-	if cards.count(code) == 3:
-		caller.connection.notify(caller.connection._("You already have 3 of this card in your deck."))
+	found = caller.connection.player.deck_editor.count_occurrence_in_deck(code)
+	if found >= 3:
+		caller.connection.notify(caller.connection._("You may only have 3 of this card (or cards with the same name) in your deck."))
 		return
 	cards.append(code)
 	caller.connection.player.deck_editor.save()
