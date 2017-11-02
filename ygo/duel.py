@@ -557,11 +557,11 @@ class Duel:
 		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION_REMOVED)
 		if pl.watching:
 			if self.tag is True:
-				nick0 = pl._("team %s")%(self.players[0].nickname+", "+self.tag_players[0].nickname)
-				nick1 = pl._("team %s")%(self.players[1].nickname+", "+self.tag_players[1].nickname)
+				nick0 = pl._("team %s")%(self.players[player].nickname+", "+self.tag_players[player].nickname)
+				nick1 = pl._("team %s")%(self.players[1 - player].nickname+", "+self.tag_players[1 - player].nickname)
 			else:
-				nick0 = self.players[0].nickname
-				nick1 = self.players[1].nickname
+				nick0 = self.players[player].nickname
+				nick1 = self.players[1 - player].nickname
 			pl.notify(pl._("LP: %s: %d %s: %d") % (nick0, self.lp[player], nick1, self.lp[1 - player]))
 			pl.notify(pl._("Hand: %s: %d %s: %d") % (nick0, hand, nick1, ohand))
 			pl.notify(pl._("Deck: %s: %d %s: %d") % (nick0, deck, nick1, odeck))
