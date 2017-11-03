@@ -76,7 +76,7 @@ def send(caller):
 	if found >= 3:
 		caller.connection.notify(caller.connection._("You may only have 3 of this card (or cards with the same name) in your deck."))
 		return
-	cards.append(code)
+	caller.connection.player.deck['cards'].append(code)
 	caller.connection.player.deck_editor.save()
 	caller.connection.session.commit()
 
