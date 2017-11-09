@@ -166,6 +166,9 @@ class Duel:
 	def end(self):
 		lib.end_duel(self.duel)
 		self.started = False
+		for pl in self.watchers:
+			if pl.watching is True:
+				pl.notify(pl._("Watching stopped."))
 		for pl in self.players + self.watchers:
 			pl.duel = None
 			pl.duel_player = 0
@@ -186,9 +189,6 @@ class Duel:
 				if isinstance(op, DuelReader):
 					op.done = lambda caller: None
 				pl.set_parser('LobbyParser')
-		for pl in self.watchers:
-			if pl.watching is True:
-				pl.notify(pl._("Watching stopped."))
 		if self.debug_mode is True and self.debug_fp is not None:
 			self.debug_fp.close()
 		globals.server.check_reboot()
