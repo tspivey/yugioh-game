@@ -1,5 +1,6 @@
 import collections
 import natsort
+import sqlite3
 
 from _duel import ffi, lib
 
@@ -81,3 +82,9 @@ def parse_ints(text):
 	except ValueError:
 		pass
 	return ints
+
+def connect_db(path):
+	db = sqlite3.connect(path)
+	db.row_factory = sqlite3.Row
+	db.create_function('UPPERCASE', 1, lambda s: s.upper())
+	return db

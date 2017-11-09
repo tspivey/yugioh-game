@@ -137,7 +137,7 @@ class DeckEditor:
 		return full
 
 	def find_next(self, text, start, limit=None, wrapped=False):
-		sql = 'SELECT id FROM texts WHERE UPPER(name) LIKE ? and id in (%s) ORDER BY id ASC LIMIT 1'
+		sql = 'SELECT id FROM texts WHERE UPPERCASE(name) LIKE ? and id in (%s) ORDER BY id ASC LIMIT 1'
 		if limit:
 			cards = globals.server.all_cards[start:start+limit]
 		else:
@@ -150,7 +150,7 @@ class DeckEditor:
 		return self.find_next(text, 0, start, wrapped=True)
 
 	def find_prev(self, text, start, end=None, wrapped=False):
-		sql = 'SELECT id FROM texts WHERE UPPER(name) LIKE ? AND id IN (%s) ORDER BY id DESC LIMIT 1'
+		sql = 'SELECT id FROM texts WHERE UPPERCASE(name) LIKE ? AND id IN (%s) ORDER BY id DESC LIMIT 1'
 		pos = start
 		if end is None:
 			end = 0
@@ -207,3 +207,14 @@ class DeckEditor:
 			self.player.notify(self.player._("%s: limit %d, found %d.") % (card.get_name(self.player), globals.lflist[banlist][code], count))
 			errors += 1
 		self.player.notify(self.player._("Check completed with %d errors.") % errors)
+
+	def count_occurrence_in_deck(self, code):
+		card = Card(code)
+		if card.alias == 0:
+			possible_cards = globals.server.db.execute('SELECT id FROM datas WHERE id = ? OR alias = ?', (code, code, )).fetchall()
+		else:
+			possible_cards = globals.server.db.execute('SELECT id FROM datas WHERE id = ? OR alias = ? OR id = ?', (code, card.alias, card.alias, )).fetchall()
+		found = 0
+		for c in possible_cards:
+			found += self.player.deck['cards'].count(c[0])
+		return found

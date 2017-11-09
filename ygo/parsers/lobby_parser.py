@@ -16,6 +16,7 @@ from .. import globals
 from ..room import Room
 from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
+from .deck_editor_parser import DeckEditorParser
 from .duel_parser import DuelParser
 from .room_parser import RoomParser
 from .. import models
@@ -36,7 +37,7 @@ def afk(caller):
 		conn.player.afk = False
 		return
 
-@LobbyParser.command(names='deck', args_regexp=r'(.*)', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
+@LobbyParser.command(names='deck', args_regexp=r'(.*)', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None and c.connection.parser is LobbyParser)
 def deck(caller):
 
 	lst = caller.args[0].split(None, 1)
@@ -158,7 +159,7 @@ def who(caller):
 	for pl in who_output:
 		caller.connection.notify(pl)
 
-@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-,]+)(?:=(\d+))?', allowed=lambda caller: caller.connection.player.is_admin)
+@LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-,]+)(?:=(\d+))?', allowed=lambda c: c.connection.player.is_admin and c.connection.player.duel is None and c.connection.player.room is None and c.connection.parser is LobbyParser)
 def replay(caller):
 	with open(os.path.join('duels', caller.args[0])) as fp:
 		lines = [json.loads(line) for line in fp]
@@ -224,7 +225,7 @@ def lookup(caller):
 		return
 	caller.connection.notify(card.get_info(caller.connection.player))
 
-@LobbyParser.command(names='passwd', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
+@LobbyParser.command(names='passwd', allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None and c.connection.parser is LobbyParser)
 def passwd(caller):
 
 	session = caller.connection.session
@@ -287,7 +288,7 @@ def encoding(caller):
 	caller.connection.session.commit()
 	caller.connection.notify(caller.connection._("Encoding set."))
 
-@LobbyParser.command(allowed=lambda caller: caller.connection.player.is_admin)
+@LobbyParser.command(allowed=lambda c: c.connection.player.is_admin)
 def restart_websockets(caller):
 	if not globals.websocket_server:
 		caller.connection.notify(caller.connection._("Websocket server not enabled."))
@@ -300,7 +301,7 @@ def restart_websockets(caller):
 	d.addCallback(stopped)
 	d.addErrback(log.err)
 
-@LobbyParser.command(args_regexp=r'(.*)', allowed=lambda caller: caller.connection.player.is_admin)
+@LobbyParser.command(args_regexp=r'(.*)', allowed=lambda c: c.connection.player.is_admin)
 def announce(caller):
 	if not caller.args[0]:
 		caller.connection.notify(caller.connection._("Announce what?"))
@@ -368,7 +369,7 @@ def reply(caller):
 def soundpack_on(caller):
 	caller.connection.player.soundpack = True
 
-@LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None)
+@LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None and c.connection.parser is not DeckEditorParser)
 def watch(caller):
 
 	con = caller.connection
@@ -443,7 +444,7 @@ def challenge(caller):
 	else:
 		con.notify(con._("Challenge off."))
 
-@LobbyParser.command(allowed=lambda caller: caller.connection.player.is_admin)
+@LobbyParser.command(allowed=lambda c: c.connection.player.is_admin)
 def reboot(caller):
 	globals.rebooting = True
 	globals.server.check_reboot()
@@ -458,7 +459,7 @@ def create(caller):
 	r.join(caller.connection.player)
 	caller.connection.parser.prompt(caller.connection)
 
-@LobbyParser.command(names=['join'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None)
+@LobbyParser.command(names=['join'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None and c.connection.parser is LobbyParser)
 def join(caller):
 
 	pl = caller.connection.player
@@ -605,6 +606,8 @@ def finger(caller):
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
+	if not key in DeckEditorParser.commands:
+		DeckEditorParser.commands[key] = LobbyParser.commands[key]
 	if not key in DuelParser.commands:
 		DuelParser.commands[key] = LobbyParser.commands[key]
 	if not key in RoomParser.commands:

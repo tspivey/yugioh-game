@@ -1,5 +1,4 @@
 import re
-import sqlite3
 import gsb
 
 from twisted.internet import reactor
@@ -7,6 +6,7 @@ from twisted.internet import reactor
 from .card import Card
 from . import globals
 from . import models
+from .utils import connect_db
 from .channels.challenge import Challenge
 from .channels.chat import Chat
 
@@ -17,8 +17,7 @@ class Server(gsb.Server):
 
 		self.challenge = Challenge()
 		self.chat = Chat()
-		self.db = sqlite3.connect('locale/en/cards.cdb')
-		self.db.row_factory = sqlite3.Row
+		self.db = connect_db('locale/en/cards.cdb')
 		self.players = {}
 		self.session_factory = models.setup()
 		self.all_cards = [int(row[0]) for row in self.db.execute("select id from datas order by id asc")]
