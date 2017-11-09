@@ -1,8 +1,10 @@
 import io
+import natsort
 from twisted.internet import reactor
 
-from ygo.constants import ATTRIBUTES
+from ygo.constants import AMOUNT_ATTRIBUTES, ATTRIBUTES_OFFSET
 from ygo.duel_reader import DuelReader
+from ygo import globals
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
 
@@ -15,11 +17,11 @@ def msg_announce_attrib(self, data):
 	return data.read()
 
 def announce_attrib(self, player, count, avail):
-	attrmap = {k: (1<<i) for i, k in enumerate(ATTRIBUTES)}
-	avail_attributes = {k: v for k, v in attrmap.items() if avail & v}
-	avail_attributes_keys = avail_attributes.keys()
-	avail_attributes_values = list(avail_attributes.values())
 	pl = self.players[player]
+	attrmap = {globals.strings[pl.language]['system'][ATTRIBUTES_OFFSET+i]: (1<<i) for i in range(AMOUNT_ATTRIBUTES)}
+	avail_attributes = {k: v for k, v in attrmap.items() if avail & v}
+	avail_attributes_keys = natsort.natsorted(list(avail_attributes.keys()))
+	avail_attributes_values = [avail_attributes[r] for r in avail_attributes_keys]
 	def prompt():
 		pl.notify("Type %d attributes separated by spaces." % count)
 		for i, attrib in enumerate(avail_attributes_keys):

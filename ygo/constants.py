@@ -1,6 +1,9 @@
 __ = lambda s: s
 
-ATTRIBUTES = ('Earth', 'Water', 'Fire', 'Wind', 'Light', 'Dark', 'Divine')
+AMOUNT_ATTRIBUTES = 7
+AMOUNT_RACES = 25
+
+ATTRIBUTES_OFFSET = 1010
 
 COMMAND_SUBSTITUTIONS = {
 	"'": "say",
@@ -47,13 +50,7 @@ POS_FACEUP = 0x5
 POS_FACEDOWN_DEFENSE = 0x8
 POS_FACEDOWN = 0xa
 
-RACES = (
-	"Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie",
-	"Machine", "Aqua", "Pyro", "Rock", "Wind Beast",
-	"Plant", "Insect", "Thunder", "Dragon", "Beast",
-	"Beast Warrior", "Dinosaur", "Fish", "Sea Serpent", "Reptile",
-	"Psycho", "Divine", "Creator god", "Wyrm", "Cyberse",
-)
+RACES_OFFSET = 1020
 
 RE_NICKNAME = r'^([A-Za-z][a-zA-Z0-9]+)$'
 
