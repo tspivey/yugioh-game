@@ -1,4 +1,5 @@
 import re
+import socket
 import gsb
 
 from twisted.internet import reactor
@@ -29,6 +30,8 @@ class Server(gsb.Server):
 		caller.connection.session = self.session_factory()
 		caller.connection.web = False
 		caller.connection.dont_process = False
+		caller.connection.transport.setTcpKeepAlive(True)
+		caller.connection.transport.socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 120)
 
 	def on_disconnect(self, caller):
 		con = caller.connection
