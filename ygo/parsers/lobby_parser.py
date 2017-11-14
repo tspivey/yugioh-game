@@ -4,8 +4,8 @@ import datetime
 import gsb
 from gsb.intercept import Reader
 import json
-import locale
 import natsort
+import os.path
 import os.path
 from twisted.internet import reactor
 from twisted.python import log
@@ -45,12 +45,6 @@ def deck(caller):
 	caller.args = lst[1:]
 	if cmd == 'list':
 		caller.connection.player.deck_editor.list()
-		return
-	elif cmd == 'check':
-		if len(caller.args) == 0:
-			caller.connection.player.deck_editor.check()
-		else:
-			caller.connection.player.deck_editor.check(caller.args[0])
 		return
 
 	if len(caller.args) == 0:
@@ -504,7 +498,7 @@ def uptime(caller):
 
 	delta = datetime.datetime.utcnow() - globals.server.started
 
-	caller.connection.notify(caller.connection._("This server has been running for %s.")%(format_timedelta(delta, locale=locale.normalize(caller.connection.player.language).split('_')[0])))
+	caller.connection.notify(caller.connection._("This server has been running for %s.")%(format_timedelta(delta, locale=caller.connection.player.get_locale())))
 
 @LobbyParser.command(names=['chathistory'], args_regexp=r'(\d*)')
 def chathistory(caller):
