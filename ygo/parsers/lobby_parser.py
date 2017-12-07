@@ -152,6 +152,8 @@ def who(caller):
 				who_output.append(s)
 	for pl in who_output:
 		caller.connection.notify(pl)
+	online = len(globals.server.get_all_players())
+	caller.connection.notify(caller.connection._("%d online, %d max this reboot.") % (online, globals.server.max_online))
 
 @LobbyParser.command(names=['replay'], args_regexp=r'([a-zA-Z0-9_\.:\-,]+)(?:=(\d+))?', allowed=lambda c: c.connection.player.is_admin and c.connection.player.duel is None and c.connection.player.room is None and c.connection.parser is LobbyParser)
 def replay(caller):

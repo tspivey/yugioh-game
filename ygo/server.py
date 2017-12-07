@@ -22,6 +22,7 @@ class Server(gsb.Server):
 		self.players = {}
 		self.session_factory = models.setup()
 		self.all_cards = [int(row[0]) for row in self.db.execute("select id from datas order by id asc")]
+		self.max_online = 0
 
 	def on_connect(self, caller):
 		### for backwards compatibility ###
@@ -62,6 +63,8 @@ class Server(gsb.Server):
 		self.players[player.nickname.lower()] = player
 		self.challenge.add_recipient(player)
 		self.chat.add_recipient(player)
+		if len(self.players) > self.max_online:
+			self.max_online = len(self.players)
 
 	def remove_player(self, nick):
 		try:
