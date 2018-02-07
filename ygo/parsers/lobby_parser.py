@@ -253,7 +253,7 @@ def passwd(caller):
 @LobbyParser.command(names=['language'], args_regexp=r'(.*)')
 def language(caller):
 	lang = caller.args[0]
-	if lang not in ('english', 'german', 'japanese', 'spanish'):
+	if lang not in ('english', 'german', 'japanese', 'spanish', 'portuguese'):
 		caller.connection.notify("Usage: language <english/german/japanese/spanish>")
 		return
 	if lang == 'english':
@@ -264,6 +264,8 @@ def language(caller):
 		caller.connection.player.set_language('ja')
 	elif lang == 'spanish':
 		caller.connection.player.set_language('es')
+	elif lang == 'portuguese':
+		caller.connection.player.set_language('pt')
 	caller.connection.notify(caller.connection._("Language set."))
 
 @LobbyParser.command(args_regexp=r'(.*)')

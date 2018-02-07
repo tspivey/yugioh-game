@@ -16,7 +16,9 @@ def main():
 		globals.japanese_db = connect_db('locale/ja/cards.cdb')
 	if os.path.exists('locale/es/cards.cdb'):
 		globals.spanish_db = connect_db('locale/es/cards.cdb')
-	for i in ('en', 'de', 'ja', 'es'):
+	if os.path.exists('locale/pt/cards.cdb'):
+		globals.portuguese_db = connect_db('locale/es/cards.cdb')
+	for i in ('en', 'de', 'ja', 'es', 'pt'):
 		globals.strings[i] = i18n.parse_strings(os.path.join('locale', i, 'strings.conf'))
 	globals.lflist = parse_lflist('lflist.conf')
 	parser = argparse.ArgumentParser()

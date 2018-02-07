@@ -20,6 +20,10 @@ def set_language(pl, language):
 		pl.cdb = globals.spanish_db
 		pl._ = gettext.translation('game', 'locale', languages=['es'], fallback=True).gettext
 		pl.language = 'es'
+	elif language == 'pt':
+		pl.cdb = globals.portuguese_db
+		pl._ = gettext.translation('game', 'locale', languages=['pt'], fallback=True).gettext
+		pl.language = 'pt'
 
 def parse_strings(filename):
 	res = {}
