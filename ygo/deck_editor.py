@@ -73,6 +73,38 @@ class DeckEditor:
 		session.commit()
 		self.player.notify(self.player._("Deck renamed."))
 
+	def copy(self, args):
+		if '=' not in args:
+			self.player.notify(self.player._("Usage: deck copy <old>=<new>"))
+			return
+		args = args.strip().split('=', 1)
+		name = args[0].strip()
+		dest = args[1].strip()
+		if not name or not dest:
+			self.player.notify(self.player._("Usage: deck copy <old>=<new>"))
+			return
+		if '=' in dest:
+			self.player.notify(self.player._("Deck names may not contain =."))
+			return
+		if name.startswith('public/'):
+			account = self.player.connection.session.query(models.Account).filter_by(name='Public').first()
+			name = name[7:]
+		else:
+			account = self.player.get_account()
+		session = self.player.connection.session
+		deck = models.Deck.find(session, account, name)
+		if not deck:
+			self.player.notify(self.player._("Deck not found."))
+			return
+		dest_deck = models.Deck.find(session, self.player.get_account(), dest)
+		if dest_deck:
+			self.player.notify(self.player._("Destination deck already exists"))
+			return
+		new_deck = models.Deck(name=dest, content=deck.content)
+		self.player.get_account().decks.append(new_deck)
+		session.commit()
+		self.player.notify(self.player._("Deck copied."))
+
 	def edit(self, deck_name):
 		con = self.player.connection
 		con.player.paused_parser = con.parser

@@ -61,6 +61,8 @@ def deck(caller):
 		caller.connection.player.deck_editor.rename(caller.args[0])
 	elif cmd == 'new':
 		caller.connection.player.deck_editor.new(caller.args[0])
+	elif cmd == 'copy':
+		caller.connection.player.deck_editor.copy(caller.args[0])
 	else:
 		caller.connection.notify(caller.connection._("Invalid deck command."))
 
