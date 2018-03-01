@@ -205,7 +205,9 @@ def help(caller):
 	if not topic:
 		topic = "start"
 	topic = topic.replace('/', '_').strip()
-	fn = os.path.join('help', topic)
+	fn = os.path.join('help', caller.connection.player.language, topic)
+	if not os.path.isfile(fn):
+		fn = os.path.join('help', topic)
 	if not os.path.isfile(fn):
 		caller.connection.notify(caller.connection._("No help topic."))
 		return
