@@ -41,6 +41,9 @@ def afk(caller):
 def deck(caller):
 
 	lst = caller.args[0].split(None, 1)
+	if not lst:
+		caller.connection.parser.handle_line(caller.connection, "help deck")
+		return
 	cmd = lst[0]
 	caller.args = lst[1:]
 	if cmd == 'list':
