@@ -134,6 +134,7 @@ class LanguageHandler:
 		try:
 			for l in backup.keys():
 				self.add(l, backup[l]['short'], backup[l]['path'])
+			gettext._translations = dict()
 			return True
 		except LanguageError as e:
 			self.languages = backup
