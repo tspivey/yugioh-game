@@ -19,6 +19,7 @@ class LanguageHandler:
 	def add(self, lang, short, path = None):
 		lang = lang.lower()
 		short = short.lower()
+		print("Adding language "+lang+" with shortage "+short)
 		try:
 			l = {'short': short}
 			if path is None:
@@ -38,13 +39,16 @@ class LanguageHandler:
 		cdb.row_factory = sqlite3.Row
 		cdb.create_function('UPPERCASE', 1, lambda s: s.upper())
 		extending_dbs = glob.glob(os.path.join(path, '*.cdb'))
+		count = 0
 		for p in extending_dbs:
 			if os.path.relpath(p, os.path.dirname(p)) == 'cards.cdb':
 				continue
+			count += 1
 			cdb.execute("ATTACH ? as new", (p, ))
 			cdb.execute("INSERT OR REPLACE INTO datas SELECT * FROM new.datas")
 			cdb.execute("INSERT OR REPLACE INTO texts SELECT * FROM new.texts")
 			cdb.execute("DETACH new")
+		print("Merged {count} databases into cards.cdb".format(count = count))
 		return cdb
 
 	def __parse_strings(self, filename):
@@ -111,6 +115,20 @@ class LanguageHandler:
 
 	def get_strings(self, lang):
 		return self.get_language(lang)['strings']
+
+	# reloads all available languages
+	def reload(self):
+		backup = self.languages
+		for l in self.languages.keys():
+			self.languages[l]['db'].close()
+		self.languages = dict()
+		try:
+			for l in backup.keys():
+				self.add(l, backup[l]['short'], backup[l]['path'])
+			return True
+		except LanguageError as e:
+			self.languages = backup
+			return str(e)
 
 	@property
 	def primary_database(self):

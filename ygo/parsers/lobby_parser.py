@@ -600,6 +600,15 @@ def finger(caller):
 
 		pl.notify(pl._("%.2f%% Success.")%(average))
 
+@LobbyParser.command(names=["reloadlanguages"], allowed = lambda c: c.connection.player.is_admin)
+def reloadlanguages(caller):
+	caller.connection.notify(caller.connection._("Reloading languages..."))
+	success = globals.language_handler.reload()
+	if success == True:
+		caller.connection.notify(caller.connection._("Success."))
+	else:
+		caller.connection.notify(caller.connection._("An error occurred: {error}").format(error = success))
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DeckEditorParser.commands:
