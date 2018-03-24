@@ -205,14 +205,7 @@ def help(caller):
 	if not topic:
 		topic = "start"
 	topic = topic.replace('/', '_').strip()
-	fn = os.path.join('help', caller.connection.player.language, topic)
-	if not os.path.isfile(fn):
-		fn = os.path.join('help', topic)
-	if not os.path.isfile(fn):
-		caller.connection.notify(caller.connection._("No help topic."))
-		return
-	with open(fn, encoding='utf-8') as fp:
-		caller.connection.notify(fp.read().rstrip('\n'))
+	caller.connection.notify(caller.connection.player.get_help(topic))
 
 @LobbyParser.command(names=['quit'], allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def quit(caller):

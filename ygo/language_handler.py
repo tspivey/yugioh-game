@@ -27,13 +27,12 @@ class LanguageHandler:
 			l['path'] = path
 			l['db'] = self.__connect_database(path)
 			l['strings'] = self.__parse_strings(os.path.join(path, 'strings.conf'))
-			l['motd'] = self.__load_motd(path)
 			self.languages[lang] = l
 		except LanguageError as e:
 			print("Error adding language "+lang+": "+str(e))
 
 	def __connect_database(self, path):
-		if not os.path.exists(os.path.join(path, 'cards.cdb')):
+		if not os.path.isfile(os.path.join(path, 'cards.cdb')):
 			raise LanguageError("cards.cdb not found")
 		cdb = sqlite3.connect(os.path.join(path, 'cards.cdb'))
 		cdb.row_factory = sqlite3.Row
@@ -52,7 +51,7 @@ class LanguageHandler:
 		return cdb
 
 	def __parse_strings(self, filename):
-		if not os.path.exists(filename):
+		if not os.path.isfile(filename):
 			raise LanguageError("strings.conf not found")
 		res = {}
 		with open(filename, 'r', encoding='utf-8') as fp:
@@ -85,14 +84,20 @@ class LanguageHandler:
 			raise LanguageError("language not found")
 
 	def get_motd(self, lang):
-		if self.get_language[lang]['motd'] == '':
-			return self.primary_motd
-		return self.get_language(lang)['motd']
-
-	def __load_motd(self, path):
-		if not os.path.exists(os.path.join(path, 'motd.txt')):
+		path = os.path.join(self.get_language(lang)['path'], 'motd.txt')
+		if lang != self.primary_language and not os.path.isfile(path):
+			return self.get_motd(self.primary_language)
+		if not os.path.isfile(path):
 			return ""
-		return open(os.path.join(path, 'motd.txt'), 'r', encoding='utf-8').read()
+		return open(path, 'r', encoding = 'utf-8').read()
+
+	def get_help(self, lang, topic):
+		path = os.path.join(self.get_language(lang)['path'], 'help', topic)
+		if lang != self.primary_language and not os.path.isfile(path):
+			return self.get_help(self.primary_language, topic)
+		if not os.path.isfile(path):
+			return ""
+		return open(path, 'r', encoding = 'utf-8').read()
 
 	def _(self, lang, text):
 		if lang == 'english':
@@ -133,7 +138,3 @@ class LanguageHandler:
 	@property
 	def primary_database(self):
 		return self.get_language(self.primary_language)['db']
-
-	@property
-	def primary_motd(self):
-		return self.get_language(self.primary_language)['motd']

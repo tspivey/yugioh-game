@@ -136,13 +136,19 @@ class Player:
 	def _(self, text):
 		return globals.language_handler._(self.language, text)
 
+	def get_help(self, topic):
+		help = globals.language_handler.get_help(self.language, topic)
+		if help == "":
+			return self._("No help topic.")
+		return help
+
 	@property
 	def cdb(self):
 		return globals.language_handler.get_language(self.language)['db']
 
 	@property
 	def motd(self):
-		return globals.language_handler.get_language(self.language)['motd']
+		return globals.language_handler.get_motd(self.language)
 
 	@property
 	def strings(self):
