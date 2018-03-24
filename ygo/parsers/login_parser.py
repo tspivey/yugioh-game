@@ -120,18 +120,13 @@ class login_parser(gsb.Parser):
 			connection.player.attach_connection(connection)
 			connection.player.set_parser('LobbyParser')
 			connection.player.is_admin = account.is_admin
-			connection.player.set_language(account.language)
+			connection.player.set_language(globals.language_handler.get_long(account.language))
 			for i in account.ignores:
 				connection.player.ignores.add(i.ignored_account.name)
 			for opl in globals.server.get_all_players():
 				opl.notify(opl._("%s logged in.") % connection.player.nickname)
 			globals.server.add_player(connection.player)
-			motd_file = os.path.join('locale', connection.player.language, 'motd.txt')
-			if not os.path.exists(motd_file):
-				motd_file = os.path.join('locale', 'en', 'motd.txt')
-			if os.path.exists(motd_file):
-				with open(motd_file, 'r') as fp:
-					connection.notify(fp.read())
+			connection.notify(connection.player.motd)
 		connection.account = None
 		account.last_logged_in = func.now()
 		connection.session.commit()

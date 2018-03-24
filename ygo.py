@@ -1,36 +1,39 @@
 import argparse
 import os.path
+import sys
 
 from ygo import globals
-from ygo import i18n
+from ygo.exceptions import LanguageError
+from ygo.language_handler import LanguageHandler
 from ygo.parsers.login_parser import LoginParser
 from ygo.server import Server
-from ygo.utils import parse_lflist, connect_db
+from ygo.utils import parse_lflist
 from ygo.websockets import start_websocket_server
 
 def main():
-	server = Server(port = 4000, default_parser = LoginParser)
-	if os.path.exists('locale/de/cards.cdb'):
-		globals.german_db = connect_db('locale/de/cards.cdb')
-	if os.path.exists('locale/ja/cards.cdb'):
-		globals.japanese_db = connect_db('locale/ja/cards.cdb')
-	if os.path.exists('locale/es/cards.cdb'):
-		globals.spanish_db = connect_db('locale/es/cards.cdb')
-	if os.path.exists('locale/pt/cards.cdb'):
-		globals.portuguese_db = connect_db('locale/es/cards.cdb')
-	for i in ('en', 'de', 'ja', 'es', 'pt'):
-		globals.strings[i] = i18n.parse_strings(os.path.join('locale', i, 'strings.conf'))
-	globals.lflist = parse_lflist('lflist.conf')
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
-	parser.add_argument('-w', '--websocket-port', type=int)
-	parser.add_argument('--websocket-cert', '-c')
-	parser.add_argument('--websocket-key', '-k')
-	args = parser.parse_args()
-	server.port = args.port
-	if args.websocket_port:
-		start_websocket_server(args.websocket_port, args.websocket_cert, args.websocket_key)
-	globals.server = server
-	server.run()
+  globals.language_handler = LanguageHandler()
+  globals.language_handler.add('english', 'en')
+  globals.language_handler.add("german", "de")
+  globals.language_handler.add('japanese', 'ja')
+  globals.language_handler.add('spanish', 'es')
+  globals.language_handler.add('portuguese', 'pt')
+  try:
+    globals.language_handler.set_primary_language('english')
+  except LanguageError as e:
+    print("Error setting primary language: "+str(e))
+    sys.exit()
+  globals.lflist = parse_lflist('lflist.conf')
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
+  parser.add_argument('-w', '--websocket-port', type=int)
+  parser.add_argument('--websocket-cert', '-c')
+  parser.add_argument('--websocket-key', '-k')
+  args = parser.parse_args()
+  server = Server(port = 4000, default_parser = LoginParser)
+  server.port = args.port
+  if args.websocket_port:
+    start_websocket_server(args.websocket_port, args.websocket_cert, args.websocket_key)
+  globals.server = server
+  server.run()
 
 main()

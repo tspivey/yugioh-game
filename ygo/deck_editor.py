@@ -243,9 +243,9 @@ class DeckEditor:
 	def count_occurrence_in_deck(self, code):
 		card = Card(code)
 		if card.alias == 0:
-			possible_cards = globals.server.db.execute('SELECT id FROM datas WHERE id = ? OR alias = ?', (code, code, )).fetchall()
+			possible_cards = globals.language_handler.primary_database.execute('SELECT id FROM datas WHERE id = ? OR alias = ?', (code, code, )).fetchall()
 		else:
-			possible_cards = globals.server.db.execute('SELECT id FROM datas WHERE id = ? OR alias = ? OR id = ?', (code, card.alias, card.alias, )).fetchall()
+			possible_cards = globals.language_handler.primary_database.execute('SELECT id FROM datas WHERE id = ? OR alias = ? OR id = ?', (code, card.alias, card.alias, )).fetchall()
 		found = 0
 		for c in possible_cards:
 			found += self.player.deck['cards'].count(c[0])

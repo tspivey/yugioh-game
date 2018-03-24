@@ -3,7 +3,7 @@ from . import globals
 
 class Card(object):
 	def __init__(self, code):
-		row = globals.server.db.execute('select * from datas where id=?', (code,)).fetchone()
+		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
 		self.code = code
 		self.alias = row['alias']
 		self.setcode = row['setcode']
@@ -16,7 +16,7 @@ class Card(object):
 		self.race = row['race']
 		self.attribute = row['attribute']
 		self.category = row['category']
-		row = globals.server.db.execute('select * from texts where id = ?', (self.code, )).fetchone()
+		row = globals.language_handler.primary_database.execute('select * from texts where id = ?', (self.code, )).fetchone()
 		self.name = row[1]
 		self.desc = row[2]
 		self.strings = []

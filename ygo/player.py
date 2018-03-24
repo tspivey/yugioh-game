@@ -1,11 +1,9 @@
-import gettext
 import locale
 
 from .channels.tell import Tell
 from .constants import *
 from . import globals
 from .deck_editor import DeckEditor
-from .i18n import set_language as i18n_set_language
 from .parsers.duel_parser import DuelParser
 from .parsers.lobby_parser import LobbyParser
 from .parsers.room_parser import RoomParser
@@ -14,7 +12,6 @@ from . import models
 class Player:
 
 	def __init__(self, name):
-		self._ = gettext.NullTranslations().gettext
 		self.afk = False
 		self.card_list = []
 		self.challenge = True
@@ -25,7 +22,8 @@ class Player:
 		self.duel = None
 		self.ignores = set()
 		self.is_admin = False
-		self.language = 'en'
+		self.language = 'english'
+		self.language_short = 'en'
 		self.nickname = name
 		self.paused_parser = None
 		self.room = None
@@ -39,8 +37,9 @@ class Player:
 		self.tell.add_recipient(self)
 
 	def set_language(self, lang):
-		i18n_set_language(self, lang)
-		self.get_account().language = self.language
+		self.language = lang
+		self.language_short = globals.language_handler.get_short(lang)
+		self.get_account().language = self.language_short
 		self.connection.session.commit()
 
 	def attach_connection(self, connection):
@@ -57,7 +56,7 @@ class Player:
 	def count_deck_cards(self, deck = None):
 		if deck is None:
 			deck = self.deck['cards']
-		rows = globals.server.db.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(deck)])))
+		rows = globals.language_handler.primary_database.execute('select id, type from datas where id in (%s)'%(','.join([str(c) for c in set(deck)])))
 		main = 0
 		extra = 0
 		for row in rows:
@@ -132,4 +131,15 @@ class Player:
 		return self.__statistics(player, giveup = 1)
 
 	def get_locale(self):
-		return locale.normalize(self.language).split('_')[0]
+		return locale.normalize(self.language_short).split('_')[0]
+
+	def _(self, text):
+		return globals.language_handler._(self.language, text)
+
+	@property
+	def cdb(self):
+		return globals.language_handler.get_language(self.language)['db']
+
+	@property
+	def motd(self):
+		return globals.language_handler.get_language(self.language)['motd']

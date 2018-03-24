@@ -1,0 +1,2 @@
+class LanguageError(Exception):
+	pass
