@@ -4,7 +4,6 @@ from twisted.internet import reactor
 
 from ygo.constants import AMOUNT_ATTRIBUTES, ATTRIBUTES_OFFSET
 from ygo.duel_reader import DuelReader
-from ygo import globals
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
 
@@ -18,7 +17,7 @@ def msg_announce_attrib(self, data):
 
 def announce_attrib(self, player, count, avail):
 	pl = self.players[player]
-	attrmap = {globals.strings[pl.language]['system'][ATTRIBUTES_OFFSET+i]: (1<<i) for i in range(AMOUNT_ATTRIBUTES)}
+	attrmap = {pl.strings['system'][ATTRIBUTES_OFFSET+i]: (1<<i) for i in range(AMOUNT_ATTRIBUTES)}
 	avail_attributes = {k: v for k, v in attrmap.items() if avail & v}
 	avail_attributes_keys = natsort.natsorted(list(avail_attributes.keys()))
 	avail_attributes_values = [avail_attributes[r] for r in avail_attributes_keys]

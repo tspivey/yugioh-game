@@ -7,7 +7,6 @@ from twisted.internet import reactor
 from .card import Card
 from . import globals
 from . import models
-from .utils import connect_db
 from .channels.challenge import Challenge
 from .channels.chat import Chat
 
@@ -18,10 +17,9 @@ class Server(gsb.Server):
 
 		self.challenge = Challenge()
 		self.chat = Chat()
-		self.db = connect_db('locale/en/cards.cdb')
 		self.players = {}
 		self.session_factory = models.setup()
-		self.all_cards = [int(row[0]) for row in self.db.execute("select id from datas order by id asc")]
+		self.all_cards = [int(row[0]) for row in globals.language_handler.primary_database.execute("select id from datas order by id asc")]
 		self.max_online = 0
 
 	def on_connect(self, caller):

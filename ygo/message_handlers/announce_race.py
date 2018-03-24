@@ -4,7 +4,6 @@ from twisted.internet import reactor
 
 from ygo.constants import AMOUNT_RACES, RACES_OFFSET
 from ygo.duel_reader import DuelReader
-from ygo import globals
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
 
@@ -18,7 +17,7 @@ def msg_announce_race(self, data):
 
 def announce_race(self, player, count, avail):
 	pl = self.players[player]
-	racemap = {globals.strings[pl.language]['system'][RACES_OFFSET+i]: (1<<i) for i in range(AMOUNT_RACES)}
+	racemap = {pl.strings['system'][RACES_OFFSET+i]: (1<<i) for i in range(AMOUNT_RACES)}
 	avail_races = {k: v for k, v in racemap.items() if avail & v}
 	avail_races_keys = natsort.natsorted(list(avail_races.keys()))
 	def prompt():

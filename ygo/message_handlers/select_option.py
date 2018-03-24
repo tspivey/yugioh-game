@@ -5,7 +5,6 @@ from twisted.internet import reactor
 from ygo.card import Card
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
-from ygo import globals
 
 def msg_select_option(self, data):
 	data = io.BytesIO(data[1:])
@@ -29,7 +28,7 @@ def select_option(self, player, options):
 			string = Card(code).get_strings(pl)[opt & 0xf]
 		else:
 			string = "Unknown option %d" % opt
-			string = globals.strings[pl.language]['system'].get(opt, string)
+			string = pl.strings['system'].get(opt, string)
 		opts.append(string)
 	m = Menu(pl._("Select option:"), no_abort=pl._("Invalid option."), persistent=True, prompt=pl._("Select option:"), restore_parser=DuelParser)
 	for idx, opt in enumerate(opts):

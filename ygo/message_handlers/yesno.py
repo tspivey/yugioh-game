@@ -4,7 +4,6 @@ from twisted.internet import reactor
 from ygo.card import Card
 from ygo.parsers.yes_or_no_parser import yes_or_no_parser
 from ygo.utils import process_duel
-from ygo import globals
 
 def msg_yesno(self, data):
 	data = io.BytesIO(data[1:])
@@ -27,7 +26,7 @@ def yesno(self, player, desc):
 		opt = Card(code).get_strings(pl)[desc & 0xf]
 	else:
 		opt = "String %d" % desc
-		opt = globals.strings[pl.language]['system'].get(desc, opt)
+		opt = pl.strings['system'].get(desc, opt)
 	pl.notify(yes_or_no_parser, opt, yes, no=no, restore_parser=old_parser)
 
 MESSAGES = {13: msg_yesno}

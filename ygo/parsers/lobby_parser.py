@@ -205,14 +205,7 @@ def help(caller):
 	if not topic:
 		topic = "start"
 	topic = topic.replace('/', '_').strip()
-	fn = os.path.join('help', caller.connection.player.language, topic)
-	if not os.path.isfile(fn):
-		fn = os.path.join('help', topic)
-	if not os.path.isfile(fn):
-		caller.connection.notify(caller.connection._("No help topic."))
-		return
-	with open(fn, encoding='utf-8') as fp:
-		caller.connection.notify(fp.read().rstrip('\n'))
+	caller.connection.notify(caller.connection.player.get_help(topic))
 
 @LobbyParser.command(names=['quit'], allowed = lambda c: c.connection.player.duel is None and c.connection.player.room is None)
 def quit(caller):
@@ -259,20 +252,11 @@ def passwd(caller):
 
 @LobbyParser.command(names=['language'], args_regexp=r'(.*)')
 def language(caller):
-	lang = caller.args[0]
-	if lang not in ('english', 'german', 'japanese', 'spanish', 'portuguese'):
-		caller.connection.notify("Usage: language <english/german/japanese/spanish>")
+	lang = caller.args[0].lower()
+	if lang not in globals.language_handler.get_available_languages():
+		caller.connection.notify("Usage: language <"+'/'.join(globals.language_handler.get_available_languages())+">")
 		return
-	if lang == 'english':
-		caller.connection.player.set_language('en')
-	elif lang == 'german':
-		caller.connection.player.set_language('de')
-	elif lang == 'japanese':
-		caller.connection.player.set_language('ja')
-	elif lang == 'spanish':
-		caller.connection.player.set_language('es')
-	elif lang == 'portuguese':
-		caller.connection.player.set_language('pt')
+	caller.connection.player.set_language(lang)
 	caller.connection.notify(caller.connection._("Language set."))
 
 @LobbyParser.command(args_regexp=r'(.*)')
@@ -608,6 +592,15 @@ def finger(caller):
 		average = float(won)*100/(float(won)+float(lost))
 
 		pl.notify(pl._("%.2f%% Success.")%(average))
+
+@LobbyParser.command(names=["reloadlanguages"], allowed = lambda c: c.connection.player.is_admin)
+def reloadlanguages(caller):
+	caller.connection.notify(caller.connection._("Reloading languages..."))
+	success = globals.language_handler.reload()
+	if success == True:
+		caller.connection.notify(caller.connection._("Success."))
+	else:
+		caller.connection.notify(caller.connection._("An error occurred: {error}").format(error = success))
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():

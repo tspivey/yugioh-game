@@ -36,7 +36,7 @@ def win(self, player, reason):
 	else:
 		winners = [self.players[player]]
 		losers = [self.players[1 - player]]
-	l_reason = lambda p: globals.strings[p.language]['victory'][reason]
+	l_reason = lambda p: p.strings['victory'][reason]
 	for w in winners:
 		if self.tag:
 			w.notify(w._("%s and you won (%s).")%(winners[1 - winners.index(w)].nickname, l_reason(w)))

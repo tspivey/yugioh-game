@@ -26,7 +26,7 @@ __ = lambda x: x
 @ffi.def_extern()
 def card_reader_callback(code, data):
 	cd = data[0]
-	row = globals.server.db.execute('select * from datas where id=?', (code,)).fetchone()
+	row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
 	cd.code = code
 	cd.alias = row['alias']
 	cd.setcode = row['setcode']
@@ -491,7 +491,7 @@ class Duel:
 				for c in card.counters:
 					counter_type = c & 0xffff
 					counter_val = (c >> 16) & 0xffff
-					counter_type = globals.strings[pl.language]['counter'][counter_type]
+					counter_type = pl.strings['counter'][counter_type]
 					counter_str = "%s: %d" % (counter_type, counter_val)
 					counters.append(counter_str)
 				if counters:
@@ -513,7 +513,7 @@ class Duel:
 				for c in card.counters:
 					counter_type = c & 0xffff
 					counter_val = (c >> 16) & 0xffff
-					counter_type = globals.strings[pl.language]['counter'][counter_type]
+					counter_type = pl.strings['counter'][counter_type]
 					counter_str = "%s: %d" % (counter_type, counter_val)
 					counters.append(counter_str)
 				if counters:
