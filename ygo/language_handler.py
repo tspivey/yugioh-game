@@ -34,9 +34,13 @@ class LanguageHandler:
 	def __connect_database(self, path):
 		if not os.path.isfile(os.path.join(path, 'cards.cdb')):
 			raise LanguageError("cards.cdb not found")
-		cdb = sqlite3.connect(os.path.join(path, 'cards.cdb'))
+		cdb = sqlite3.connect(":memory:")
 		cdb.row_factory = sqlite3.Row
 		cdb.create_function('UPPERCASE', 1, lambda s: s.upper())
+		cdb.execute("ATTACH ? AS new", (os.path.join(path, 'cards.cdb'), ))
+		cdb.execute("CREATE TABLE datas AS SELECT * FROM new.datas")
+		cdb.execute("CREATE TABLE texts AS SELECT * FROM new.texts")
+		cdb.execute("DETACH new")
 		extending_dbs = glob.glob(os.path.join(path, '*.cdb'))
 		count = 0
 		for p in extending_dbs:
