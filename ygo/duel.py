@@ -491,7 +491,7 @@ class Duel:
 				for c in card.counters:
 					counter_type = c & 0xffff
 					counter_val = (c >> 16) & 0xffff
-					counter_type = globals.strings[pl.language]['counter'][counter_type]
+					counter_type = pl.strings['counter'][counter_type]
 					counter_str = "%s: %d" % (counter_type, counter_val)
 					counters.append(counter_str)
 				if counters:
@@ -513,7 +513,7 @@ class Duel:
 				for c in card.counters:
 					counter_type = c & 0xffff
 					counter_val = (c >> 16) & 0xffff
-					counter_type = globals.strings[pl.language]['counter'][counter_type]
+					counter_type = pl.strings['counter'][counter_type]
 					counter_str = "%s: %d" % (counter_type, counter_val)
 					counters.append(counter_str)
 				if counters:

@@ -1,7 +1,6 @@
 import io
 
 from ygo.constants import AMOUNT_ATTRIBUTES, AMOUNT_RACES
-from ygo import globals
 
 def msg_card_hint(self, data):
 	data = io.BytesIO(data[1:])
@@ -16,11 +15,11 @@ def msg_card_hint(self, data):
 def card_hint(self, card, type, value):
 	if type == 3: # race announcement
 		for pl in self.players+self.watchers:
-			races = [globals.strings[pl.language]['system'][1020+i] for i in range(AMOUNT_RACES) if value & (1<<i)]
+			races = [pl.strings['system'][1020+i] for i in range(AMOUNT_RACES) if value & (1<<i)]
 			pl.notify(pl._("{spec} ({name}) selected {value}.").format(spec=card.get_spec(pl.duel_player), name=card.get_name(pl), value=', '.join(races)))
 	elif type == 4: # attribute announcement
 		for pl in self.players+self.watchers:
-			attributes = [globals.strings[pl.language]['system'][1010+i] for i in range(AMOUNT_ATTRIBUTES) if value & (1<<i)]
+			attributes = [pl.strings['system'][1010+i] for i in range(AMOUNT_ATTRIBUTES) if value & (1<<i)]
 			pl.notify(pl._("{spec} ({name}) selected {value}.").format(spec=card.get_spec(pl.duel_player), name=card.get_name(pl), value=', '.join(attributes)))
 
 	else:

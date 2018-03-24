@@ -109,6 +109,9 @@ class LanguageHandler:
 				return l
 		return self.primary_language
 
+	def get_strings(self, lang):
+		return self.get_language(lang)['strings']
+
 	@property
 	def primary_database(self):
 		return self.get_language(self.primary_language)['db']

@@ -143,3 +143,7 @@ class Player:
 	@property
 	def motd(self):
 		return globals.language_handler.get_language(self.language)['motd']
+
+	@property
+	def strings(self):
+		return globals.language_handler.get_strings(self.language)

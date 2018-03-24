@@ -1,7 +1,5 @@
 import io
 
-from ygo import globals
-
 def msg_toss_coin(self, data, dice=False):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
@@ -17,8 +15,8 @@ def toss_coin(self, player, options):
 	players = []
 	players.extend(self.players + self.watchers)
 	for pl in players:
-		s = globals.strings[pl.language]['system'][1623] + " "
-		opts = [globals.strings[pl.language]['system'][60] if opt else globals.strings[pl.language]['system'][61] for opt in options]
+		s = pl.strings['system'][1623] + " "
+		opts = [pl.strings['system'][60] if opt else pl.strings['system'][61] for opt in options]
 		s += ", ".join(opts)
 		pl.notify(s)
 
@@ -27,7 +25,7 @@ def toss_dice(self, player, options):
 	players = []
 	players.extend(self.players + self.watchers)
 	for pl in players:
-		s = globals.strings[pl.language]['system'][1624] + " "
+		s = pl.strings['system'][1624] + " "
 		s += ", ".join(opts)
 		pl.notify(s)
 

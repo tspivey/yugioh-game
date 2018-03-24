@@ -6,7 +6,6 @@ from ygo.card import Card
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import parse_ints, process_duel
-from ygo import globals
 
 def msg_select_counter(self, data):
 	data = io.BytesIO(data[1:])
@@ -27,7 +26,7 @@ def msg_select_counter(self, data):
 
 def select_counter(self, player, countertype, count, cards):
 	pl = self.players[player]
-	counter_str = globals.strings[pl.language]['counter'][countertype]
+	counter_str = pl.strings['counter'][countertype]
 	def prompt():
 		pl.notify(pl._("Type new {counter} for {cards} cards, separated by spaces.")
 			.format(counter=counter_str, cards=len(cards)))
