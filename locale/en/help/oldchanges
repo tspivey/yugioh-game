@@ -1,0 +1,132 @@
+2017-07-03
+* info cardspec will now show info on the opponent's cards when it's their turn.
+Example: info om1
+* Added help command.
+* Added quit command.
+* Added lookup.
+2017-07-04
+* Clear requested opponent once duel is accepted
+* Extra decks, extra and extra2
+* Fixed String 30
+2017-07-08
+* Fixed Tribe-infecting Virus
+2017-07-14
+Add echo command
+2017-07-15
+Change LP increase/decrease messages
+Add goodbye message to quit
+
+2017-07-17
+Change chat to . and add say command for duels, available as '.
+The chat can now be toggled with chat.
+tab and tab2 now say which table they're displaying.
+Spell counters should work now.
+2017-07-20
+Show which card is being targetted
+2017-07-21
+Accounts are in. To import your old decks, deck import deckname.
+help deck for more info on the new deck commands.
+Added passwd command to change your account password.
+Added deck new command to create new, empty decks.
+Allow activating the second effect of a card (e.g. Uni-Zombie)
+Added more types, e.g. Tuner
+Fix tribute summoning
+
+2017-07-22
+Show when cards are returned to the hand
+Allow sorting cards
+Show when monsters are tributed
+The lookup command respects the currently selected language
+Made the Question card work
+Added removed and removed2
+Added help dueling file
+2017-07-23
+Fix yes/no, now only responses starting with y or n will work.
+Fix Ground Collapse and similar cards
+Fix targetting message, it should say the correct player now
+Looking up a non existing card works properly.
+Deck editor improvements:
+* Cards can be searched for in the language of the player.
+* ? was added for search backwards.
+* / and ? now keep the last search string, so just typing / or ? will repeat the search.
+* Search wraps.
+Language and encoding are now saved on the account, and restored at login.
+Displaying tables now displays levels of cards.
+The real ATK/DEF of a card is shown when selecting it while attacking.
+The dueling without a deck message was updated.
+2017-07-25
+removed added to info and also r is a cardspec now.
+Info can now show cards in your hand. E.g. info h1.
+Selecting cards is fixed if there were no cards to select.
+Deck names are now case insensitive.
+Adjusting counters should work better.
+Info now allows you to check the extra deck.
+Cards which ask you to declare a number such as Reasoning should work, and they tell the opponent what was declared.
+2017-07-30
+Info display no longer shows attack/defense/level if the card is not a Monster card.
+Include cardspec when selecting cards
+Show coin tosses
+Announce added
+Tell and reply added
+show cards to your opponent
+Show when one card is equipped to another
+Fixes to tracking LP
+Prompts updated
+Deck rename added
+2017-08-18
+deck check added
+Added more cards
+2017-08-21
+Added watch mode. Type watch player to use it, and watch stop to stop watching.
+2017-08-22
+More watch improvements. Watchers should show up on the who list.
+Added duel end to end a duel. Currently there's a bug, if you're in a prompt your next command won't go through.
+Added duel continue.
+If your connection breaks during a duel, reconnect and type duel continue. You should then be back where you left off.
+2017-08-25
+Watchers can now see equips and targets.
+Fixed duel end.
+2017-08-30
+Added private duels, pd player.
+Added challenge channel.
+Show flip summons.
+Show revealed cards to watchers.
+Added an auto reboot system.
+2027-09-01
+Added minimum and maximum deck sizes.
+Show paying LP to watchers
+Don't show face down cards to watchers in the extra deck or when cards are targetted
+2017-09-10
+Hopefully fix the monster summoning bug that would break duels.
+Add counters to tab/tab2.
+2017-09-19
+Show xyz materials on tab/tab2
+Show equips on tab/tab2
+Add ? (question mark) command on the select a card screen to show usable cards
+2017-09-22
+Add deck shuffle message
+Add extra deck limit of 15 cards
+Show extra card count in deck editor
+Show deck top and reverse deck events
+Add counter add/remove messages
+2017-09-23
+Improvements to score when watching
+Don't show face down cards when banished
+Improvements to the who list
+2017-09-24
+Added AFK
+Show card levels correctly when on table
+added partial name matching
+You can type the first few characters of a name instead of the entire thing with commands like duel, tell, watch, etc.
+Cards are grouped in the deck editor when listing with l.
+2017-09-23
+More movement messages.
+When selecting a card, info 1, info 2 etc now works.
+Selecting a card now re-prints the menu when typing an invalid command.
+2017-09-29
+Added watch notifications.
+Typing watch toggles whether you see people start/stop watching.
+Added watchers command to show watchers.
+Added say toggle.
+Typing say will turn say off.
+Who-list improvements: who duel, idle, or watch.

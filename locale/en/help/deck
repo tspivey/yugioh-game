@@ -1,0 +1,12 @@
+deck list - list the decks associated with your account.
+deck clear deckname - clear a deck.
+deck delete deckname - delete a deck.
+deck edit deckname
+deck rename old=new - rename old to new.
+
+Deck editing commands:
+/text - search for text.
+Example: /magician
+/ - search for the last searched for text.
+?text and ? - search backward.
+The rest of the commands are explained in the editor.

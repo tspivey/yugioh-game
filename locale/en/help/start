@@ -1,0 +1,15 @@
+For a list of help topics, type help topics.
+Welcome to the game.
+
+A TeamTalk server is available. See help teamtalk.
+Quick tips on getting started dueling:
+The first thing you will want to do is create or join a duel room.
+Type create to create, or join <player> to join a room.
+If you don't have a deck, there are public decks.
+Type help public decks for information on the public decks.
+To create your own decks, read help deck.
+
+The chat command will allow you to talk to people. For example:
+chat hi
+
+Type who to see who's online.
