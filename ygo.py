@@ -18,6 +18,7 @@ def main():
 	globals.language_handler.add('japanese', 'ja')
 	globals.language_handler.add('spanish', 'es')
 	globals.language_handler.add('portuguese', 'pt')
+	globals.language_handler.add('italian', 'it')
 	print("{count} languages added successfully.".format(count = len(globals.language_handler.get_available_languages())))
 	try:
 		globals.language_handler.set_primary_language('english')
