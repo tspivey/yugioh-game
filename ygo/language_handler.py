@@ -14,6 +14,7 @@ from .utils import get_root_directory
 # allows for quick switching of primary language, to take e.g. the german database
 # with higher priority than the english one
 class LanguageHandler:
+	all_primary_cards = []
 	languages = dict()
 	primary_language = ''
 
@@ -82,6 +83,7 @@ class LanguageHandler:
 		if not self.is_loaded(lang):
 			raise LanguageError("language "+lang+" not loaded and can therefore not be set as primary language")
 		self.primary_language = lang
+		self.all_primary_cards = [int(row[0]) for row in self.primary_database.execute("SELECT id FROM datas ORDER BY id ASC")]
 
 	def get_language(self, lang):
 		try:
@@ -129,17 +131,20 @@ class LanguageHandler:
 
 	# reloads all available languages
 	def reload(self):
-		backup = self.languages
+		backup_cards = self.all_primary_cards
+		backup_languages = self.languages
 		for l in self.languages.keys():
 			self.languages[l]['db'].close()
 		self.languages = dict()
 		try:
-			for l in backup.keys():
-				self.add(l, backup[l]['short'], backup[l]['path'])
+			for l in backup_languages.keys():
+				self.add(l, backup_languages[l]['short'], backup_languages[l]['path'])
 			gettext._translations = dict()
+			self.set_primary_language(self.primary_language)
 			return True
 		except LanguageError as e:
-			self.languages = backup
+			self.languages = backup_languages
+			self.all_primary_cards = backup_cards
 			return str(e)
 
 	@property
