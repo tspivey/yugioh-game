@@ -43,6 +43,8 @@ class LanguageHandler:
 		cdb.execute("CREATE TABLE datas AS SELECT * FROM new.datas")
 		cdb.execute("CREATE TABLE texts AS SELECT * FROM new.texts")
 		cdb.execute("DETACH new")
+		cdb.execute("CREATE UNIQUE INDEX idx_datas_id ON datas (id)")
+		cdb.execute("CREATE UNIQUE INDEX idx_texts_id ON texts (id)")
 		extending_dbs = glob.glob(os.path.join(path, '*.cdb'))
 		count = 0
 		for p in extending_dbs:
