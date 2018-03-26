@@ -19,7 +19,6 @@ class Server(gsb.Server):
 		self.chat = Chat()
 		self.players = {}
 		self.session_factory = models.setup()
-		self.all_cards = [int(row[0]) for row in globals.language_handler.primary_database.execute("select id from datas order by id asc")]
 		self.max_online = 0
 
 	def on_connect(self, caller):
@@ -120,3 +119,7 @@ class Server(gsb.Server):
 			for pl in self.get_all_players():
 				pl.notify(pl._("Rebooting."))
 			reactor.callLater(0.2, reactor.stop)
+
+	@property
+	def all_cards(self):
+		return globals.language_handler.all_primary_cards
