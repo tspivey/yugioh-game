@@ -99,13 +99,13 @@ def talk(caller):
 	if not text:
 		caller.connection.player.toggle_language_chat(language)
 		if caller.connection.player.is_language_chat_enabled(language):
-			caller.connection.notify(caller.connection._("{language} talk on.").format(language = language))
+			caller.connection.notify(caller.connection._("{language} talk on.").format(language = language[0].upper()+language[1:]))
 		else:
-			caller.connection.notify(caller.connection._("{language} talk off.").format(language = language))
+			caller.connection.notify(caller.connection._("{language} talk off.").format(language = language[0].upper()+language[1:]))
 		return
 	if not caller.connection.player.is_language_chat_enabled(language):
 		caller.connection.player.enable_language_chat(language)
-		caller.connection.notify(caller.connection._("{language} talk on.").format(language = language))
+		caller.connection.notify(caller.connection._("{language} talk on.").format(language = language[0].upper()+language[1:]))
 	globals.language_handler.get_language(language)['channel'].send_message(caller.connection.player, text)
 
 @LobbyParser.command(names=['talkhistory'], args_regexp=r'(\w*) ?(\d*)')
