@@ -84,6 +84,31 @@ def chat(caller):
 		caller.connection.notify(caller.connection._("Chat on."))
 	globals.server.chat.send_message(caller.connection.player, text)
 
+@LobbyParser.command(names=["talk"], args_regexp=r'(.*)')
+def talk(caller):
+	text = caller.args[0]
+	if not text:
+		caller.connection.player.toggle_language_chat(caller.connection.player.language)
+		if caller.connection.player.is_language_chat_enabled(caller.connection.player.language):
+			caller.connection.notify(caller.connection._("Talk on."))
+		else:
+			caller.connection.notify(caller.connection._("Talk off."))
+		return
+	if not caller.connection.player.is_language_chat_enabled(caller.connection.player.language):
+		caller.connection.player.enable_language_chat(caller.connection.player.language)
+		caller.connection.notify(caller.connection._("Talk on."))
+	globals.language_handler.get_language(caller.connection.player.language)['channel'].send_message(caller.connection.player, text)
+
+@LobbyParser.command(names=['talkhistory'], args_regexp=r'(\d*)')
+def talkhistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+	else:
+		count = int(caller.args[0])
+
+	globals.language_handler.get_language(caller.connection.player.language)['channel'].print_history(caller.connection.player, count)
+
 @LobbyParser.command(names=["say"], args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is not None or c.connection.player.duel is not None)
 def say(caller):
 	text = caller.args[0]
