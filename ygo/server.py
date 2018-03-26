@@ -61,6 +61,8 @@ class Server(gsb.Server):
 		self.players[player.nickname.lower()] = player
 		self.challenge.add_recipient(player)
 		self.chat.add_recipient(player)
+		for l in globals.language_handler.get_available_languages():
+			globals.language_handler.get_language(l)['channel'].add_recipient(player)
 		if len(self.players) > self.max_online:
 			self.max_online = len(self.players)
 
@@ -68,6 +70,8 @@ class Server(gsb.Server):
 		try:
 			self.challenge.remove_recipient(self.players[nick.lower()])
 			self.chat.remove_recipient(self.players[nick.lower()])
+			for l in globals.language_handler.get_available_languages():
+				globals.language_handler.get_language(l)['channel'].remove_recipient(self.players[nick.lower()])
 			del(self.players[nick.lower()])
 		except KeyError:
 			pass

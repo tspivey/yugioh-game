@@ -84,6 +84,52 @@ def chat(caller):
 		caller.connection.notify(caller.connection._("Chat on."))
 	globals.server.chat.send_message(caller.connection.player, text)
 
+@LobbyParser.command(names=["talk"], args_regexp=r'(.*)')
+def talk(caller):
+	language = caller.args[0]
+	text = caller.args[0]
+	if not language:
+		language = caller.connection.player.language
+	else:
+		language = language.split(" ")[0].lower()
+		if not language in globals.language_handler.get_available_languages():
+			language = caller.connection.player.language
+		else:
+			text = text[len(language)+1:]
+	if not text:
+		caller.connection.player.toggle_language_chat(language)
+		if caller.connection.player.is_language_chat_enabled(language):
+			caller.connection.notify(caller.connection._("{language} talk on.").format(language = language[0].upper()+language[1:]))
+		else:
+			caller.connection.notify(caller.connection._("{language} talk off.").format(language = language[0].upper()+language[1:]))
+		return
+	if not caller.connection.player.is_language_chat_enabled(language):
+		caller.connection.player.enable_language_chat(language)
+		caller.connection.notify(caller.connection._("{language} talk on.").format(language = language[0].upper()+language[1:]))
+	globals.language_handler.get_language(language)['channel'].send_message(caller.connection.player, text)
+
+@LobbyParser.command(names=['talkhistory'], args_regexp=r'(\w*) ?(\d*)')
+def talkhistory(caller):
+
+	if len(caller.args) == 0 or caller.args[0] == '':
+		count = 30
+		language = caller.connection.player.language
+	else:
+		try:
+			count = int(caller.args[0])
+			language = caller.connection.player.language
+		except ValueError:
+			language = caller.args[0]
+			if language not in globals.language_handler.get_available_languages():
+				caller.connection.notify(caller.connection._("This language is unknown."))
+				return
+			if len(caller.args) == 2 and caller.args[1]:
+				count = int(caller.args[1])
+			else:
+				count = 30
+
+	globals.language_handler.get_language(language)['channel'].print_history(caller.connection.player, count)
+
 @LobbyParser.command(names=["say"], args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is not None or c.connection.player.duel is not None)
 def say(caller):
 	text = caller.args[0]

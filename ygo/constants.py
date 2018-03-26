@@ -8,6 +8,7 @@ ATTRIBUTES_OFFSET = 1010
 COMMAND_SUBSTITUTIONS = {
 	"'": "say",
 	".": "chat",
+	'"': "talk"
 }
 
 LINK_MARKERS = {

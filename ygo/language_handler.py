@@ -3,6 +3,7 @@ import glob
 import os.path
 import sqlite3
 
+from .channels.language_chat import LanguageChat
 from .exceptions import LanguageError
 from .utils import get_root_directory
 
@@ -27,6 +28,7 @@ class LanguageHandler:
 			l['path'] = path
 			l['db'] = self.__connect_database(path)
 			l['strings'] = self.__parse_strings(os.path.join(path, 'strings.conf'))
+			l['channel'] = LanguageChat(lang)
 			self.languages[lang] = l
 		except LanguageError as e:
 			print("Error adding language "+lang+": "+str(e))

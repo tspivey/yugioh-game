@@ -23,6 +23,7 @@ class Player:
 		self.ignores = set()
 		self.is_admin = False
 		self.language = 'english'
+		self.language_chats = dict()
 		self.language_short = 'en'
 		self.nickname = name
 		self.paused_parser = None
@@ -37,10 +38,12 @@ class Player:
 		self.tell.add_recipient(self)
 
 	def set_language(self, lang):
+		self.disable_language_chat(self.language)
 		self.language = lang
 		self.language_short = globals.language_handler.get_short(lang)
 		self.get_account().language = self.language_short
 		self.connection.session.commit()
+		self.enable_language_chat(self.language)
 
 	def attach_connection(self, connection):
 		self.connection = connection
@@ -141,6 +144,18 @@ class Player:
 		if help == "":
 			return self._("No help topic.")
 		return help
+
+	def disable_language_chat(self, lang):
+		self.language_chats[lang] = False
+	
+	def enable_language_chat(self, lang):
+		self.language_chats[lang] = True
+
+	def is_language_chat_enabled(self, lang):
+		return self.language_chats.get(lang, False)
+
+	def toggle_language_chat(self, lang):
+		self.language_chats[lang] = not self.language_chats.get(lang, False)
 
 	@property
 	def cdb(self):
