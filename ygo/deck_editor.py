@@ -129,6 +129,7 @@ class DeckEditor:
 			return
 		cards = json.loads(deck.content)['cards']
 		session.commit()
+		cards = [c for c in cards if not (Card(c).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))]
 		random.shuffle(cards)
 		for i in range(0, min(amount, len(cards))):
 			self.player.notify(self.player._("Drew: %s") % Card(cards[i]).get_name(self.player))
