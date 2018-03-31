@@ -12,6 +12,7 @@ class DuelReader(Reader):
 		cmd, args = self.split(line)
 		if cmd in DuelParser.commands:
 			DuelParser.handle_line(con, line)
-			con.notify(self, self.done)
+			if con.parser is DuelParser or isinstance(con.parser, DuelReader):
+				con.notify(self, self.done)
 		else:
 			super().handle_line(con, line)
