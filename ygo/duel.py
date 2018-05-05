@@ -172,7 +172,6 @@ class Duel:
 		for pl in self.players + self.watchers:
 			pl.duel = None
 			pl.duel_player = 0
-			pl.intercept = None
 			pl.watching = False
 			pl.card_list = []
 			pl.deck = {'cards': []}

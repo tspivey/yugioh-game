@@ -23,7 +23,10 @@ def yesno(self, player, desc):
 		reactor.callLater(0, process_duel, self)
 	if desc > 10000:
 		code = desc >> 4
-		opt = Card(code).get_strings(pl)[desc & 0xf]
+		card = Card(code)
+		opt = card.get_strings(pl)[desc & 0xf]
+		if opt == '':
+			opt = pl._('Unknown question from %s. Yes or no?')%(card.get_name(pl))
 	else:
 		opt = "String %d" % desc
 		opt = pl.strings['system'].get(desc, opt)
