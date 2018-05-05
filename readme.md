@@ -1,6 +1,6 @@
 ## Install dependencies
 Lua is needed for ygopro-core. On Ubuntu:
-    apt-get install lua5.2-dev
+    apt-get install lua5.3-dev
 
 Install Python dependencies:
     pip3 install -r requirements.txt
@@ -11,7 +11,7 @@ git clone https://github.com/Fluorohydride/ygopro-core
 git clone https://github.com/Fluorohydride/ygopro-scripts
 cd ygopro-core
 patch -p0 < ../yugioh-game/etc/ygopro-core.patch
-g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.2 -llua5.2 -std=c++11
+g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.3 -llua5.3 -std=c++11
 cd ../yugioh-game
 python3 duel_build.py
 ln -s ../ygopro-scripts script
