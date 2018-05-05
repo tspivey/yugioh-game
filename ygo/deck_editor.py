@@ -1,5 +1,6 @@
 from collections import OrderedDict, Counter
 import json
+import random
 import natsort
 
 from .card import Card
@@ -104,6 +105,34 @@ class DeckEditor:
 		self.player.get_account().decks.append(new_deck)
 		session.commit()
 		self.player.notify(self.player._("Deck copied."))
+
+	def draw(self, args):
+		if '=' not in args:
+			self.player.notify(self.player._("Usage: deck draw <deck>=<number>"))
+			return
+		args = args.strip().split('=', 1)
+		name = args[0].strip()
+		amount = int(args[1])
+		if not name or not amount:
+			self.player.notify(self.player._("Usage: deck draw <deck>=<number>"))
+			return
+		if name.startswith('public/'):
+			account = self.player.connection.session.query(models.Account).filter_by(name='Public').first()
+			name = name[7:]
+		else:
+			account = self.player.get_account()
+		session = self.player.connection.session
+		deck = models.Deck.find(session, account, name)
+		if not deck:
+			self.player.notify(self.player._("Deck not found."))
+			session.commit()
+			return
+		cards = json.loads(deck.content)['cards']
+		session.commit()
+		cards = [c for c in cards if not (Card(c).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))]
+		random.shuffle(cards)
+		for i in range(0, min(amount, len(cards))):
+			self.player.notify(self.player._("Drew: %s") % Card(cards[i]).get_name(self.player))
 
 	def edit(self, deck_name):
 		con = self.player.connection
