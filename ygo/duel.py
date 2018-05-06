@@ -309,6 +309,8 @@ class Duel:
 	def get_card(self, player, loc, seq):
 		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_LINK
 		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
+		if bl == 0:
+			return
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		f = self.read_u32(buf)
 		if f == 4:

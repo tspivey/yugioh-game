@@ -6,10 +6,11 @@ def msg_card_hint(self, data):
 	data = io.BytesIO(data[1:])
 	loc = self.read_u32(data)
 	pl, loc, seq, pos = self.unpack_location(loc)
-	card = self.get_card(pl, loc, seq)
 	type = self.read_u8(data)
 	value = self.read_u32(data)
-	self.cm.call_callbacks('card_hint', card, type, value)
+	card = self.get_card(pl, loc, seq)
+	if card:
+		self.cm.call_callbacks('card_hint', card, type, value)
 	return data.read()
 
 def card_hint(self, card, type, value):
