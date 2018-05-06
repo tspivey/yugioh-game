@@ -1,14 +1,17 @@
 from babel.dates import format_time
 from collections import deque
 import datetime
+import re
 
 NO_SEND_CHECK = 0x1
+NO_ESCAPE = 0x2
 
 class Channel:
 	# buffer_size: amount of messages stored for history
 	# flags: possible values
 	#   NO_SEND_CHECK - don't check if player is a recipient of this channel when
 	#                   sending a message
+	#   NO_ESCAPE - don't escape strings sent to this channel
 	def __init__(self, buffer_size=100, flags = 0):
 		self.buffer = deque(maxlen = buffer_size)
 		self.flags = flags
@@ -53,12 +56,15 @@ class Channel:
 		if not self.flags & NO_SEND_CHECK and not self.is_recipient(sender):
 			return
 
+		if not self.flags & NO_ESCAPE:
+			message = re.sub(r"([{}]+)", r"\1\1", message)
+
 		success = 0
 		
 		for r in self.recipients:
 			if not self.is_enabled(r) or self.is_ignoring(r, sender):
 				continue
-			r.notify(self.format_message(r, sender, message, kwargs))
+			r.notify(self.format_message(r, sender, message, kwargs).format())
 			success += 1
 		
 		self.buffer.append(self.format_buffer_entry(sender, message, kwargs))
