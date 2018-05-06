@@ -1,9 +1,12 @@
 from babel.dates import format_time
 import copy
 
-from ..channel import Channel
+from ..channel import Channel, NO_ESCAPE
 
 class Challenge(Channel):
+	def __init__(self):
+		Channel.__init__(self, flags = NO_ESCAPE)
+
 	def format_message(self, recipient, sender, message, params):
 		return 'Challenge: '+recipient._(message).format(**self.resolve_closures(recipient, params))
 	
