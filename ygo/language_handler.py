@@ -55,6 +55,7 @@ class LanguageHandler:
 			cdb.execute("ATTACH ? as new", (p, ))
 			cdb.execute("INSERT OR REPLACE INTO datas SELECT * FROM new.datas")
 			cdb.execute("INSERT OR REPLACE INTO texts SELECT * FROM new.texts")
+			cdb.execute("commit")
 			cdb.execute("DETACH new")
 		print("Merged {count} databases into cards.cdb".format(count = count))
 		return cdb
