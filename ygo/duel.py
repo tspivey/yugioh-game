@@ -165,7 +165,7 @@ class Duel:
 		reactor.callLater(0, process_duel, self)
 
 	def end(self, timeout=False):
-		if not timeout:
+		if not timeout and self.pause_timer:
 			self.pause_timer.cancel()
 		self.pause_timer = None
 		lib.end_duel(self.duel)
