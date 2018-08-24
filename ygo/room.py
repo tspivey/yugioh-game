@@ -112,3 +112,23 @@ class Room:
 		else:
 			self.invitations.append(pl.nickname)
 			return True
+
+	def show(self, pl):
+		pl.notify(pl._("The following settings are defined for this room:"))
+
+		pl.notify(pl._("Banlist: %s")%(self.get_banlist()))
+
+		s = pl._("Duel Rules:")+" "
+
+		if self.rules == 4:
+			s += pl._("Link")
+		elif self.rules == 1:
+			s += pl._("Traditional")
+		elif self.rules == 0:
+			s += pl._("Default")
+
+		pl.notify(s)
+
+		pl.notify(pl._("Lifepoints - %s: %d, %s: %d")%(pl._("team %d")%(1), self.lp[0], pl._("team %d")%(2), self.lp[1]))
+
+		pl.notify(pl._("Privacy: %s")%(pl._("private") if self.private is True else pl._("public")))

@@ -127,3 +127,7 @@ def tag(caller):
 @DuelParser.command(names=['taghistory'], allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
 def taghistory(caller):
 	caller.connection.player.duel.tags[caller.connection.player.duel_player].print_history(caller.connection.player)
+
+@DuelParser.command(names=['room'])
+def room(caller):
+	caller.connection.player.duel.room.show(caller.connection.player)

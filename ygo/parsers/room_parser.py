@@ -33,24 +33,7 @@ def list(caller):
 	pl = caller.connection.player
 	room = pl.room
 
-	pl.notify(pl._("The following settings are defined for this room:"))
-
-	pl.notify(pl._("Banlist: %s")%(room.get_banlist()))
-
-	s = pl._("Duel Rules:")+" "
-
-	if room.rules == 4:
-		s += pl._("Link")
-	elif room.rules == 1:
-		s += pl._("Traditional")
-	elif room.rules == 0:
-		s += pl._("Default")
-
-	pl.notify(s)
-
-	pl.notify(pl._("Lifepoints - %s: %d, %s: %d")%(pl._("team %d")%(1), room.lp[0], pl._("team %d")%(2), room.lp[1]))
-
-	pl.notify(pl._("Privacy: %s")%(pl._("private") if room.private is True else pl._("public")))
+	room.show(pl)
 
 	pl.notify(pl._("The following commands are available for you:"))
 
@@ -314,6 +297,7 @@ def start(caller):
 	duel.add_players(room.teams[1]+room.teams[2])
 	duel.set_player_info(0, room.lp[0])
 	duel.set_player_info(1, room.lp[1])
+	duel.room = room
 
 	if not room.private:
 		if duel.tag is True:
