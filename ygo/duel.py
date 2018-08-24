@@ -92,6 +92,7 @@ class Duel:
 		self.watch = Watchers()
 		self.tags = [Tag(), Tag()]
 		self.bind_message_handlers()
+		self.pause_timer = None
 
 	def set_player_info(self, player, lp):
 		self.lp[player] = lp
@@ -163,7 +164,10 @@ class Duel:
 				pl.notify(pl._("%s will go first.")%(self.players[i].nickname))
 		reactor.callLater(0, process_duel, self)
 
-	def end(self):
+	def end(self, timeout=False):
+		if not timeout:
+			self.pause_timer.cancel()
+		self.pause_timer = None
 		lib.end_duel(self.duel)
 		self.started = False
 		for pl in self.watchers:
@@ -632,6 +636,9 @@ class Duel:
 		pl.set_parser('DuelParser')
 		if not self.paused:
 			self.unpause()
+			if self.pause_timer:
+				self.pause_timer.cancel()
+				self.pause_timer = None
 
 	def pause(self):
 		for pl in self.players + self.watchers:
@@ -640,6 +647,8 @@ class Duel:
 			if pl.connection is not None:
 				pl.paused_parser = pl.connection.parser
 				pl.set_parser('DuelParser')
+		if not self.pause_timer:
+			self.pause_timer = reactor.callLater(600, self.end, True)
 
 	def unpause(self):
 		for pl in self.players+self.tag_players:
