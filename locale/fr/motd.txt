@@ -1,0 +1,9 @@
+Si les caractères ne s'affichent pas correctement, tapez : encoding windows-1252
+New cards. See help newcards.
+Welcome to the game.
+For latest changes, type help changes.
+There are several public decks available, type help public decks to get a list.
+See help deck for a list of available deck commands.
+Create a new duel room by using create, or join player to join an existing room.
+chat text (or .text with a leading dot) will chat that text to all users.
+who shows who is online.
