@@ -67,7 +67,7 @@ class LanguageHandler:
 		with open(filename, 'r', encoding='utf-8') as fp:
 			for line in fp:
 				line = line.rstrip('\n')
-				if not line.startswith('!'):
+				if not line.startswith('!') or line.startswith('!setcode'):
 					continue
 				type, id, s = line[1:].split(' ', 2)
 				if id.startswith('0x'):
