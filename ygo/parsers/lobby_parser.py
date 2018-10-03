@@ -47,7 +47,7 @@ def deck(caller):
 	cmd = lst[0]
 	caller.args = lst[1:]
 	if cmd == 'list':
-		caller.connection.player.deck_editor.list()
+		caller.connection.player.deck_editor.list(caller.args)
 		return
 
 	if len(caller.args) == 0:

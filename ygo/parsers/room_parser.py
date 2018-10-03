@@ -200,7 +200,7 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
-		pl.deck_editor.list()
+		pl.deck_editor.list([])
 		return
 
 	name = caller.args[0]

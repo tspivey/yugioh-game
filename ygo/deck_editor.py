@@ -16,8 +16,11 @@ class DeckEditor:
 		self.last_search = ""
 		self.player = player
 
-	def list(self):
+	def list(self, args):
 		decks = self.player.get_account().decks
+		if args:
+			s = args[0].lower()
+			decks = [deck for deck in decks if s in deck.name.lower()]
 		if not decks:
 			self.player.notify(self.player._("No decks."))
 			return
