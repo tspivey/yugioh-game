@@ -131,3 +131,16 @@ def taghistory(caller):
 @DuelParser.command(names=['room'])
 def room(caller):
 	caller.connection.player.duel.room.show(caller.connection.player)
+
+@DuelParser.command(names=['showhand'])
+def showhand(caller):
+	pl = caller.connection.player
+	if pl.watching:
+		caller.connection.notify(pl._("Watchers cannot use this command."))
+		return
+	for player in pl.duel.players + pl.duel.watchers:
+		if player is pl:
+			pl.notify(pl._("Hand shown."))
+			continue
+		player.notify(player._("%s shows you their hand:") % pl.nickname)
+		pl.duel.show_cards_in_location(player, pl.duel_player, LOCATION_HAND, False)
