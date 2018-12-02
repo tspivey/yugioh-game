@@ -282,3 +282,40 @@ class DeckEditor:
 		for c in possible_cards:
 			found += self.player.deck['cards'].count(c[0])
 		return found
+
+	def deck_import(self, args):
+		if '=' not in args:
+			self.player.notify(self.player._("Usage: deck import <name>=<string>"))
+			return
+		args = args.strip().split('=', 1)
+		name = args[0].strip()
+		s = args[1].strip()
+		if not name or not s:
+			self.player.notify(self.player._("Usage: deck import <name>=<string>"))
+			return
+		try:
+			json.loads(s)
+		except ValueError:
+			self.player.notify(self.player._("Invalid import string."))
+			return
+		account = self.player.get_account()
+		session = self.player.connection.session
+		deck = models.Deck.find(session, account, name)
+		if deck:
+			self.player.notify(self.player._("Deck already exists."))
+			return
+		deck = models.Deck(account_id=account.id, name=name, content=s)
+		account.decks.append(deck)
+		session.commit()
+		self.player.notify(self.player._("Deck %s imported.") % name)
+
+	def deck_export(self, args):
+		name = args
+		account = self.player.get_account()
+		session = self.player.connection.session
+		deck = models.Deck.find(session, account, name)
+		if not deck:
+			self.player.notify(self.player._("Deck not found."))
+			return
+		s = deck.content
+		self.player.notify("deck import %s=%s" % (deck.name, s))

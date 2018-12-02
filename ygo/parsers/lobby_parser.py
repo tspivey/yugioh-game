@@ -68,6 +68,10 @@ def deck(caller):
 		caller.connection.player.deck_editor.copy(caller.args[0])
 	elif cmd == 'draw':
 		caller.connection.player.deck_editor.draw(caller.args[0])
+	elif cmd == 'import':
+		caller.connection.player.deck_editor.deck_import(caller.args[0])
+	elif cmd == 'export':
+		caller.connection.player.deck_editor.deck_export(caller.args[0])
 	else:
 		caller.connection.notify(caller.connection._("Invalid deck command."))
 
