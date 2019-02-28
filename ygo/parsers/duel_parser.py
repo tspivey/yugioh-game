@@ -111,6 +111,32 @@ def giveup(caller):
 
 	duel.end()
 
+@DuelParser.command(names=['scoop'], allowed = lambda c: c.connection.player.watching is False)
+def scoop(caller):
+
+	duel = caller.connection.player.duel
+	winners = [duel.players[1 - caller.connection.player.duel_player]]
+	losers = [duel.players[caller.connection.player.duel_player]]
+	if duel.tag is True:
+		winners.append(duel.tag_players[1 - caller.connection.player.duel_player])
+		losers.append(duel.tag_players[caller.connection.player.duel_player])
+
+	for pl in duel.players+duel.watchers:
+		pl.notify(pl._("%s scooped.")%(caller.connection.player.nickname))
+
+	if not duel.private:
+		if duel.tag is True:
+			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
+		else:
+			op = duel.players[1 - caller.connection.player.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} scooped against {player2}."), player1 = caller.connection.player.nickname, player2 = op)
+
+	for w in winners:
+		for l in losers:
+			l.lose_against(w)
+			w.win_against(l)
+	duel.end()
+
 @DuelParser.command(names=['sc', 'score'])
 def score(caller):
 	caller.connection.player.duel.show_score(caller.connection.player)
