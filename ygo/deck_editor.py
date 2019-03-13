@@ -264,11 +264,12 @@ class DeckEditor:
 		codes = set(deck)
 		errors = 0
 		for code in codes:
-			count = deck.count(code)
-			if code not in globals.lflist[banlist] or count <= globals.lflist[banlist][code]:
+			count = self.count_occurrence_in_deck(code)
+			banlist_count = self.banlist_limit(banlist, code)
+			if banlist_count is None or count <= banlist_count:
 				continue
 			card = Card(code)
-			self.player.notify(self.player._("%s: limit %d, found %d.") % (card.get_name(self.player), globals.lflist[banlist][code], count))
+			self.player.notify(self.player._("%s: limit %d, found %d.") % (card.get_name(self.player), banlist_count, count))
 			errors += 1
 		self.player.notify(self.player._("Check completed with %d errors.") % errors)
 
@@ -282,6 +283,19 @@ class DeckEditor:
 		for c in possible_cards:
 			found += self.player.deck['cards'].count(c[0])
 		return found
+
+	def banlist_limit(self, banlist, code):
+		l = globals.lflist[banlist]
+		if code in l:
+			return l[code]
+		card = Card(code)
+		if card.alias == 0:
+			return None
+		while card.alias != 0:
+			if card.alias in l:
+				return l[card.alias]
+			card = Card(card.alias)
+		return None
 
 	def deck_import(self, args):
 		if '=' not in args:

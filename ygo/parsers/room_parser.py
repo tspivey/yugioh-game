@@ -243,10 +243,11 @@ def deck(caller):
 		errors = 0
 		for code in codes:
 			count = content['cards'].count(code)
-			if code not in globals.lflist[room.get_banlist()] or count <= globals.lflist[room.get_banlist()][code]:
+			banlist_count = pl.deck_editor.banlist_limit(room.get_banlist(), code)
+			if banlist_count is None or count <= banlist_count:
 				continue
 			card = Card(code)
-			pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), globals.lflist[room.get_banlist()][code], count))
+			pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), banlist_count, count))
 			errors += 1
 
 		if errors > 0:
