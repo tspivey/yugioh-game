@@ -107,12 +107,11 @@ class Duel:
 				extra.append(tc)
 			else:
 				c.append(tc)
-
 		if shuffle is True:
 			random.shuffle(c)
+		extra.sort()
 		for tc in extra:
 			c.append(tc)
-		c.sort()
 
 		if tag is True:
 			self.tag_cards[player.duel_player] = c
