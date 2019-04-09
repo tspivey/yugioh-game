@@ -98,10 +98,22 @@ class Duel:
 		self.lp[player] = lp
 		lib.set_player_info(self.duel, player, lp, 5, 1)
 
-	def load_deck(self, player, shuffle=True, tag = False):
-		c = player.deck['cards'][:]
+	def load_deck(self, player, shuffle = True, tag = False):
+		full_deck = player.deck['cards'][:]
+		c = []
+		extra = []
+		for tc in full_deck[::-1]:
+			if Card(tc).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK):
+				extra.append(tc)
+			else:
+				c.append(tc)
+
 		if shuffle is True:
 			random.shuffle(c)
+		for tc in extra:
+			c.append(tc)
+		c.sort()
+
 		if tag is True:
 			self.tag_cards[player.duel_player] = c
 		else:
