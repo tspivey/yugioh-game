@@ -102,16 +102,41 @@ class Duel:
 		full_deck = player.deck['cards'][:]
 		c = []
 		extra = []
+		fusion = []
+		xyz = []
+		synchro = []
+		link = []
+
 		for tc in full_deck[::-1]:
 			if Card(tc).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK):
-				extra.append(tc)
+				if Card(tc).type & TYPE_FUSION:
+					fusion.append([tc, Card(tc).level])
+				if Card(tc).type & TYPE_XYZ:
+					xyz.append([tc, Card(tc).level])
+				if Card(tc).type & TYPE_SYNCHRO:
+					synchro.append([tc, Card(tc).level])
+				if Card(tc).type & TYPE_LINK:
+					link.append([tc, Card(tc).level])
 			else:
 				c.append(tc)
+
 		if shuffle is True:
 			random.shuffle(c)
-		extra.sort()
-		for tc in extra:
-			c.append(tc)
+
+		conv = lambda lvl: lvl[1]
+		fusion.sort(key=conv, reverse=True)
+		xyz.sort(key=conv, reverse=True)
+		synchro.sort(key=conv, reverse=True)
+		link.sort(key=conv, reverse=True)
+
+		for tc in fusion:
+			c.append(tc[0])
+		for tc in xyz:
+			c.append(tc[0])
+		for tc in synchro:
+			c.append(tc[0])
+		for tc in link:
+			c.append(tc[0])
 
 		if tag is True:
 			self.tag_cards[player.duel_player] = c
