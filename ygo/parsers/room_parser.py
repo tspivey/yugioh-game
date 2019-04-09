@@ -229,8 +229,8 @@ def deck(caller):
 
 	# we check card limits first
 	main, extra = pl.count_deck_cards(content['cards'])
-	if main < 40 or main > 200:
-		pl.notify(pl._("Your main deck must contain between 40 and 200 cards (currently %d).") % main)
+	if main < 40 or main > 60:
+		pl.notify(pl._("Your main deck must contain between 40 and 60 cards (currently %d).") % main)
 		return
 
 	if extra > 15:
