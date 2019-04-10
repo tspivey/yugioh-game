@@ -483,8 +483,11 @@ class Duel:
 			else:
 				s += card.get_name(pl) + " "
 				if card.type & TYPE_LINK:
-					s += (pl._("({attack}) level {level}")
+					s += (pl._("({attack}) link rating {level}")
 						.format(attack=card.attack, level=card.level))
+				elif card.type & TYPE_XYZ:
+					s += (pl._("({attack}/{defense}) rank {level}")
+						.format(attack=card.attack, defense=card.defense, level=card.level))
 				else:
 					s += (pl._("({attack}/{defense}) level {level}")
 						.format(attack=card.attack, defense=card.defense, level=card.level))
@@ -547,7 +550,12 @@ class Duel:
 				if location != LOCATION_HAND:
 					s += " " + card.get_position(pl)
 				if card.type & TYPE_MONSTER:
-					s += " " + pl._("level %d") % card.level
+					if card.type & TYPE_LINK:
+						s += " " + pl._("link rating %d") % card.level
+					elif card.type & TYPE_XYZ:
+						s += " " + pl._("rank %d") % card.level
+					else:
+						s += " " + pl._("level %d") % card.level
 			pl.notify(s)
 
 	def show_score(self, pl):
