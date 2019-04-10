@@ -101,7 +101,6 @@ class Duel:
 	def load_deck(self, player, shuffle = True, tag = False):
 		full_deck = player.deck['cards'][:]
 		c = []
-		extra = []
 		fusion = []
 		xyz = []
 		synchro = []

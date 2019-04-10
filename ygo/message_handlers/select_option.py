@@ -30,7 +30,7 @@ def select_option(self, player, options):
 			string = "Unknown option %d" % opt
 			string = pl.strings['system'].get(opt, string)
 		opts.append(string)
-	m = Menu(pl._("Select option:"), no_abort=pl._("Invalid option."), persistent=True, prompt=pl._("Select option:"), restore_parser=DuelParser)
+	m = Menu(pl._("Select option:"), no_abort=pl._("Invalid option."), prompt=pl._("Select option:"), persistent=True, restore_parser=DuelParser)
 	for idx, opt in enumerate(opts):
 		m.item(opt)(lambda caller, idx=idx: select(caller, idx))
 	pl.notify(m)
