@@ -98,7 +98,9 @@ class Card(object):
 		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
 		if self.type & TYPE_MONSTER:
 			if self.type & TYPE_LINK:
-				lst.append(pl._("Attack: %d Level: %d")%(self.attack, self.level))
+				lst.append(pl._("Attack: %d Link rating: %d")%(self.attack, self.level))
+			elif self.type & TYPE_XYZ:
+				lst.append(pl._("Attack: %d Defense: %d Rank: %d") % (self.attack, self.defense, self.level))
 			else:
 				lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
 		if self.type & TYPE_PENDULUM:
