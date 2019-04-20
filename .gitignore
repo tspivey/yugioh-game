@@ -7,3 +7,12 @@ expansions
 game.db
 *.mo
 *.pot
+locale/*.cdb
+locale/en/*.cdb
+locale/de/*.cdb
+locale/es/*.cdb
+locale/fr/*.cdb
+locale/it/*.cdb
+locale/ja/*.cdb
+locale/pt/*.cdb
+locale/th/*.cdb
