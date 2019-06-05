@@ -11,7 +11,7 @@ git clone https://github.com/Fluorohydride/ygopro-core
 git clone https://github.com/Fluorohydride/ygopro-scripts
 cd ygopro-core
 patch -p0 < ../yugioh-game/etc/ygopro-core.patch
-g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.3 -llua5.3 -std=c++11
+g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.3 -llua5.3 -std=c++14
 cd ../yugioh-game
 python3 duel_build.py
 ln -s ../ygopro-scripts script
