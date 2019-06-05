@@ -151,7 +151,7 @@ def cmd_list(caller):
 	editor = pl.deck_editor
 	cards = pl.deck['cards']
 
-	editor.list(cards)
+	editor.list(cards.copy())
 
 @DeckEditorParser.command(args_regexp=r'(\d+)')
 def goto(caller):
