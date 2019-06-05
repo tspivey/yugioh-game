@@ -26,7 +26,18 @@ class DeckEditor:
 			return
 		self.player.notify(self.player._("You own %d decks:")%(len(decks)))
 		for deck in decks:
-			self.player.notify(deck.name)
+
+			banlist = None
+			
+			for b in globals.banlists.values():
+				if len(b.check(json.loads(deck.content)['cards'])) == 0:
+					banlist = b
+					break
+
+			if banlist:
+				self.player.notify(self.player._("{0} (compatible with {1} banlist)").format(deck.name, banlist.name))
+			else:
+				self.player.notify(self.player._("{0} (compatible with no banlist)").format(deck.name))
 
 	def clear(self, name):
 		account = self.player.get_account()
