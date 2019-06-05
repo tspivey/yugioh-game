@@ -1,36 +1,45 @@
 ## Install dependencies
-Lua is needed for ygopro-core. On Ubuntu:
-    apt-get install lua5.3-dev
+Lua is needed for ygopro-core. To make sure a matching lua version is used, we will compile it on our own:
+
+    wget https://www.lua.org/ftp/lua-5.3.5.tar.gz
+    tar xf lua-5.3.5.tar.gz
+    cd lua-5.3.5
+    make linux CC=g++ CFLAGS='-O2 -fPIC'
 
 Install Python dependencies:
     pip3 install -r requirements.txt
+
 ## Building
+
+The following commands will assume your custom lua build to be found in your home directory. Adapt the corresponding lines to your liking.
+
 ygopro-core and ygopro-scripts must be placed one level up from here.
+
 ```
 git clone https://github.com/Fluorohydride/ygopro-core
 git clone https://github.com/Fluorohydride/ygopro-scripts
 cd ygopro-core
 patch -p0 < ../yugioh-game/etc/ygopro-core.patch
-g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I/usr/include/lua5.3 -llua5.3 -std=c++14
+g++ -shared -fPIC -o ../yugioh-game/libygo.so *.cpp -I$HOME/lua-5.3.5/src -L$HOME/lua-5.3.5/src -llua -std=c++14
 cd ../yugioh-game
 python3 duel_build.py
 ln -s ../ygopro-scripts script
 ```
 
 ## Compile language catalogues
-This game supports multiple languages (english, spanish, german and japanese right now).
+This game supports multiple languages (english, spanish, german and french right now).
 To compile the language catalogues, run the following:
 ```
 ./compile.sh de
 ./compile.sh es
-./compile.sh ja
+./compile.sh fr
 ```
 
 To update the plain text files into human-readable format, run the following:
 ```
 ./update.sh de
 ./update.sh es
-./update.sh ja
+./update.sh fr
 ```
 The generated files in locale/<language code>/LC_MESSAGES/game.po can be given to translators afterwards.
 
