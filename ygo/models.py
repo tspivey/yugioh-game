@@ -55,6 +55,7 @@ class Deck(Base):
 	account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
 	name = Column(Unicode(collation='NOCASE'), nullable=False)
 	content = Column(Unicode, nullable=False)
+	public = Column(Boolean, nullable=False, default=False)
 	__table_args__ = (
 		Index('decks_account_name', 'account_id', 'name'),
 	)
