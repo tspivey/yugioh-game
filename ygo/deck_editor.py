@@ -139,10 +139,17 @@ class DeckEditor:
 
 	def edit(self, deck_name):
 		con = self.player.connection
+		account = con.player.get_account()
+
+		deck = models.Deck.find(con.session, account, deck_name)
+
+		if deck.public:
+			con.notify(con._("You cannot edit public decks. Switch it back to private by using deck private {0} first.".format(deck_name)))
+			return
+
 		con.player.paused_parser = con.parser
 		con.parser = DeckEditorParser
-		account = con.player.get_account()
-		deck = models.Deck.find(con.session, account, deck_name)
+
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
