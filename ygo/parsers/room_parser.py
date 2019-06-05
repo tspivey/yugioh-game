@@ -200,7 +200,7 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
-		pl.deck_editor.list([])
+		pl.deck_editor.list_decks([])
 		return
 
 	name = caller.args[0]
@@ -226,7 +226,7 @@ def deck(caller):
 		account = session.query(models.Account).filter_by(name=player_name).first()
 
 		if not account:
-			pl.notify(pl._("Player {0} could not be found.".format(player_name)))
+			pl.notify(pl._("Player {0} could not be found.").format(player_name))
 			return
 
 		deck = models.Deck.find(session, account, deck_name)

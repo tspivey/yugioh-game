@@ -16,7 +16,7 @@ class DeckEditor:
 		self.last_search = ""
 		self.player = player
 
-	def list(self, args):
+	def list_decks(self, args):
 		decks = self.player.get_account().decks
 		if args:
 			s = args[0].lower()
@@ -121,7 +121,7 @@ class DeckEditor:
 			account = self.player.connection.session.query(models.Account).filter_by(name=player_name).first()
 
 			if not account:
-				self.player.notify(self.player._("Player {0} could not be found.".format(player_name)))
+				self.player.notify(self.player._("Player {0} could not be found.").format(player_name))
 				return
 			
 		else:
@@ -184,7 +184,7 @@ class DeckEditor:
 		deck = models.Deck.find(con.session, account, deck_name)
 
 		if deck.public:
-			con.notify(con._("You cannot edit public decks. Switch it back to private by using deck private {0} first.".format(deck_name)))
+			con.notify(con._("You cannot edit public decks. Switch it back to private by using deck private {0} first.").format(deck_name))
 			return
 
 		con.player.paused_parser = con.parser
@@ -411,3 +411,47 @@ class DeckEditor:
 			self.player.notify(self.player._("This deck is now public."))
 		else:
 			self.player.notify(self.player._("This deck is no longer public."))
+
+	def list(self, cards):
+
+		pl = self.player
+
+		groups = self.group_sort_cards(cards)
+		monsters, spells, traps, extra, other = groups
+		i = 1
+		if len(monsters):
+			pl.notify(pl._("monsters (%d):")%(sum(monsters.values())))
+			for code, count in monsters.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
+		if len(spells):
+			pl.notify(pl._("spells (%d):")%(sum(spells.values())))
+			for code, count in spells.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
+		if len(traps):
+			pl.notify(pl._("traps (%d):")%(sum(traps.values())))
+			for code, count in traps.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
+		if len(extra):
+			pl.notify(pl._("extra (%d):")%(sum(extra.values())))
+			for code, count in extra.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
