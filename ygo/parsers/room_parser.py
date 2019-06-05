@@ -208,13 +208,38 @@ def deck(caller):
 	# first the loading algorithm
 	# parsing the string, loading from database
 	session = caller.connection.session
-	account = caller.connection.player.get_account()
-	if name.startswith('public/'):
-		account = session.query(models.Account).filter_by(name='Public').first()
-		name = name[7:]
-	deck = models.Deck.find(session, account, name)
+	account = pl.get_account()
+
+	player_name = ''
+	deck_name = name
+
+	if '/' in deck_name:
+		player_name = deck_name.split("/")[0].title()
+		deck_name = deck_name[(len(player_name) + 1):]
+
+	if player_name != '':
+
+		if player_name.lower() == pl.nickname.lower():
+			pl.notify(pl._("You don't need to mention yourself if you want to use your own deck."))
+			return
+
+		account = session.query(models.Account).filter_by(name=player_name).first()
+
+		if not account:
+			pl.notify(pl._("Player {0} could not be found.".format(player_name)))
+			return
+
+		deck = session.query(models.Deck).filter_by(account_id = account.id, name = deck_name, public = True).first()
+
+	else:
+
+		deck = models.Deck.find(session, account, deck_name)
+
 	if not deck:
-		pl.notify(pl._("Deck doesn't exist."))
+		if player_name != '':
+			pl.notify(pl._("Deck doesn't exist or isn't publically available."))
+		else:
+			pl.notify(pl._("Deck doesn't exist."))
 		return
 
 	content = json.loads(deck.content)
