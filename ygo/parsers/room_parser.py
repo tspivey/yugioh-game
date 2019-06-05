@@ -261,18 +261,13 @@ def deck(caller):
 
 	# check against selected banlist
 	if room.get_banlist() != 'none':
-		codes = set(content['cards'])
-		errors = 0
-		for code in codes:
-			count = content['cards'].count(code)
-			if code not in globals.lflist[room.get_banlist()] or count <= globals.lflist[room.get_banlist()][code]:
-				continue
-			card = Card(code)
-			pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), globals.lflist[room.get_banlist()][code], count))
-			errors += 1
+		errors = globals.banlists[room.get_banlist()].check_and_resolve(content['cards'])
 
-		if errors > 0:
-			pl.notify(pl._("Check completed with %d errors.") % errors)
+		for err in errors:
+			pl.notify(pl._("%s: limit %d, found %d.") % (err[0].get_name(pl), err[1], err[2]))
+
+		if len(errors) > 0:
+			pl.notify(pl._("Check completed with %d errors.") % len(errors))
 			return
 
 	pl.deck = content

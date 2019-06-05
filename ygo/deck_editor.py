@@ -291,22 +291,24 @@ class DeckEditor:
 	def check(self, deck, banlist = None):
 		con = self.player.connection
 		if not banlist:
-			for k in globals.lflist.keys():
+
+			self.player.notify(self.player._("The following banlists are available (from newest to oldest):"))
+
+			for k in globals.banlists.keys():
 				self.player.notify(k)
+
 			return
-		if banlist not in globals.lflist:
-			self.player.notify(self.player._("Invalid entry."))
+
+		if banlist not in globals.banlists:
+			self.player.notify(self.player._("This banlist is unknown."))
 			return
-		codes = set(deck)
-		errors = 0
-		for code in codes:
-			count = deck.count(code)
-			if code not in globals.lflist[banlist] or count <= globals.lflist[banlist][code]:
-				continue
-			card = Card(code)
-			self.player.notify(self.player._("%s: limit %d, found %d.") % (card.get_name(self.player), globals.lflist[banlist][code], count))
-			errors += 1
-		self.player.notify(self.player._("Check completed with %d errors.") % errors)
+
+		errors = globals.banlists[banlist].check_and_resolve(deck)
+
+		for err in errors:
+			self.player.notify(self.player._("%s: limit %d, found %d.") % (err[0].get_name(self.player), err[1], err[2]))
+
+		self.player.notify(self.player._("Check completed with %d errors.") % len(errors))
 
 	def count_occurrence_in_deck(self, code):
 		card = Card(code)

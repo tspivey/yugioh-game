@@ -26,7 +26,7 @@ def main():
 	except LanguageError as e:
 		print("Error setting primary language: "+str(e))
 		sys.exit()
-	globals.lflist = parse_lflist('lflist.conf')
+	globals.banlists = parse_lflist('lflist.conf')
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--port', type=int, default=4000, help="Port to bind to")
 	parser.add_argument('-w', '--websocket-port', type=int)
