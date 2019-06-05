@@ -64,6 +64,10 @@ class Deck(Base):
 	def find(session, account, name):
 		return session.query(Deck).filter_by(account_id=account.id, name=name).first()
 
+	@staticmethod
+	def find_public(session, account, name):
+		return session.query(Deck).filter_by(account_id=account.id, name=name, public = True).first()
+
 class Ignore(Base):
 	__tablename__ = 'ignores'
 	account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)

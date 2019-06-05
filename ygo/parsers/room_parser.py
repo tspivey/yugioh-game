@@ -229,17 +229,14 @@ def deck(caller):
 			pl.notify(pl._("Player {0} could not be found.".format(player_name)))
 			return
 
-		deck = session.query(models.Deck).filter_by(account_id = account.id, name = deck_name, public = True).first()
+		deck = models.Deck.find(session, account, deck_name)
 
 	else:
 
 		deck = models.Deck.find(session, account, deck_name)
 
 	if not deck:
-		if player_name != '':
-			pl.notify(pl._("Deck doesn't exist or isn't publically available."))
-		else:
-			pl.notify(pl._("Deck doesn't exist."))
+		pl.notify(pl._("Deck doesn't exist or isn't publically available."))
 		return
 
 	content = json.loads(deck.content)
