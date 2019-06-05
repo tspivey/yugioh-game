@@ -82,6 +82,7 @@ def setup():
 
 	# stamp the database with the latest version tag
 	alembic_cfg = alembic_config("alembic.ini")
+	alembic_cfg.attributes['configure_logger'] = False
 	alembic_command.stamp(alembic_cfg, "head")
 
 	return Session
