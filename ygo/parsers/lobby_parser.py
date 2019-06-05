@@ -1,5 +1,6 @@
 from babel.dates import format_timedelta, format_date
 import codecs
+import collections
 import datetime
 import gsb
 from gsb.intercept import Reader
@@ -48,6 +49,43 @@ def deck(caller):
 	caller.args = lst[1:]
 	if cmd == 'list':
 		caller.connection.player.deck_editor.list_decks(caller.args)
+		return
+
+	elif cmd == 'publiclist':
+
+		pl = caller.connection.player
+
+		session = caller.connection.session
+		
+		decks = list(session.query(models.Deck).filter_by(public = True))
+
+		accs = {}
+		
+		for deck in decks:
+			if not deck.account.name in accs:
+				accs[deck.account.name] = []
+			accs[deck.account.name].append(deck)
+
+		accs = collections.OrderedDict(natsort.natsorted(accs.items()))
+
+		pl.notify(pl._("{0} public decks available:").format(len(decks)))
+
+		for acc in accs.keys():
+			pl.notify(acc + ':')
+			for d in natsort.natsorted(accs[acc], key = lambda n: n.name):
+
+				banlist = None
+			
+				for b in globals.banlists.values():
+					if len(b.check(json.loads(d.content)['cards'])) == 0:
+						banlist = b
+						break
+
+				if banlist:
+					pl.notify('\t' + pl._("{0} (compatible with {1} banlist)").format(d.name, banlist.name))
+				else:
+					pl.notify('\t' + pl._("{0} (compatible with no banlist)").format(d.name))
+
 		return
 
 	if len(caller.args) == 0:
@@ -112,6 +150,7 @@ def deck(caller):
 			return
 
 		pl.deck_editor.list(json.loads(deck.content)['cards'])
+
 	else:
 		caller.connection.notify(caller.connection._("Invalid deck command."))
 
