@@ -1,3 +1,6 @@
+from alembic.config import Config as alembic_config
+from alembic import command as alembic_command
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -75,4 +78,9 @@ def setup():
 	Base.metadata.bind = engine
 	Session = sessionmaker(bind=engine)
 	Base.metadata.create_all()
+
+	# stamp the database with the latest version tag
+	alembic_cfg = alembic_config("alembic.ini")
+	alembic_command.stamp(alembic_cfg, "head")
+
 	return Session
