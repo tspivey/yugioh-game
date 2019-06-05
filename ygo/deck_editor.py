@@ -319,3 +319,46 @@ class DeckEditor:
 			return
 		s = deck.content
 		self.player.notify("deck import %s=%s" % (deck.name, s))
+
+	def set_public(self, name, pub):
+
+		account = self.player.get_account()
+		session = self.player.connection.session
+
+		deck = models.Deck.find(session, account, name)
+
+		if not deck:
+			self.player.notify(self.player._("Deck not found."))
+			return
+
+		if deck.public == pub:
+			if pub:
+				self.player.notify(self.player._("This deck is already public."))
+			else:
+				self.player.notify(self.player._("This deck is already private."))
+			return
+
+		if pub:
+
+			# performing several checks
+			# making unfinished decks publically available doesn't make sense
+
+			content = json.loads(deck.content)
+
+			main, extra = self.player.count_deck_cards(content['cards'])
+
+			if main < 40 or main > 60:
+				self.player.notify(self.player._("Your main deck must contain between 40 and 60 cards (currently %d).") % main)
+				return
+
+			if extra > 15:
+				self.player.notify(self.player._("Your extra deck may not contain more than 15 cards (currently %d).")%extra)
+				return
+
+		deck.public = pub
+		session.commit()
+
+		if pub:
+			self.player.notify(self.player._("This deck is now public."))
+		else:
+			self.player.notify(self.player._("This deck is no longer public."))

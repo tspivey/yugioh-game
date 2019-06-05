@@ -72,6 +72,10 @@ def deck(caller):
 		caller.connection.player.deck_editor.deck_import(caller.args[0])
 	elif cmd == 'export':
 		caller.connection.player.deck_editor.deck_export(caller.args[0])
+	elif cmd == 'public':
+		caller.connection.player.deck_editor.set_public(caller.args[0], True)
+	elif cmd == 'private':
+		caller.connection.player.deck_editor.set_public(caller.args[0], False)
 	else:
 		caller.connection.notify(caller.connection._("Invalid deck command."))
 
