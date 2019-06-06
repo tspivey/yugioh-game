@@ -200,7 +200,7 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
-		pl.deck_editor.list([])
+		pl.deck_editor.list_decks([])
 		return
 
 	name = caller.args[0]
@@ -208,13 +208,35 @@ def deck(caller):
 	# first the loading algorithm
 	# parsing the string, loading from database
 	session = caller.connection.session
-	account = caller.connection.player.get_account()
-	if name.startswith('public/'):
-		account = session.query(models.Account).filter_by(name='Public').first()
-		name = name[7:]
-	deck = models.Deck.find(session, account, name)
+	account = pl.get_account()
+
+	player_name = ''
+	deck_name = name
+
+	if '/' in deck_name:
+		player_name = deck_name.split("/")[0].title()
+		deck_name = deck_name[(len(player_name) + 1):]
+
+	if player_name != '':
+
+		if player_name.lower() == pl.nickname.lower():
+			pl.notify(pl._("You don't need to mention yourself if you want to use your own deck."))
+			return
+
+		account = session.query(models.Account).filter_by(name=player_name).first()
+
+		if not account:
+			pl.notify(pl._("Player {0} could not be found.").format(player_name))
+			return
+
+		deck = models.Deck.find(session, account, deck_name)
+
+	else:
+
+		deck = models.Deck.find(session, account, deck_name)
+
 	if not deck:
-		pl.notify(pl._("Deck doesn't exist."))
+		pl.notify(pl._("Deck doesn't exist or isn't publically available."))
 		return
 
 	content = json.loads(deck.content)
@@ -239,18 +261,13 @@ def deck(caller):
 
 	# check against selected banlist
 	if room.get_banlist() != 'none':
-		codes = set(content['cards'])
-		errors = 0
-		for code in codes:
-			count = content['cards'].count(code)
-			if code not in globals.lflist[room.get_banlist()] or count <= globals.lflist[room.get_banlist()][code]:
-				continue
-			card = Card(code)
-			pl.notify(pl._("%s: limit %d, found %d.") % (card.get_name(pl), globals.lflist[room.get_banlist()][code], count))
-			errors += 1
+		errors = globals.banlists[room.get_banlist()].check_and_resolve(content['cards'])
 
-		if errors > 0:
-			pl.notify(pl._("Check completed with %d errors.") % errors)
+		for err in errors:
+			pl.notify(pl._("%s: limit %d, found %d.") % (err[0].get_name(pl), err[1], err[2]))
+
+		if len(errors) > 0:
+			pl.notify(pl._("Check completed with %d errors.") % len(errors))
 			return
 
 	pl.deck = content

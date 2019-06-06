@@ -150,45 +150,8 @@ def cmd_list(caller):
 	pl = caller.connection.player
 	editor = pl.deck_editor
 	cards = pl.deck['cards']
-	groups = editor.group_sort_cards(cards.copy())
-	monsters, spells, traps, extra, other = groups
-	i = 1
-	if len(monsters):
-		pl.notify(pl._("monsters (%d):")%(sum(monsters.values())))
-		for code, count in monsters.items():
-			card = Card(code)
-			if count > 1:
-				pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
-			else:
-				pl.notify("%d: %s" % (i, card.get_name(pl)))
-			i += 1
-	if len(spells):
-		pl.notify(pl._("spells (%d):")%(sum(spells.values())))
-		for code, count in spells.items():
-			card = Card(code)
-			if count > 1:
-				pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
-			else:
-				pl.notify("%d: %s" % (i, card.get_name(pl)))
-			i += 1
-	if len(traps):
-		pl.notify(pl._("traps (%d):")%(sum(traps.values())))
-		for code, count in traps.items():
-			card = Card(code)
-			if count > 1:
-				pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
-			else:
-				pl.notify("%d: %s" % (i, card.get_name(pl)))
-			i += 1
-	if len(extra):
-		pl.notify(pl._("extra (%d):")%(sum(extra.values())))
-		for code, count in extra.items():
-			card = Card(code)
-			if count > 1:
-				pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
-			else:
-				pl.notify("%d: %s" % (i, card.get_name(pl)))
-			i += 1
+
+	editor.list(cards.copy())
 
 @DeckEditorParser.command(args_regexp=r'(\d+)')
 def goto(caller):

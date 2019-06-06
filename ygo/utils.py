@@ -4,9 +4,12 @@ import os.path
 import sys
 
 from _duel import ffi, lib
+from .banlist import Banlist
 
 def parse_lflist(filename):
+
 	lst = {}
+
 	with open(filename, 'r', encoding='utf-8') as fp:
 		for line in fp:
 			line = line.rstrip('\n')
@@ -14,12 +17,13 @@ def parse_lflist(filename):
 				continue
 			elif line.startswith('!'):
 				section = line[1:].lower()
-				lst[section] = lst.get(section, {})
+				lst[section] = Banlist(section)
 			else:
 				code, num_allowed, *extra = line.split(' ', 2)
 				code = int(code)
 				num_allowed = int(num_allowed)
-				lst[section][code] = num_allowed
+				lst[section].add(code, num_allowed)
+
 	return collections.OrderedDict(natsort.natsorted(lst.items(), reverse=True))
 
 def process_duel(d):

@@ -1,5 +1,5 @@
 language_handler = None
-lflist = {}
+banlists = {}
 rebooting = False
 server = None
 websocket_server = None

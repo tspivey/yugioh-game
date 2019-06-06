@@ -1,0 +1,42 @@
+There are several ways available to communicate with other people in this mud, called channels. The following channels are available:
+
+chat: allows you to chat with all other people in this mud.
+You can use the chat command (or .) to write a message.
+Example: chat hi
+
+talk: allows you to talk to all other people with the same language setting.
+You can use the talk command to do so.
+Example: talk this is a test.
+
+say: the say channel can be used whenever you are in a duel (either as a competitor or as a watcher). The said text will only be shown for the people within this duel.
+You can use the say (or ') command to say something.
+Example: say test
+
+tag: the tag channel can be used to talk to your team mate within a tag duel.
+You can use the tag command to do so.
+Example: tag test
+
+tell: the tell command allows you to talk to oanother person privately.
+You can use the tell command, followed by the person's name, to do so.
+Example: tell tsp hello, how are you?
+
+reply: the reply command is used to answer to the last incoming tell that reached you.
+Example: reply thanks, how about you?
+
+challenge: the challenge channel is somewhat special, as noone can write on it. It instead publishes all duel-related information to all listening players
+
+watch: the watch channel informs about players watching a certain duel. Noone can write on it manually.
+The command watchers can however be used to list all watching players while in a duel.
+
+All channels do have a history which can be checked to see the previous messages. This can be achieved by suffixing the channel command with the history command. The only exception is the watch channel.
+Example: chathistory, talkhistory, tellhistory etc.
+The history commands accept a parameter which defines the amount of messages you want to see.
+Example: chathistory 10 to see the last 10 chat messages.
+
+All channels can be turned on and off as well by simply writing the name of the channel.
+Example: chat, say, talk etc.
+The only exception here is tell.
+
+Tell however can be influenced by the ignore command. Ignore allows you to ignore specific players, thus you won't receive messages from them on neither channel.
+Example: ignore toni
+The same command used again will remove the player from the ignore list.

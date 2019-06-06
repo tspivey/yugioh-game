@@ -83,11 +83,11 @@ class Room:
 	def get_banlist(self):
 		if self.banlist == 'tcg':
 			# always the newest tcg list
-			lst = [l for l in globals.lflist if l.endswith('tcg')]
+			lst = [l for l in globals.banlists if l.endswith('tcg')]
 			return lst[0]
 		elif self.banlist == 'ocg':
 			# always the newest ocg list
-			lst = [l for l in globals.lflist.keys() if not l.endswith('tcg')]
+			lst = [l for l in globals.banlists.keys() if not l.endswith('tcg')]
 			return lst[0]
 		else:
 			return self.banlist

@@ -1,0 +1,18 @@
+Für eine Übersicht aller Hilfethemen, verwende help themen.
+Willkommen im Spiel.
+
+Eine kurze Hilfestellung, um mit dem Duellieren zu beginnen.
+Als Erstes wirst Du sicher einen Duellraum erstellen wollen. Tippe create, um einen Raum zu erstellen oder join <spielername>, um den Raum eines anderen Spielers zu betreten.
+Falls Du kein eigenes Deck besitzt, gibt es öffentliche Decks, welche Du nutzen kannst. Verwende help öffentliche decks.
+Um Deine eigenen Decks zu erstellen, verwende help deck.
+
+Das Chat-Kommando erlaubt Dir, mit anderen Spielern zu interagieren.
+Beispiel: chat hi
+Chat kann auch mit . abgekürzt werden.
+Beispiel: .hi
+
+Es gibt auch noch weitere Kanäle, welche Du nutzen kannst, siehe help kommunikation.
+
+Tippe who, um zu sehen, wer online ist.
+Der who-Befehl kann außerdem auch filtern. So zeigt who idle alle Spieler an, welche derzeit unbeschäftigt sind, who watch alle Spieler, welche gerade einem Duell zuschauen oder who duel alle Spieler, welche sich derzeit duellieren.
+Tippe finger spielername, um mehr Informationen über diesen Spieler zu erfahren.

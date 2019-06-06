@@ -1,5 +1,6 @@
 from babel.dates import format_timedelta, format_date
 import codecs
+import collections
 import datetime
 import gsb
 from gsb.intercept import Reader
@@ -47,7 +48,38 @@ def deck(caller):
 	cmd = lst[0]
 	caller.args = lst[1:]
 	if cmd == 'list':
-		caller.connection.player.deck_editor.list(caller.args)
+		caller.connection.player.deck_editor.list_decks(caller.args)
+		return
+
+	elif cmd == 'publiclist':
+
+		pl = caller.connection.player
+
+		session = caller.connection.session
+		
+		decks = list(session.query(models.Deck).filter_by(public = True))
+
+		accs = {}
+		
+		for deck in decks:
+			accs[deck.account.name + "/" + deck.name] = deck
+
+		accs = collections.OrderedDict(natsort.natsorted(accs.items()))
+
+		pl.notify(pl._("{0} public decks available:").format(len(decks)))
+
+		for acc in accs.keys():
+			d = accs[acc]
+
+			banlist_text = pl._("compatible with no banlist")
+			
+			for b in globals.banlists.values():
+				if len(b.check(json.loads(d.content)['cards'])) == 0:
+					banlist_text = pl._("compatible with {0} banlist").format(b.name)
+					break
+
+			pl.notify(pl._("{deckname} ({banlist})").format(deckname = acc, banlist = banlist_text))
+
 		return
 
 	if len(caller.args) == 0:
@@ -72,6 +104,47 @@ def deck(caller):
 		caller.connection.player.deck_editor.deck_import(caller.args[0])
 	elif cmd == 'export':
 		caller.connection.player.deck_editor.deck_export(caller.args[0])
+	elif cmd == 'public':
+		caller.connection.player.deck_editor.set_public(caller.args[0], True)
+	elif cmd == 'private':
+		caller.connection.player.deck_editor.set_public(caller.args[0], False)
+	elif cmd == 'view':
+
+		pl = caller.connection.player
+		session = caller.connection.session
+		
+		player_name = ''
+		deck_name = caller.args[0]
+		
+		if '/' in deck_name:
+			player_name = deck_name.split('/')[0].title()
+			deck_name = deck_name[(len(player_name) + 1):]
+
+		if player_name != '':
+			if player_name.lower() == caller.connection.player.nickname.lower():
+				pl.notify(pl._("You don't need to mention yourself if you want to use your own deck."))
+				return
+
+			account = session.query(models.Account).filter_by(name=player_name).first()
+
+			if not account:
+				pl.notify(pl._("Player {0} could not be found.").format(player_name))
+				return
+			
+			deck = models.Deck.find_public(session, account, deck_name)
+
+		else:
+
+			account = pl.get_account()
+			
+			deck = models.Deck.find(session, account, deck_name)
+
+		if not deck:
+			self.player.notify(self.player._("Deck not found."))
+			return
+
+		pl.deck_editor.list(json.loads(deck.content)['cards'])
+
 	else:
 		caller.connection.notify(caller.connection._("Invalid deck command."))
 

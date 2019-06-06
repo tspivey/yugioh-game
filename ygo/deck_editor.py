@@ -16,7 +16,7 @@ class DeckEditor:
 		self.last_search = ""
 		self.player = player
 
-	def list(self, args):
+	def list_decks(self, args):
 		decks = self.player.get_account().decks
 		if args:
 			s = args[0].lower()
@@ -26,7 +26,20 @@ class DeckEditor:
 			return
 		self.player.notify(self.player._("You own %d decks:")%(len(decks)))
 		for deck in decks:
-			self.player.notify(deck.name)
+
+			if deck.public:
+				privacy = self.player._("public")
+			else:
+				privacy = self.player._("private")
+
+			banlist_text = self.player._("compatible with no banlist")
+
+			for b in globals.banlists.values():
+				if len(b.check(json.loads(deck.content)['cards'])) == 0:
+					banlist_text = self.player._("compatible with {0} banlist").format(b.name)
+					break
+
+			self.player.notify(self.player._("{deckname} ({privacy}) ({banlist})").format(deckname=deck.name, privacy=privacy, banlist=banlist_text))
 
 	def clear(self, name):
 		account = self.player.get_account()
@@ -90,20 +103,49 @@ class DeckEditor:
 		if '=' in dest:
 			self.player.notify(self.player._("Deck names may not contain =."))
 			return
-		if name.startswith('public/'):
-			account = self.player.connection.session.query(models.Account).filter_by(name='Public').first()
-			name = name[7:]
+
+		if '/' in dest:
+			self.player.notify(self.player._("The copy destination can only be one of your own decks."))
+			return
+
+		player_name = ''
+		deck_name = name
+
+		if '/' in deck_name:
+			player_name = deck_name.split('/')[0].title()
+			deck_name = deck_name[(len(player_name) + 1):]
+
+		if player_name != '':
+			if player_name.lower() == self.player.nickname.lower():
+				self.player.notify(self.player._("You don't need to mention yourself if you want to use your own deck."))
+				return
+
+			account = self.player.connection.session.query(models.Account).filter_by(name=player_name).first()
+
+			if not account:
+				self.player.notify(self.player._("Player {0} could not be found.").format(player_name))
+				return
+			
 		else:
 			account = self.player.get_account()
+
 		session = self.player.connection.session
-		deck = models.Deck.find(session, account, name)
+
+		if player_name != '':
+			deck = models.Deck.find_public(session, account, deck_name)
+		else:
+			deck = models.Deck.find(session, account, name)
+
 		if not deck:
-			self.player.notify(self.player._("Deck not found."))
+			self.player.notify(self.player._("Deck doesn't exist or isn't publically available."))
 			return
+
 		dest_deck = models.Deck.find(session, self.player.get_account(), dest)
+
 		if dest_deck:
 			self.player.notify(self.player._("Destination deck already exists"))
 			return
+
 		new_deck = models.Deck(name=dest, content=deck.content)
 		self.player.get_account().decks.append(new_deck)
 		session.commit()
@@ -139,10 +181,17 @@ class DeckEditor:
 
 	def edit(self, deck_name):
 		con = self.player.connection
+		account = con.player.get_account()
+
+		deck = models.Deck.find(con.session, account, deck_name)
+
+		if deck and deck.public:
+			con.notify(con._("You cannot edit public decks. Switch it back to private by using deck private {0} first.").format(deck_name))
+			return
+
 		con.player.paused_parser = con.parser
 		con.parser = DeckEditorParser
-		account = con.player.get_account()
-		deck = models.Deck.find(con.session, account, deck_name)
+
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
@@ -255,22 +304,24 @@ class DeckEditor:
 	def check(self, deck, banlist = None):
 		con = self.player.connection
 		if not banlist:
-			for k in globals.lflist.keys():
+
+			self.player.notify(self.player._("The following banlists are available (from newest to oldest):"))
+
+			for k in globals.banlists.keys():
 				self.player.notify(k)
+
 			return
-		if banlist not in globals.lflist:
-			self.player.notify(self.player._("Invalid entry."))
+
+		if banlist not in globals.banlists:
+			self.player.notify(self.player._("This banlist is unknown."))
 			return
-		codes = set(deck)
-		errors = 0
-		for code in codes:
-			count = deck.count(code)
-			if code not in globals.lflist[banlist] or count <= globals.lflist[banlist][code]:
-				continue
-			card = Card(code)
-			self.player.notify(self.player._("%s: limit %d, found %d.") % (card.get_name(self.player), globals.lflist[banlist][code], count))
-			errors += 1
-		self.player.notify(self.player._("Check completed with %d errors.") % errors)
+
+		errors = globals.banlists[banlist].check_and_resolve(deck)
+
+		for err in errors:
+			self.player.notify(self.player._("%s: limit %d, found %d.") % (err[0].get_name(self.player), err[1], err[2]))
+
+		self.player.notify(self.player._("Check completed with %d errors.") % len(errors))
 
 	def count_occurrence_in_deck(self, code):
 		card = Card(code)
@@ -319,3 +370,90 @@ class DeckEditor:
 			return
 		s = deck.content
 		self.player.notify("deck import %s=%s" % (deck.name, s))
+
+	def set_public(self, name, pub):
+
+		account = self.player.get_account()
+		session = self.player.connection.session
+
+		deck = models.Deck.find(session, account, name)
+
+		if not deck:
+			self.player.notify(self.player._("Deck not found."))
+			return
+
+		if deck.public == pub:
+			if pub:
+				self.player.notify(self.player._("This deck is already public."))
+			else:
+				self.player.notify(self.player._("This deck is already private."))
+			return
+
+		if pub:
+
+			# performing several checks
+			# making unfinished decks publically available doesn't make sense
+
+			content = json.loads(deck.content)
+
+			main, extra = self.player.count_deck_cards(content['cards'])
+
+			if main < 40 or main > 60:
+				self.player.notify(self.player._("Your main deck must contain between 40 and 60 cards (currently %d).") % main)
+				return
+
+			if extra > 15:
+				self.player.notify(self.player._("Your extra deck may not contain more than 15 cards (currently %d).")%extra)
+				return
+
+		deck.public = pub
+		session.commit()
+
+		if pub:
+			self.player.notify(self.player._("This deck is now public."))
+		else:
+			self.player.notify(self.player._("This deck is no longer public."))
+
+	def list(self, cards):
+
+		pl = self.player
+
+		groups = self.group_sort_cards(cards)
+		monsters, spells, traps, extra, other = groups
+		i = 1
+		if len(monsters):
+			pl.notify(pl._("monsters (%d):")%(sum(monsters.values())))
+			for code, count in monsters.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
+		if len(spells):
+			pl.notify(pl._("spells (%d):")%(sum(spells.values())))
+			for code, count in spells.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
+		if len(traps):
+			pl.notify(pl._("traps (%d):")%(sum(traps.values())))
+			for code, count in traps.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1
+		if len(extra):
+			pl.notify(pl._("extra (%d):")%(sum(extra.values())))
+			for code, count in extra.items():
+				card = Card(code)
+				if count > 1:
+					pl.notify("%d: %s (x %d)" % (i, card.get_name(pl), count))
+				else:
+					pl.notify("%d: %s" % (i, card.get_name(pl)))
+				i += 1

@@ -1,0 +1,13 @@
+Jeder Spieler in diesem Mud kann seine oder ihre Decks öffentlich machen, um damit anderen Spielern zu helfen.
+
+deck public deckname schaltet ein vorher erstelltes Deck öffentlich. Öffentliche Decks können jedoch nicht mehr verändert werden.
+deck private deckname kann eines Deiner öffentlichen Decks jedoch wieder privat schalten, woraufhin es wieder bearbeitet werden kann.
+deck publiclist listet alle öffentlichen Decks in alphabetischer Reihenfolge auf.
+
+Öffentliche Decks können mittels dem Spielernamen, gefolgt von einem / und dem Decknamen angesprochen werden.
+Beispiel: toni/öffentliches-deck1
+
+Der Befehl deck copy (siehe help deck) akzeptiert als Quelle auch den Pfad zu einem öffentlichen Deck. Damit ist es möglich, öffentliche Decks lokal zu kopieren und diese Kopie zu bearbeiten, um ein noch spannenderes Deck zu erstellen.
+Beispiel: deck copy toni/öffentliches-deck1=meine-coole-modifikation
+
+Das Selbe gilt für den deck view Befehl, womit es möglich ist, in die Kartenliste eines öffentlichen Decks zu schauen.

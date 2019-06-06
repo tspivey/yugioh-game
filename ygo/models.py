@@ -1,3 +1,6 @@
+from alembic.config import Config as alembic_config
+from alembic import command as alembic_command
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,7 +37,7 @@ class Account(Base):
 	language = Column(Unicode, nullable=False, default='en')
 	encoding = Column(Unicode, nullable=False, default='utf-8')
 	is_admin = Column(Boolean, nullable=False, default=False)
-	decks = relationship('Deck')
+	decks = relationship('Deck', backref = "account")
 	ignores = relationship('Ignore', cascade='all, delete-orphan', foreign_keys='Ignore.account_id')
 	duel_rules = Column(Integer, nullable=False, default=0)
 	banlist = Column(String(50), nullable = False, default = 'tcg')
@@ -52,6 +55,7 @@ class Deck(Base):
 	account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
 	name = Column(Unicode(collation='NOCASE'), nullable=False)
 	content = Column(Unicode, nullable=False)
+	public = Column(Boolean, nullable=False, default=False)
 	__table_args__ = (
 		Index('decks_account_name', 'account_id', 'name'),
 	)
@@ -59,6 +63,10 @@ class Deck(Base):
 	@staticmethod
 	def find(session, account, name):
 		return session.query(Deck).filter_by(account_id=account.id, name=name).first()
+
+	@staticmethod
+	def find_public(session, account, name):
+		return session.query(Deck).filter_by(account_id=account.id, name=name, public = True).first()
 
 class Ignore(Base):
 	__tablename__ = 'ignores'
@@ -75,4 +83,10 @@ def setup():
 	Base.metadata.bind = engine
 	Session = sessionmaker(bind=engine)
 	Base.metadata.create_all()
+
+	# stamp the database with the latest version tag
+	alembic_cfg = alembic_config("alembic.ini")
+	alembic_cfg.attributes['configure_logger'] = False
+	alembic_command.stamp(alembic_cfg, "head")
+
 	return Session

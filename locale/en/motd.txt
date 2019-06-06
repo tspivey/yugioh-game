@@ -5,3 +5,4 @@ See help deck for a list of available deck commands.
 Create a new duel room by using create, or join player to join an existing room.
 chat text (or .text with a leading dot) will chat that text to all users.
 who shows who is online.
+And even more information can be received by using help start.

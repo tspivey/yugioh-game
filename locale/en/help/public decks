@@ -1,0 +1,12 @@
+Any player in this Mud can make his or her decks public to help other players.
+deck public deckname can be used to make an own deck public. A public deck cannot be edited anymore.
+deck private deckname however can make a deck private again, which allows it to be edited again.
+deck publiclist will list all public decks in alphabetical order.
+
+Public decks can be used by addressing them with the player name, followed by a slash and the deck name.
+Example: toni/public-deck1
+
+The command deck copy (see help deck) accepts a public deck path as source too, so you can create copies of other player's public decks and modify them to create a whole new deck.
+Example: deck copy toni/public-deck1=my-really-cool-modification
+
+Same goes for the deck view command, which allows you to take a look at a public deck's recipe.

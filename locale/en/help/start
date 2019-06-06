@@ -12,4 +12,9 @@ To create your own decks, read help deck.
 The chat command will allow you to talk to people. For example:
 chat hi
 
+There more channels available, see help communication.
+
 Type who to see who's online.
+The who command can also filter players, who idle will show all players who are idling in the lobby, who duel will show all players who are currently duelling and who watch will show all players who are currently watching a duel.
+
+The finger command can be used to show certain information about a given player.
