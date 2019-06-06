@@ -62,29 +62,23 @@ def deck(caller):
 		accs = {}
 		
 		for deck in decks:
-			if not deck.account.name in accs:
-				accs[deck.account.name] = []
-			accs[deck.account.name].append(deck)
+			accs[deck.account.name + "/" + deck.name] = deck
 
 		accs = collections.OrderedDict(natsort.natsorted(accs.items()))
 
 		pl.notify(pl._("{0} public decks available:").format(len(decks)))
 
 		for acc in accs.keys():
-			pl.notify(acc + ':')
-			for d in natsort.natsorted(accs[acc], key = lambda n: n.name):
+			d = accs[acc]
 
-				banlist = None
+			banlist_text = pl._("compatible with no banlist")
 			
-				for b in globals.banlists.values():
-					if len(b.check(json.loads(d.content)['cards'])) == 0:
-						banlist = b
-						break
+			for b in globals.banlists.values():
+				if len(b.check(json.loads(d.content)['cards'])) == 0:
+					banlist_text = pl._("compatible with {0} banlist").format(b.name)
+					break
 
-				if banlist:
-					pl.notify('\t' + pl._("{0} (compatible with {1} banlist)").format(d.name, banlist.name))
-				else:
-					pl.notify('\t' + pl._("{0} (compatible with no banlist)").format(d.name))
+			pl.notify(pl._("{deckname} ({banlist})").format(deckname = acc, banlist = banlist_text))
 
 		return
 
