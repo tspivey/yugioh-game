@@ -14,22 +14,28 @@ class Banlist:
 
 		errors = []
 	 
-		for card in codes:
-			count = cards.count(card)
+		for card in (Card(c) for c in codes):
+			limit = self.limit(card)
+			count = cards.count(card.code)
 
-			if card not in self.__cards or count <= self.__cards[card]:
+			if limit is None or count <= limit:
 				continue
 
-			errors += [(card, self.__cards[card], count)]
+			errors += [(card, limit, count)]
 
 		return errors
-
-	def check_and_resolve(self, cards):
-
-		orig = self.check(cards)
-		
-		return [(Card(t[0]), t[1], t[2]) for t in orig]
 
 	@property
 	def name(self):
 		return self.__name
+
+	def limit(self, card):
+		if card.code in self.__cards:
+			return self.__cards[card.code]
+		if card.alias == 0:
+			return None
+		while card.alias != 0:
+			if card.alias in self.__cards:
+				return self.__cards[card.alias]
+			card = Card(card.alias)
+		return None
