@@ -185,7 +185,7 @@ class DeckEditor:
 
 		deck = models.Deck.find(con.session, account, deck_name)
 
-		if deck.public:
+		if deck and deck.public:
 			con.notify(con._("You cannot edit public decks. Switch it back to private by using deck private {0} first.").format(deck_name))
 			return
 
