@@ -1,9 +1,14 @@
 from .constants import *
 from . import globals
 
+class CardNotFound(Exception):
+	pass
+
 class Card(object):
 	def __init__(self, code):
 		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
+		if row is None:
+			raise CardNotFound("Card %d not found" % code)
 		self.code = code
 		self.alias = row['alias']
 		self.setcode = row['setcode']

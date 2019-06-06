@@ -1,4 +1,4 @@
-from .card import Card
+from .card import Card, CardNotFound
 
 class Banlist:
 	def __init__(self, name):
@@ -13,8 +13,14 @@ class Banlist:
 		codes = set(cards)
 
 		errors = []
-	 
-		for card in (Card(c) for c in codes):
+		card_objects = []
+		for c in cards:
+			try:
+				card_objects.append(Card(c))
+			except CardNotFound:
+				continue
+
+		for card in card_objects:
 			limit = self.limit(card)
 			count = cards.count(card.code)
 
