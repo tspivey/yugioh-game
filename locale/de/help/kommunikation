@@ -1,0 +1,42 @@
+Es gibt verschiedene Möglichkeiten, mit den anderen Spielern in diesem Mud zu interagieren, welche Kanäle genannt werden. Die folgenden Kanäle sind verfügbar:
+
+Chat: ermöglicht Dir, mit allen anderen Spielern in diesem Mud zu chatten.
+Du kannst den chat (oder .) Befehl verwenden, um eine Nachricht zu schreiben.
+Beispiel: chat hi
+
+Talk: erlaubt Dir, mit allen anderen Spielern zu schreiben, welche die selbe Sprache wie Du verwenden.
+Das talk-Kommando wird hierzu verwendet.
+Beispiel: talk Dies ist ein Test.
+
+say: Der Say-Kanal kann immer nur in einem Duell verwendet werden (von Duellanten und Zuschauern). Der Text wird dann allen Duellanten und Zuschauern dieses Duells angezeigt.
+Hierfür wird der say (oder ') Befehl genutzt.
+Beispiel: say test
+
+tag: der Tag-Kanal ermöglicht Dir die Absprache mit Deinem Teampartner in einem Tag-Duel.
+Hierfür wird der Tag-Befehl verwendet.
+Beispiel: tag test
+
+tell: der Tell-Befehl ermöglicht Dir die private Kommunikation mit einem einzelnen Spieler.
+Du kannst dafür den Tell-Befehl, gefolgt vom Namen des Spielers, verwenden.
+Beispiel: tell toni Hi, wie gehts?
+
+Reply: der Reply-Befehl kann verwendet werden, um auf den letzten eingehenden Tell-Befehl, welcher Dich erreicht hat, zu antworten.
+Beispiel: reply Danke, und Du so?
+
+Challenge: Der Challenge-Kanal ist besonders, da niemand auf ihm schreiben kann. Stattdessen verteilt er alle Duell-bezogenen Neuigkeiten an alle Spieler, welche ihm zuhören.
+
+watch: Der Watch-Kanal ist der Kanal, welcher während Duellen über das Zuschauen anderer Spieler informiert. Auf ihm kann ebenfalls nicht geschrieben werden.
+Für ihn gibt es allerdings den Befehl watchers, welcher alle zuschauenden Spieler während eines Duells anzeigt.
+
+Alle Kanäle besitzen eine Historie, welche abgefragt werden kann, um vorhergehende Nachrichten dieses Kanals einzusehen. Hierfür wird der Name des Kanals, gefolgt von history genutzt. Eine Ausnahme ist dabei der watch-Kanal.
+Beispiel: chathistory, talkhistory, tellhistory etc.
+Die history-Befehle akzeptieren einen Parameter, welcher angibt, wie viele Nachrichten man sehen möchte.
+Beispiel: chathistory 10 um die letzten 10 Nachrichten zu sehen.
+
+Alle Kanäle können an- und ausgeschaltet werden, indem man ihre Befehle ohne Nachricht schreibt.
+Example: chat, say, talk etc.
+Die einzige Ausnahme ist tell.
+
+Tell dagegen wird von der Ignorierliste beeinflusst. Mittels ignore spielername können einzelne Spieler von dir ignoriert werden, woraufhin man keine Nachrichten mehr von ihnen erhalten kann, auf keinem Kanal.
+Example: ignore toni
+Der selbe Befehl entfernt den Spieler auch wieder von der Ignorierliste.

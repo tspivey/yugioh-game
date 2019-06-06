@@ -1,0 +1,17 @@
+deck list - Listet alle Decks auf, welche Du gespeichert hast.
+deck list text - listet alle Deine Decks auf, welche im Titel den Text text beinhalten.
+deck clear deckname - entfernt alle Karten aus einem Deiner Decks.
+deck delete deckname - löscht ein Deck vollständig.
+deck edit deckname - bearbeite Dein Deck.
+deck rename old=new - benenne Dein Deck old in new um.
+deck copy quelle=ziel - kopiert ein Deck namens quelle und speichert es unter dem Namen Ziel.
+deck draw deck=anzahl - simuliert das Ziehen zufälliger Karten von einem Deck. Anzahl ist die Anzahl zu ziehender Karten.
+deck view deckname - zeigt eine Liste aller in deckname enthaltenen Karten.
+
+Befehle im Deck Editor:
+/text - suche nach text.
+Beispiel: /magier
+/ - nach dem zuletzt gesuchten Text weitersuchen.
+?text und ? - ähnlich wie /, nur rückwärts.
+
+Die restlichen Befehle werden direkt im Editor erklärt.

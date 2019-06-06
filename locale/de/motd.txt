@@ -5,3 +5,4 @@ Für deckspezifische Befehle, siehe help deck.
 Um einen Raum zu erstellen und ein Duell zu organisieren, tippe create, oder verwende join Spielername, um einem Raum eines Spielers beizutreten.
 Du kannst Dich mit allen Nutzern via .text (oder chat text) unterhalten.
 Und who zeigt Dir, wer gerade anwesend ist.
+Noch mehr Details gibt es mit help start.

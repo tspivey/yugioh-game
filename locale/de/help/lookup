@@ -1,0 +1,4 @@
+Syntax: lookup kartenname
+lookup 2.kartenname
+
+Ermöglicht Dir, nach einer Karte zu suchen, auch wenn Du nur den Namen (oder den Teil eines Namens) kennst.

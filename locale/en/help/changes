@@ -31,5 +31,8 @@ Hopefully fixed connections dropping after inactivity.
 Added deck copy.
 Typing deck now shows the help file, instead of causing an error.
 Help files can now be translated.
-2019--3-06
+2019-03-06
 Scoop command added
+
+2019-06-06
+new public deck system added. see help public decks
