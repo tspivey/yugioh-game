@@ -6,14 +6,14 @@ grave und grave2 - zeigt Deinen und den gegnerischen Friedhof.
 extra und extra2 - zeigt Dein und das gegnerische Extradeck.
 removed und removed2 - zeigt Deine und die gegnerischen verbannten Karten.
 score - zeigt den Duellfortschritt an.
-info position - zeigt Informationen über die Karte an besagter Position.
-m1-m5 für Deine Monsterzonen, s1-s5 für Deine Zauber/Fallenkartenzonen, s6 für die Feldzauberkartenzone und s7-s8 für die Pendelkartenzone, sowie g1-gX für den Friedhof, r1-rX für die aus dem Spiel entfernten Karten, h1-hX für alle Karten in der Hand, x1-xX für alle Karten im Extradeck.
+info position - zeigt Informationen Ã¼ber die Karte an besagter Position.
+m1-m5 fÃ¼r Deine Monsterzonen, s1-s5 fÃ¼r Deine Zauber/Fallenkartenzonen, s6 fÃ¼r die Feldzauberkartenzone und s7-s8 fÃ¼r die Pendelkartenzone, sowie g1-gX fÃ¼r den Friedhof, r1-rX fÃ¼r die aus dem Spiel entfernten Karten, h1-hX fÃ¼r alle Karten in der Hand, x1-xX fÃ¼r alle Karten im Extradeck.
 ACHTUNG: alle diese Angaben beziehen sich auf die Duellregelungen vor den Linkregeln.
-Alle diese Positionen können mit o (om1-om5 etc) ausgeführt werden, um sich auf das gegnerische Feld zu beziehen.
-showhand - zeigt allen Spielern und Zuschauern Deine hand (bei Anfängern nützlich)
-giveup - beendet das Duell und verzeichnet für beide Spieler eine Aufgabe.
+Alle diese Positionen kÃ¶nnen mit o (om1-om5 etc) ausgefÃ¼hrt werden, um sich auf das gegnerische Feld zu beziehen.
+showhand - zeigt allen Spielern und Zuschauern Deine hand (bei AnfÃ¤ngern nÃ¼tzlich)
+giveup - beendet das Duell und verzeichnet fÃ¼r beide Spieler eine Aufgabe.
 scoop - beendet das Duell, gesteht dem Gegner allerdings einen Sieg ein.
 
 watchers - zeigt die Liste aller zuschauenden Spieler.
-say - ermöglicht die Kommunikation mit allen Duellanten und Zuschauern am Tisch.
-tag - ermöglicht die private Kommunikation mit Deinem Tag-Duell-Partner.
+say - ermÃ¶glicht die Kommunikation mit allen Duellanten und Zuschauern am Tisch.
+tag - ermÃ¶glicht die private Kommunikation mit Deinem Tag-Duell-Partner.
