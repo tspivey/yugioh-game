@@ -1,0 +1,2043 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-10-26 21:40+0200\n"
+"PO-Revision-Date: 2017-10-26 21:50+0200\n"
+"Last-Translator: \n"
+"Language: es\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+"X-Generator: Poedit 2.0.4\n"
+
+#: ygo/card.py:70
+msgid "Activate this card."
+msgstr "Ativar essa carta."
+
+#: ygo/card.py:101
+#, python-format
+msgid "Attack: %d Level: %d"
+msgstr "Ataque: %d Nível: %d."
+
+#: ygo/card.py:103
+#, python-format
+msgid "Attack: %d Defense: %d Level: %d"
+msgstr "Ataque: %d Defesa: %d Nível: %d"
+
+#: ygo/card.py:105
+#, python-format
+msgid "Pendulum scale: %d/%d"
+msgstr "Escala de Pendulum: %d/%d"
+
+#: ygo/card.py:107
+#, python-format
+msgid "Link Markers: %s"
+msgstr "Marcadores de link: %s"
+
+#: ygo/card.py:116
+msgid "attached xyz materials:"
+msgstr "Possui Materiais xyz acoplados:"
+
+#: ygo/card.py:123
+msgid "no xyz materials attached"
+msgstr "Não possui materiais xyz acoplados:"
+
+#: ygo/card.py:133
+msgid "face-up attack"
+msgstr "Virado para cima em ataque"
+
+#: ygo/card.py:135
+msgid "face-down attack"
+msgstr "Virado para baixo em ataque"
+
+#: ygo/card.py:137
+msgid "face-up defense"
+msgstr "Virado para cima em defesa"
+
+#: ygo/card.py:139
+msgid "face-up"
+msgstr "Virada para cima"
+
+#: ygo/card.py:141
+msgid "face-down defense"
+msgstr "Virada para baixo em defesa"
+
+#: ygo/card.py:143
+msgid "face down"
+msgstr "Virada para baixo."
+
+#: ygo/channel.py:82
+msgid "You currently don't receive messages from this channel, so you may not see the history."
+msgstr "Você não recebe mensagens deste canal, portanto você não pode ler o histórico do mesmo"
+
+#: ygo/channel.py:86
+msgid "No messages yet."
+msgstr "Ainda não tem mensagens"
+
+#: ygo/constants.py:15
+msgid "bottom left"
+msgstr "Botão Esquerdo"
+
+#: ygo/constants.py:16
+msgid "bottom"
+msgstr "Botão"
+
+#: ygo/constants.py:17
+msgid "bottom right"
+msgstr "Botão Direito"
+
+#: ygo/constants.py:18
+msgid "left"
+msgstr "Esquerdo"
+
+#: ygo/constants.py:19
+msgid "right"
+msgstr "Direito"
+
+#: ygo/constants.py:20
+msgid "top left"
+msgstr "Topo Esquerdo"
+
+#: ygo/constants.py:21
+msgid "top"
+msgstr "Topo"
+
+#: ygo/constants.py:22
+msgid "top right"
+msgstr "Topo Direito"
+
+#: ygo/constants.py:35
+msgid "draw phase"
+msgstr "Fase de Puxar"
+
+#: ygo/constants.py:36
+msgid "standby phase"
+msgstr "Fase de Espera"
+
+#: ygo/constants.py:37
+msgid "main1 phase"
+msgstr "Fase Principal 1"
+
+#: ygo/constants.py:38
+msgid "battle start phase"
+msgstr "Iniciando a Fase de Batalha"
+
+#: ygo/constants.py:39
+msgid "battle step phase"
+msgstr "Fase de Batalha"
+
+#: ygo/constants.py:40
+msgid "damage phase"
+msgstr "Fase de Dano"
+
+#: ygo/constants.py:41
+msgid "damage calculation phase"
+msgstr "Fase de calculação de dano"
+
+#: ygo/constants.py:42
+msgid "battle phase"
+msgstr "Fase de Batalha"
+
+#: ygo/constants.py:43
+msgid "main2 phase"
+msgstr "Fase Principal 2"
+
+#: ygo/constants.py:44
+msgid "end phase"
+msgstr "Fase Final"
+
+#: ygo/deck_editor.py:22
+msgid "No decks."
+msgstr "Você não tem baralhos."
+
+#: ygo/deck_editor.py:24
+#, python-format
+msgid "You own %d decks:"
+msgstr "Você tem %d Baralhos:"
+
+#: ygo/deck_editor.py:33 ygo/deck_editor.py:44 ygo/deck_editor.py:67
+#: ygo/deck_editor.py:98 ygo/deck_editor.py:127
+msgid "Deck not found."
+msgstr "Este Baralho não Existe"
+
+#: ygo/deck_editor.py:37
+msgid "Deck cleared."
+msgstr "Baralho limpo."
+
+#: ygo/deck_editor.py:48
+msgid "Deck deleted."
+msgstr "Baralho Apagado."
+
+#: ygo/deck_editor.py:52 ygo/deck_editor.py:58
+msgid "Usage: deck rename <old>=<new>"
+msgstr "Uso: deck rename <antigo>=<novo>."
+
+#: ygo/deck_editor.py:61 ygo/deck_editor.py:88
+msgid "Deck names may not contain =."
+msgstr "Baralho não pode conter =."
+
+#: ygo/deck_editor.py:71 ygo/deck_editor.py:102
+msgid "Destination deck already exists"
+msgstr "Este baralho não existe"
+
+#: ygo/deck_editor.py:75
+msgid "Deck renamed."
+msgstr "Baralho renomeado."
+
+#: ygo/deck_editor.py:79 ygo/deck_editor.py:85
+msgid "Usage: deck copy <old>=<new>"
+msgstr "Uso: deck copy <Antigo>=<Novo>"
+
+#: ygo/deck_editor.py:107
+msgid "Deck copied."
+msgstr "Deck copiado."
+
+#: ygo/deck_editor.py:111 ygo/deck_editor.py:117
+msgid "Usage: deck draw <deck>=<number>"
+msgstr "Deck puxar <deck>=number>"
+
+#: ygo/deck_editor.py:135
+#, python-format
+msgid "Drew: %s"
+msgstr "Puxou: %s"
+
+#: ygo/deck_editor.py:144
+msgid "Deck exists, loading."
+msgstr "Este baralho já existe, carregando-o"
+
+#: ygo/deck_editor.py:149 ygo/parsers/room_parser.py:245
+msgid "Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."
+msgstr "Algumas cartas foram removidas, isso pode ocorrer quando o servidor reinicia com um novo banco de cartas e não reconhece as cartas antigas."
+
+#: ygo/deck_editor.py:151
+#, python-format
+msgid "Creating new deck %s."
+msgstr "Criando novo baralho: %s."
+
+#: ygo/deck_editor.py:244
+msgid "That deck already exists."
+msgstr "Este baralho já existe."
+
+#: ygo/deck_editor.py:250
+msgid "Deck created."
+msgstr "Baralho criado."
+
+#: ygo/deck_editor.py:259
+msgid "Invalid entry."
+msgstr "Intrada inválida."
+
+#: ygo/deck_editor.py:268 ygo/parsers/room_parser.py:266
+#, python-format
+msgid "%s: limit %d, found %d."
+msgstr "Limite de cartas encontradas %s: %d %d."
+
+#: ygo/deck_editor.py:270 ygo/parsers/room_parser.py:270
+#, python-format
+msgid "Check completed with %d errors."
+msgstr "Checagem completada com %d Erros."
+
+#: ygo/duel.py:157 ygo/duel.py:161
+#, python-format
+msgid "Duel created. You are player %s."
+msgstr "%s criou um duelo."
+
+#: ygo/duel.py:158 ygo/duel.py:162
+msgid "Type help dueling for a list of usable commands."
+msgstr "Para ler os comandos usados em um duelo, digite help dueling"
+
+#: ygo/duel.py:163
+#, python-format
+msgid "%s will go first."
+msgstr "%s irá primeiro."
+
+#: ygo/duel.py:171 ygo/duel.py:659
+msgid "Watching stopped."
+msgstr "Visualização do duelo cancelada."
+
+#: ygo/duel.py:184 ygo/server.py:51
+#, python-format
+msgid "%s logged out."
+msgstr "%s desconectou-se"
+
+#: ygo/duel.py:406
+#, python-format
+msgid "Summonable in attack position: %s"
+msgstr "Invocable: %s em modo de ataque."
+
+#: ygo/duel.py:408
+#, python-format
+msgid "Summonable in defense position: %s"
+msgstr "Invocable: %s em modo de defesa."
+
+#: ygo/duel.py:410
+#, python-format
+msgid "Special summonable: %s"
+msgstr "Invocable: de forma especial %s em modo de ataque."
+
+#: ygo/duel.py:412
+#, python-format
+msgid "Activatable: %s"
+msgstr "Ativable: %s"
+
+#: ygo/duel.py:414
+#, python-format
+msgid "Repositionable: %s"
+msgstr "Mudando posicionable: %s"
+
+#: ygo/duel.py:416
+#, python-format
+msgid "Settable: %s"
+msgstr "Colocable: %s"
+
+#: ygo/duel.py:460
+msgid "deck"
+msgstr "Baralho"
+
+#: ygo/duel.py:464
+msgid "{position} card ({spec})"
+msgstr "{position} da carta ({spec})"
+
+#: ygo/duel.py:473
+msgid "Table is empty."
+msgstr "Mesa Vazia."
+
+#: ygo/duel.py:482
+msgid "({attack}) level {level}"
+msgstr "({attack}) Nível {level}"
+
+#: ygo/duel.py:485
+msgid "({attack}/{defense}) level {level}"
+msgstr "({attack}/{defense}) nível {level}"
+
+#: ygo/duel.py:490
+#, python-format
+msgid "xyz materials: %d"
+msgstr "Materiais xyz: %d"
+
+#: ygo/duel.py:511
+#, python-format
+msgid "(equipped to %s)"
+msgstr "(Equipada a %s)"
+
+#: ygo/duel.py:530
+#, python-format
+msgid "Zone linked by %s (%s): %s"
+msgstr "Posições %s (%s): %s estão ativadas"
+
+#: ygo/duel.py:535
+msgid "No cards."
+msgstr "Não a cartas."
+
+#: ygo/duel.py:546
+#, python-format
+msgid "level %d"
+msgstr "Nível %d"
+
+#: ygo/duel.py:561 ygo/duel.py:562 ygo/duel.py:670 ygo/duel.py:671
+#: ygo/parsers/duel_parser.py:26 ygo/parsers/duel_parser.py:41
+#: ygo/parsers/lobby_parser.py:179 ygo/parsers/lobby_parser.py:180
+#: ygo/parsers/lobby_parser.py:190
+#, python-format
+msgid "team %s"
+msgstr "Equipe %s"
+
+#: ygo/duel.py:566
+#, python-format
+msgid "LP: %s: %d %s: %d"
+msgstr "LP: %s: %d %s: %d"
+
+#: ygo/duel.py:567
+#, python-format
+msgid "Hand: %s: %d %s: %d"
+msgstr "Mão: %s: %d %s: %d"
+
+#: ygo/duel.py:568
+#, python-format
+msgid "Deck: %s: %d %s: %d"
+msgstr "Baralho: %s: %d %s: %d"
+
+#: ygo/duel.py:569
+#, python-format
+msgid "Grave: %s: %d %s: %d"
+msgstr "Cemitério: %s: %d %s: %d"
+
+#: ygo/duel.py:570
+#, python-format
+msgid "Removed: %s: %d %s: %d"
+msgstr "Removidas do jogo: %s: %d %s: %d"
+
+#: ygo/duel.py:572
+#, python-format
+msgid "Your LP: %d Opponent LP: %d"
+msgstr "Seus pontos de vida: %d Pontos de vida do oponente: %d"
+
+#: ygo/duel.py:573
+#, python-format
+msgid "Hand: You: %d Opponent: %d"
+msgstr "Sua mão: %d Oponente: %d"
+
+#: ygo/duel.py:574
+#, python-format
+msgid "Deck: You: %d Opponent: %d"
+msgstr "Seu baralho: %d Oponente: %d"
+
+#: ygo/duel.py:575
+#, python-format
+msgid "Grave: You: %d Opponent: %d"
+msgstr "Seu cemitério: %d Oponente: %d"
+
+#: ygo/duel.py:576
+#, python-format
+msgid "Removed: You: %d Opponent: %d"
+msgstr "Suas cartas removidas: %d: oponente: %d"
+
+#: ygo/duel.py:578
+msgid "This duel is currently paused."
+msgstr "Este duelo está atualmente em pausa."
+
+#: ygo/duel.py:581
+msgid "It's your turn."
+msgstr "É o seu turno."
+
+#: ygo/duel.py:583
+#, python-format
+msgid "It's %s's turn."
+msgstr "É o turno de %s's."
+
+#: ygo/duel.py:589
+#, python-format
+msgid "%s: %s card."
+msgstr "%s: carta %s ."
+
+#: ygo/duel.py:604 ygo/parsers/deck_editor_parser.py:96
+#: ygo/parsers/deck_editor_parser.py:202
+msgid "Invalid card."
+msgstr "Carta inválida."
+
+#: ygo/duel.py:638
+msgid "Duel paused until all duelists reconnect."
+msgstr "Duelo pausado até que os duelistas se reconectem."
+
+#: ygo/duel.py:649
+msgid "Duel continues."
+msgstr "Continuando o duelo."
+
+#: ygo/duel.py:655
+msgid "{player} is no longer watching this duel."
+msgstr "{player} não está mas assistindo esse duelo."
+
+#: ygo/duel.py:675
+#, python-format
+msgid "Watching duel between %s and %s."
+msgstr "Assistindo duelo entre %s e %s."
+
+#: ygo/duel.py:677
+msgid "{player} is now watching this duel."
+msgstr "{player} não assiste mas esse duelo."
+
+#: ygo/duel.py:681
+msgid "The duel is currently paused due to not all players being connected."
+msgstr "O duelo foi pausado até que os jogadores se reconectem."
+
+#: ygo/player.py:145
+msgid "No help topic."
+msgstr "Não existe esse tópico de ajuda."
+
+#: ygo/room.py:33
+msgid "You joined your new room. You need to finish the setup to make it available to the other players."
+msgstr "Você entrou em sua nova sala de duelo, você precisa terminar a configuração para disponibilizá-la para os outros jogadores."
+
+#: ygo/room.py:35
+#, python-format
+msgid "You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel."
+msgstr "Você entrou na sala de %s, use o comando move para alternar entre as equipes 1 ou 2. Ou 0 para apenas assistir o duelo."
+
+#: ygo/room.py:37
+#, python-format
+msgid "%s joined this room."
+msgstr "%s entrou na sala."
+
+#: ygo/room.py:55
+msgid "You left the room."
+msgstr "Você saiu da sala."
+
+#: ygo/room.py:58
+#, python-format
+msgid "%s left this room."
+msgstr "%s saiu da sala."
+
+#: ygo/room.py:68
+msgid "The room creator disbanded the room."
+msgstr "O criador da sala saiu, por tanto a sala foi fechada."
+
+#: ygo/room.py:70
+msgid "The room was disbanded."
+msgstr "A sala foi fechada."
+
+#: ygo/room.py:73
+msgid "{player} disbanded their duel room."
+msgstr "{player} saiu da sala de duelo."
+
+#: ygo/server.py:41
+#, python-format
+msgid "%s lost connection while in a duel."
+msgstr "%s Perdeu a conexão quando estava em um duelo."
+
+#: ygo/server.py:120
+msgid "Rebooting."
+msgstr "Reiniciando."
+
+#: ygo/channels/challenge.py:17 ygo/channels/watchers.py:16
+msgid "message"
+msgstr "Mensagem"
+
+#: ygo/channels/chat.py:5
+#, python-format
+msgid "%s chats: %s"
+msgstr "chat: %s %s."
+
+#: ygo/channels/language_chat.py:9
+#, python-format
+msgid "%s talks in %s: %s"
+msgstr "chat: %s %s %s"
+
+#: ygo/channels/say.py:5
+#, python-format
+msgid "%s says: %s"
+msgstr "%s diz: %s"
+
+#: ygo/channels/tag.py:7
+#, python-format
+msgid "%s tags: %s"
+msgstr "%s tags: %s"
+
+#: ygo/channels/tell.py:11 ygo/channels/tell.py:17
+#, python-format
+msgid "You tell %s: %s"
+msgstr "Você diz a %s: %s"
+
+#: ygo/channels/tell.py:13 ygo/channels/tell.py:19
+#, python-format
+msgid "%s tells you: %s"
+msgstr "%s diz a você: %s"
+
+#: ygo/message_handlers/act_on_card.py:14
+#: ygo/message_handlers/act_on_card.py:40
+#: ygo/message_handlers/announce_card.py:20
+#: ygo/message_handlers/announce_card_filter.py:24
+#: ygo/message_handlers/announce_number.py:22
+#: ygo/message_handlers/battle_attack.py:31
+#: ygo/message_handlers/display_battle_menu.py:31
+#: ygo/message_handlers/select_chain.py:67 ygo/message_handlers/sort_card.py:29
+#: ygo/parsers/deck_editor_parser.py:10 ygo/parsers/lobby_parser.py:283
+#: ygo/parsers/lobby_parser.py:289 ygo/parsers/lobby_parser.py:291
+#: ygo/parsers/lobby_parser.py:299
+msgid "Invalid command."
+msgstr "Comando inválido."
+
+#: ygo/message_handlers/act_on_card.py:14
+#: ygo/message_handlers/act_on_card.py:40
+msgid "Select action for {card}"
+msgstr "Selecione a ação da carta."
+
+#: ygo/message_handlers/act_on_card.py:18
+msgid "Summon this card in face-up attack position."
+msgstr "Invocar."
+
+#: ygo/message_handlers/act_on_card.py:20
+msgid "Set this card."
+msgstr "colocar carta."
+
+#: ygo/message_handlers/act_on_card.py:22
+msgid "Summon this card in face-down defense position."
+msgstr "Colocar monstro em defesavirado para baixo."
+
+#: ygo/message_handlers/act_on_card.py:24
+msgid "reposition this card."
+msgstr "Mudando posição da carta."
+
+#: ygo/message_handlers/act_on_card.py:26
+msgid "Special summon this card."
+msgstr "Invocar de forma especial em modo de ataque."
+
+#: ygo/message_handlers/act_on_card.py:38
+msgid "Show card info."
+msgstr "Ver as informações da carta."
+
+#: ygo/message_handlers/act_on_card.py:39
+msgid "back."
+msgstr "Voltar."
+
+#: ygo/message_handlers/act_on_card.py:61
+#: ygo/message_handlers/act_on_card.py:73
+#: ygo/message_handlers/act_on_card.py:79
+msgid "Invalid action."
+msgstr "Ação inválida."
+
+#: ygo/message_handlers/announce_card.py:19
+#: ygo/message_handlers/announce_card_filter.py:23
+msgid "Enter the name of a card:"
+msgstr "Digite o nome de uma carta:"
+
+#: ygo/message_handlers/announce_card.py:27
+#: ygo/message_handlers/announce_card_filter.py:31
+#: ygo/parsers/lobby_parser.py:268
+msgid "No results found."
+msgstr "Não foram encontrados resultados."
+
+#: ygo/message_handlers/announce_card.py:29
+#: ygo/message_handlers/announce_card_filter.py:35
+msgid "Wrong type."
+msgstr "Tipo errado."
+
+#: ygo/message_handlers/announce_number.py:20
+msgid "Select a number, one of: {opts}"
+msgstr "Selecione um número, de um a: {opts}"
+
+#: ygo/message_handlers/attack.py:26
+#, python-format
+msgid "%s prepares to attack with %s (%s)"
+msgstr "%s se prepara para atacar com %s (%s)"
+
+#: ygo/message_handlers/attack.py:36 ygo/message_handlers/become_target.py:23
+#: ygo/message_handlers/move.py:85 ygo/message_handlers/move.py:103
+#: ygo/message_handlers/swap.py:28
+#, python-format
+msgid "%s card"
+msgstr "carta %s"
+
+#: ygo/message_handlers/attack.py:37
+#, python-format
+msgid "%s prepares to attack %s (%s) with %s (%s)"
+msgstr "%s se prepara para atacar %s (%s) com %s (%s)"
+
+#: ygo/message_handlers/battle.py:43
+#, python-format
+msgid "%s (%s) attacks %s (%s)"
+msgstr "%s (%s) ataca %s (%s)"
+
+#: ygo/message_handlers/battle.py:45
+#, python-format
+msgid "%s (%s) attacks"
+msgstr "%s (%s) ataca"
+
+#: ygo/message_handlers/battle_activate.py:9
+msgid "Select card to activate:"
+msgstr "Selecione a carta que quer ativar:"
+
+#: ygo/message_handlers/battle_activate.py:15
+#: ygo/message_handlers/battle_attack.py:19
+msgid "z: back."
+msgstr "Z: volta."
+
+#: ygo/message_handlers/battle_activate.py:21
+#: ygo/message_handlers/battle_attack.py:25
+msgid "Invalid cardspec. Retry."
+msgstr "Especificação de carta inválida. Tente novamente."
+
+#: ygo/message_handlers/battle_attack.py:10
+msgid "Select card to attack with:"
+msgstr "Escolha a carta que irá atacar:"
+
+#: ygo/message_handlers/battle_attack.py:15
+#, python-format
+msgid "%s: %s (%d)"
+msgstr "%s: %s (%d)"
+
+#: ygo/message_handlers/battle_attack.py:31
+#: ygo/message_handlers/idle_action.py:18
+#: ygo/message_handlers/idle_action.py:38
+msgid "Select a card:"
+msgstr "Selecione a carta:"
+
+#: ygo/message_handlers/become_target.py:24
+#, python-format
+msgid "%s targets %s (%s)"
+msgstr "%s Seleciona %s (%s)"
+
+#: ygo/message_handlers/begin_damage.py:7
+msgid "begin damage"
+msgstr "calculando dano"
+
+#: ygo/message_handlers/card_hint.py:20 ygo/message_handlers/card_hint.py:24
+msgid "{spec} ({name}) selected {value}."
+msgstr "{spec} o ({name}) ({value}) selecionado"
+
+#: ygo/message_handlers/chaining.py:34
+#, python-format
+msgid "Activating %s"
+msgstr "Ativando %s"
+
+#: ygo/message_handlers/chaining.py:35 ygo/message_handlers/chaining.py:43
+#, python-format
+msgid "%s activating %s"
+msgstr "%s ativa %s"
+
+#: ygo/message_handlers/confirm_cards.py:23
+msgid "{player} shows you {count} cards."
+msgstr "{player} mostra {count} cartas"
+
+#: ygo/message_handlers/counters.py:31
+msgid "{amount} counters of type {counter} placed on {card}"
+msgstr "{amount} contadores do tipo {counter} colocado em {card}"
+
+#: ygo/message_handlers/counters.py:34
+msgid "{amount} counters of type {counter} removed from {card}"
+msgstr "{amount} contadores do tipo {counter} removido em {card}"
+
+#: ygo/message_handlers/damage.py:14
+#, python-format
+msgid "Your lp decreased by %d, now %d"
+msgstr "Você perde %d pontos, agora %d"
+
+#: ygo/message_handlers/damage.py:15 ygo/message_handlers/damage.py:17
+#, python-format
+msgid "%s's lp decreased by %d, now %d"
+msgstr "%s perde %d pontos de vida, agora %d"
+
+#: ygo/message_handlers/decktop.py:19
+#, python-format
+msgid "you reveal your top deck card to be %s"
+msgstr "Você revela a carta do topo do seu baralho que é: %s"
+
+#: ygo/message_handlers/decktop.py:21
+#, python-format
+msgid "%s reveals their top deck card to be %s"
+msgstr "%s revela a carta do topo do baralho que é: %s"
+
+#: ygo/message_handlers/display_battle_menu.py:8
+msgid "Battle menu:"
+msgstr "Menu de batalha:"
+
+#: ygo/message_handlers/display_battle_menu.py:10
+msgid "a: Attack."
+msgstr "A: atacar."
+
+#: ygo/message_handlers/display_battle_menu.py:12
+msgid "c: activate."
+msgstr "C: Ativar."
+
+#: ygo/message_handlers/display_battle_menu.py:14
+msgid "m: Main phase 2."
+msgstr "M: fase principal 2."
+
+#: ygo/message_handlers/display_battle_menu.py:16
+#: ygo/message_handlers/idle_action.py:15
+msgid "e: End phase."
+msgstr "E: Fase final."
+
+#: ygo/message_handlers/display_battle_menu.py:29
+#: ygo/message_handlers/select_option.py:33
+msgid "Invalid option."
+msgstr "Opção inválida."
+
+#: ygo/message_handlers/display_battle_menu.py:31
+msgid "Select an option:"
+msgstr "Selecione a opção:"
+
+#: ygo/message_handlers/draw.py:19
+#, python-format
+msgid "Drew %d cards:"
+msgstr "Puxa %d cartas:"
+
+#: ygo/message_handlers/draw.py:23
+#, python-format
+msgid "Opponent drew %d cards."
+msgstr "Oponente puxa %d cartas:"
+
+#: ygo/message_handlers/draw.py:25
+#, python-format
+msgid "%s drew %d cards."
+msgstr "%s Puxa %d cartas."
+
+#: ygo/message_handlers/end_damage.py:7
+msgid "end damage"
+msgstr "Fim da fase de dano."
+
+#: ygo/message_handlers/equip.py:18
+msgid "{card} equipped to {target}."
+msgstr "{card} equipada a {target}."
+
+#: ygo/message_handlers/field_disabled.py:17
+#: ygo/message_handlers/field_disabled.py:18
+#, python-format
+msgid "Field locations %s are disabled."
+msgstr "colocações %s do campo estão desativadas."
+
+#: ygo/message_handlers/flipsummoning.py:19
+msgid "{player} flip summons {card} ({spec})."
+msgstr "{player} invoca {card} em modo de ataque ({spec})."
+
+#: ygo/message_handlers/idle_action.py:10
+msgid "Select a card on which to perform an action."
+msgstr "Selecione a carta a qual deve executar uma ação."
+
+#: ygo/message_handlers/idle_action.py:11
+msgid "h shows your hand, tab and tab2 shows your or the opponent's table, ? shows usable cards."
+msgstr "H mostra sua mão, tab e tab2 mostra a sua mesa ou a do oponente, "mostra as cartas utilizáveis."
+
+#: ygo/message_handlers/idle_action.py:13
+msgid "b: Enter the battle phase."
+msgstr "B: entra em sua fase de batalha."
+
+#: ygo/message_handlers/idle_action.py:17
+#: ygo/message_handlers/idle_action.py:37
+#: ygo/message_handlers/idle_action.py:41
+msgid "Invalid specifier. Retry."
+msgstr "Especificação inválida. Tente novamente."
+
+#: ygo/message_handlers/idle_action.py:52
+msgid "There is no card in that position."
+msgstr "Não a carta nessa posição."
+
+#: ygo/message_handlers/idle_action.py:57
+msgid "Face-down card."
+msgstr "Carta virada para baixo."
+
+#: ygo/message_handlers/move.py:24 ygo/message_handlers/move.py:27
+#, python-format
+msgid "Card %s (%s) destroyed."
+msgstr "Carta %s (%s) destruída."
+
+#: ygo/message_handlers/move.py:34
+msgid "your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}."
+msgstr "Sua carta {spec} ({name}) mudou o controle para {op} e está localizada em {targetspec}."
+
+#: ygo/message_handlers/move.py:35
+msgid "you now control {plname}s card {spec} ({name}) and its located at {targetspec}."
+msgstr "Você agora controla {plname}s card {spec} ({name}) que está localizada em {targetspec}."
+
+#: ygo/message_handlers/move.py:39
+msgid "{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}."
+msgstr "{plname}s card {spec} ({name}) mudou o controle para {op} e está localizada em {targetspec}."
+
+#: ygo/message_handlers/move.py:42
+msgid "your card {spec} ({name}) switched its zone to {targetspec}."
+msgstr "Sua carta {spec} ({name}) mudou sua zona para {targetspec}."
+
+#: ygo/message_handlers/move.py:46
+msgid "{plname}s card {spec} ({name}) changed its zone to {targetspec}."
+msgstr "{plname}s card {spec} ({name}) mudou sua zona para {targetspec}."
+
+#: ygo/message_handlers/move.py:48
+msgid "you discarded {spec} ({name})."
+msgstr "você descartou {spec} ({name})."
+
+#: ygo/message_handlers/move.py:51
+msgid "{plname} discarded {spec} ({name})."
+msgstr "{plname} descartou {spec} ({name})."
+
+#: ygo/message_handlers/move.py:55
+msgid "your banished card {spec} ({name}) returns to the field at {targetspec}."
+msgstr "sua carta banida {spec} ({name}) retorna para o campo em {targetspec}."
+
+#: ygo/message_handlers/move.py:59
+msgid "{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}."
+msgstr "{plname} carta banida {spec} ({name}) que retornou ao campo em {targetspec}."
+
+#: ygo/message_handlers/move.py:63
+msgid "your card {spec} ({name}) returns from the graveyard to the field at {targetspec}."
+msgstr "sua carta {spec} ({name}) retorna do cemitério para o campo em {targetspec}."
+
+#: ygo/message_handlers/move.py:67
+msgid "{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}."
+msgstr "a carta {spec} ({name})  de {plname} retornou do cemitério para o campo em {targetspec}."
+
+#: ygo/message_handlers/move.py:69
+msgid "Card {spec} ({name}) returned to hand."
+msgstr "A carta {spec} ({name}) retornou para a sua mão."
+
+#: ygo/message_handlers/move.py:73
+msgid "Face-down card"
+msgstr "A carta está virada para baixo."
+
+#: ygo/message_handlers/move.py:77
+msgid "{plname}'s card {spec} ({name}) returned to their hand."
+msgstr "A carta 's {spec} ({name}) de {plname} retornou a sua mão.
+
+#: ygo/message_handlers/move.py:80
+msgid "You tribute {spec} ({name})."
+msgstr "Você sacrifica {spec} ({name})."
+
+#: ygo/message_handlers/move.py:88
+msgid "{plname} tributes {spec} ({name})."
+msgstr "{plname} Sacrifica há {spec} ({name})."
+
+#: ygo/message_handlers/move.py:91
+#, python-format
+msgid "you detached %s."
+msgstr "Você separa %s."
+
+#: ygo/message_handlers/move.py:93
+#, python-format
+msgid "%s detached %s"
+msgstr "%s desprendeu %s"
+
+#: ygo/message_handlers/move.py:95
+msgid "your card {spec} ({name}) was sent to the graveyard."
+msgstr "Sua carta {spec} ({name}) foi enviada para o cemitério."
+
+#: ygo/message_handlers/move.py:98
+msgid "{plname}'s card {spec} ({name}) was sent to the graveyard."
+msgstr "A carta {spec} ({name})  de {plname} foi enviada para o cemitério."
+
+#: ygo/message_handlers/move.py:100
+msgid "your card {spec} ({name}) was banished."
+msgstr "Sua carta {spec} ({name}) foi banida."
+
+#: ygo/message_handlers/move.py:107
+msgid "{plname}'s card {spec} ({name}) was banished."
+msgstr "A carta {spec} ({name}) de {plname} foi banida."
+
+#: ygo/message_handlers/move.py:109
+msgid "your card {spec} ({name}) returned to your deck."
+msgstr "sua carta {spec} ({name}) retornou para o seu baralho."
+
+#: ygo/message_handlers/move.py:112
+msgid "{plname}'s card {spec} ({name}) returned to their deck."
+msgstr "A carta {spec} ({name}) de {plname} retornou para o baralho."
+
+#: ygo/message_handlers/move.py:114
+msgid "your card {spec} ({name}) returned to your extra deck."
+msgstr "Sua carta {spec} ({name}) retornou para seu baralho extra.
+
+#: ygo/message_handlers/move.py:117
+msgid "{plname}'s card {spec} ({name}) returned to their extra deck."
+msgstr "A carta {spec} ({name}) de {plname} retornou para seu baralho extra.
+
+#: ygo/message_handlers/new_turn.py:8
+msgid "Your turn."
+msgstr "É sua vês."
+
+#: ygo/message_handlers/new_turn.py:10 ygo/message_handlers/new_turn.py:12
+#, python-format
+msgid "%s's turn."
+msgstr "É a vês de %s"
+
+#: ygo/message_handlers/pay_lpcost.py:12
+#, python-format
+msgid "You pay %d LP. Your LP is now %d."
+msgstr "Você paga %d LP. seu LP agora é de %d."
+
+#: ygo/message_handlers/pay_lpcost.py:16
+#, python-format
+msgid "%s pays %d LP. Their LP is now %d."
+msgstr "%s paga %d Pontos. Agora %d."
+
+#: ygo/message_handlers/phase.py:17
+#, python-format
+msgid "entering %s."
+msgstr "Entrando em %s."
+
+#: ygo/message_handlers/pos_change.py:22 ygo/message_handlers/pos_change.py:23
+#: ygo/message_handlers/pos_change.py:26
+#, python-format
+msgid "The position of card %s (%s) was changed to %s."
+msgstr "A posição da carta %s (%s) foi mudada para %s."
+
+#: ygo/message_handlers/recover.py:14
+#, python-format
+msgid "Your lp increased by %d, now %d"
+msgstr "Seu lp aumentou em %d, agora o total é de %d"
+
+#: ygo/message_handlers/recover.py:15 ygo/message_handlers/recover.py:17
+#, python-format
+msgid "%s's lp increased by %d, now %d"
+msgstr "O lp de %s aumentou em %d, agora o total é de %d"
+
+#: ygo/message_handlers/reversedeck.py:3
+msgid "all decks are now reversed."
+msgstr "Todos os baralhos agora estão invertidos."
+
+#: ygo/message_handlers/select_card.py:51
+#, python-format
+msgid "Select %d to %d cards to tribute separated by spaces:"
+msgstr "Selecione as cartas de %d para %d para a sacrificar separando-as por espaço."
+
+#: ygo/message_handlers/select_card.py:53
+#, python-format
+msgid "Select %d to %d cards separated by spaces:"
+msgstr "Selecione as cartas de %d para %d separadas por espaço:"
+
+#: ygo/message_handlers/select_card.py:64
+#: ygo/message_handlers/select_place.py:27
+#: ygo/message_handlers/select_sum.py:58 ygo/message_handlers/sort_card.py:42
+msgid "Duplicate values not allowed."
+msgstr "Valores duplicados não permitidos."
+
+#: ygo/message_handlers/select_card.py:66
+#, python-format
+msgid "Please enter between %d and %d cards."
+msgstr "Por favor, insira as cartas entre %d e %d."
+
+#: ygo/message_handlers/select_card.py:68
+msgid "Invalid value."
+msgstr "Valor inválido."
+
+#: ygo/message_handlers/select_card.py:75
+msgid "Not enough tributes."
+msgstr "Não há tributos suficientes."
+
+#: ygo/message_handlers/select_chain.py:38
+msgid "Waiting for opponent."
+msgstr "Aguardando pelo oponente."
+
+#: ygo/message_handlers/select_chain.py:55
+msgid "Select chain:"
+msgstr "Selecione a cadeia:"
+
+#: ygo/message_handlers/select_chain.py:57
+msgid "Select chain (c to cancel):"
+msgstr "Selecione a cadeia (c para cancelar):"
+
+#: ygo/message_handlers/select_chain.py:64
+msgid "Select card to chain:"
+msgstr "Selecione a carta para ativar."
+
+#: ygo/message_handlers/select_chain.py:66
+msgid "Select card to chain (c = cancel):"
+msgstr "Selecione a carta para ativar (c = cancelar):"
+
+#: ygo/message_handlers/select_chain.py:80
+msgid "Invalid spec."
+msgstr "Especificação inválida."
+
+#: ygo/message_handlers/select_counter.py:31
+msgid "Type new {counter} for {cards} cards, separated by spaces."
+msgstr "Digite novo {counter} para {cards} cartas, separado por espaço."
+
+#: ygo/message_handlers/select_counter.py:43
+#, python-format
+msgid "Please specify %d values."
+msgstr "Por favor, especifique os valores de %d."
+
+#: ygo/message_handlers/select_counter.py:45
+msgid "Values cannot be greater than counter."
+msgstr "Os valores não podem ser maiores que o contador."
+
+#: ygo/message_handlers/select_counter.py:47
+#, python-format
+msgid "Please specify %d values with a sum of %d."
+msgstr "Por favor, especifique os valores de %d com um incremento de %d."
+
+#: ygo/message_handlers/select_effectyn.py:27
+msgid "Do you want to use the effect from {card} in {spec}?"
+msgstr "Você quer usar o efeito {card} em {spec}?"
+
+#: ygo/message_handlers/select_option.py:33
+msgid "Select option:"
+msgstr "Selecione uma opção:"
+
+#: ygo/message_handlers/select_place.py:21
+#, python-format
+msgid "Select place for card, one of %s."
+msgstr "Selecione o lugar da carta, um dos %s."
+
+#: ygo/message_handlers/select_place.py:23
+#, python-format
+msgid "Select %d places for card, from %s."
+msgstr "Selecione Os lugares das cartas de %d, para %s."
+
+#: ygo/message_handlers/select_place.py:28
+#: ygo/message_handlers/select_place.py:31
+#: ygo/message_handlers/select_place.py:34
+#: ygo/message_handlers/select_place.py:46
+#: ygo/message_handlers/select_unselect_card.py:65
+msgid "Invalid command"
+msgstr "Comando inválido"
+
+#: ygo/message_handlers/select_place.py:30 ygo/message_handlers/sort_card.py:40
+#, python-format
+msgid "Please enter %d values."
+msgstr "Por favor, entre com os valores de %d."
+
+#: ygo/message_handlers/select_place.py:33
+msgid "Invalid cardspec. Try again."
+msgstr "Especificação da carta inválido. Tente novamente."
+
+#: ygo/message_handlers/select_position.py:20
+#, python-format
+msgid "Select position for %s:"
+msgstr "Selecione a posição para %s:"
+
+#: ygo/message_handlers/select_position.py:25
+msgid "Face-up attack"
+msgstr "Lado de ataque virado para cima."
+
+#: ygo/message_handlers/select_position.py:27
+msgid "Face-down attack"
+msgstr "Lado de ataque virado para baixo."
+
+#: ygo/message_handlers/select_position.py:29
+msgid "Face-up defense"
+msgstr "Lado de defesa virado para cima."
+
+#: ygo/message_handlers/select_position.py:31
+msgid "Face-down defense"
+msgstr "Lado de defesa virado para baixo."
+
+#: ygo/message_handlers/select_sum.py:44
+#, python-format
+msgid "Select cards with a total value of %d, seperated by spaces."
+msgstr "Selecione as cartas com um valor total de %d, separados por espaço."
+
+#: ygo/message_handlers/select_sum.py:46
+#, python-format
+msgid "Select cards with a total value of at least %d, seperated by spaces."
+msgstr "Selecione cartas com um valor total de pelo menos %d, separados por espaço."
+
+#: ygo/message_handlers/select_sum.py:60
+msgid "Value out of range."
+msgstr "Valor fora do determinado."
+
+#: ygo/message_handlers/select_sum.py:64
+msgid "Levels out of range."
+msgstr "Nível fora de alcance."
+
+#: ygo/message_handlers/select_sum.py:66
+#, python-format
+msgid "Selected value does not equal %d."
+msgstr "O valor selecionado não é igual a %d."
+
+#: ygo/message_handlers/select_unselect_card.py:39
+#, python-format
+msgid "Check or uncheck %d to %d cards by entering their number"
+msgstr "Marque ou desmarque as cartas de %d para %d digitando seus números."
+
+#: ygo/message_handlers/select_unselect_card.py:41
+msgid "Enter c to cancel"
+msgstr "Tecle C para cancelar."
+
+#: ygo/message_handlers/select_unselect_card.py:43
+msgid "Enter f to finish"
+msgstr "Tecle F para terminar."
+
+#: ygo/message_handlers/select_unselect_card.py:48
+msgid "unchecked"
+msgstr "Desmarcado"
+
+#: ygo/message_handlers/select_unselect_card.py:50
+msgid "checked"
+msgstr "Marcado"
+
+#: ygo/message_handlers/select_unselect_card.py:67
+msgid "Number not in range"
+msgstr "Número fora do intervalo"
+
+#: ygo/message_handlers/set.py:18
+#, python-format
+msgid "You set %s (%s) in %s position."
+msgstr "Você coloca %s (%s) na posição %s."
+
+#: ygo/message_handlers/set.py:22 ygo/message_handlers/set.py:25
+#, python-format
+msgid "%s sets %s in %s position."
+msgstr "%s coloca %s na posição %s."
+
+#: ygo/message_handlers/shuffle.py:11
+msgid "you shuffled your deck."
+msgstr "você embaralhou seu baralho."
+
+#: ygo/message_handlers/shuffle.py:13
+#, python-format
+msgid "%s shuffled their deck."
+msgstr "%s embaralhou seu baralho."
+
+#: ygo/message_handlers/sort_card.py:26
+#, python-format
+msgid "Sort %d cards by entering numbers separated by spaces (c = cancel):"
+msgstr "ordene as %d cartas, inserindo os números separados por espaço. C = cancelar:"
+
+#: ygo/message_handlers/sort_card.py:44
+#, python-format
+msgid "Please enter values between 1 and %d."
+msgstr "Por favor insira valores entre 1 e%d."
+
+#: ygo/message_handlers/summoning.py:23
+#, python-format
+msgid "%s special summoning %s (%d) in %s position."
+msgstr "%s Invoca de forma especial %s (%d)  %s."
+
+#: ygo/message_handlers/summoning.py:25
+#, python-format
+msgid "%s special summoning %s (%d/%d) in %s position."
+msgstr "%s Invoca de forma especial %s (%d/%d) %s."
+
+#: ygo/message_handlers/summoning.py:27
+#, python-format
+msgid "%s summoning %s (%d/%d) in %s position."
+msgstr "%s invoca %s (%d/%d) %s."
+
+#: ygo/message_handlers/swap.py:31
+msgid "card {name} swapped control towards {plname} and is now located at {targetspec}."
+msgstr "A carta {name} mudou o controle para {plname} e está localizada em {targetspec}."
+
+#: ygo/message_handlers/tag_swap.py:42
+#, python-format
+msgid "You switch places with %s and get ready to duel."
+msgstr "Você troca de lugar com %s e se prepara para a batalha.""
+
+#: ygo/message_handlers/tag_swap.py:43
+#, python-format
+msgid "You switch places with %s and watch carefully."
+msgstr "Você troca de lugar com% s e assiste com cuidado."
+
+#: ygo/message_handlers/tag_swap.py:47
+#, python-format
+msgid "%s switches in for %s and continues the duel."
+msgstr "%s muda de posição com %s e continua o duelo."
+
+#: ygo/message_handlers/win.py:22
+msgid "{player1} and {player2} ended up in a draw."
+msgstr "{player1} e {player2} terminaram empatados."
+
+#: ygo/message_handlers/win.py:42
+#, python-format
+msgid "%s and you won (%s)."
+msgstr "%s e você (%s) ganharam.""
+
+#: ygo/message_handlers/win.py:44
+#, python-format
+msgid "You won (%s)."
+msgstr "Você ganhou (%s)."
+
+#: ygo/message_handlers/win.py:50
+#, python-format
+msgid "%s and you lost (%s)."
+msgstr "%s e você (%s) perderam."
+
+#: ygo/message_handlers/win.py:52
+#, python-format
+msgid "You lost (%s)."
+msgstr "Você perdeu (%s)."
+
+#: ygo/message_handlers/win.py:63
+#, python-format
+msgid "%s won (%s)."
+msgstr "%s ganhou (%s)."
+
+#: ygo/message_handlers/win.py:71
+msgid "{winner} won the duel between {player1} and {player2} ({reason})."
+msgstr "{winner} venceu o duelo entre {player1} e {player2} ({reason})."
+
+#: ygo/message_handlers/yesno.py:29
+#, python-format
+msgid "Unknown question from %s. Yes or no?"
+msgstr "Pergunta desconhecida de %s. Sim ou não?"
+
+#: ygo/parsers/deck_editor_parser.py:24
+#, python-format
+msgid "%d in deck."
+msgstr "%d no baralho."
+
+#: ygo/parsers/deck_editor_parser.py:27
+msgid "u: up d: down /: search forward ?: search backward t: top"
+msgstr "u: para cima, d: para baixo, /: procurar a frente, ?: procurar atrás, t: topo"
+
+#: ygo/parsers/deck_editor_parser.py:28
+msgid "s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"
+msgstr "s: enviar para o baralho r: retirar do baralho l: listar cartas no baralho g: ir para uma carta no baralho q: sair"
+
+#: ygo/parsers/deck_editor_parser.py:29
+msgid "c: check deck against banlist"
+msgstr "c: checar baralho com a banlist."
+
+#: ygo/parsers/deck_editor_parser.py:31
+#, python-format
+msgid "Command (%d cards in main deck, %d cards in extra deck):"
+msgstr "Comando (%d cartas no baralho principal, e %d cartas no baralho extra):"
+
+#: ygo/parsers/deck_editor_parser.py:57
+msgid "bottom of list."
+msgstr "parte inferior da lista."
+
+#: ygo/parsers/deck_editor_parser.py:63
+msgid "Top of list."
+msgstr "Topo da lista."
+
+#: ygo/parsers/deck_editor_parser.py:70
+msgid "Top."
+msgstr "Topo."
+
+#: ygo/parsers/deck_editor_parser.py:77
+msgid "You may only have 3 of this card (or cards with the same name) in your deck."
+msgstr "Você pode ter apenas 3 cartas (ou cartas com o mesmo nome) no seu baralho."
+
+#: ygo/parsers/deck_editor_parser.py:101
+msgid "This card isn't in your deck."
+msgstr "Esta carta não está no seu baralho."
+
+#: ygo/parsers/deck_editor_parser.py:104
+#, python-format
+msgid "Removed %s from your deck."
+msgstr "A carta %s foi removida do seu baralho."
+
+#: ygo/parsers/deck_editor_parser.py:124 ygo/parsers/deck_editor_parser.py:144
+msgid "Not found."
+msgstr "Não achado."
+
+#: ygo/parsers/deck_editor_parser.py:157
+#, python-format
+msgid "monsters (%d):"
+msgstr "Monstros (%d):"
+
+#: ygo/parsers/deck_editor_parser.py:166
+#, python-format
+msgid "spells (%d):"
+msgstr "Magias (%d)"
+
+#: ygo/parsers/deck_editor_parser.py:175
+#, python-format
+msgid "traps (%d):"
+msgstr "Armadilhas (%d):"
+
+#: ygo/parsers/deck_editor_parser.py:184
+#, python-format
+msgid "extra (%d):"
+msgstr "Extra (%d):"
+
+#: ygo/parsers/deck_editor_parser.py:213
+msgid "Quit."
+msgstr "Sair."
+
+#: ygo/parsers/duel_parser.py:29 ygo/parsers/duel_parser.py:44
+#, python-format
+msgid "%s's table:"
+msgstr "Mesa de %s"
+
+#: ygo/parsers/duel_parser.py:32
+msgid "Your table:"
+msgstr "Sua mesa:"
+
+#: ygo/parsers/duel_parser.py:46
+msgid "Opponent's table:"
+msgstr "Mesa do oponente:"
+
+#: ygo/parsers/duel_parser.py:81
+msgid "No one is watching this duel."
+msgstr "Ninguém está assistindo esse duelo."
+
+#: ygo/parsers/duel_parser.py:83
+msgid "People watching this duel:"
+msgstr "Pessoas assistindo esse duelo:"
+
+#: ygo/parsers/duel_parser.py:97
+#, python-format
+msgid "%s has ended the duel."
+msgstr "%s terminou o duelo."
+
+#: ygo/parsers/duel_parser.py:104
+msgid "{player1} has cowardly submitted to {player2}."
+msgstr "{player1} Se rendeu corvardimente a {player2}."
+
+#: ygo/parsers/duel_parser.py:122
+msgid "You need to send some text to this channel."
+msgstr "Você precisa enviar algum texto para este canal."
+
+#: ygo/parsers/lobby_parser.py:32
+msgid "You are now AFK."
+msgstr "Você está agora AFK."
+
+#: ygo/parsers/lobby_parser.py:36
+msgid "You are no longer AFK."
+msgstr "Você não está mais AFK."
+
+#: ygo/parsers/lobby_parser.py:54
+msgid "This command requires more information to operate with."
+msgstr "Este comando requer mais informações para funcionar."
+
+#: ygo/parsers/lobby_parser.py:72
+msgid "Invalid deck command."
+msgstr "Comando de baralho inválido."
+
+#: ygo/parsers/lobby_parser.py:80 ygo/parsers/lobby_parser.py:86
+msgid "Chat on."
+msgstr "Chat ativo."
+
+#: ygo/parsers/lobby_parser.py:82
+msgid "Chat off."
+msgstr "Chat desativado."
+
+#: ygo/parsers/lobby_parser.py:104 ygo/parsers/lobby_parser.py:110
+msgid "{language} talk on."
+msgstr "Conversa em {language} ativa."
+
+#: ygo/parsers/lobby_parser.py:106
+msgid "{language} talk off."
+msgstr "Conversa em {language} desativada."
+
+#: ygo/parsers/lobby_parser.py:126
+msgid "This language is unknown."
+msgstr "Esta língua é desconhecida."
+
+#: ygo/parsers/lobby_parser.py:146 ygo/parsers/lobby_parser.py:153
+msgid "Say on."
+msgstr "Falar ativado."
+
+#: ygo/parsers/lobby_parser.py:148
+msgid "Say off."
+msgstr "Falar desativado."
+
+#: ygo/parsers/lobby_parser.py:170
+#, python-format
+msgid "Invalid filter: %s"
+msgstr "Filtro inválido: %s"
+
+#: ygo/parsers/lobby_parser.py:172
+msgid "Online players:"
+msgstr "Jogadores online:"
+
+#: ygo/parsers/lobby_parser.py:176
+msgid "[AFK]"
+msgstr "[AFK]"
+
+#: ygo/parsers/lobby_parser.py:184
+#, python-format
+msgid "%s (Watching duel with %s and %s)"
+msgstr "%s (assistindo o duelo de %s e %s")
+
+#: ygo/parsers/lobby_parser.py:192
+#, python-format
+msgid "%s (privately dueling %s together with %s"
+msgstr "%s (em duelo privado com %s junto com %s"
+
+#: ygo/parsers/lobby_parser.py:194
+#, python-format
+msgid "%s (dueling %s together with %s)"
+msgstr "%s (em duelo com %s junto com %s)"
+
+#: ygo/parsers/lobby_parser.py:198
+#, python-format
+msgid "%s (privately dueling %s)"
+msgstr "%s (em duelo privado com %s)"
+
+#: ygo/parsers/lobby_parser.py:200
+#, python-format
+msgid "%s (dueling %s)"
+msgstr "%s (em duelo com %s)"
+
+#: ygo/parsers/lobby_parser.py:202
+#, python-format
+msgid "%s (preparing to duel)"
+msgstr "%s (preparando-se para duelar)"
+
+#: ygo/parsers/lobby_parser.py:209
+#, python-format
+msgid "%d online, %d max this reboot."
+msgstr ""
+
+#: ygo/parsers/lobby_parser.py:227
+#, python-format
+msgid "%s is not logged in."
+msgstr "%s não está logado."
+
+#: ygo/parsers/lobby_parser.py:230
+#, python-format
+msgid "%s is already dueling."
+msgstr "%s já está duelando."
+
+#: ygo/parsers/lobby_parser.py:233
+#, python-format
+msgid "%s is currently in a duel room."
+msgstr "%s está atualmente em uma sala de duelo."
+
+#: ygo/parsers/lobby_parser.py:260
+msgid "Goodbye."
+msgstr "Adeus."
+
+#: ygo/parsers/lobby_parser.py:281
+msgid "Incorrect password."
+msgstr "Senha incorreta."
+
+#: ygo/parsers/lobby_parser.py:283 ygo/parsers/lobby_parser.py:289
+msgid "New password:"
+msgstr "Nova Senha."
+
+#: ygo/parsers/lobby_parser.py:288
+msgid "Passwords must be at least 6 characters."
+msgstr "As senhas devem ter pelo menos 6 caracteres."
+
+#: ygo/parsers/lobby_parser.py:291
+msgid "Confirm password:"
+msgstr "Confirmar senha."
+
+#: ygo/parsers/lobby_parser.py:294
+msgid "Passwords don't match."
+msgstr "Essas senhas não são iguais."
+
+#: ygo/parsers/lobby_parser.py:298
+msgid "Password changed."
+msgstr "Senha alterada."
+
+#: ygo/parsers/lobby_parser.py:299
+msgid "Current password:"
+msgstr "Senha atual:"
+
+#: ygo/parsers/lobby_parser.py:308
+msgid "Language set."
+msgstr "Idioma alterado."
+
+#: ygo/parsers/lobby_parser.py:313
+msgid "Encoding is not needed when using the web client."
+msgstr "A codificação não é necessária ao usar o web client."
+
+#: ygo/parsers/lobby_parser.py:320
+msgid "Unknown encoding."
+msgstr "Codificação desconhecida."
+
+#: ygo/parsers/lobby_parser.py:326
+msgid "Encoding set."
+msgstr "Encoding configurada."
+
+#: ygo/parsers/lobby_parser.py:331
+msgid "Websocket server not enabled."
+msgstr "Servidor Websocket não habilitado."
+
+#: ygo/parsers/lobby_parser.py:333
+msgid "Stopping server..."
+msgstr "Parando o servidor ..."
+
+#: ygo/parsers/lobby_parser.py:336
+msgid "Done, restarting."
+msgstr "Concluído, reiniciando."
+
+#: ygo/parsers/lobby_parser.py:344
+msgid "Announce what?"
+msgstr "Anunciar o quê?"
+
+#: ygo/parsers/lobby_parser.py:347
+#, python-format
+msgid "Announcement: %s"
+msgstr "%s anunciou:"
+
+#: ygo/parsers/lobby_parser.py:353
+msgid "Usage: tell <player> <message>"
+msgstr "Uso: tell <player> <message>"
+
+#: ygo/parsers/lobby_parser.py:360 ygo/parsers/lobby_parser.py:432
+#: ygo/parsers/lobby_parser.py:518 ygo/parsers/room_parser.py:360
+#, python-format
+msgid "Multiple players match this name: %s"
+msgstr "Vários jogadores correspondem a este nome: %s"
+
+#: ygo/parsers/lobby_parser.py:363 ygo/parsers/lobby_parser.py:389
+#: ygo/parsers/lobby_parser.py:435
+msgid "That player is not online."
+msgstr "Esse jogador não está online."
+
+#: ygo/parsers/lobby_parser.py:367 ygo/parsers/lobby_parser.py:393
+#, python-format
+msgid "You are ignoring %s."
+msgstr "Você está ignorando %s."
+
+#: ygo/parsers/lobby_parser.py:370 ygo/parsers/lobby_parser.py:396
+#, python-format
+msgid "%s is ignoring you."
+msgstr "%s está ignorando você."
+
+#: ygo/parsers/lobby_parser.py:373 ygo/parsers/lobby_parser.py:399
+#: ygo/parsers/room_parser.py:381
+#, python-format
+msgid "%s is AFK and may not be paying attention."
+msgstr "%s está AUSENTE e pode não estar prestando atenção."
+
+#: ygo/parsers/lobby_parser.py:382
+msgid "Usage: rep0ly <message>"
+msgstr "Uso: reply <mensagem>"
+
+#: ygo/parsers/lobby_parser.py:385
+msgid "No one to reply to."
+msgstr "Ninguém para responder."
+
+#: ygo/parsers/lobby_parser.py:417
+msgid "Watch notification enabled."
+msgstr "Notificação de alerta ativada."
+
+#: ygo/parsers/lobby_parser.py:419
+msgid "Watch notification disabled."
+msgstr "Notificação de alerta desativada."
+
+#: ygo/parsers/lobby_parser.py:423
+msgid "You aren't watching a duel."
+msgstr "Você não está assistindo a um duelo."
+
+#: ygo/parsers/lobby_parser.py:429
+msgid "You are already in a duel."
+msgstr "Você já está em um duelo."
+
+#: ygo/parsers/lobby_parser.py:438
+msgid "That player is not in a duel."
+msgstr "Esse jogador não está em duelo."
+
+#: ygo/parsers/lobby_parser.py:441
+msgid "That duel is private."
+msgstr "Esse duelo é privado."
+
+#: ygo/parsers/lobby_parser.py:450
+msgid "Ignored accounts:"
+msgstr "Contas ignoradas:"
+
+#: ygo/parsers/lobby_parser.py:456
+msgid "You cannot ignore yourself."
+msgstr "Você não pode ignorar a si mesmo."
+
+#: ygo/parsers/lobby_parser.py:460
+msgid "That account doesn't exist. Make sure you enter the full name (no auto-completion for security reasons)."
+msgstr "Essa conta não existe. Certifique-se de digitar o nome completo (sem preenchimento automático por motivos de segurança)."
+
+#: ygo/parsers/lobby_parser.py:467
+#, python-format
+msgid "Ignoring %s."
+msgstr "Ignorando %s."
+
+#: ygo/parsers/lobby_parser.py:471
+#, python-format
+msgid "Stopped ignoring %s."
+msgstr "Parou de ignorar %s."
+
+#: ygo/parsers/lobby_parser.py:480
+msgid "Challenge on."
+msgstr "Desafio ativado."
+
+#: ygo/parsers/lobby_parser.py:482
+msgid "Challenge off."
+msgstr "Desafio desativado."
+
+#: ygo/parsers/lobby_parser.py:509
+msgid "Invalid player name."
+msgstr "Nome de jogador inválido."
+
+#: ygo/parsers/lobby_parser.py:515
+msgid "This player isn't online."
+msgstr "Este jogador não está online."
+
+#: ygo/parsers/lobby_parser.py:524 ygo/parsers/room_parser.py:372
+msgid "You're ignoring this player."
+msgstr "Você está ignorando este jogador."
+
+#: ygo/parsers/lobby_parser.py:526 ygo/parsers/room_parser.py:375
+msgid "This player ignores you."
+msgstr "Este jogador ignora você."
+
+#: ygo/parsers/lobby_parser.py:528
+msgid "This player is currently in a duel."
+msgstr "Este jogador está atualmente em duelo."
+
+#: ygo/parsers/lobby_parser.py:530
+msgid "This player currently doesn't prepare to duel or you may not enter the room."
+msgstr "Este jogador atualmente não se prepara para duelar ou você não pode entrar na sala."
+
+#: ygo/parsers/lobby_parser.py:532
+#, python-format
+msgid "You're currently ignoring %s, who is the owner of this room."
+msgstr "Você está atualmente ignorando%s, que é o dono desta sala."
+
+#: ygo/parsers/lobby_parser.py:534
+#, python-format
+msgid "%s, who is the owner of this room, is ignoring you."
+msgstr "%s, que é o dono desta sala, está ignorando você."
+
+#: ygo/parsers/lobby_parser.py:544
+#, python-format
+    msgid "This server has been running for %s."
+msgstr "Este servidor está sendo executado para %s."
+
+#: ygo/parsers/lobby_parser.py:605
+msgid "No player with that name found."
+msgstr "Nenhum jogador com esse nome foi encontrado."
+
+#: ygo/parsers/lobby_parser.py:610
+#, python-format
+msgid "Finger report for %s"
+msgstr "Estatísticas de %s"
+
+#: ygo/parsers/lobby_parser.py:612
+#, python-format
+msgid "Created on %s"
+msgstr "Criado em %s"
+
+#: ygo/parsers/lobby_parser.py:615
+msgid "Currently logged in"
+msgstr "Conectado atualmente"
+
+#: ygo/parsers/lobby_parser.py:617
+#, python-format
+msgid "Last logged in on %s"
+msgstr "Última vez logado em %s"
+
+#: ygo/parsers/lobby_parser.py:626
+msgid "Duel statistics:"
+msgstr "Estatísticas de duelo:"
+
+#: ygo/parsers/lobby_parser.py:630
+#, python-format
+msgid "%s - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d"
+msgstr "%s - Ganhou: %d, Perdeu: %d, Empatou: %d, Entregou-se: %d"
+
+#: ygo/parsers/lobby_parser.py:637
+#, python-format
+msgid "Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d"
+msgstr "Conclusão - Ganhou: %d, Perdeu: %d, Empatou: %d, Entregou-se: %d"
+
+#: ygo/parsers/lobby_parser.py:642
+#, python-format
+msgid "%.2f%% Success."
+msgstr "%.2f %% Êxito."
+
+#: ygo/parsers/lobby_parser.py:646
+msgid "Reloading languages..."
+msgstr "Recarregando idiomas ..."
+
+#: ygo/parsers/lobby_parser.py:649
+msgid "Success."
+msgstr "Êxito."
+
+#: ygo/parsers/lobby_parser.py:651
+msgid "An error occurred: {error}"
+msgstr "Ocorreu um erro: {error}"
+
+#: ygo/parsers/login_parser.py:102
+msgid "Disconnecting old connection."
+msgstr "Desconectando conexão antiga."
+
+#: ygo/parsers/login_parser.py:111
+msgid "Reconnecting..."
+msgstr "Reconectando ..."
+
+#: ygo/parsers/login_parser.py:113
+#, python-format
+msgid "%s reconnected."
+msgstr "%s reconectado."
+
+#: ygo/parsers/login_parser.py:127
+#, python-format
+msgid "%s logged in."
+msgstr "%s conectou-se."
+
+#: ygo/parsers/room_parser.py:13
+msgid "Enter ? to show all commands and room preferences"
+msgstr "Enter para mostrar todos os comandos e preferências"
+
+#: ygo/parsers/room_parser.py:16
+msgid "This command isn't available right now."
+msgstr "Este comando não está disponível agora."
+
+#: ygo/parsers/room_parser.py:36
+msgid "The following settings are defined for this room:"
+msgstr "As seguintes configurações estão definidas para esta sala:"
+
+#: ygo/parsers/room_parser.py:38
+#, python-format
+msgid "Banlist: %s"
+msgstr "Banlist: %s"
+
+#: ygo/parsers/room_parser.py:40
+    msgid "Duel Rules:"
+msgstr "Regras do Duelo:"
+
+#: ygo/parsers/room_parser.py:43 ygo/parsers/room_parser.py:207
+msgid "Link"
+msgstr "Link"
+
+#: ygo/parsers/room_parser.py:45 ygo/parsers/room_parser.py:205
+msgid "Traditional"
+msgstr "Traditional"
+
+#: ygo/parsers/room_parser.py:47 ygo/parsers/room_parser.py:203
+msgid "Default"
+msgstr "Difault"
+
+#: ygo/parsers/room_parser.py:51
+#, python-format
+msgid "Lifepoints - %s: %d, %s: %d"
+msgstr "Pontos de vida - %s: %d, %s: %d"
+
+#: ygo/parsers/room_parser.py:51 ygo/parsers/room_parser.py:132
+#: ygo/parsers/room_parser.py:134 ygo/parsers/room_parser.py:161
+#: ygo/parsers/room_parser.py:163 ygo/parsers/room_parser.py:399
+#, python-format
+msgid "team %d"
+msgstr "Equipe %d"
+
+#: ygo/parsers/room_parser.py:53
+#, python-format
+msgid "Privacy: %s"
+msgstr "Privacidade: %s"
+
+#: ygo/parsers/room_parser.py:53
+msgid "private"
+msgstr "Privada"
+
+#: ygo/parsers/room_parser.py:53
+msgid "public"
+msgstr "Pública"
+
+#: ygo/parsers/room_parser.py:55
+msgid "The following commands are available for you:"
+msgstr "Os seguintes comandos estão disponíveis para você:"
+
+#: ygo/parsers/room_parser.py:58
+msgid "banlist - define banlist"
+msgstr "Banlist - define banlist"
+
+#: ygo/parsers/room_parser.py:59
+msgid "finish - finish room creation and open it to other players"
+msgstr "finish - termina a criação da sala e abre para outros jogadores"
+
+#: ygo/parsers/room_parser.py:60
+msgid "lifepoints - set lifepoints per team"
+msgstr "lifepoints - definir pontos de vida por equipe" msgid "lifepoints - set lifepoints per team"
+
+#: ygo/parsers/room_parser.py:61
+msgid "private - toggles privacy"
+msgstr "private - alterna a privacidade"
+
+#: ygo/parsers/room_parser.py:62
+msgid "rules - define duel rules"
+msgstr "rules - definir regras de duelo"
+
+#: ygo/parsers/room_parser.py:63
+msgid "save - save settings for all your future rooms"
+msgstr "save - salvar configurações para todas as novas salas de duelo criadas por você"
+
+#: ygo/parsers/room_parser.py:66
+msgid "deck - select a deck to duel with"
+msgstr "deck - seleciona um deck para duelar"
+
+#: ygo/parsers/room_parser.py:67
+msgid "move - move yourself into a team of your choice"
+msgstr "move - mova-se para uma equipe de sua escolha"
+
+#: ygo/parsers/room_parser.py:68
+msgid "teams - show teams and associated players"
+msgstr "teams - mostra equipes e jogadores associados""
+
+#: ygo/parsers/room_parser.py:71
+msgid "invite - invite player into this room"
+msgstr "envite - convida jogador para esta sala"
+
+#: ygo/parsers/room_parser.py:72
+msgid "start - start duel with current teams"
+msgstr "Starte - Inicia duelo com as equipes atuais"
+
+#: ygo/parsers/room_parser.py:75
+msgid "leave - leave this room and close it"
+msgstr "Leave - Sai da sala e a fecha"
+
+#: ygo/parsers/room_parser.py:77
+msgid "leave - leave this room"
+msgstr "Leave - Sai da sala"
+
+#: ygo/parsers/room_parser.py:87
+msgid "You finished the room setup."
+msgstr "Você terminou a configuração da sala."
+
+#: ygo/parsers/room_parser.py:90
+msgid "You can now invite players to join this room."
+msgstr "Agora você pode convidar jogadores para entrar nesta sala."
+
+#: ygo/parsers/room_parser.py:92
+msgid "Players can now join this room, or you can invite them to join you."
+msgstr "Agora os jogadores podem entrar nesta sala, ou você pode convidá-los para se juntar a você."
+
+#: ygo/parsers/room_parser.py:93
+msgid "{player} created a new duel room."
+msgstr "{player} criou uma nova sala de duelo."
+
+#: ygo/parsers/room_parser.py:110
+msgid "You can set the banlist to ocg or tcg, which will automatically select the newest tcg/ocg banlist for you."
+msgstr "Você pode definir a banlist como ocg ou tcg, que selecionará automaticamente a mais nova banlist tcg / ocg para você."
+
+#: ygo/parsers/room_parser.py:112
+msgid "You can also set the banlist to none or one of the following:"
+msgstr "Você também pode definir a banlist como nenhum ou uma das seguintes:"
+
+#: ygo/parsers/room_parser.py:116
+msgid "Invalid banlist specified."
+msgstr "A Lista de banimento especificada é inválida."
+
+#: ygo/parsers/room_parser.py:120
+#, python-format
+msgid "The banlist for this room was set to %s."
+msgstr "A lista de proibições para esta sala foi ajustada para %s."
+
+#: ygo/parsers/room_parser.py:122
+msgid "This game doesn't know this banlist. Check the banlist command to get all possible arguments to this command."
+msgstr "Este jogo não conhece esta banlist. Verifique o comando banlist para obter todos os argumentos possíveis para este comando."
+
+#: ygo/parsers/room_parser.py:132
+#, python-format
+msgid "No players in %s."
+msgstr "Nenhum jogador em %s."
+
+#: ygo/parsers/room_parser.py:134
+#, python-format
+msgid "Players in %s: %s"
+msgstr "Jogadores em %s: %s"
+
+#: ygo/parsers/room_parser.py:137
+msgid "No remaining players in this room."
+msgstr "Nenhum jogador restante nesta sala."
+
+#: ygo/parsers/room_parser.py:139
+#, python-format
+msgid "Players not yet in a team: %s"
+msgstr "Jogadores que ainda não estão em um time:% s"
+
+#: ygo/parsers/room_parser.py:148
+msgid "You can move yourself into team 0, 1 or 2, where 0 means that you remove yourself from any team."
+msgstr "Você pode se mover para a equipe 0, 1 ou 2, onde 0 significa que você se remove de qualquer equipe."
+
+#: ygo/parsers/room_parser.py:155
+msgid "You were removed from any team."
+msgstr "Você não tem equipe."
+
+#: ygo/parsers/room_parser.py:157
+#, python-format
+msgid "%s was removed from any team."
+msgstr "%s não tem equipe."
+
+#: ygo/parsers/room_parser.py:161
+#, python-format
+msgid "You were moved into %s."
+msgstr "Você moveuce para %s."
+
+#: ygo/parsers/room_parser.py:163
+#, python-format
+msgid "%s was moved into %s."
+msgstr "%s moveu-se para %s."
+
+#: ygo/parsers/room_parser.py:174
+msgid "This room is now private."
+msgstr "Esta sala é agora privada."
+
+#: ygo/parsers/room_parser.py:176
+msgid "This room is now public."
+msgstr "Esta sala agora é pública."
+
+#: ygo/parsers/room_parser.py:185
+msgid "Following rules can be defined:"
+msgstr "As seguintes regras podem ser definidas:"
+
+#: ygo/parsers/room_parser.py:186
+msgid "Default - The default duelling behaviour before link summons came in"
+msgstr "Padrão - O comportamento de duelo padrão."
+
+#: ygo/parsers/room_parser.py:187
+msgid "Link - Enable link summons"
+msgstr "Link - Habilitar convocação de links"
+
+#: ygo/parsers/room_parser.py:188
+msgid "Traditional - Duel rules from the first days of Yu-Gi-Oh"
+msgstr "Tradicional - regras de duelo dos primeiros dias de Yu-Gi-Oh"
+
+#: ygo/parsers/room_parser.py:190
+msgid "Invalid duel rules specified. See rules command to get the possible arguments."
+msgstr "Regras de duelo especificadas inválidas. Veja o comando de regras para obter os possíveis argumentos."
+
+#: ygo/parsers/room_parser.py:200
+#, python-format
+msgid "Duel rules were set to %s."
+msgstr "Regras de duelo foram definidas para% s."
+
+#: ygo/parsers/room_parser.py:234
+msgid "Deck doesn't exist."
+msgstr "Esse baralho não existe."
+
+#: ygo/parsers/room_parser.py:250
+#, python-format
+msgid "Your main deck must contain between 40 and 200 cards (currently %d)."
+msgstr "O seu baralho principal deve conter entre 40 e 200 cartas (atualmente %d)."
+
+#: ygo/parsers/room_parser.py:254
+#, python-format
+msgid "Your extra deck may not contain more than 15 cards (currently %d)."
+msgstr "O seu baralho extra não pode conter mais de 15 cartas (atualmente% d)."
+
+#: ygo/parsers/room_parser.py:274
+#, python-format
+msgid "Deck loaded with %d cards."
+msgstr "Baralho carregado com %d cartas."
+
+#: ygo/parsers/room_parser.py:278
+#, python-format
+msgid "%s loaded a deck."
+msgstr "%s carregou um baralho."
+
+#: ygo/parsers/room_parser.py:289
+msgid "Both teams must have the same amount of players."
+msgstr "Ambas as equipes devem ter a mesma quantidade de jogadores."
+
+#: ygo/parsers/room_parser.py:293
+msgid "Both teams may only have one or two players."
+msgstr "Ambas as equipas podem ter apenas um ou dois jogadores."
+
+#: ygo/parsers/room_parser.py:299
+#, python-format
+msgid "%s doesn't have a deck loaded yet."
+msgstr "%s ainda não tem um baralho carregado."
+
+#: ygo/parsers/room_parser.py:308
+msgid "You start the duel."
+msgstr "Você inicia o duelo."
+
+#: ygo/parsers/room_parser.py:310
+#, python-format
+msgid "%s starts the duel."
+msgstr "%s inicia o duelo."
+
+#: ygo/parsers/room_parser.py:325
+msgid "The duel between {player1} and {player2} has begun!"
+msgstr "O duelo entre {player1} e {player2} acaba de começar!"
+
+#: ygo/parsers/room_parser.py:347
+msgid "You can invite any player to join this room. Simply type invite <player> to do so."
+msgstr "Você pode convidar qualquer jogador para entrar nesta sala. Simplesmente digite envite <player> para fazer isso."
+
+#: ygo/parsers/room_parser.py:351 ygo/parsers/room_parser.py:357
+msgid "No player with this name found."
+msgstr "Nenhum jogador com este nome foi encontrado."
+
+#: ygo/parsers/room_parser.py:366
+msgid "This player is already in a duel."
+msgstr "Este jogador já está em duelo."
+
+#: ygo/parsers/room_parser.py:369
+msgid "This player is already preparing to duel."
+msgstr "Este jogador já está se preparando para duelar."
+
+#: ygo/parsers/room_parser.py:383
+#, python-format
+msgid "%s invites you to join his duel room. Type join %s to do so."
+msgstr "%s convida você a se juntar à sua sala de duelo. Digite join %s para fazer isso."
+
+#: ygo/parsers/room_parser.py:385
+#, python-format
+msgid "An invitation was sent to %s."
+msgstr "Um convite foi enviado para %s."
+
+#: ygo/parsers/room_parser.py:394
+msgid "Usage: lifepoints <team> <lp>"
+msgstr "Uso: lifepoints <team> <lp>"
+
+#: ygo/parsers/room_parser.py:399
+#, python-format
+msgid "Lifepoints for %s set to %d."
+msgstr "Pontos de vida para %s definido como %d."
+
+#: ygo/parsers/room_parser.py:412
+msgid "Settings saved."
+msgstr "Configurações salvas".
+
+#: ygo/parsers/yes_or_no_parser.py:25
+msgid "Please enter y or n."
+msgstr "Por favor digite y ou n."
