@@ -52,6 +52,7 @@ def list(caller):
 
 		if room.creator is pl:
 			pl.notify(pl._("invite - invite player into this room"))
+			pl.notify(pl._("remove - remove player from this room"))
 			pl.notify(pl._("start - start duel with current teams"))
 
 	if room.creator is pl:
@@ -399,7 +400,7 @@ def lifepoints(caller):
 	
 	pl.notify(pl._("Lifepoints for %s set to %d.")%(pl._("team %d")%(int(caller.args[0])), room.lp[int(caller.args[0])-1]))
 
-@RoomParser.command(names=['save'])
+@RoomParser.command(names=['save'], allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
 def save(caller):
 
 	con = caller.connection
@@ -411,3 +412,47 @@ def save(caller):
 	con.session.commit()
 	
 	con.notify(con._("Settings saved."))
+
+@RoomParser.command(names=["remove"], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
+def remove(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+
+	if len(caller.args) == 0:
+		pl.notify(pl._("You can remove any player from this room, except yourself. Type remove <player> to do so."))
+		return
+	
+	if caller.args[0] is None:
+		pl.notify(pl._("No player with this name found."))
+		return
+
+	players = globals.server.guess_players(caller.args[0], pl.nickname)
+
+	if len(players) == 0:
+		pl.notify(pl._("No player with this name found."))
+		return
+	elif len(players)>1:
+		pl.notify(pl._("Multiple players match this name: %s")%(', '.join([p.nickname for p in players])))
+		return
+
+	target = players[0]
+	
+	if target is pl:
+		pl.notify(pl._("You cannot remove yourself from this room."))
+		return
+
+	if target.room is not pl.room:
+		pl.notify(pl._("{0} is currently not in this room.").format(target.nickname))
+		return
+	
+	pl.notify(pl._("You ask {0} friendly to leave this room.").format(target.nickname))
+
+	target.notify(target._("{0} asks you friendly to leave the room.").format(pl.nickname))
+
+	for p in room.get_all_players():
+		if p is target or p is pl:
+			continue
+		p.notify(p._("{0} asks {1} friendly to leave this room.").format(pl.nickname, target.nickname))
+
+	room.leave(target)
