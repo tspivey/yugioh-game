@@ -1,4 +1,5 @@
-from .card import Card, CardNotFound
+from .card import Card
+from .exceptions import CardNotFoundError
 
 class Banlist:
 	def __init__(self, name):
@@ -17,7 +18,7 @@ class Banlist:
 		for c in cards:
 			try:
 				card_objects.append(Card(c))
-			except CardNotFound:
+			except CardNotFoundError:
 				continue
 
 		for card in card_objects:
