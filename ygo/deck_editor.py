@@ -316,7 +316,7 @@ class DeckEditor:
 			self.player.notify(self.player._("This banlist is unknown."))
 			return
 
-		errors = globals.banlists[banlist].check(deck)
+		errors = globals.banlists[banlist].check_and_resolve(deck)
 
 		for err in errors:
 			self.player.notify(self.player._("%s: limit %d, found %d.") % (err[0].get_name(self.player), err[1], err[2]))
