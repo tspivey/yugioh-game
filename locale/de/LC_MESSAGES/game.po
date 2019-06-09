@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-06-08 22:32+0200\n"
+"POT-Creation-Date: 2019-06-09 19:12+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -843,14 +843,12 @@ msgid "{spec} ({name}) selected {value}."
 msgstr "Für {spec} ({name}) wurde {value} gewählt."
 
 #: ygo/message_handlers/chaining.py:34
-#, python-format
-msgid "Activating %s"
-msgstr "Aktiviere %s"
+msgid "Activating {0} ({1})"
+msgstr "Aktiviere {0} ({1})"
 
 #: ygo/message_handlers/chaining.py:35 ygo/message_handlers/chaining.py:43
-#, python-format
-msgid "%s activating %s"
-msgstr "%s aktiviert %s"
+msgid "{0} activating {1} ({2})"
+msgstr "{0} aktiviert {1} ({2})"
 
 #: ygo/message_handlers/confirm_cards.py:23
 msgid "{player} shows you {count} cards."
@@ -2364,4 +2362,10 @@ msgstr "Gib y oder n ein"
 
 #~ msgid "{0} (compatible with no banlist)"
 #~ msgstr "{0} (mit keiner Bannliste kompatibel)"
+
+#~ msgid "Activating %s"
+#~ msgstr "Aktiviere %s"
+
+#~ msgid "%s activating %s"
+#~ msgstr "%s aktiviert %s"
 
