@@ -262,7 +262,7 @@ def deck(caller):
 
 	# check against selected banlist
 	if room.get_banlist() != 'none':
-		errors = globals.banlists[room.get_banlist()].check(content['cards'])
+		errors = globals.banlists[room.get_banlist()].check_and_resolve(content['cards'])
 
 		for err in errors:
 			pl.notify(pl._("%s: limit %d, found %d.") % (err[0].get_name(pl), err[1], err[2]))
