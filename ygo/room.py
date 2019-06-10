@@ -29,10 +29,8 @@ class Room:
 			self.invitations.remove(player.nickname)
 		for pl in self.get_all_players():
 			if pl is player:
-				if player is self.creator:
-					player.notify(player._("You joined your new room. You need to finish the setup to make it available to the other players."))
-				else:
-					pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
+				pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
+				self.show(pl)
 			else:
 				pl.notify(pl._("%s joined this room.")%(player.nickname))
 

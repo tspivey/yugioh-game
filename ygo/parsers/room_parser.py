@@ -364,7 +364,7 @@ def invite(caller):
 
 	target = players[0]
 
-	if target.duel is not None:
+	if target.duel is not None and (target in target.duel.players or target in target.duel.tag_players):
 		pl.notify(pl._("This player is already in a duel."))
 		return
 	elif target.room is not None:
