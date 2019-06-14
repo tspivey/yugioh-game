@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-06-09 19:12+0200\n"
+"POT-Creation-Date: 2019-06-14 15:47+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -17,6 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
+
+#: ygo/banlist.py:133
+msgid "Forbidden cards (not allowed at all):"
+msgstr "Verbotene Karten (nicht im Deck erlaubt):"
+
+#: ygo/banlist.py:137
+msgid "Limited cards (only allowed once):"
+msgstr "Limitierte Karten (nur ein Mal im Deck erlaubt):"
+
+#: ygo/banlist.py:141
+msgid "Semi-limited cards (only allowed twice):"
+msgstr "Semi-limitierte Karten (zwei Mal im Deck erlaubt):"
 
 #: ygo/card.py:73
 msgid "Activate this card."
@@ -168,11 +180,11 @@ msgstr "Keine Decks gefunden."
 msgid "You own %d decks:"
 msgstr "Du besitzt %d Decks."
 
-#: ygo/deck_editor.py:31 ygo/room.py:134
+#: ygo/deck_editor.py:31 ygo/room.py:132
 msgid "public"
 msgstr "öffentlich"
 
-#: ygo/deck_editor.py:33 ygo/room.py:134
+#: ygo/deck_editor.py:33 ygo/room.py:132
 msgid "private"
 msgstr "privat"
 
@@ -278,11 +290,11 @@ msgstr "Dieses Deck existiert bereits."
 msgid "Deck created."
 msgstr "Deck erstellt."
 
-#: ygo/deck_editor.py:308
+#: ygo/deck_editor.py:308 ygo/parsers/lobby_parser.py:737
 msgid "The following banlists are available (from newest to oldest):"
 msgstr "Die folgenden Bannlisten sind verfügbar (neu nach alt):"
 
-#: ygo/deck_editor.py:316
+#: ygo/deck_editor.py:316 ygo/parsers/lobby_parser.py:747
 msgid "This banlist is unknown."
 msgstr "Diese Bannliste ist unbekannt."
 
@@ -580,79 +592,75 @@ msgstr "Dieses Duell ist derzeit pausiert, da nicht alle Duellanten verbunden si
 msgid "No help topic."
 msgstr "Keine Hilfeseite gefunden."
 
-#: ygo/room.py:33
-msgid "You joined your new room. You need to finish the setup to make it available to the other players."
-msgstr "Du hast Deinen neuen Raum betreten. Du musst die Einrichtung abschließen, um ihn für andere Spieler zugänglich zu machen."
-
-#: ygo/room.py:35
+#: ygo/room.py:32
 #, python-format
 msgid "You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel."
 msgstr "Du hast den Raum von %s betreten. Benutze die Befehle move und teams, um die Teams einzusehen und dich in eines zu bewegen, oder warte einfach, um ein Zuschauer zu sein."
 
-#: ygo/room.py:37
+#: ygo/room.py:35
 #, python-format
 msgid "%s joined this room."
 msgstr "%s betritt den Raum."
 
-#: ygo/room.py:55
+#: ygo/room.py:53
 msgid "You left the room."
 msgstr "Du hast den Raum verlassen."
 
-#: ygo/room.py:58
+#: ygo/room.py:56
 #, python-format
 msgid "%s left this room."
 msgstr "%s hat den Raum verlassen."
 
-#: ygo/room.py:68
+#: ygo/room.py:66
 msgid "The room creator disbanded the room."
 msgstr "Der Raumbesitzer hat den Raum aufgelöst."
 
-#: ygo/room.py:70
+#: ygo/room.py:68
 msgid "The room was disbanded."
 msgstr "Der Raum wurde aufgelöst."
 
-#: ygo/room.py:73
+#: ygo/room.py:71
 msgid "{player} disbanded their duel room."
 msgstr "{player} hat seinen Duellraum aufgelöst."
 
-#: ygo/room.py:117
+#: ygo/room.py:115
 msgid "The following settings are defined for this room:"
 msgstr "Die folgenden Einstellungen wurden für diesen Raum definiert:"
 
-#: ygo/room.py:119
+#: ygo/room.py:117
 #, python-format
 msgid "Banlist: %s"
 msgstr "Banliste: %s"
 
-#: ygo/room.py:121
+#: ygo/room.py:119
 msgid "Duel Rules:"
 msgstr "Duellregeln:"
 
-#: ygo/parsers/room_parser.py:191 ygo/room.py:124
+#: ygo/parsers/room_parser.py:191 ygo/room.py:122
 msgid "Link"
 msgstr "Linkregeln"
 
-#: ygo/parsers/room_parser.py:189 ygo/room.py:126
+#: ygo/parsers/room_parser.py:189 ygo/room.py:124
 msgid "Traditional"
 msgstr "traditionelle Regeln"
 
-#: ygo/parsers/room_parser.py:187 ygo/room.py:128
+#: ygo/parsers/room_parser.py:187 ygo/room.py:126
 msgid "Default"
 msgstr "Standardregeln"
 
-#: ygo/room.py:132
+#: ygo/room.py:130
 #, python-format
 msgid "Lifepoints - %s: %d, %s: %d"
 msgstr "Lebenspunkte - %s: %d, %s: %d"
 
 #: ygo/parsers/room_parser.py:116 ygo/parsers/room_parser.py:118
 #: ygo/parsers/room_parser.py:145 ygo/parsers/room_parser.py:147
-#: ygo/parsers/room_parser.py:401 ygo/room.py:132
+#: ygo/parsers/room_parser.py:401 ygo/room.py:130
 #, python-format
 msgid "team %d"
 msgstr "Gruppe %d"
 
-#: ygo/room.py:134
+#: ygo/room.py:132
 #, python-format
 msgid "Privacy: %s"
 msgstr "Privatsphäre: %s"
@@ -2368,4 +2376,7 @@ msgstr "Gib y oder n ein"
 
 #~ msgid "%s activating %s"
 #~ msgstr "%s aktiviert %s"
+
+#~ msgid "You joined your new room. You need to finish the setup to make it available to the other players."
+#~ msgstr "Du hast Deinen neuen Raum betreten. Du musst die Einrichtung abschließen, um ihn für andere Spieler zugänglich zu machen."
 
