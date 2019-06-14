@@ -8,6 +8,9 @@ deck copy quelle=ziel - kopiert ein Deck namens quelle und speichert es unter de
 deck draw deck=anzahl - simuliert das Ziehen zufälliger Karten von einem Deck. Anzahl ist die Anzahl zu ziehender Karten.
 deck view deckname - zeigt eine Liste aller in deckname enthaltenen Karten.
 
+banlist - listet alle im Spiel verfügbaren Bannlisten auf
+banlist name - zeigt Dir alle verbotenen, limitierten und semi-limitierten Karten einer Bannliste an.
+
 Befehle im Deck Editor:
 /text - suche nach text.
 Beispiel: /magier

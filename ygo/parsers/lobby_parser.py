@@ -727,6 +727,28 @@ def reloadlanguages(caller):
 	else:
 		caller.connection.notify(caller.connection._("An error occurred: {error}").format(error = success))
 
+@LobbyParser.command(names=["banlist"], args_regexp='([a-zA-Z0-9\.\- ]+)?')
+def banlist(caller):
+
+	pl = caller.connection.player
+	
+	if len(caller.args) == 0 or caller.args[0] is None:
+
+		pl.notify(pl._("The following banlists are available (from newest to oldest):"))
+
+		for k in globals.banlists.keys():
+			pl.notify(k)
+
+		return
+		
+	banlist = caller.args[0].lower()
+
+	if banlist not in globals.banlists:
+		pl.notify(pl._("This banlist is unknown."))
+		return
+
+	globals.banlists[banlist].show(pl)
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DeckEditorParser.commands:

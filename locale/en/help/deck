@@ -8,6 +8,9 @@ deck copy source=destination - copies a deckand saves it under a new name.
 deck draw deck=amount - simulates a draw from your deck. amount is the amount of cards you want to draw.
 deck view deckname - shows the list of all cards in deckname.
 
+banlist - lists all banlists available
+banlist name - shows all forbidden, limited and semi-limited cards of a specific banlist
+
 Deck editing commands:
 /text - search for text.
 Example: /magician
