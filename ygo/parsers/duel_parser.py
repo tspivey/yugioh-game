@@ -1,11 +1,10 @@
-import gsb
 import natsort
 
 from ..constants import *
-from ..constants import __
 from .. import globals
+from .. import parser
 
-DuelParser = gsb.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
+DuelParser = parser.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 
 @DuelParser.command(names=['h', 'hand'])
 def hand(caller):

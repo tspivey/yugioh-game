@@ -14,7 +14,7 @@ from . import callback_manager
 from .card import Card
 from .constants import *
 from .duel_reader import DuelReader
-from .utils import process_duel
+from .utils import process_duel, handle_error
 from . import globals
 from . import message_handlers
 from .channels.say import Say
@@ -239,6 +239,7 @@ class Duel:
 		data = self.process_messages(data)
 		return res
 
+	@handle_error
 	def process_messages(self, data):
 		while data:
 			msg = int(data[0])

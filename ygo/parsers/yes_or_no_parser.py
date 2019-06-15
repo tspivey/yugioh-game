@@ -1,8 +1,7 @@
-import gsb
-
 from .duel_parser import DuelParser
+from .. import parser
 
-class yes_or_no_parser(gsb.Parser):
+class yes_or_no_parser(parser.Parser):
 
 	def __init__(self, question, yes=None, no=None, restore_parser=None, *args, **kwargs):
 		self.question = question

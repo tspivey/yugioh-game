@@ -6,8 +6,9 @@ from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME, __
 from ..duel import Duel
 from .. import globals
 from .. import models
+from .. import parser
 
-class room_parser(gsb.Parser):
+class room_parser(parser.Parser):
 
 	def prompt(self, connection):
 		connection.notify(connection._("Enter ? to show all commands and room preferences"))

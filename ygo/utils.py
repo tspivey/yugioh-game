@@ -2,9 +2,11 @@ import collections
 import natsort
 import os.path
 import sys
+import traceback
 
 from _duel import ffi, lib
 from .banlist import Banlist
+from . import globals
 
 def parse_lflist(filename):
 
@@ -90,3 +92,25 @@ def parse_ints(text):
 
 def get_root_directory():
 	return os.path.dirname(os.path.abspath(sys.argv[0]))
+
+def forward_error():
+	
+	players = globals.server.get_all_players()
+	
+	players = [p for p in players if p.is_admin]
+
+	exc = traceback.format_exc()
+
+	for pl in players:
+	
+		pl.notify(pl._("A critical error was encountered."))
+		pl.notify(exc)
+
+def handle_error(f):
+	def catch(*args, **kwargs):
+		try:
+			return f(*args, **kwargs)
+		except Exception as e:
+			forward_error()
+			raise e
+	return catch
