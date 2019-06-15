@@ -1,10 +1,9 @@
-import gsb
-
 from ..card import Card
 from ..constants import COMMAND_SUBSTITUTIONS
 from .. import globals
+from .. import parser
 
-class deck_editor_parser(gsb.Parser):
+class deck_editor_parser(parser.Parser):
 
 	def huh(self, caller):
 		caller.connection.notify(caller.connection._("Invalid command."))

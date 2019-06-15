@@ -2,7 +2,6 @@ from babel.dates import format_timedelta, format_date
 import codecs
 import collections
 import datetime
-import gsb
 from gsb.intercept import Reader
 import json
 import natsort
@@ -14,6 +13,7 @@ from twisted.python import log
 from ..constants import *
 from ..duel import Duel
 from .. import globals
+from .. import parser
 from ..room import Room
 from ..utils import process_duel, process_duel_replay
 from ..websockets import start_websocket_server
@@ -24,7 +24,7 @@ from .. import models
 
 __ = lambda x: x
 
-LobbyParser = gsb.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
+LobbyParser = parser.Parser(command_substitutions=COMMAND_SUBSTITUTIONS)
 
 @LobbyParser.command(names=['afk'])
 def afk(caller):

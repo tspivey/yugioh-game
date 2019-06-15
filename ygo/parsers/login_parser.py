@@ -1,14 +1,15 @@
+import gsb
 import os
 import re
 from sqlalchemy import func
-import gsb
 
 from ..constants import RE_NICKNAME
 from .. import globals
 from .. import models
+from .. import parser
 from ..player import Player
 
-class login_parser(gsb.Parser):
+class login_parser(parser.Parser):
 
 	nickname_re = re.compile(RE_NICKNAME)
 
