@@ -1,6 +1,7 @@
 import natsort
 
 from ..constants import *
+from ..constants import __
 from .. import globals
 from .. import parser
 
