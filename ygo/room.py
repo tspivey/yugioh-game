@@ -72,7 +72,7 @@ class Room:
 
 	def set_banlist(self, list):
 
-		if list.lower() != 'tcg' and list.lower() != 'ocg' and list.lower() != 'none' and not list.lower() in globals.lflist or self.open:
+		if list.lower() != 'tcg' and list.lower() != 'ocg' and list.lower() != 'none' and not list.lower() in globals.banlists or self.open:
 			return False
 		else:
 			self.banlist = list.lower()
