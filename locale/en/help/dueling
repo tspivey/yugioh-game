@@ -14,6 +14,7 @@ showhand - shows all other players and watchers your hand (useful for newbies).
 giveup - end the current duel and add a giveup to both player's statistics.
 scoop - end the current duel, but your opponent wins and you lose.
 
+invite - invites a player to watch this duel (even if the duel is private)
 watchers - shows the list of watching players
 say - writes a message to all players duelling/watching this duel.
 tag - writes to your tag team members only.
