@@ -246,9 +246,21 @@ def deck(caller):
 	# we parsed the deck now we execute several checks
 
 	# we filter all invalid cards first
-	invalid_cards = pl.get_invalid_cards_in_deck(content['cards'])
-	content['cards'] = [c for c in content['cards'] if c not in invalid_cards]
-	if len(invalid_cards):
+	found = False
+
+	invalid_cards = pl.get_invalid_cards_in_deck(content.get('cards', []))
+
+	if invalid_cards:
+		content['cards'] = [c for c in content['cards'] if c not in invalid_cards]
+		found = True
+
+	invalid_cards = pl.get_invalid_cards_in_deck(content.get('side', []))
+
+	if invalid_cards:
+		content['side'] = [c for c in content['side'] if c not in invalid_cards]
+		found = True
+
+	if found:
 		pl.notify(pl._("Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."))
 
 	# we check card limits first
@@ -261,9 +273,13 @@ def deck(caller):
 		pl.notify(pl._("Your extra deck may not contain more than 15 cards (currently %d).")%extra)
 		return
 
+	if len(content.get('side', [])) > 15:
+		pl.notify(pl._("Your side deck may not contain more than 15 cards (currently %d).")%len(content.get('side', [])))
+		return
+
 	# check against selected banlist
 	if room.get_banlist() != 'none':
-		errors = globals.banlists[room.get_banlist()].check_and_resolve(content['cards'])
+		errors = globals.banlists[room.get_banlist()].check_and_resolve(content.get('cards', []) + content.get('side', []))
 
 		for err in errors:
 			pl.notify(pl._("%s: limit %d, found %d.") % (err[0].get_name(pl), err[1], err[2]))

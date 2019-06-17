@@ -74,7 +74,9 @@ def deck(caller):
 			banlist_text = pl._("compatible with no banlist")
 			
 			for b in globals.banlists.values():
-				if len(b.check(json.loads(d.content)['cards'])) == 0:
+				content = json.loads(d.content)
+
+				if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
 					banlist_text = pl._("compatible with {0} banlist").format(b.name)
 					break
 

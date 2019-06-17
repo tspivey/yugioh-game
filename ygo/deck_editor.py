@@ -35,7 +35,8 @@ class DeckEditor:
 			banlist_text = self.player._("compatible with no banlist")
 
 			for b in globals.banlists.values():
-				if len(b.check(json.loads(deck.content)['cards'])) == 0:
+				content = json.loads(deck.content)
+				if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
 					banlist_text = self.player._("compatible with {0} banlist").format(b.name)
 					break
 
@@ -48,7 +49,7 @@ class DeckEditor:
 		if not deck:
 			self.player.notify(self.player._("Deck not found."))
 			return
-		deck.content = json.dumps({'cards': []})
+		deck.content = json.dumps({'cards': [], 'side': []})
 		session.commit()
 		self.player.notify(self.player._("Deck cleared."))
 
@@ -195,10 +196,24 @@ class DeckEditor:
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
-			invalid_cards = con.player.get_invalid_cards_in_deck()
-			con.player.deck['cards'] = [c for c in con.player.deck['cards'] if c not in invalid_cards]
+
+			found = False
+
+			invalid_cards = con.player.get_invalid_cards_in_deck(con.player.deck.get('cards', []))
+
 			if len(invalid_cards):
+				con.player.deck['cards'] = [c for c in con.player.deck['cards'] if c not in invalid_cards]
+				found = True
+
+			invalid_cards = con.player.get_invalid_cards_in_deck(con.player.deck.get('side', []))
+
+			if len(invalid_cards):
+				con.player.deck['side'] = [c for c in con.player.deck['side'] if c not in invalid_cards]
+				found = True
+
+			if found:
 				con.notify(con._("Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."))
+
 		else:
 			con.notify(con._("Creating new deck %s.") % deck_name)
 		self.deck_name = deck_name
@@ -297,7 +312,7 @@ class DeckEditor:
 			return
 		deck = models.Deck(account_id=account.id, name=name)
 		account.decks.append(deck)
-		deck.content = json.dumps({'cards': []})
+		deck.content = json.dumps({'cards': [], 'side': []})
 		session.commit()
 		self.player.notify(self.player._("Deck created."))
 
@@ -331,7 +346,8 @@ class DeckEditor:
 			possible_cards = globals.language_handler.primary_database.execute('SELECT id FROM datas WHERE id = ? OR alias = ? OR id = ?', (code, card.alias, card.alias, )).fetchall()
 		found = 0
 		for c in possible_cards:
-			found += self.player.deck['cards'].count(c[0])
+			found += self.player.deck.get('cards', []).count(c[0])
+			found += self.player.deck.get('side', []).count(c[0])
 		return found
 
 	def deck_import(self, args):
