@@ -514,9 +514,10 @@ def watch(caller):
 	elif not players[0].duel:
 		con.notify(con._("That player is not in a duel."))
 		return
-	elif players[0].duel.private:
-		con.notify(con._("That duel is private."))
+	elif players[0].duel.private and not players[0].duel.can_join(con.player):
+		con.notify(con._("That duel is private and you don't have an invitation to watch it."))
 		return
+	players[0].duel.join(con.player)
 	players[0].duel.add_watcher(con.player, players[0].duel_player)
 
 @LobbyParser.command(args_regexp=r'(.*)')

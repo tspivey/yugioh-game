@@ -170,3 +170,56 @@ def showhand(caller):
 			continue
 		player.notify(player._("%s shows you their hand:") % pl.nickname)
 		pl.duel.show_cards_in_location(player, pl.duel_player, LOCATION_HAND, False)
+
+@DuelParser.command(names=["invite"], args_regexp=RE_NICKNAME)
+def invite(caller):
+
+	pl = caller.connection.player
+	duel = pl.duel
+
+	if len(caller.args) == 0:
+		pl.notify(pl._("You can invite any player to join this duel. Simply type invite <player> to do so."))
+		return
+
+	if caller.args[0] is None:
+		pl.notify(pl._("No player with this name found."))
+		return
+
+	players = globals.server.guess_players(caller.args[0], pl.nickname)
+
+	if len(players) == 0:
+		pl.notify(pl._("No player with this name found."))
+		return
+	elif len(players)>1:
+		pl.notify(pl._("Multiple players match this name: %s")%(', '.join([p.nickname for p in players])))
+		return
+
+	target = players[0]
+
+	if target.duel is not None and (target in target.duel.players or target in target.duel.tag_players):
+		pl.notify(pl._("This player is already in a duel."))
+		return
+	elif target.room is not None:
+		pl.notify(pl._("This player is already preparing to duel."))
+		return
+	elif target.nickname in pl.ignores:
+		pl.notify(pl._("You're ignoring this player."))
+		return
+	elif pl.nickname in target.ignores:
+		pl.notify(pl._("This player ignores you."))
+		return
+
+	success = duel.invite(target)
+
+	if success:
+
+		if target.afk is True:
+			pl.notify(pl._("%s is AFK and may not be paying attention.")%(target.nickname))
+
+		target.notify(target._("%s invites you to watch his duel. Type watch %s to do so.")%(pl.nickname, pl.nickname))
+
+		pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))
+
+	else:
+	
+		pl.notify(pl._("{0} already got an invitation to this duel.").format(target.nickname))
