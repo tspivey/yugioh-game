@@ -378,14 +378,20 @@ def invite(caller):
 		pl.notify(pl._("This player ignores you."))
 		return
 
-	room.add_invitation(target)
+	success = room.invite(target)
 
-	if target.afk is True:
-		pl.notify(pl._("%s is AFK and may not be paying attention.")%(target.nickname))
+	if success:
 
-	target.notify(target._("%s invites you to join his duel room. Type join %s to do so.")%(pl.nickname, pl.nickname))
+		if target.afk is True:
+			pl.notify(pl._("%s is AFK and may not be paying attention.")%(target.nickname))
 
-	pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))
+		target.notify(target._("%s invites you to join his duel room. Type join %s to do so.")%(pl.nickname, pl.nickname))
+
+		pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))
+
+	else:
+	
+		pl.notify(pl._("{0} already got an invitation to this room.").format(target.nickname))
 
 @RoomParser.command(names=['lifepoints'], args_regexp=r'([1-2]) (\d+)', allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
 def lifepoints(caller):

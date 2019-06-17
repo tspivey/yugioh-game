@@ -603,7 +603,7 @@ def join(caller):
 		pl.notify(pl._("This player ignores you."))
 	elif target.duel is not None:
 		pl.notify(pl._("This player is currently in a duel."))
-	elif target.room is None or target.room.open is not True or (target.room.private is True and not pl.nickname in target.room.invitations):
+	elif target.room is None or target.room.open is not True or (target.room.private is True and not target.room.can_join(pl)):
 		pl.notify(pl._("This player currently doesn't prepare to duel or you may not enter the room."))
 	elif target.room.creator.nickname in pl.ignores:
 		pl.notify(pl._("You're currently ignoring %s, who is the owner of this room.")%(target.room.creator.nickname))

@@ -4,12 +4,13 @@ from .channels.tell import Tell
 from .constants import *
 from . import globals
 from .deck_editor import DeckEditor
+from .invite.invitable import Invitable
 from .parsers.duel_parser import DuelParser
 from .parsers.lobby_parser import LobbyParser
 from .parsers.room_parser import RoomParser
 from . import models
 
-class Player:
+class Player(Invitable):
 
 	def __init__(self, name):
 		self.afk = False
@@ -168,3 +169,7 @@ class Player:
 	@property
 	def strings(self):
 		return globals.language_handler.get_strings(self.language)
+
+	@property
+	def invitable_id(self):
+		return self.nickname
