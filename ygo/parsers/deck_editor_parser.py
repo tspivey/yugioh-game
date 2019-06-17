@@ -18,16 +18,26 @@ class deck_editor_parser(parser.Parser):
 		editor = pl.deck_editor
 		pos = editor.deck_edit_pos
 		code = globals.server.all_cards[pos]
-		in_deck = pl.deck['cards'].count(code)
+
+		in_deck = pl.deck.get('cards', []).count(code)
 		if in_deck > 0:
 			pl.notify(pl._("%d in deck.") % in_deck)
+		in_deck = pl.deck.get('side', []).count(code)
+		if in_deck > 0:
+			pl.notify(pl._("%d in side deck.") % in_deck)
+		
+		if editor.deck_key == 'cards':
+			pl.notify(pl._("editing main deck."))
+		elif editor.deck_key == 'side':
+			pl.notify(pl._("editing side deck."))
+
 		card = Card(code)
 		pl.notify(card.get_info(pl))
 		pl.notify(pl._("u: up d: down /: search forward ?: search backward t: top"))
 		pl.notify(pl._("s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"))
-		pl.notify(pl._("c: check deck against banlist"))
+		pl.notify(pl._("c: check deck against banlist w: switch between main deck and side deck"))
 		main, extra = pl.count_deck_cards(pl.deck['cards'])
-		pl.notify(pl._("Command (%d cards in main deck, %d cards in extra deck):") % (main, extra))
+		pl.notify(pl._("Command (%d cards in main deck, %d cards in extra deck, %d cards in side deck):") % (main, extra, len(pl.deck.get('side', []))))
 
 substitutions = {
 	'/': 'search_forward',
@@ -40,7 +50,8 @@ substitutions = {
 	'r': 'remove',
 	's': 'send',
 	't': 'top',
-	'u': 'up'
+	'u': 'up',
+	'w': 'switch'
 }
 
 substitutions.update(COMMAND_SUBSTITUTIONS)
@@ -75,7 +86,7 @@ def send(caller):
 	if found >= 3:
 		caller.connection.notify(caller.connection._("You may only have 3 of this card (or cards with the same name) in your deck."))
 		return
-	caller.connection.player.deck['cards'].append(code)
+	caller.connection.player.deck[caller.connection.player.deck_editor.deck_key].append(code)
 	caller.connection.player.deck_editor.save()
 	caller.connection.session.commit()
 
@@ -84,7 +95,7 @@ def remove(caller):
 
 	pl = caller.connection.player
 	editor = pl.deck_editor
-	cards = pl.deck['cards']
+	cards = pl.deck[caller.connection.player.deck_editor.deck_key]
 	cnt = editor.group_cards_combined(cards.copy())
 
 	if caller.args[0] is None:
@@ -148,16 +159,27 @@ def search_backward(caller):
 def cmd_list(caller):
 	pl = caller.connection.player
 	editor = pl.deck_editor
-	cards = pl.deck['cards']
 
-	editor.list(cards.copy())
+	if len(pl.deck.get('cards', [])):
+		cards = pl.deck['cards']
+
+		pl.notify(pl._("main deck:"))
+
+		editor.list(cards.copy())
+
+	if len(pl.deck.get('side', [])):
+		cards = pl.deck['side']
+
+		pl.notify(pl._("side deck:"))
+
+		editor.list(cards.copy())
 
 @DeckEditorParser.command(args_regexp=r'(\d+)')
 def goto(caller):
 
 	pl = caller.connection.player
 	editor = pl.deck_editor
-	cards = pl.deck['cards']
+	cards = pl.deck[editor.deck_key]
 	cnt = editor.group_cards_combined(cards.copy())
 	n = int(caller.args[0]) - 1
 	if n < 0 or n > len(cnt) - 1:
@@ -182,8 +204,24 @@ def check(caller):
 
 	pl = caller.connection.player
 	editor = pl.deck_editor
-	cards = pl.deck['cards']
+	cards = pl.deck.get('cards', []) + pl.deck.get('side', [])
 	search = caller.args[0]
 	if search is not None:
 		search = search.lower()
 	editor.check(cards, search)
+
+@DeckEditorParser.command
+def switch(caller):
+
+	pl = caller.connection.player
+	editor = pl.deck_editor
+	
+	if editor.deck_key == 'cards':
+		editor.deck_key = 'side'
+		pl.notify(pl._('now editing side deck'))
+	elif editor.deck_key == 'side':
+		editor.deck_key = 'cards'
+		pl.notify(pl._("now editing main deck"))
+	
+	if not editor.deck_key in pl.deck:
+		pl.deck[editor.deck_key] = []

@@ -18,7 +18,7 @@ class Player(Invitable):
 		self.challenge = True
 		self.chat = True
 		self.connection = None
-		self.deck = {'cards': []}
+		self.deck = {'cards': [], 'side': []}
 		self.deck_editor = DeckEditor(self)
 		self.duel = None
 		self.ignores = set()
