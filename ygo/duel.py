@@ -14,6 +14,7 @@ from . import callback_manager
 from .card import Card
 from .constants import *
 from .duel_reader import DuelReader
+from .invite.joinable import Joinable
 from .utils import process_duel, handle_error
 from . import globals
 from . import message_handlers
@@ -62,8 +63,9 @@ def script_reader_callback(name, lenptr):
 
 lib.set_script_reader(lib.script_reader_callback)
 
-class Duel:
+class Duel(Joinable):
 	def __init__(self, seed=None):
+		Joinable.__init__(self)
 		self.buf = ffi.new('char[]', 4096)
 		if seed is None:
 			seed = random.randint(0, 0xffffffff)

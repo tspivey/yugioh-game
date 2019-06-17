@@ -14,6 +14,7 @@ showhand - zeigt allen Spielern und Zuschauern Deine hand (bei Anfängern nützl
 giveup - beendet das Duell und verzeichnet für beide Spieler eine Aufgabe.
 scoop - beendet das Duell, gesteht dem Gegner allerdings einen Sieg ein.
 
+invite - lädt einen Spieler als Zuschauer ein (auch, wenn das Duell privat ist)
 watchers - zeigt die Liste aller zuschauenden Spieler.
 say - ermöglicht die Kommunikation mit allen Duellanten und Zuschauern am Tisch.
 tag - ermöglicht die private Kommunikation mit Deinem Tag-Duell-Partner.

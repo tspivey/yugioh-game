@@ -516,9 +516,10 @@ def watch(caller):
 	elif not players[0].duel:
 		con.notify(con._("That player is not in a duel."))
 		return
-	elif players[0].duel.private:
-		con.notify(con._("That duel is private."))
+	elif players[0].duel.private and not players[0].duel.can_join(con.player):
+		con.notify(con._("That duel is private and you don't have an invitation to watch it."))
 		return
+	players[0].duel.join(con.player)
 	players[0].duel.add_watcher(con.player, players[0].duel_player)
 
 @LobbyParser.command(args_regexp=r'(.*)')
@@ -605,7 +606,7 @@ def join(caller):
 		pl.notify(pl._("This player ignores you."))
 	elif target.duel is not None:
 		pl.notify(pl._("This player is currently in a duel."))
-	elif target.room is None or target.room.open is not True or (target.room.private is True and not pl.nickname in target.room.invitations):
+	elif target.room is None or target.room.open is not True or (target.room.private is True and not target.room.can_join(pl)):
 		pl.notify(pl._("This player currently doesn't prepare to duel or you may not enter the room."))
 	elif target.room.creator.nickname in pl.ignores:
 		pl.notify(pl._("You're currently ignoring %s, who is the owner of this room.")%(target.room.creator.nickname))

@@ -1,9 +1,11 @@
 from .constants import __
 from . import globals
 from .channels.say import Say
+from .invite.joinable import Joinable
 
-class Room:
+class Room(Joinable):
 	def __init__(self, creator):
+		Joinable.__init__(self)
 		creator_account = creator.get_account()
 		self.open = False
 		self.private = False
@@ -11,7 +13,6 @@ class Room:
 		self.creator = creator
 		self.options = 0
 		self.rules = creator_account.duel_rules
-		self.invitations = []
 		self.banlist = creator_account.banlist
 		self.say = Say()
 		self.lp = [8000, 8000]
@@ -20,13 +21,17 @@ class Room:
 		return self.teams[0]+self.teams[1]+self.teams[2]
 
 	def join(self, player):
+
+		success = Joinable.join(self, player)
+
+		if not self.creator is player and self.private and not success:
+			return
+
 		player.set_parser('RoomParser')
 		player.room = self
 		player.deck = {'cards': []}
 		self.teams[0].append(player)
 		self.say.add_recipient(player)
-		if player.nickname in self.invitations:
-			self.invitations.remove(player.nickname)
 		for pl in self.get_all_players():
 			if pl is player:
 				pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
@@ -47,7 +52,7 @@ class Room:
 
 		player.set_parser('LobbyParser')
 		player.room = None
-		player.deck = {'cards': []}
+		player.deck = {'cards': [], 'side': []}
 		self.say.remove_recipient(player)
 
 		player.notify(player._("You left the room."))
@@ -102,14 +107,6 @@ class Room:
 			return
 
 		self.teams[team].append(player)
-
-	def add_invitation(self, pl):
-
-		if pl.nickname in self.invitations:
-			return False
-		else:
-			self.invitations.append(pl.nickname)
-			return True
 
 	def show(self, pl):
 		pl.notify(pl._("The following settings are defined for this room:"))
