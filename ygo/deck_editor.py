@@ -15,6 +15,7 @@ class DeckEditor:
 		self.deck_name = ''
 		self.last_search = ""
 		self.player = player
+		self.deck_key = 'cards'
 
 	def list_decks(self, args):
 		decks = self.player.get_account().decks
