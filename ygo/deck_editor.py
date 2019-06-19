@@ -149,7 +149,8 @@ class DeckEditor:
 			return
 
 		new_deck = models.Deck(name=dest, content=deck.content)
-		self.player.get_account().decks.append(new_deck)
+		player_account = self.player.get_account()
+		player_account.decks.append(new_deck)
 		session.commit()
 		self.player.notify(self.player._("Deck copied."))
 
