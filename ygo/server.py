@@ -29,7 +29,8 @@ class Server(gsb.Server):
 		caller.connection.web = False
 		caller.connection.dont_process = False
 		caller.connection.transport.setTcpKeepAlive(True)
-		caller.connection.transport.socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 120)
+		if hasattr(socket, "TCP_KEEPIDLE"):
+			caller.connection.transport.socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 120)
 
 	def on_disconnect(self, caller):
 		con = caller.connection

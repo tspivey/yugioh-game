@@ -8,6 +8,12 @@ from .. import globals
 from .. import models
 from .. import parser
 
+try:
+	import _duel
+	DUEL_AVAILABLE = True
+except ImportError:
+	DUEL_AVAILABLE = False
+
 class room_parser(parser.Parser):
 
 	def prompt(self, connection):
@@ -328,33 +334,38 @@ def start(caller):
 			p.notify(p._("%s starts the duel.")%(pl.nickname))
 
 	# launch the duel
-	duel = Duel()
-	duel.add_players(room.teams[1]+room.teams[2])
-	duel.set_player_info(0, room.lp[0])
-	duel.set_player_info(1, room.lp[1])
-	duel.room = room
 
-	if not room.private:
-		if duel.tag is True:
-			pl0 = "team "+duel.players[0].nickname+", "+duel.tag_players[0].nickname
-			pl1 = "team "+duel.players[1].nickname+", "+duel.tag_players[1].nickname
-		else:
-			pl0 = duel.players[0].nickname
-			pl1 = duel.players[1].nickname
-		globals.server.challenge.send_message(None, __("The duel between {player1} and {player2} has begun!"), player1 = pl0, player2 = pl1)
+	if DUEL_AVAILABLE:
+		duel = Duel()
+		duel.add_players(room.teams[1]+room.teams[2])
+		duel.set_player_info(0, room.lp[0])
+		duel.set_player_info(1, room.lp[1])
+		duel.room = room
 
-	duel.start(((room.rules&0xff)<<16)+(room.options&0xffff))
+		if not room.private:
+			if duel.tag is True:
+				pl0 = "team "+duel.players[0].nickname+", "+duel.tag_players[0].nickname
+				pl1 = "team "+duel.players[1].nickname+", "+duel.tag_players[1].nickname
+			else:
+				pl0 = duel.players[0].nickname
+				pl1 = duel.players[1].nickname
+			globals.server.challenge.send_message(None, __("The duel between {player1} and {player2} has begun!"), player1 = pl0, player2 = pl1)
 
-	duel.private = room.private
+		duel.start(((room.rules&0xff)<<16)+(room.options&0xffff))
 
-	# move all 	players without a team into the duel as watchers
-	for p in room.teams[0]:
-		duel.add_watcher(p)
+		duel.private = room.private
 
-	# remove the room from all players
-	for p in room.get_all_players():
-		p.room.say.remove_recipient(p)
-		p.room = None
+		# move all 	players without a team into the duel as watchers
+		for p in room.teams[0]:
+			duel.add_watcher(p)
+
+		# remove the room from all players
+		for p in room.get_all_players():
+			p.room.say.remove_recipient(p)
+			p.room = None
+
+	else:
+		pl.notify(pl._("Duels aren't available right now."))
 
 @RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
 def invite(caller):

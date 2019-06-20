@@ -4,9 +4,14 @@ import os.path
 import sys
 import traceback
 
-from _duel import ffi, lib
 from .banlist import Banlist
 from . import globals
+
+try:
+	from _duel import ffi, lib
+	DUEL_AVAILABLE = True
+except ImportError:
+	DUEL_AVAILABLE = False
 
 def parse_lflist(filename):
 
