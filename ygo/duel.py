@@ -158,10 +158,10 @@ class Duel(Joinable):
 			else:
 				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE)
 
-	def add_players(self, players, shuffle=True):
+	def add_players(self, players, shuffle_players=True, shuffle_decks = True):
 		if len(players) == 4:
 			teams = [[players[0], players[1]], [players[2], players[3]]]
-			if shuffle is True:
+			if shuffle_players is True:
 				random.shuffle(teams)
 				random.shuffle(teams[0])
 				random.shuffle(teams[1])
@@ -169,7 +169,7 @@ class Duel(Joinable):
 			self.tag_players = [teams[0][1], teams[1][1]]
 		else:
 			self.players = list(players)
-			if shuffle is True:
+			if shuffle_players is True:
 				random.shuffle(self.players)
 
 		self.watchers = self.tag_players[:]
@@ -181,7 +181,7 @@ class Duel(Joinable):
 			self.say.add_recipient(self.players[i])
 			self.watch.add_recipient(self.players[i])
 			self.tags[i].add_recipient(self.players[i])
-			self.load_deck(self.players[i], shuffle)
+			self.load_deck(self.players[i], shuffle_decks)
 			if len(self.tag_players) > i:
 				self.tag_players[i].duel_player = i
 				self.tag_players[i].duel = self
@@ -189,7 +189,7 @@ class Duel(Joinable):
 				self.say.add_recipient(self.tag_players[i])
 				self.watch.add_recipient(self.tag_players[i])
 				self.tags[i].add_recipient(self.tag_players[i])
-				self.load_deck(self.tag_players[i], shuffle, True)
+				self.load_deck(self.tag_players[i], shuffle_decks, True)
 
 	def start(self, options):
 		if os.environ.get('DEBUG', 0):

@@ -1,3 +1,5 @@
+import random
+
 from .constants import __
 from .duel import Duel, DUEL_AVAILABLE
 from . import globals
@@ -133,8 +135,10 @@ class Room(Joinable):
 	def start_duel(self, start_team):
 
 		if DUEL_AVAILABLE:
+			random.shuffle(self.teams[1])
+			random.shuffle(self.teams[2])
 			duel = Duel()
-			duel.add_players(self.teams[start_team]+self.teams[3-start_team], False)
+			duel.add_players(self.teams[start_team]+self.teams[3-start_team], shuffle_players=False)
 			duel.set_player_info(0, self.lp[0])
 			duel.set_player_info(1, self.lp[1])
 			duel.room = self
