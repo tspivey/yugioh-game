@@ -195,6 +195,7 @@ def quit(caller):
 	
 	pl.notify(pl._("Quit."))
 	editor.deck_name = ''
+	editor.deck_key = 'cards'
 	pl.connection.parser = pl.paused_parser
 	pl.paused_parser = None
 
