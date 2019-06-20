@@ -314,7 +314,7 @@ def replay(caller):
 				players[i] = p
 				p.deck = {'cards': decks[i]}
 			duel = Duel(line.get('seed', 0))
-			duel.add_players(players, shuffle = False)
+			duel.add_players(players, shuffle_players = False, shuffle_decks = False)
 			duel.set_player_info(0, lp[0])
 			duel.set_player_info(1, lp[1])
 			duel.start(line.get('options', 0))
