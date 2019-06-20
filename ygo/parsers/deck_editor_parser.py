@@ -26,11 +26,6 @@ class deck_editor_parser(parser.Parser):
 		if in_deck > 0:
 			pl.notify(pl._("%d in side deck.") % in_deck)
 		
-		if editor.deck_key == 'cards':
-			pl.notify(pl._("editing main deck."))
-		elif editor.deck_key == 'side':
-			pl.notify(pl._("editing side deck."))
-
 		card = Card(code)
 		pl.notify(card.get_info(pl))
 		pl.notify(pl._("u: up d: down /: search forward ?: search backward t: top"))
@@ -38,6 +33,10 @@ class deck_editor_parser(parser.Parser):
 		pl.notify(pl._("c: check deck against banlist w: switch between main deck and side deck"))
 		main, extra = pl.count_deck_cards(pl.deck['cards'])
 		pl.notify(pl._("Command (%d cards in main deck, %d cards in extra deck, %d cards in side deck):") % (main, extra, len(pl.deck.get('side', []))))
+		if editor.deck_key == 'cards':
+			pl.notify(pl._("editing main deck."))
+		elif editor.deck_key == 'side':
+			pl.notify(pl._("editing side deck."))
 
 substitutions = {
 	'/': 'search_forward',
@@ -196,6 +195,7 @@ def quit(caller):
 	
 	pl.notify(pl._("Quit."))
 	editor.deck_name = ''
+	editor.deck_key = 'cards'
 	pl.connection.parser = pl.paused_parser
 	pl.paused_parser = None
 

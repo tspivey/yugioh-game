@@ -1,5 +1,6 @@
 import gsb
 import json
+import random
 
 from ..card import Card
 from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME, __
@@ -7,11 +8,15 @@ from ..duel import Duel
 from .. import globals
 from .. import models
 from .. import parser
+from ..who_goes_first.rps import RPS
 
 class room_parser(parser.Parser):
 
 	def prompt(self, connection):
-		connection.notify(connection._("Enter ? to show all commands and room preferences"))
+		room = connection.player.room
+
+		if not room.started:
+			connection.notify(connection._("Enter ? to show all commands and room preferences"))
 
 	def huh(self, caller):
 		caller.connection.notify(caller.connection._("This command isn't available right now."))
@@ -77,7 +82,7 @@ def finish(caller):
 		pl.notify(pl._("Players can now join this room, or you can invite them to join you."))
 		globals.server.challenge.send_message(None, __("{player} created a new duel room."), player = pl.nickname)
 
-@RoomParser.command(names=['leave'])
+@RoomParser.command(names=['leave'], allowed = lambda c: c.connection.player in c.connection.player.room.teams[0] or not c.connection.player.room.started)
 def leave(caller):
 
 	pl = caller.connection.player
@@ -123,7 +128,7 @@ def teams(caller):
 	else:
 		pl.notify(pl._("Players not yet in a team: %s")%(', '.join([p.nickname for p in room.teams[0]])))
 
-@RoomParser.command(names=['move'], args_regexp=r'([0-2])', allowed = lambda c: c.connection.player.room.open)
+@RoomParser.command(names=['move'], args_regexp=r'([0-2])', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
 def move(caller):
 
 	pl = caller.connection.player
@@ -147,7 +152,7 @@ def move(caller):
 				else:
 					p.notify(p._("%s was moved into %s.")%(pl.nickname, p._("team %d")%(team)))
 
-@RoomParser.command(names=['private'])
+@RoomParser.command(names=['private'], allowed = lambda c: not c.connection.player.room.open and c.connection.player.room.creator is c.connection.player)
 def private(caller):
 
 	pl = caller.connection.player
@@ -195,7 +200,7 @@ def rules(caller):
 
 		pl.notify(s)
 
-@RoomParser.command(names=['deck'], args_regexp=r'(.+)', allowed = lambda c: c.connection.player.room.open)
+@RoomParser.command(names=['deck'], args_regexp=r'(.+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
 def deck(caller):
 
 	pl = caller.connection.player
@@ -295,7 +300,7 @@ def deck(caller):
 		if p is not pl:
 			p.notify(p._("%s loaded a deck.")%(pl.nickname))
 
-@RoomParser.command(names=['start'], allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
+@RoomParser.command(names=['start'], allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open and not c.connection.player.room.started)
 def start(caller):
 
 	pl = caller.connection.player
@@ -327,34 +332,20 @@ def start(caller):
 		else:
 			p.notify(p._("%s starts the duel.")%(pl.nickname))
 
-	# launch the duel
-	duel = Duel()
-	duel.add_players(room.teams[1]+room.teams[2])
-	duel.set_player_info(0, room.lp[0])
-	duel.set_player_info(1, room.lp[1])
-	duel.room = room
+	# decide who will go first
+	room.started = True
 
-	if not room.private:
-		if duel.tag is True:
-			pl0 = "team "+duel.players[0].nickname+", "+duel.tag_players[0].nickname
-			pl1 = "team "+duel.players[1].nickname+", "+duel.tag_players[1].nickname
-		else:
-			pl0 = duel.players[0].nickname
-			pl1 = duel.players[1].nickname
-		globals.server.challenge.send_message(None, __("The duel between {player1} and {player2} has begun!"), player1 = pl0, player2 = pl1)
+	pl0 = room.teams[1][random.randint(0, len(room.teams[1])-1)]
+	pl1 = room.teams[2][random.randint(0, len(room.teams[2])-1)]
 
-	duel.start(((room.rules&0xff)<<16)+(room.options&0xffff))
-
-	duel.private = room.private
-
-	# move all 	players without a team into the duel as watchers
-	for p in room.teams[0]:
-		duel.add_watcher(p)
-
-	# remove the room from all players
 	for p in room.get_all_players():
-		p.room.say.remove_recipient(p)
-		p.room = None
+		if p is pl0 or p is pl1:
+			p.notify(p._("You need to play rock paper scisors to decide upon who will go first."))
+		else:
+			p.notify(p._("{0} and {1} will now play rock paper scisors to decide upon who will go first.").format(pl0.nickname, pl1.nickname))
+	
+	pl0.notify(RPS(pl0, pl1))
+	pl1.notify(RPS(pl1, pl0))
 
 @RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
 def invite(caller):
@@ -469,6 +460,10 @@ def remove(caller):
 		pl.notify(pl._("{0} is currently not in this room.").format(target.nickname))
 		return
 	
+	if room.started and not target in room.teams[0]:
+		pl.notify(pl._("You can only remove watchers after starting the duel."))
+		return
+
 	pl.notify(pl._("You ask {0} friendly to leave this room.").format(target.nickname))
 
 	target.notify(target._("{0} asks you friendly to leave the room.").format(pl.nickname))

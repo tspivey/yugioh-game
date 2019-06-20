@@ -1,4 +1,9 @@
-from _duel import ffi, lib
+try:
+	from _duel import ffi, lib
+	DUEL_AVAILABLE = True
+except ImportError:
+	DUEL_AVAILABLE = False
+
 import os
 import io
 import struct
@@ -13,6 +18,7 @@ from twisted.internet import reactor
 from . import callback_manager
 from .card import Card
 from .constants import *
+from .constants import __
 from .duel_reader import DuelReader
 from .invite.joinable import Joinable
 from .utils import process_duel, handle_error
@@ -22,46 +28,45 @@ from .channels.say import Say
 from .channels.tag import Tag
 from .channels.watchers import Watchers
 
-__ = lambda x: x
+if DUEL_AVAILABLE:
+	@ffi.def_extern()
+	def card_reader_callback(code, data):
+		cd = data[0]
+		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
+		cd.code = code
+		cd.alias = row['alias']
+		cd.setcode = row['setcode']
+		cd.type = row['type']
+		cd.level = row['level'] & 0xff
+		cd.lscale = (row['level'] >> 24) & 0xff
+		cd.rscale = (row['level'] >> 16) & 0xff
+		cd.attack = row['atk']
+		cd.defense = row['def']
+		if cd.type & TYPE_LINK:
+			cd.link_marker = cd.defense
+			cd.defense = 0
+		else:
+			cd.link_marker = 0
+		cd.race = row['race']
+		cd.attribute = row['attribute']
+		return 0
 
-@ffi.def_extern()
-def card_reader_callback(code, data):
-	cd = data[0]
-	row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
-	cd.code = code
-	cd.alias = row['alias']
-	cd.setcode = row['setcode']
-	cd.type = row['type']
-	cd.level = row['level'] & 0xff
-	cd.lscale = (row['level'] >> 24) & 0xff
-	cd.rscale = (row['level'] >> 16) & 0xff
-	cd.attack = row['atk']
-	cd.defense = row['def']
-	if cd.type & TYPE_LINK:
-		cd.link_marker = cd.defense
-		cd.defense = 0
-	else:
-		cd.link_marker = 0
-	cd.race = row['race']
-	cd.attribute = row['attribute']
-	return 0
+	lib.set_card_reader(lib.card_reader_callback)
 
-lib.set_card_reader(lib.card_reader_callback)
+	scriptbuf = ffi.new('char[131072]')
+	@ffi.def_extern()
+	def script_reader_callback(name, lenptr):
+		fn = ffi.string(name)
+		if not os.path.exists(fn):
+			lenptr[0] = 0
+			return ffi.NULL
+		s = open(fn, 'rb').read()
+		buf = ffi.buffer(scriptbuf)
+		buf[0:len(s)] = s
+		lenptr[0] = len(s)
+		return ffi.cast('byte *', scriptbuf)
 
-scriptbuf = ffi.new('char[131072]')
-@ffi.def_extern()
-def script_reader_callback(name, lenptr):
-	fn = ffi.string(name)
-	if not os.path.exists(fn):
-		lenptr[0] = 0
-		return ffi.NULL
-	s = open(fn, 'rb').read()
-	buf = ffi.buffer(scriptbuf)
-	buf[0:len(s)] = s
-	lenptr[0] = len(s)
-	return ffi.cast('byte *', scriptbuf)
-
-lib.set_script_reader(lib.script_reader_callback)
+	lib.set_script_reader(lib.script_reader_callback)
 
 class Duel(Joinable):
 	def __init__(self, seed=None):

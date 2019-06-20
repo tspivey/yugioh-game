@@ -1,4 +1,5 @@
 from .constants import __
+from .duel import Duel, DUEL_AVAILABLE
 from . import globals
 from .channels.say import Say
 from .invite.joinable import Joinable
@@ -15,6 +16,7 @@ class Room(Joinable):
 		self.rules = creator_account.duel_rules
 		self.banlist = creator_account.banlist
 		self.say = Say()
+		self.started = False
 		self.lp = [8000, 8000]
 
 	def get_all_players(self):
@@ -127,3 +129,39 @@ class Room(Joinable):
 		pl.notify(pl._("Lifepoints - %s: %d, %s: %d")%(pl._("team %d")%(1), self.lp[0], pl._("team %d")%(2), self.lp[1]))
 
 		pl.notify(pl._("Privacy: %s")%(pl._("private") if self.private is True else pl._("public")))
+
+	def start_duel(self, start_team):
+
+		if DUEL_AVAILABLE:
+			duel = Duel()
+			duel.add_players(self.teams[start_team]+self.teams[3-start_team], False)
+			duel.set_player_info(0, self.lp[0])
+			duel.set_player_info(1, self.lp[1])
+			duel.room = self
+
+			if not self.private:
+				if duel.tag is True:
+					pl0 = "team "+duel.players[0].nickname+", "+duel.tag_players[0].nickname
+					pl1 = "team "+duel.players[1].nickname+", "+duel.tag_players[1].nickname
+				else:
+					pl0 = duel.players[0].nickname
+					pl1 = duel.players[1].nickname
+				globals.server.challenge.send_message(None, __("The duel between {player1} and {player2} has begun!"), player1 = pl0, player2 = pl1)
+
+			duel.start(((self.rules&0xff)<<16)+(self.options&0xffff))
+
+			duel.private = self.private
+
+			# move all 	players without a team into the duel as watchers
+			for p in self.teams[0]:
+				duel.add_watcher(p)
+
+			# remove the room from all players
+			for p in self.get_all_players():
+				self.say.remove_recipient(p)
+				p.room = None
+
+		else:
+			self.started = False
+			for p in self.get_all_players():
+				p.notify(p._("Duels aren't available right now."))
