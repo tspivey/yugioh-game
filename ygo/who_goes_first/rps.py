@@ -12,15 +12,15 @@ class RPS(Menu):
 
 			pl.rps_selection = selection
 
-			pl.notify(pl._("You choose {0}.").format([pl._("Rock"), pl._("Paper"), pl._("Scisors")][selection-1]))
+			pl.notify(pl._("You choose {0}.").format([pl._("Rock"), pl._("Paper"), pl._("Scissors")][selection-1]))
 
 			if self.op.rps_selection == 0:
 				pl.notify(pl._("You now need to wait for {0} to choose.").format(self.op.nickname))
 			else:
 				for p in room.get_all_players():
 					p.notify(p._("Here are the results:"))
-					p.notify(p._("{0} has chosen {1}.").format(pl.nickname, [p._("Rock"), p._("Paper"), p._("Scisors")][pl.rps_selection-1]))
-					p.notify(p._("{0} has chosen {1}.").format(self.op.nickname, [p._("Rock"), p._("Paper"), p._("Scisors")][self.op.rps_selection-1]))
+					p.notify(p._("{0} has chosen {1}.").format(pl.nickname, [p._("Rock"), p._("Paper"), p._("Scissors")][pl.rps_selection-1]))
+					p.notify(p._("{0} has chosen {1}.").format(self.op.nickname, [p._("Rock"), p._("Paper"), p._("Scissors")][self.op.rps_selection-1]))
 
 				if pl.rps_selection == self.op.rps_selection:
 					for p in room.get_all_players():
@@ -65,7 +65,7 @@ class RPS(Menu):
 		self.op = op
 		self.item(pl._("Rock"))(lambda c: select(c, 1))
 		self.item(pl._("Paper"))(lambda c: select(c, 2))
-		self.item(pl._("Scisors"))(lambda c: select(c, 3))
+		self.item(pl._("Scissors"))(lambda c: select(c, 3))
 
 	def handle_line(self, con, line):
 		for s, c in self.restore_parser.command_substitutions.items():

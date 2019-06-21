@@ -2203,11 +2203,11 @@ msgid "%s starts the duel."
 msgstr "%s hat das Duell gestartet."
 
 #: ygo/parsers/room_parser.py:343
-msgid "You need to play rock paper scisors to decide upon who will go first."
+msgid "You need to play rock paper scissors to decide upon who will go first."
 msgstr "Du musst Schere Stein Papier spielen um zu entscheiden, wer anfangen darf."
 
 #: ygo/parsers/room_parser.py:345
-msgid "{0} and {1} will now play rock paper scisors to decide upon who will go first."
+msgid "{0} and {1} will now play rock paper scissors to decide upon who will go first."
 msgstr "{0} und {1} werden jetzt Schere Stein Papier spielen, um zu entscheiden, wer anfangen darf."
 
 #: ygo/parsers/room_parser.py:357
@@ -2312,7 +2312,7 @@ msgstr "Papier"
 
 #: ygo/who_goes_first/rps.py:15 ygo/who_goes_first/rps.py:22
 #: ygo/who_goes_first/rps.py:23 ygo/who_goes_first/rps.py:68
-msgid "Scisors"
+msgid "Scissors"
 msgstr "Schere"
 
 #: ygo/who_goes_first/rps.py:18

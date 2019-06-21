@@ -340,9 +340,9 @@ def start(caller):
 
 	for p in room.get_all_players():
 		if p is pl0 or p is pl1:
-			p.notify(p._("You need to play rock paper scisors to decide upon who will go first."))
+			p.notify(p._("You need to play rock paper scissors to decide upon who will go first."))
 		else:
-			p.notify(p._("{0} and {1} will now play rock paper scisors to decide upon who will go first.").format(pl0.nickname, pl1.nickname))
+			p.notify(p._("{0} and {1} will now play rock paper scissors to decide upon who will go first.").format(pl0.nickname, pl1.nickname))
 	
 	pl0.notify(RPS(pl0, pl1))
 	pl1.notify(RPS(pl1, pl0))
