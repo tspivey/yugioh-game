@@ -8,6 +8,7 @@ from ..duel import Duel
 from .. import globals
 from .. import models
 from .. import parser
+from ..who_goes_first.decision import Decision
 from ..who_goes_first.rps import RPS
 
 class room_parser(parser.Parser):
@@ -339,14 +340,38 @@ def start(caller):
 	pl0 = room.teams[1][random.randint(0, len(room.teams[1])-1)]
 	pl1 = room.teams[2][random.randint(0, len(room.teams[2])-1)]
 
-	for p in room.get_all_players():
-		if p is pl0 or p is pl1:
-			p.notify(p._("You need to play rock paper scissors to decide upon who will go first."))
-		else:
-			p.notify(p._("{0} and {1} will now play rock paper scissors to decide upon who will go first.").format(pl0.nickname, pl1.nickname))
+	if room.points[0] == room.points[1]:
+
+		for p in room.get_all_players():
+			if p is pl0 or p is pl1:
+				p.notify(p._("You need to play rock paper scissors to decide upon who will go first."))
+			else:
+				p.notify(p._("{0} and {1} will now play rock paper scissors to decide upon who will go first.").format(pl0.nickname, pl1.nickname))
 	
-	pl0.notify(RPS(pl0, pl1))
-	pl1.notify(RPS(pl1, pl0))
+		pl0.notify(RPS(pl0, pl1))
+		pl1.notify(RPS(pl1, pl0))
+
+	elif room.points[0] < room.points[1]:
+		for p in room.get_all_players():
+			if p is pl0:
+				p.notify(p._("Your score in this match is lower than your opponent's score, thus you may decide who will go first."))
+			elif p is pl1:
+				p.notify(p._("Your score is higher than your opponent's score, thus they may decide who will go first."))
+			else:
+				p.notify(p._("{0} may decide who will go first due to a lower score.").format(pl0.nickname))
+
+		pl0.notify(Decision(pl0))
+
+	else:
+		for p in room.get_all_players():
+			if p is pl1:
+				p.notify(p._("Your score in this match is lower than your opponent's score, thus you may decide who will go first."))
+			elif p is pl0:
+				p.notify(p._("Your score is higher than your opponent's score, thus they may decide who will go first."))
+			else:
+				p.notify(p._("{0} may decide who will go first due to a lower score.").format(pl1.nickname))
+
+		pl1.notify(Decision(pl1))
 
 @RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
 def invite(caller):
