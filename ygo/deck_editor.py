@@ -4,6 +4,7 @@ import random
 import natsort
 
 from .card import Card
+from .exceptions import CardNotFoundError
 from . import globals
 from . import models
 from .constants import *
@@ -155,30 +156,58 @@ class DeckEditor:
 		self.player.notify(self.player._("Deck copied."))
 
 	def draw(self, args):
+
 		if '=' not in args:
 			self.player.notify(self.player._("Usage: deck draw <deck>=<number>"))
 			return
+
 		args = args.strip().split('=', 1)
-		name = args[0].strip()
+
+		player_name = ''
+		deck_name = args[0].strip()
 		amount = int(args[1])
-		if not name or not amount:
+
+		if not deck_name or not amount:
 			self.player.notify(self.player._("Usage: deck draw <deck>=<number>"))
 			return
-		if name.startswith('public/'):
-			account = self.player.connection.session.query(models.Account).filter_by(name='Public').first()
-			name = name[7:]
+
+		session = self.player.connection.session
+
+		if '/' in deck_name:
+			player_name = deck_name.split('/')[0].title()
+			deck_name = deck_name[(len(player_name) + 1):]
+
+		if player_name != '':
+			if player_name.lower() == self.player.nickname.lower():
+				self.player.notify(self.player._("You don't need to mention yourself if you want to use your own deck."))
+				return
+
+			account = session.query(models.Account).filter_by(name=player_name).first()
+
+			if not account:
+				self.player.notify(self.player._("Player {0} could not be found.").format(player_name))
+				return
+			
 		else:
 			account = self.player.get_account()
-		session = self.player.connection.session
-		deck = models.Deck.find(session, account, name)
+
+		if player_name != '':
+			deck = models.Deck.find_public(session, account, deck_name)
+		else:
+			deck = models.Deck.find(session, account, deck_name)
+
+		if not deck:
+			self.player.notify(self.player._("Deck doesn't exist or isn't publically available."))
+			return
+
 		if not deck:
 			self.player.notify(self.player._("Deck not found."))
-			session.commit()
 			return
+
 		cards = json.loads(deck.content)['cards']
-		session.commit()
-		cards = [c for c in cards if not (Card(c).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))]
+		cards = [c for c in cards if c in globals.server.all_cards and not (Card(c).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))]
 		random.shuffle(cards)
+
 		for i in range(0, min(amount, len(cards))):
 			self.player.notify(self.player._("Drew: %s") % Card(cards[i]).get_name(self.player))
 
