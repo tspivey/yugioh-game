@@ -75,6 +75,6 @@ class RPS(Menu):
 		cmd, args = self.split(line)
 		if cmd in self.restore_parser.commands:
 			self.restore_parser.handle_line(con, line)
-			self.notify(self)
+			con.notify(self)
 		else:
 			super().handle_line(con, line)
