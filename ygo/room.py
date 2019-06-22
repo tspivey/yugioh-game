@@ -61,7 +61,8 @@ class Room(Joinable):
 		else:
 			return
 
-		player.set_parser('LobbyParser')
+		if player.connection:
+			player.set_parser('LobbyParser')
 		player.room = None
 		player.deck = {'cards': [], 'side': []}
 		self.say.remove_recipient(player)
@@ -200,6 +201,7 @@ class Room(Joinable):
 		if pl.connection is None:
 			for opl in globals.server.get_all_players():
 				opl.notify(opl._("%s logged out.")%(pl.nickname))
+			self.leave(pl)
 			globals.server.remove_player(pl.nickname)
 		else:
 			op = pl.connection.parser
@@ -213,8 +215,6 @@ class Room(Joinable):
 				pl.set_parser('RoomParser')
 				pl.room = self
 				self.say.add_recipient(pl)
-				if not pl in self.teams[0] and not pl in self.teams[1] and not pl in self.teams[2]:
-					self.teams[0].append(pl)
 
 	# called by every duel after all players were restored
 	def process(self):

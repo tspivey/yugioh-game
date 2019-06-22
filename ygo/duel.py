@@ -703,6 +703,8 @@ class Duel(Joinable):
 	def remove_watcher(self, pl):
 		try:
 			self.watchers.remove(pl)
+			if pl in self.room.teams[0]:
+				self.room.teams[0].remove(pl)
 			self.watch.remove_recipient(pl)
 			self.watch.send_message(pl, __("{player} is no longer watching this duel."))
 			pl.duel = None
@@ -725,6 +727,8 @@ class Duel(Joinable):
 			pl0 = self.players[player].nickname
 			pl1 = self.players[1 - player].nickname
 		pl.notify(pl._("Watching duel between %s and %s.")%(pl0, pl1))
+		if not pl in self.room.teams[0]:
+			self.room.teams[0].append(pl)
 		self.watchers.append(pl)
 		self.watch.send_message(pl, __("{player} is now watching this duel."))
 		self.watch.add_recipient(pl)
