@@ -47,6 +47,7 @@ def list(caller):
 		pl.notify(pl._("banlist - define banlist"))
 		pl.notify(pl._("finish - finish room creation and open it to other players"))
 		pl.notify(pl._("lifepoints - set lifepoints per team"))
+		pl.notify(pl._("match - toggle match mode on or off"))
 		pl.notify(pl._("private - toggles privacy"))
 		pl.notify(pl._("rules - define duel rules"))
 		pl.notify(pl._("save - save settings for all your future rooms"))
@@ -474,3 +475,16 @@ def remove(caller):
 		p.notify(p._("{0} asks {1} friendly to leave this room.").format(pl.nickname, target.nickname))
 
 	room.leave(target)
+
+@RoomParser.command(names=["match"], allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
+def match(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+	
+	room.match = not room.match
+	
+	if room.match:
+		pl.notify(pl._("Match mode enabled."))
+	else:
+		pl.notify(pl._("Match mode disabled."))

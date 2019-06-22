@@ -19,6 +19,7 @@ class Room(Joinable):
 		self.banlist = creator_account.banlist
 		self.say = Say()
 		self.started = False
+		self.match = False
 		self.lp = [8000, 8000]
 
 	def get_all_players(self):
@@ -142,6 +143,11 @@ class Room(Joinable):
 		pl.notify(pl._("Lifepoints - %s: %d, %s: %d")%(pl._("team %d")%(1), self.lp[0], pl._("team %d")%(2), self.lp[1]))
 
 		pl.notify(pl._("Privacy: %s")%(pl._("private") if self.private is True else pl._("public")))
+
+		if self.match:
+			pl.notify(pl._("Match mode enabled"))
+		else:
+			pl.notify(pl._("Match mode disabled."))
 
 	def start_duel(self, start_team):
 
