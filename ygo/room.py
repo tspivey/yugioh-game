@@ -233,14 +233,14 @@ class Room(Joinable):
 		if self.disbandable:
 			self.inform()
 	
-	def announce_victory(self, pl):
+	def announce_victory(self, pl, announce = True):
 		if pl in self.teams[1]:
 			self.points[0] += 1
 		else:
 			self.points[1] += 1
 			
 		if self.disbandable:
-			self.inform()
+			self.inform(announce)
 
 	def announce_giveup(self, pl):
 
@@ -265,7 +265,7 @@ class Room(Joinable):
 				p1.giveup_against(p2)
 
 	# informs players globally and handles statistics
-	def inform(self):
+	def inform(self, announce = True):
 		if self.points[0] == self.points[1]:
 			if self.tag is True:
 				pl0 = "team "+self.teams[1][0].nickname+", "+self.teams[1][1].nickname
@@ -274,7 +274,8 @@ class Room(Joinable):
 				pl0 = self.teams[1][0].nickname
 				pl1 = self.teams[2][0].nickname
 			if not self.private:
-				globals.server.challenge.send_message(None, __("{player1} and {player2} ended up in a draw."), player1 = pl0, player2 = pl1)
+				if announce:
+					globals.server.challenge.send_message(None, __("{player1} and {player2} ended up in a draw."), player1 = pl0, player2 = pl1)
 				self.teams[1][0].draw_against(self.teams[2][0])
 				self.teams[2][0].draw_against(self.teams[1][0])
 				if self.tag is True:
@@ -294,16 +295,15 @@ class Room(Joinable):
 			winners = self.teams[2][:]
 			losers = self.teams[1][:]
 
-		for w in winners:
-			if not self.private:
+		if not self.private:
+			for w in winners:
 				for l in losers:
 					w.win_against(l)
-		for l in losers:
-			if not self.private:
+			for l in losers:
 				for w in winners:
 					l.lose_against(w)
 
-		if not self.private:
+		if not self.private and announce:
 			if self.tag is True:
 				w = "team "+winners[0].nickname+", "+winners[1].nickname
 				l = "team "+losers[0].nickname+", "+losers[1].nickname

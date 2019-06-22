@@ -129,7 +129,7 @@ def scoop(caller):
 			op = duel.players[1 - caller.connection.player.duel_player].nickname
 		globals.server.challenge.send_message(None, __("{player1} scooped against {player2}."), player1 = caller.connection.player.nickname, player2 = op)
 
-	duel.room.announce_victory(winners[0])
+	duel.room.announce_victory(winners[0], duel.room.match)
 	duel.end()
 
 @DuelParser.command(names=['sc', 'score'])
