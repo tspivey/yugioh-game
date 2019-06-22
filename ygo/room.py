@@ -45,8 +45,11 @@ class Room(Joinable):
 
 	def leave(self, player):
 
+		abort = True
+
 		if player in self.teams[0]:
 			self.teams[0].remove(player)
+			abort = False
 		elif player in self.teams[1]:
 			self.teams[1].remove(player)
 		elif player in self.teams[2]:
@@ -79,6 +82,14 @@ class Room(Joinable):
 			if self.open and not self.private:
 				globals.server.challenge.send_message(None, __("{player} disbanded their duel room."), player = player.nickname)
 
+			return
+			
+		if self.started and abort:
+			self.started = False
+			for pl in self.get_all_players():
+				pl.notify(pl._("Duel aborted."))
+				pl.set_parser('RoomParser')
+				
 	def set_banlist(self, list):
 
 		if list.lower() != 'tcg' and list.lower() != 'ocg' and list.lower() != 'none' and not list.lower() in globals.banlists or self.open:
