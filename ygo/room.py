@@ -76,7 +76,7 @@ class Room(Joinable):
 			for pl in self.get_all_players():
 				pl.set_parser('LobbyParser')
 				pl.room = None
-				pl.deck = {'cards': []}
+				pl.deck = {'cards': [], 'side': []}
 				self.say.remove_recipient(pl)
 
 				pl.notify(pl._("The room creator disbanded the room."))
@@ -88,11 +88,15 @@ class Room(Joinable):
 
 			return
 			
-		if self.started and abort:
+		if (self.started or self.duel_count > 0) and abort:
+			self.duel_count = 0
+			self.points = [0, 0]
 			self.started = False
 			for pl in self.get_all_players():
 				pl.notify(pl._("Duel aborted."))
 				pl.set_parser('RoomParser')
+
+			globals.server.check_reboot()
 				
 	def set_banlist(self, list):
 
