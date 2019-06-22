@@ -94,7 +94,10 @@ def giveup(caller):
 	duel = caller.connection.player.duel
 
 	for pl in duel.players+duel.watchers:
-		pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
+		if duel.room.match:
+			pl.notify(pl._("%s has ended the match.")%(caller.connection.player.nickname))
+		else:
+			pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
 
 	if not duel.private:
 		if duel.tag is True:
@@ -111,6 +114,9 @@ def giveup(caller):
 
 	duel.end()
 
+	if caller.connection.player.room:
+		caller.connection.player.room.leave(caller.connection.player)
+
 @DuelParser.command(names=['scoop'], allowed = lambda c: c.connection.player.watching is False)
 def scoop(caller):
 
@@ -122,19 +128,19 @@ def scoop(caller):
 		losers.append(duel.tag_players[caller.connection.player.duel_player])
 
 	for pl in duel.players+duel.watchers:
-		pl.notify(pl._("%s scooped.")%(caller.connection.player.nickname))
+		if pl is caller.connection.player:
+			pl.notify(pl._("You scooped."))
+		else:
+			pl.notify(pl._("%s scooped.")%(caller.connection.player.nickname))
 
-	if not duel.private:
+	if not duel.private and not duel.room.match:
 		if duel.tag is True:
 			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
 		else:
 			op = duel.players[1 - caller.connection.player.duel_player].nickname
 		globals.server.challenge.send_message(None, __("{player1} scooped against {player2}."), player1 = caller.connection.player.nickname, player2 = op)
 
-	for w in winners:
-		for l in losers:
-			l.lose_against(w)
-			w.win_against(l)
+	duel.room.announce_victory(winners[0])
 	duel.end()
 
 @DuelParser.command(names=['sc', 'score'])
