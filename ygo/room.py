@@ -242,6 +242,28 @@ class Room(Joinable):
 		if self.disbandable:
 			self.inform()
 
+	def announce_giveup(self, pl):
+
+		if self.private:
+			return
+
+		duel = pl.duel
+
+		if self.tag is True:
+			op = "team "+duel.players[1 - pl.duel_player].nickname+", "+duel.tag_players[1 - pl.duel_player].nickname
+		else:
+			op = duel.players[1 - pl.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = pl.nickname, player2 = op)
+
+		if pl in self.teams[1]:
+			team = 1
+		else:
+			team = 2
+
+		for p1 in self.teams[team]:
+			for p2 in self.teams[3 - team]:
+				p1.giveup_against(p2)
+
 	# informs players globally and handles statistics
 	def inform(self):
 		if self.points[0] == self.points[1]:

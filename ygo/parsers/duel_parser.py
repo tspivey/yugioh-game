@@ -99,18 +99,7 @@ def giveup(caller):
 		else:
 			pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
 
-	if not duel.private:
-		if duel.tag is True:
-			op = "team "+duel.players[1 - caller.connection.player.duel_player].nickname+", "+duel.tag_players[1 - caller.connection.player.duel_player].nickname
-		else:
-			op = duel.players[1 - caller.connection.player.duel_player].nickname
-		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = caller.connection.player.nickname, player2 = op)
-
-		if not duel.paused:
-			for pl in duel.players+duel.tag_players:
-				for op in duel.players+duel.tag_players:
-					if pl is not op:
-						pl.giveup_against(op)
+	duel.room.announce_giveup(caller.connection.player)
 
 	duel.end()
 
