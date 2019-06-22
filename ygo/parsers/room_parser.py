@@ -209,6 +209,7 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
+		pl.deck_editor.list_public_decks()
 		pl.deck_editor.list_decks([])
 		return
 

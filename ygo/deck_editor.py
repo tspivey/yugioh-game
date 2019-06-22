@@ -503,3 +503,34 @@ class DeckEditor:
 				else:
 					pl.notify("%d: %s" % (i, card.get_name(pl)))
 				i += 1
+
+	def list_public_decks(self):
+
+		pl = self.player
+
+		session = pl.connection.session
+		
+		decks = list(session.query(models.Deck).filter_by(public = True))
+
+		accs = {}
+		
+		for deck in decks:
+			accs[deck.account.name + "/" + deck.name] = deck
+
+		accs = OrderedDict(natsort.natsorted(accs.items()))
+
+		pl.notify(pl._("{0} public decks available:").format(len(decks)))
+
+		for acc in accs.keys():
+			d = accs[acc]
+
+			banlist_text = pl._("compatible with no banlist")
+			
+			for b in globals.banlists.values():
+				content = json.loads(d.content)
+
+				if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
+					banlist_text = pl._("compatible with {0} banlist").format(b.name)
+					break
+
+			pl.notify(pl._("{deckname} ({banlist})").format(deckname = acc, banlist = banlist_text))
