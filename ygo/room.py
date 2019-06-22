@@ -33,7 +33,7 @@ class Room(Joinable):
 
 		player.set_parser('RoomParser')
 		player.room = self
-		player.deck = {'cards': []}
+		player.deck = {'cards': [], 'side': []}
 		self.teams[0].append(player)
 		self.say.add_recipient(player)
 		for pl in self.get_all_players():
