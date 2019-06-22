@@ -2,6 +2,7 @@ import random
 
 from .constants import __
 from .duel import Duel, DUEL_AVAILABLE
+from .duel_reader import DuelReader
 from . import globals
 from .channels.say import Say
 from .invite.joinable import Joinable
@@ -21,6 +22,8 @@ class Room(Joinable):
 		self.started = False
 		self.match = False
 		self.lp = [8000, 8000]
+		self.points = [0, 0]
+		self.duel_count = 0
 
 	def get_all_players(self):
 		return self.teams[0]+self.teams[1]+self.teams[2]
@@ -186,3 +189,121 @@ class Room(Joinable):
 			self.started = False
 			for p in self.get_all_players():
 				p.notify(p._("Duels aren't available right now."))
+
+	# restore this room to a specific player
+	# called by every duel after the duel finished
+	def restore(self, pl):
+		if pl.connection is None:
+			for opl in globals.server.get_all_players():
+				opl.notify(opl._("%s logged out.")%(pl.nickname))
+			globals.server.remove_player(pl.nickname)
+		else:
+			op = pl.connection.parser
+			if isinstance(op, DuelReader):
+				op.done = lambda caller: None
+		if self.disbandable:
+			if pl.connection:
+				pl.set_parser('LobbyParser')
+		else:
+			if pl.connection:
+				pl.set_parser('RoomParser')
+				pl.room = self
+				self.say.add_recipient(pl)
+				if not pl in self.teams[0] and not pl in self.teams[1] and not pl in self.teams[2]:
+					self.teams[0].append(pl)
+
+	# called by every duel after all players were restored
+	def process(self):
+		if self.disbandable:
+			for pl in self.teams[1] + self.teams[2]:
+				pl.deck = {'cards': [], 'side': []}
+			globals.server.check_reboot()
+		else:
+			self.started = False
+			self.duel_count += 1
+
+	def announce_draw():
+		self.points[0] += 1
+		self.points[1] += 1
+
+		if self.disbandable:
+			self.inform()
+	
+	def announce_victory(self, pl):
+		if pl in self.teams[1]:
+			self.points[0] += 1
+		else:
+			self.points[1] += 1
+			
+		if self.disbandable:
+			self.inform()
+
+	# informs players globally and handles statistics
+	def inform(self):
+		if self.points[0] == self.points[1]:
+			if self.tag is True:
+				pl0 = "team "+self.teams[1][0].nickname+", "+self.teams[1][1].nickname
+				pl1 = "team "+self.teams[2][0].nickname+", "+self.teams[2][1].nickname
+			else:
+				pl0 = self.teams[1][0].nickname
+				pl1 = self.teams[2][0].nickname
+			if not self.private:
+				globals.server.challenge.send_message(None, __("{player1} and {player2} ended up in a draw."), player1 = pl0, player2 = pl1)
+				self.teams[1][0].draw_against(self.teams[2][0])
+				self.teams[2][0].draw_against(self.teams[1][0])
+				if self.tag is True:
+					self.teams[1][0].draw_against(self.teams[2][1])
+					self.teams[1][1].draw_against(self.teams[2][0])
+					self.teams[1][1].draw_against(self.teams[2][1])
+					self.teams[2][0].draw_against(self.teams[1][1])
+					self.teams[2][1].draw_against(self.teams[1][0])
+					self.teams[2][1].draw_against(self.teams[1][1])
+
+			return
+
+		if self.points[0] > self.points[1]:
+			winners = self.teams[1][:]
+			losers = self.teams[2][:]
+		else:
+			winners = self.teams[2][:]
+			losers = self.teams[1][:]
+
+		for w in winners:
+			if not self.private:
+				for l in losers:
+					w.win_against(l)
+		for l in losers:
+			if not self.private:
+				for w in winners:
+					l.lose_against(w)
+
+		if not self.private:
+			if self.tag is True:
+				w = "team "+winners[0].nickname+", "+winners[1].nickname
+				l = "team "+losers[0].nickname+", "+losers[1].nickname
+			else:
+				w = winners[0].nickname
+				l = losers[0].nickname
+			if self.match:
+				globals.server.challenge.send_message(None, __("{winner} won the match between {player1} and {player2}."), winner = w, player1 = w, player2 = l)
+			else:
+				globals.server.challenge.send_message(None, __("{winner} won the duel between {player1} and {player2}."), winner = w, player1 = w, player2 = l)
+
+	# returns True if the room can be disbanded
+	# either because its only ment for one duel
+	# or because the match ended
+	@property
+	def disbandable(self):
+		if not self.match:
+			return True
+		if self.duel_count == 2:
+			return True
+		if self.duel_count >= 1 and abs(self.points[0] - self.points[1]) > 0:
+			return True
+		return False
+
+	@property
+	def tag(self):
+		if len(self.teams[1]) == 2 and len(self.teams[2]) == 2:
+			return True
+		return False

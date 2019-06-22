@@ -4,7 +4,6 @@ import random
 import natsort
 
 from .card import Card
-from .exceptions import CardNotFoundError
 from . import globals
 from . import models
 from .constants import *

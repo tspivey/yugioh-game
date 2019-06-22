@@ -83,7 +83,7 @@ def finish(caller):
 		pl.notify(pl._("Players can now join this room, or you can invite them to join you."))
 		globals.server.challenge.send_message(None, __("{player} created a new duel room."), player = pl.nickname)
 
-@RoomParser.command(names=['leave'], allowed = lambda c: c.connection.player in c.connection.player.room.teams[0] or not c.connection.player.room.started)
+@RoomParser.command(names=['leave'], allowed = lambda c: c.connection.player in c.connection.player.room.teams[0] or (not c.connection.player.room.started and c.connection.player.room.duel_count == 0))
 def leave(caller):
 
 	pl = caller.connection.player
@@ -129,7 +129,7 @@ def teams(caller):
 	else:
 		pl.notify(pl._("Players not yet in a team: %s")%(', '.join([p.nickname for p in room.teams[0]])))
 
-@RoomParser.command(names=['move'], args_regexp=r'([0-2])', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
+@RoomParser.command(names=['move'], args_regexp=r'([0-2])', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started and c.connection.player.room.duel_count == 0)
 def move(caller):
 
 	pl = caller.connection.player
@@ -201,7 +201,7 @@ def rules(caller):
 
 		pl.notify(s)
 
-@RoomParser.command(names=['deck'], args_regexp=r'(.+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
+@RoomParser.command(names=['deck'], args_regexp=r'(.+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started and c.connection.player.room.duel_count == 0)
 def deck(caller):
 
 	pl = caller.connection.player
@@ -461,8 +461,8 @@ def remove(caller):
 		pl.notify(pl._("{0} is currently not in this room.").format(target.nickname))
 		return
 	
-	if room.started and not target in room.teams[0]:
-		pl.notify(pl._("You can only remove watchers after starting the duel."))
+	if (room.started or room.duel_count > 0) and not target in room.teams[0]:
+		pl.notify(pl._("You can only remove watchers after starting the duel or match."))
 		return
 
 	pl.notify(pl._("You ask {0} friendly to leave this room.").format(target.nickname))

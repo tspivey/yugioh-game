@@ -220,23 +220,15 @@ class Duel(Joinable):
 			pl.duel_player = 0
 			pl.watching = False
 			pl.card_list = []
-			pl.deck = {'cards': []}
 			self.say.remove_recipient(pl)
 			self.watch.remove_recipient(pl)
 			self.tags[0].remove_recipient(pl)
 			self.tags[1].remove_recipient(pl)
-			if pl.connection is None:
-				for opl in globals.server.get_all_players():
-					opl.notify(opl._("%s logged out.")%(pl.nickname))
-				globals.server.remove_player(pl.nickname)
-			else:
-				op = pl.connection.parser
-				if isinstance(op, DuelReader):
-					op.done = lambda caller: None
-				pl.set_parser('LobbyParser')
+			self.room.restore(pl)
 		if self.debug_mode is True and self.debug_fp is not None:
 			self.debug_fp.close()
-		globals.server.check_reboot()
+		self.room.process()
+		self.room = None
 
 	def process(self):
 		res = lib.process(self.duel)
