@@ -162,6 +162,9 @@ class Room(Joinable):
 
 		if self.match:
 			pl.notify(pl._("Match mode enabled."))
+
+			pl.notify(pl._("Team 1 score: {0}").format(self.points[0]))
+			pl.notify(pl._("Team 2 score: {0}").format(self.points[1]))
 		else:
 			pl.notify(pl._("Match mode disabled."))
 

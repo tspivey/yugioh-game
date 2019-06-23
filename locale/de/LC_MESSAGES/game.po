@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-06-23 13:45+0200\n"
+"POT-Creation-Date: 2019-06-23 13:52+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -676,44 +676,52 @@ msgstr "Privatsphäre: %s"
 msgid "Match mode enabled."
 msgstr "Match Modus eingeschaltet."
 
-#: ygo/parsers/room_parser.py:530 ygo/room.py:166
+#: ygo/room.py:166
+msgid "Team 1 score: {0}"
+msgstr "Punktestand Gruppe 1: {0}"
+
+#: ygo/room.py:167
+msgid "Team 2 score: {0}"
+msgstr "Punktestand Gruppe 2: {0}"
+
+#: ygo/parsers/room_parser.py:530 ygo/room.py:169
 msgid "Match mode disabled."
 msgstr "Match Modus ausgeschaltet."
 
-#: ygo/room.py:186
+#: ygo/room.py:189
 msgid "The duel between {player1} and {player2} has begun!"
 msgstr "Das Duell zwischen {player1} und {player2} hat begonnen!"
 
-#: ygo/room.py:204
+#: ygo/room.py:207
 msgid "Duels aren't available right now."
 msgstr "Duelle sind derzeit nicht verfügbar."
 
-#: ygo/room.py:211 ygo/server.py:52
+#: ygo/room.py:214 ygo/server.py:52
 #, python-format
 msgid "%s logged out."
 msgstr "%s abgemeldet."
 
-#: ygo/room.py:242
+#: ygo/room.py:245
 msgid "You're now waiting for all players to get ready for their next duel."
 msgstr "Du wartest darauf, dass alle Spiele sich auf ihr nächstes Duell vorbereiten."
 
-#: ygo/room.py:244
+#: ygo/room.py:247
 msgid "You are now preparing for your next duel."
 msgstr "Du bereitest Dich nun auf Dein nächstes Duell vor."
 
-#: ygo/room.py:274
+#: ygo/room.py:277
 msgid "{player1} has cowardly submitted to {player2}."
 msgstr "{player1} hat das Duell mit {player2} aufgegeben."
 
-#: ygo/room.py:296
+#: ygo/room.py:299
 msgid "{player1} and {player2} ended up in a draw."
 msgstr "{player1} und {player2} beendeten ihr Duell mit einem Unentschieden."
 
-#: ygo/room.py:332
+#: ygo/room.py:335
 msgid "{winner} won the match between {player1} and {player2}."
 msgstr "{winner} hat das Match zwischen {player1} und {player2} gewonnen."
 
-#: ygo/room.py:334
+#: ygo/room.py:337
 msgid "{winner} won the duel between {player1} and {player2}."
 msgstr "{winner} hat das Duell zwischen {player1} und {player2} gewonnen."
 
