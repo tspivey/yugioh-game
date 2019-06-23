@@ -53,35 +53,7 @@ def deck(caller):
 
 	elif cmd == 'publiclist':
 
-		pl = caller.connection.player
-
-		session = caller.connection.session
-		
-		decks = list(session.query(models.Deck).filter_by(public = True))
-
-		accs = {}
-		
-		for deck in decks:
-			accs[deck.account.name + "/" + deck.name] = deck
-
-		accs = collections.OrderedDict(natsort.natsorted(accs.items()))
-
-		pl.notify(pl._("{0} public decks available:").format(len(decks)))
-
-		for acc in accs.keys():
-			d = accs[acc]
-
-			banlist_text = pl._("compatible with no banlist")
-			
-			for b in globals.banlists.values():
-				content = json.loads(d.content)
-
-				if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
-					banlist_text = pl._("compatible with {0} banlist").format(b.name)
-					break
-
-			pl.notify(pl._("{deckname} ({banlist})").format(deckname = acc, banlist = banlist_text))
-
+		caller.connection.player.deck_editor.list_public_decks()
 		return
 
 	if len(caller.args) == 0:

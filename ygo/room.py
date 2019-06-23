@@ -2,6 +2,7 @@ import random
 
 from .constants import __
 from .duel import Duel, DUEL_AVAILABLE
+from .duel_reader import DuelReader
 from . import globals
 from .channels.say import Say
 from .invite.joinable import Joinable
@@ -19,7 +20,10 @@ class Room(Joinable):
 		self.banlist = creator_account.banlist
 		self.say = Say()
 		self.started = False
+		self.match = False
 		self.lp = [8000, 8000]
+		self.points = [0, 0]
+		self.duel_count = 0
 
 	def get_all_players(self):
 		return self.teams[0]+self.teams[1]+self.teams[2]
@@ -32,6 +36,7 @@ class Room(Joinable):
 			return
 
 		player.set_parser('RoomParser')
+		player.locked = False
 		player.room = self
 		player.deck = {'cards': [], 'side': []}
 		self.teams[0].append(player)
@@ -57,7 +62,9 @@ class Room(Joinable):
 		else:
 			return
 
-		player.set_parser('LobbyParser')
+		if player.connection:
+			player.set_parser('LobbyParser')
+		player.locked = False
 		player.room = None
 		player.deck = {'cards': [], 'side': []}
 		self.say.remove_recipient(player)
@@ -71,8 +78,9 @@ class Room(Joinable):
 			# closing room entirely
 			for pl in self.get_all_players():
 				pl.set_parser('LobbyParser')
+				pl.locked = False
 				pl.room = None
-				pl.deck = {'cards': []}
+				pl.deck = {'cards': [], 'side': []}
 				self.say.remove_recipient(pl)
 
 				pl.notify(pl._("The room creator disbanded the room."))
@@ -84,11 +92,17 @@ class Room(Joinable):
 
 			return
 			
-		if self.started and abort:
+		if (self.started or self.duel_count > 0) and abort:
+			self.duel_count = 0
+			self.points = [0, 0]
 			self.started = False
 			for pl in self.get_all_players():
 				pl.notify(pl._("Duel aborted."))
+				pl.locked = False
+				pl.deck = {'cards': [], 'side': []}
 				pl.set_parser('RoomParser')
+
+			globals.server.check_reboot()
 				
 	def set_banlist(self, list):
 
@@ -123,6 +137,9 @@ class Room(Joinable):
 
 		self.teams[team].append(player)
 
+		if team == 0:
+			player.locked = False
+
 	def show(self, pl):
 		pl.notify(pl._("The following settings are defined for this room:"))
 
@@ -142,6 +159,14 @@ class Room(Joinable):
 		pl.notify(pl._("Lifepoints - %s: %d, %s: %d")%(pl._("team %d")%(1), self.lp[0], pl._("team %d")%(2), self.lp[1]))
 
 		pl.notify(pl._("Privacy: %s")%(pl._("private") if self.private is True else pl._("public")))
+
+		if self.match:
+			pl.notify(pl._("Match mode enabled."))
+
+			pl.notify(pl._("Team 1 score: {0}").format(self.points[0]))
+			pl.notify(pl._("Team 2 score: {0}").format(self.points[1]))
+		else:
+			pl.notify(pl._("Match mode disabled."))
 
 	def start_duel(self, start_team):
 
@@ -180,3 +205,148 @@ class Room(Joinable):
 			self.started = False
 			for p in self.get_all_players():
 				p.notify(p._("Duels aren't available right now."))
+
+	# restore this room to a specific player
+	# called by every duel after the duel finished
+	def restore(self, pl):
+		if pl.connection is None:
+			for opl in globals.server.get_all_players():
+				opl.notify(opl._("%s logged out.")%(pl.nickname))
+			self.leave(pl)
+			globals.server.remove_player(pl.nickname)
+		else:
+			op = pl.connection.parser
+			if isinstance(op, DuelReader):
+				op.done = lambda caller: None
+		if self.disbandable:
+			if pl.connection:
+				pl.set_parser('LobbyParser')
+		else:
+			if pl.connection:
+				pl.set_parser('RoomParser')
+				pl.room = self
+				self.say.add_recipient(pl)
+
+				if not pl in self.teams[0]:
+					pl.locked = True
+
+	# called by every duel after all players were restored
+	def process(self):
+		if self.disbandable:
+			for pl in self.teams[1] + self.teams[2]:
+				pl.deck = {'cards': [], 'side': []}
+			globals.server.check_reboot()
+		else:
+			self.started = False
+			self.duel_count += 1
+
+			for pl in self.get_all_players():
+				if pl in self.teams[0]:
+					pl.notify(pl._("You're now waiting for all players to get ready for their next duel."))
+				else:
+					pl.notify(pl._("You are now preparing for your next duel."))
+				pl.connection.parser.prompt(pl.connection)
+
+	def announce_draw():
+		self.points[0] += 1
+		self.points[1] += 1
+
+		if self.disbandable:
+			self.inform()
+	
+	def announce_victory(self, pl, announce = True):
+		if pl in self.teams[1]:
+			self.points[0] += 1
+		else:
+			self.points[1] += 1
+			
+		if self.disbandable:
+			self.inform(announce)
+
+	def announce_giveup(self, pl):
+
+		if self.private:
+			return
+
+		duel = pl.duel
+
+		if self.tag is True:
+			op = "team "+duel.players[1 - pl.duel_player].nickname+", "+duel.tag_players[1 - pl.duel_player].nickname
+		else:
+			op = duel.players[1 - pl.duel_player].nickname
+		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = pl.nickname, player2 = op)
+
+		for p1 in self.teams[1]:
+			for p2 in self.teams[2]:
+				p1.giveup_against(p2)
+				p2.giveup_against(p1)
+
+	# informs players globally and handles statistics
+	def inform(self, announce = True):
+		if self.points[0] == self.points[1]:
+			if self.tag is True:
+				pl0 = "team "+self.teams[1][0].nickname+", "+self.teams[1][1].nickname
+				pl1 = "team "+self.teams[2][0].nickname+", "+self.teams[2][1].nickname
+			else:
+				pl0 = self.teams[1][0].nickname
+				pl1 = self.teams[2][0].nickname
+			if not self.private:
+				if announce:
+					globals.server.challenge.send_message(None, __("{player1} and {player2} ended up in a draw."), player1 = pl0, player2 = pl1)
+				self.teams[1][0].draw_against(self.teams[2][0])
+				self.teams[2][0].draw_against(self.teams[1][0])
+				if self.tag is True:
+					self.teams[1][0].draw_against(self.teams[2][1])
+					self.teams[1][1].draw_against(self.teams[2][0])
+					self.teams[1][1].draw_against(self.teams[2][1])
+					self.teams[2][0].draw_against(self.teams[1][1])
+					self.teams[2][1].draw_against(self.teams[1][0])
+					self.teams[2][1].draw_against(self.teams[1][1])
+
+			return
+
+		if self.points[0] > self.points[1]:
+			winners = self.teams[1][:]
+			losers = self.teams[2][:]
+		else:
+			winners = self.teams[2][:]
+			losers = self.teams[1][:]
+
+		if not self.private:
+			for w in winners:
+				for l in losers:
+					w.win_against(l)
+			for l in losers:
+				for w in winners:
+					l.lose_against(w)
+
+		if not self.private and announce:
+			if self.tag is True:
+				w = "team "+winners[0].nickname+", "+winners[1].nickname
+				l = "team "+losers[0].nickname+", "+losers[1].nickname
+			else:
+				w = winners[0].nickname
+				l = losers[0].nickname
+			if self.match:
+				globals.server.challenge.send_message(None, __("{winner} won the match between {player1} and {player2}."), winner = w, player1 = w, player2 = l)
+			else:
+				globals.server.challenge.send_message(None, __("{winner} won the duel between {player1} and {player2}."), winner = w, player1 = w, player2 = l)
+
+	# returns True if the room can be disbanded
+	# either because its only ment for one duel
+	# or because the match ended
+	@property
+	def disbandable(self):
+		if not self.match:
+			return True
+		if self.duel_count == 2:
+			return True
+		if self.duel_count >= 1 and abs(self.points[0] - self.points[1]) > 0:
+			return True
+		return False
+
+	@property
+	def tag(self):
+		if len(self.teams[1]) == 2 and len(self.teams[2]) == 2:
+			return True
+		return False

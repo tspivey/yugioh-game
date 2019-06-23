@@ -116,7 +116,16 @@ class Server(gsb.Server):
 
 	def check_reboot(self):
 		duels = [c.duel for c in self.get_all_players() if c.duel is not None]
-		if globals.rebooting and len(duels) == 0:
+
+		if len(duels):
+			return
+
+		rooms = [p.room for p in self.get_all_players() if p.room and p.room.match and p.room.duel_count > 0]
+
+		if len(rooms):
+			return
+
+		if globals.rebooting:
 			for pl in self.get_all_players():
 				pl.notify(pl._("Rebooting."))
 			reactor.callLater(0.2, reactor.stop)
