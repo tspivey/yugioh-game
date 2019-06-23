@@ -535,7 +535,7 @@ def exchange(caller):
 	pl = caller.connection.player
 
 	if len(pl.deck.get('cards', [])) == 0:
-		pl.notify(pl._("You have no deck loaded yet, so you can't exchange cards between main and side deck yet."))
+		pl.notify(pl._("You have no deck loaded, so you can't exchange cards between main and side deck yet."))
 		return
 
 	if len(caller.args) == 0 or caller.args[0] is None or caller.args[1] is None:

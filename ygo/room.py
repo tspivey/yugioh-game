@@ -161,7 +161,7 @@ class Room(Joinable):
 		pl.notify(pl._("Privacy: %s")%(pl._("private") if self.private is True else pl._("public")))
 
 		if self.match:
-			pl.notify(pl._("Match mode enabled"))
+			pl.notify(pl._("Match mode enabled."))
 		else:
 			pl.notify(pl._("Match mode disabled."))
 
