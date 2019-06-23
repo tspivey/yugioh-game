@@ -341,7 +341,8 @@ def start(caller):
 	if len(room.teams[1]) > 1:
 		room.options = room.options | 0x20
 	else:
-		room.options = room.options ^ 0x20
+		if room.options&0x20 == 0x20:
+			room.options = room.options ^ 0x20
 
 	for p in room.get_all_players():
 		if p is pl:
