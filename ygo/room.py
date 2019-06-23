@@ -36,6 +36,7 @@ class Room(Joinable):
 			return
 
 		player.set_parser('RoomParser')
+		player.locked = False
 		player.room = self
 		player.deck = {'cards': [], 'side': []}
 		self.teams[0].append(player)
@@ -63,6 +64,7 @@ class Room(Joinable):
 
 		if player.connection:
 			player.set_parser('LobbyParser')
+		player.locked = False
 		player.room = None
 		player.deck = {'cards': [], 'side': []}
 		self.say.remove_recipient(player)
@@ -76,6 +78,7 @@ class Room(Joinable):
 			# closing room entirely
 			for pl in self.get_all_players():
 				pl.set_parser('LobbyParser')
+				pl.locked = False
 				pl.room = None
 				pl.deck = {'cards': [], 'side': []}
 				self.say.remove_recipient(pl)
@@ -95,6 +98,7 @@ class Room(Joinable):
 			self.started = False
 			for pl in self.get_all_players():
 				pl.notify(pl._("Duel aborted."))
+				pl.locked = False
 				pl.deck = {'cards': [], 'side': []}
 				pl.set_parser('RoomParser')
 
@@ -132,6 +136,9 @@ class Room(Joinable):
 			return
 
 		self.teams[team].append(player)
+
+		if team == 0:
+			player.locked = False
 
 	def show(self, pl):
 		pl.notify(pl._("The following settings are defined for this room:"))
@@ -217,6 +224,9 @@ class Room(Joinable):
 				pl.room = self
 				self.say.add_recipient(pl)
 
+				if not pl in self.teams[0]:
+					pl.locked = True
+
 	# called by every duel after all players were restored
 	def process(self):
 		if self.disbandable:
@@ -226,6 +236,13 @@ class Room(Joinable):
 		else:
 			self.started = False
 			self.duel_count += 1
+
+			for pl in self.get_all_players():
+				if pl in self.teams[0]:
+					pl.notify(pl._("You're now waiting for all players to get ready for their next duel."))
+				else:
+					pl.notify(pl._("You are now preparing for your next duel."))
+				pl.connection.parser.prompt(pl.connection)
 
 	def announce_draw():
 		self.points[0] += 1

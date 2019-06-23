@@ -19,6 +19,9 @@ class room_parser(parser.Parser):
 		if not room.started:
 			connection.notify(connection._("Enter ? to show all commands and room preferences"))
 
+			if connection.player.locked:
+				connection.notify(connection._("Don't forget to remove the lock when you are ready. Type lock to do so."))
+
 	def huh(self, caller):
 		caller.connection.notify(caller.connection._("This command isn't available right now."))
 
@@ -56,6 +59,7 @@ def list(caller):
 	if room.open:
 		pl.notify(pl._("deck - select a deck to duel with"))
 		pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
+		pl.notify(pl._("lock - lock/unlock a room so that the duel cannot be started"))
 		pl.notify(pl._("move - move yourself into a team of your choice"))
 		pl.notify(pl._("teams - show teams and associated players"))
 
@@ -326,9 +330,18 @@ def start(caller):
 			pl.notify(pl._("%s doesn't have a deck loaded yet.")%(p.nickname))
 			return
 
+	# is someone locking the room?
+	p_l = [p for p in room.teams[1] + room.teams[2] if p.locked]
+
+	if len(p_l):
+		pl.notify(pl._("Players currently locking this room: {0}").format(', '.join([(p.nickname if p is not pl else "you") for p in p_l])))
+		return
+
 	# is it a tag duel?
 	if len(room.teams[1]) > 1:
 		room.options = room.options | 0x20
+	else:
+		room.options = room.options ^ 0x20
 
 	for p in room.get_all_players():
 		if p is pl:
@@ -565,3 +578,15 @@ def exchange(caller):
 	pl.deck['side'].append(main_card)
 
 	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(Card(main_card).get_name(pl), Card(side_card).get_name(pl)))
+
+@RoomParser.command(names=["lock"], allowed = lambda c: c.connection.player.room.open and c.connection.player not in c.connection.player.room.teams[0])
+def lock(caller):
+
+	pl = caller.connection.player
+	
+	pl.locked = not pl.locked
+	
+	if pl.locked:
+		pl.notify(pl._("You're now locking the room."))
+	else:
+		pl.notify(pl._("You are no longer locking the room."))
