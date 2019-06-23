@@ -565,4 +565,3 @@ def exchange(caller):
 	pl.deck['side'].append(main_card)
 
 	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(Card(main_card).get_name(pl), Card(side_card).get_name(pl)))
-	

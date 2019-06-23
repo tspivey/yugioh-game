@@ -95,6 +95,7 @@ class Room(Joinable):
 			self.started = False
 			for pl in self.get_all_players():
 				pl.notify(pl._("Duel aborted."))
+				pl.deck = {'cards': [], 'side': []}
 				pl.set_parser('RoomParser')
 
 			globals.server.check_reboot()
