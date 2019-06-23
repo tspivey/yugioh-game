@@ -55,6 +55,7 @@ def list(caller):
 
 	if room.open:
 		pl.notify(pl._("deck - select a deck to duel with"))
+		pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
 		pl.notify(pl._("move - move yourself into a team of your choice"))
 		pl.notify(pl._("teams - show teams and associated players"))
 
@@ -514,3 +515,54 @@ def match(caller):
 		pl.notify(pl._("Match mode enabled."))
 	else:
 		pl.notify(pl._("Match mode disabled."))
+
+@RoomParser.command(names=["exchange"], args_regexp=r'(\d+) (\d+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
+def exchange(caller):
+
+	pl = caller.connection.player
+
+	if len(pl.deck.get('cards', [])) == 0:
+		pl.notify(pl._("You have no deck loaded yet, so you can't exchange cards between main and side deck yet."))
+		return
+
+	if len(caller.args) == 0 or caller.args[0] is None or caller.args[1] is None:
+		pl.notify(pl._("Main deck:"))
+		pl.deck_editor.list(pl.deck['cards'][:])
+		if len(pl.deck.get('side', [])):
+			pl.notify(pl._("Side deck:"))
+			pl.deck_editor.list(pl.deck['side'][:])
+		
+		return
+
+	if len(pl.deck.get('side', [])) == 0:
+		pl.notify(pl._("Your side deck doesn't contain any cards, so you can't exchange cards with your main deck."))
+		return
+ 
+	monsters, spells, traps, extra, other = pl.deck_editor.group_sort_cards(pl.deck['cards'][:])
+	# this entire thing gets utterly complicated since CPython 3.6+
+	main = []
+	main += [k for k in monsters.keys()]
+	main += [k for k in spells.keys()]
+	main += [k for k in traps.keys()]
+	main += [k for k in extra.keys()]
+
+	monsters, spells, traps, extra, other = pl.deck_editor.group_sort_cards(pl.deck['side'][:])
+	side = []
+	side += [k for k in monsters.keys()]
+	side += [k for k in spells.keys()]
+	side += [k for k in traps.keys()]
+	side += [k for k in extra.keys()]
+
+	main_pos = int(caller.args[0]) - 1
+	side_pos = int(caller.args[1]) - 1
+
+	main_card = main[main_pos]
+	side_card = side[side_pos]
+
+	pl.deck['cards'].remove(main_card)
+	pl.deck['cards'].append(side_card)
+	pl.deck['side'].remove(side_card)
+	pl.deck['side'].append(main_card)
+
+	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(Card(main_card).get_name(pl), Card(side_card).get_name(pl)))
+	
