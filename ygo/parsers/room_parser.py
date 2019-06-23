@@ -334,7 +334,7 @@ def start(caller):
 	p_l = [p for p in room.teams[1] + room.teams[2] if p.locked]
 
 	if len(p_l):
-		pl.notify(pl._("Players currently locking this room: {0}").format(', '.join([(p.nickname if p is not pl else "you") for p in p_l])))
+		pl.notify(pl._("Players currently locking this room: {0}").format(', '.join([(p.nickname if p is not pl else pl._("you")) for p in p_l])))
 		return
 
 	# is it a tag duel?
