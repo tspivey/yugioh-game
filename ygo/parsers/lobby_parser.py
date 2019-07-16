@@ -114,7 +114,7 @@ def deck(caller):
 			deck = models.Deck.find(session, account, deck_name)
 
 		if not deck:
-			self.player.notify(self.player._("Deck not found."))
+			pl.notify(pl._("Deck not found."))
 			return
 
 		pl.deck_editor.list(json.loads(deck.content)['cards'])
