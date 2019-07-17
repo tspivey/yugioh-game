@@ -7,6 +7,7 @@ class Card(object):
 		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
 		if row is None:
 			raise CardNotFoundError("Card %d not found" % code)
+		self.data = 0 # additional data fetched in certain cases (see Duel.read_cardlist)
 		self.code = code
 		self.alias = row['alias']
 		self.setcode = row['setcode']

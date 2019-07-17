@@ -260,12 +260,11 @@ class Duel(Joinable):
 			location = self.read_u8(data)
 			sequence = self.read_u8(data)
 			card = self.get_card(controller, location, sequence)
-			card.extra = 0
 			if extra:
 				if extra8:
-					card.extra = self.read_u8(data)
+					card.data = self.read_u8(data)
 				else:
-					card.extra = self.read_u32(data)
+					card.data = self.read_u32(data)
 			res.append(card)
 		return res
 

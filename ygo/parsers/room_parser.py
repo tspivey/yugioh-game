@@ -353,10 +353,14 @@ def start(caller):
 	# decide who will go first
 	room.started = True
 
-	pl0 = room.teams[1][random.randint(0, len(room.teams[1])-1)]
-	pl1 = room.teams[2][random.randint(0, len(room.teams[2])-1)]
+	if room.decider == 0:
+		pl0 = room.teams[1][random.randint(0, len(room.teams[1])-1)]
+		pl1 = room.teams[2][random.randint(0, len(room.teams[2])-1)]
+	else:
+		pl0 = room.teams[room.decider][random.randint(0, len(room.teams[room.decider])-1)]
+		pl1 = room.teams[3-room.decider][random.randint(0, len(room.teams[3-room.decider])-1)]
 
-	if room.points[0] == room.points[1]:
+	if room.decider == 0:
 
 		for p in room.get_all_players():
 			if p is pl0 or p is pl1:
@@ -367,27 +371,16 @@ def start(caller):
 		pl0.notify(RPS(pl0, pl1))
 		pl1.notify(RPS(pl1, pl0))
 
-	elif room.points[0] < room.points[1]:
-		for p in room.get_all_players():
-			if p is pl0:
-				p.notify(p._("Your score in this match is lower than your opponent's score, thus you may decide who will go first."))
-			elif p is pl1:
-				p.notify(p._("Your score is higher than your opponent's score, thus they may decide who will go first."))
-			else:
-				p.notify(p._("{0} may decide who will go first due to a lower score.").format(pl0.nickname))
-
-		pl0.notify(Decision(pl0))
-
 	else:
 		for p in room.get_all_players():
-			if p is pl1:
-				p.notify(p._("Your score in this match is lower than your opponent's score, thus you may decide who will go first."))
-			elif p is pl0:
-				p.notify(p._("Your score is higher than your opponent's score, thus they may decide who will go first."))
+			if p is pl0:
+				p.notify(p._("You've lost the last duel of this match, thus you may decide who'll go first."))
+			elif p is pl1:
+				p.notify(p._("You've won the last duel of this match, thus your opponent may decide who will go first."))
 			else:
-				p.notify(p._("{0} may decide who will go first due to a lower score.").format(pl1.nickname))
+				p.notify(p._("{0} lost the last duel of this match and thus may decide who will go first.").format(pl0.nickname))
 
-		pl1.notify(Decision(pl1))
+		pl0.notify(Decision(pl0))
 
 @RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
 def invite(caller):

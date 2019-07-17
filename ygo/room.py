@@ -24,6 +24,7 @@ class Room(Joinable):
 		self.lp = [8000, 8000]
 		self.points = [0, 0]
 		self.duel_count = 0
+		self.decider = 0
 
 	def get_all_players(self):
 		return self.teams[0]+self.teams[1]+self.teams[2]
@@ -250,6 +251,7 @@ class Room(Joinable):
 	def announce_draw():
 		self.points[0] += 1
 		self.points[1] += 1
+		self.decider = 0
 
 		if self.disbandable:
 			self.inform()
@@ -257,8 +259,10 @@ class Room(Joinable):
 	def announce_victory(self, pl, announce = True):
 		if pl in self.teams[1]:
 			self.points[0] += 1
+			self.decider = 2
 		else:
 			self.points[1] += 1
+			self.decider = 1
 			
 		if self.disbandable:
 			self.inform(announce)
