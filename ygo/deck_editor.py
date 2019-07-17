@@ -464,6 +464,15 @@ class DeckEditor:
 
 		pl = self.player
 
+		db = globals.language_handler.primary_database
+
+		codes = set(cards)
+
+		# this will filter all unknown cards
+		res = [r[0] for r in db.execute('SELECT id FROM datas WHERE id IN ({0})'.format(', '.join([str(c) for c in codes]))).fetchall()]
+
+		cards = list(filter(lambda c: c in res, cards))
+
 		groups = self.group_sort_cards(cards)
 		monsters, spells, traps, extra, other = groups
 		i = 1
