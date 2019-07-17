@@ -530,7 +530,7 @@ def match(caller):
 	else:
 		pl.notify(pl._("Match mode disabled."))
 
-@RoomParser.command(names=["exchange"], args_regexp=r'(\d+) (\d+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
+@RoomParser.command(names=["exchange"], args_regexp=r'(\d+) (\d+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started and c.connection.player.room.match)
 def exchange(caller):
 
 	pl = caller.connection.player
@@ -546,6 +546,10 @@ def exchange(caller):
 			pl.notify(pl._("Side deck:"))
 			pl.deck_editor.list(pl.deck['side'][:])
 		
+		return
+
+	if pl.room.points[0] == 0 and pl.room.points[1] == 0:
+		pl.notify(pl._("You can only exchange cards after the first duel of the match ended."))
 		return
 
 	if len(pl.deck.get('side', [])) == 0:
