@@ -175,3 +175,7 @@ class Card(object):
 				lst.append(pl._(LINK_MARKERS[m]))
 
 		return ', '.join(lst)
+
+	@property
+	def extra(self):
+		return bool(self.type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))

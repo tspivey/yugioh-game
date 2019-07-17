@@ -114,15 +114,16 @@ class Duel(Joinable):
 		link = []
 
 		for tc in full_deck[::-1]:
-			if Card(tc).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK):
-				if Card(tc).type & TYPE_FUSION:
-					fusion.append([tc, Card(tc).level])
-				if Card(tc).type & TYPE_XYZ:
-					xyz.append([tc, Card(tc).level])
-				if Card(tc).type & TYPE_SYNCHRO:
-					synchro.append([tc, Card(tc).level])
-				if Card(tc).type & TYPE_LINK:
-					link.append([tc, Card(tc).level])
+			cc = Card(tc)
+			if cc.extra:
+				if cc.type & TYPE_FUSION:
+					fusion.append([tc, cc.level])
+				if cc.type & TYPE_XYZ:
+					xyz.append([tc, cc.level])
+				if cc.type & TYPE_SYNCHRO:
+					synchro.append([tc, cc.level])
+				if cc.type & TYPE_LINK:
+					link.append([tc, cc.level])
 			else:
 				c.append(tc)
 
@@ -150,7 +151,7 @@ class Duel(Joinable):
 			self.cards[player.duel_player] = c
 		for sc in c[::-1]:
 			if tag is True:
-				if Card(sc).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK):
+				if Card(sc).extra:
 					location = LOCATION_EXTRA
 				else:
 					location = LOCATION_DECK

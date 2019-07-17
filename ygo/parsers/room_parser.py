@@ -570,15 +570,19 @@ def exchange(caller):
 	main_pos = int(caller.args[0]) - 1
 	side_pos = int(caller.args[1]) - 1
 
-	main_card = main[main_pos]
-	side_card = side[side_pos]
+	main_card = Card(main[main_pos])
+	side_card = Card(side[side_pos])
 
-	pl.deck['cards'].remove(main_card)
-	pl.deck['cards'].append(side_card)
-	pl.deck['side'].remove(side_card)
-	pl.deck['side'].append(main_card)
+	if main_card.extra != side_card.extra:
+		pl.notify(pl._("You can only exchange a card located in the main deck against another card from the main deck and same goes for the extra deck."))
+		return
 
-	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(Card(main_card).get_name(pl), Card(side_card).get_name(pl)))
+	pl.deck['cards'].remove(main_card.code)
+	pl.deck['cards'].append(side_card.code)
+	pl.deck['side'].remove(side_card.code)
+	pl.deck['side'].append(main_card.code)
+
+	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(main_card.get_name(pl), side_card.get_name(pl)))
 
 @RoomParser.command(names=["lock"], allowed = lambda c: c.connection.player.room.open and c.connection.player not in c.connection.player.room.teams[0])
 def lock(caller):
