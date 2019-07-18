@@ -135,6 +135,7 @@ def scoop(caller):
 @DuelParser.command(names=['sc', 'score'])
 def score(caller):
 	caller.connection.player.duel.show_score(caller.connection.player)
+	caller.connection.player.notify(caller.connection.player._("You can type 'room' if you want to see more information about the duel settings."))
 
 @DuelParser.command(names=['tag'], args_regexp=r'(.*)', allowed = lambda c: c.connection.player in c.connection.player.duel.players or c.connection.player in c.connection.player.duel.tag_players and c.connection.player.duel.tag is True)
 def tag(caller):
