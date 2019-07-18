@@ -57,21 +57,25 @@ def list(caller):
 		pl.notify(pl._("save - save settings for all your future rooms"))
 
 	if room.open:
-		pl.notify(pl._("deck - select a deck to duel with"))
-		pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
-		pl.notify(pl._("lock - lock/unlock a room so that the duel cannot be started"))
-		pl.notify(pl._("move - move yourself into a team of your choice"))
 		pl.notify(pl._("teams - show teams and associated players"))
+		if room.duel_count == 0 and not room.started:
+			pl.notify(pl._("deck - select a deck to duel with"))
+			pl.notify(pl._("move - move yourself into a team of your choice"))
+		if room.duel_count > 0 and pl not in room.teams[0] and not room.started:
+			pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
+			pl.notify(pl._("lock - lock/unlock a room so that the duel cannot be started"))
+			pl.notify(pl._("scoop - scoop the next duel"))
 
-		if room.creator is pl:
+		if room.creator is pl and not room.started:
 			pl.notify(pl._("invite - invite player into this room"))
 			pl.notify(pl._("remove - remove player from this room"))
 			pl.notify(pl._("start - start duel with current teams"))
 
-	if room.creator is pl:
-		pl.notify(pl._("leave - leave this room and close it"))
-	else:
-		pl.notify(pl._("leave - leave this room"))
+	if room.duel_count == 0 or pl in room.teams[0]:
+		if room.creator is pl:
+			pl.notify(pl._("leave - leave this room and close it"))
+		else:
+			pl.notify(pl._("leave - leave this room"))
 
 @RoomParser.command(names=['finish'], allowed = lambda c: not c.connection.player.room.open and c.connection.player.room.creator is c.connection.player)
 def finish(caller):
@@ -353,10 +357,14 @@ def start(caller):
 	# decide who will go first
 	room.started = True
 
-	pl0 = room.teams[1][random.randint(0, len(room.teams[1])-1)]
-	pl1 = room.teams[2][random.randint(0, len(room.teams[2])-1)]
+	if room.decider == 0:
+		pl0 = room.teams[1][random.randint(0, len(room.teams[1])-1)]
+		pl1 = room.teams[2][random.randint(0, len(room.teams[2])-1)]
+	else:
+		pl0 = room.teams[room.decider][random.randint(0, len(room.teams[room.decider])-1)]
+		pl1 = room.teams[3-room.decider][random.randint(0, len(room.teams[3-room.decider])-1)]
 
-	if room.points[0] == room.points[1]:
+	if room.decider == 0:
 
 		for p in room.get_all_players():
 			if p is pl0 or p is pl1:
@@ -367,27 +375,16 @@ def start(caller):
 		pl0.notify(RPS(pl0, pl1))
 		pl1.notify(RPS(pl1, pl0))
 
-	elif room.points[0] < room.points[1]:
-		for p in room.get_all_players():
-			if p is pl0:
-				p.notify(p._("Your score in this match is lower than your opponent's score, thus you may decide who will go first."))
-			elif p is pl1:
-				p.notify(p._("Your score is higher than your opponent's score, thus they may decide who will go first."))
-			else:
-				p.notify(p._("{0} may decide who will go first due to a lower score.").format(pl0.nickname))
-
-		pl0.notify(Decision(pl0))
-
 	else:
 		for p in room.get_all_players():
-			if p is pl1:
-				p.notify(p._("Your score in this match is lower than your opponent's score, thus you may decide who will go first."))
-			elif p is pl0:
-				p.notify(p._("Your score is higher than your opponent's score, thus they may decide who will go first."))
+			if p is pl0:
+				p.notify(p._("You've lost the last duel of this match, thus you may decide who'll go first."))
+			elif p is pl1:
+				p.notify(p._("You've won the last duel of this match, thus your opponent may decide who will go first."))
 			else:
-				p.notify(p._("{0} may decide who will go first due to a lower score.").format(pl1.nickname))
+				p.notify(p._("{0} lost the last duel of this match and thus may decide who will go first.").format(pl0.nickname))
 
-		pl1.notify(Decision(pl1))
+		pl0.notify(Decision(pl0))
 
 @RoomParser.command(names=['invite'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room.creator is c.connection.player and c.connection.player.room.open)
 def invite(caller):
@@ -530,7 +527,7 @@ def match(caller):
 	else:
 		pl.notify(pl._("Match mode disabled."))
 
-@RoomParser.command(names=["exchange"], args_regexp=r'(\d+) (\d+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started)
+@RoomParser.command(names=["exchange"], args_regexp=r'(\d+) (\d+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started and c.connection.player.room.match)
 def exchange(caller):
 
 	pl = caller.connection.player
@@ -546,6 +543,10 @@ def exchange(caller):
 			pl.notify(pl._("Side deck:"))
 			pl.deck_editor.list(pl.deck['side'][:])
 		
+		return
+
+	if pl.room.points[0] == 0 and pl.room.points[1] == 0:
+		pl.notify(pl._("You can only exchange cards after the first duel of the match ended."))
 		return
 
 	if len(pl.deck.get('side', [])) == 0:
@@ -570,24 +571,61 @@ def exchange(caller):
 	main_pos = int(caller.args[0]) - 1
 	side_pos = int(caller.args[1]) - 1
 
-	main_card = main[main_pos]
-	side_card = side[side_pos]
+	main_card = Card(main[main_pos])
+	side_card = Card(side[side_pos])
 
-	pl.deck['cards'].remove(main_card)
-	pl.deck['cards'].append(side_card)
-	pl.deck['side'].remove(side_card)
-	pl.deck['side'].append(main_card)
+	if main_card.extra != side_card.extra:
+		pl.notify(pl._("You can only exchange a card located in the main deck against another card from the main deck and same goes for the extra deck."))
+		return
 
-	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(Card(main_card).get_name(pl), Card(side_card).get_name(pl)))
+	pl.deck['cards'].remove(main_card.code)
+	pl.deck['cards'].append(side_card.code)
+	pl.deck['side'].remove(side_card.code)
+	pl.deck['side'].append(main_card.code)
+
+	pl.notify(pl._("You exchange {0} from your main deck against {1} from your side deck.").format(main_card.get_name(pl), side_card.get_name(pl)))
 
 @RoomParser.command(names=["lock"], allowed = lambda c: c.connection.player.room.open and c.connection.player not in c.connection.player.room.teams[0])
 def lock(caller):
 
 	pl = caller.connection.player
+	room = pl.room
 	
 	pl.locked = not pl.locked
 	
 	if pl.locked:
-		pl.notify(pl._("You're now locking the room."))
+		for p in room.get_all_players():
+			if p is pl:
+				p.notify(p._("You're now locking the room."))
+			else:
+				p.notify(p._("{0} is now locking the room.").format(pl.nickname))
 	else:
-		pl.notify(pl._("You are no longer locking the room."))
+		for p in room.get_all_players():
+			if p is pl:
+				p.notify(p._("You are no longer locking the room."))
+			else:
+				p.notify(p._("{0} is no longer locking the room.").format(pl.nickname))
+
+@RoomParser.command(names=["scoop"], allowed = lambda c: c.connection.player.room.open and c.connection.player not in c.connection.player.room.teams[0] and c.connection.player.room.duel_count > 0)
+def scoop(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+	
+	if pl in room.teams[1]:
+		winner = room.teams[2][0]
+	else:
+		winner = room.teams[1][0]
+	
+	for p in room.get_all_players():
+		if p is pl:
+			p.notify(p._("You scooped."))
+		else:
+			p.notify(p._("%s scooped.")%(pl.nickname))
+
+	room.announce_victory(winner)
+
+	for p in room.get_all_players():
+		room.restore(p, already_in_room = True)
+
+	room.process()

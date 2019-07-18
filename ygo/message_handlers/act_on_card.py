@@ -27,7 +27,7 @@ def act_on_card(self, caller, card):
 		if activate_count > 0:
 			effect_descriptions = []
 			for i in range(activate_count):
-				ind = self.idle_activate[self.idle_activate.index(card)+i].extra
+				ind = self.idle_activate[self.idle_activate.index(card)+i].data
 				effect_descriptions.append(card.get_effect_description(pl, ind))
 
 			if activate_count == 1:

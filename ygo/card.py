@@ -7,6 +7,7 @@ class Card(object):
 		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
 		if row is None:
 			raise CardNotFoundError("Card %d not found" % code)
+		self.data = 0 # additional data fetched in certain cases (see Duel.read_cardlist)
 		self.code = code
 		self.alias = row['alias']
 		self.setcode = row['setcode']
@@ -175,3 +176,7 @@ class Card(object):
 				lst.append(pl._(LINK_MARKERS[m]))
 
 		return ', '.join(lst)
+
+	@property
+	def extra(self):
+		return bool(self.type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))

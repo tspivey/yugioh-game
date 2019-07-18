@@ -250,7 +250,10 @@ def who(caller):
 				else:
 					who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
 		elif pl.room and pl.room.open and not pl.room.private and "prepare" in showing:
-			who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
+			if pl.room.duel_count > 0:
+				who_output.append(caller.connection._("%s (preparing to continue match)")%(pl.nickname))
+			else:
+				who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))
 		elif not pl.duel and not pl.watching:
 			if "idle" in showing:
 				who_output.append(s)
@@ -702,7 +705,7 @@ def reloadlanguages(caller):
 	else:
 		caller.connection.notify(caller.connection._("An error occurred: {error}").format(error = success))
 
-@LobbyParser.command(names=["banlist"], args_regexp='([a-zA-Z0-9\.\- ]+)?')
+@LobbyParser.command(names=["banlist"], args_regexp=RE_BANLIST + " ?" + RE_BANLIST)
 def banlist(caller):
 
 	pl = caller.connection.player
@@ -718,11 +721,29 @@ def banlist(caller):
 		
 	banlist = caller.args[0].lower()
 
+	diff_list = None
+	
+	try:
+		diff_list = caller.args[1].lower()
+
+		if diff_list not in globals.banlists:
+			pl.notify(pl._("Banlist {0} is unknown.").format(diff_list))
+
+	except AttributeError:
+		pass
+
 	if banlist not in globals.banlists:
-		pl.notify(pl._("This banlist is unknown."))
+		pl.notify(pl._("Banlist {0} is unknown.").format(banlist))
 		return
 
-	globals.banlists[banlist].show(pl)
+	if banlist is diff_list:
+		pl.notify(pl._("You cannot compare a banlist to itself."))
+		return
+
+	if diff_list is None:
+		globals.banlists[banlist].show(pl)
+	else:
+		globals.banlists[banlist].show_diff(globals.banlists[diff_list], pl)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():

@@ -100,7 +100,7 @@ class Banlist:
 	def check_and_resolve(self, cards):
 		return [(Card(e[0]), e[1], e[2], ) for e in self.check(cards)]
 
-	def __list_cards(self, cards, pl):
+	def __list_cards(self, cards, pl, currently_allowed = None, previously_allowed = None):
 
 		# getting all data
 		data = pl.cdb.execute('SELECT id, name FROM texts WHERE id IN ({0})'.format(', '.join([str(c) for c in cards]))).fetchall()
@@ -118,7 +118,12 @@ class Banlist:
 
 		for d in natsort.natsorted(data, key = lambda d: d[1]):
 
-			pl.notify("\t" + d[1])
+			if currently_allowed and previously_allowed:
+				pl.notify("\t" + pl._("{0} (now at {1}, previously at {2})").format(d[1], currently_allowed[d[0]], previously_allowed[d[0]]))
+			elif previously_allowed:
+				pl.notify("\t" + pl._("{0}, (previously at {1})").format(d[1], previously_allowed[d[0]]))
+			else:
+				pl.notify("\t" + d[1])
 
 	def show(self, pl):
 
@@ -141,6 +146,46 @@ class Banlist:
 		pl.notify(pl._("Semi-limited cards (only allowed twice):"))
 		
 		self.__list_cards(semi_limited, pl)
+
+	def _get_cards(self):
+		return self.__cards.copy()
+
+	def show_diff(self, diff, pl):
+		current_cards = self._get_cards()
+		diff_cards = diff._get_cards()
+
+		current_cards_s = set(current_cards.keys())
+		diff_cards_s = set(diff_cards.keys())
+
+		new_cards_s = current_cards_s - diff_cards_s
+		removed_cards_s = diff_cards_s - current_cards_s
+		changed_cards_s = set([c for c in current_cards_s if c in diff_cards_s and current_cards[c] != diff_cards[c]])
+
+		new_forbidden_cards_s = set([c for c in new_cards_s if current_cards[c] == 0])
+		new_limited_cards_s = set([c for c in new_cards_s if current_cards[c] == 1])
+		new_semi_limited_cards_s = new_cards_s - new_limited_cards_s - new_forbidden_cards_s
+
+		pl.notify(pl._("Changes between {0} and {1} banlist:").format(self.name, diff.name))
+
+		if len(new_forbidden_cards_s):
+			pl.notify(pl._("Forbidden cards (not allowed at all):"))
+			self.__list_cards(new_forbidden_cards_s, pl)
+
+		if len(new_limited_cards_s):
+			pl.notify(pl._("Limited cards (only allowed once):"))
+			self.__list_cards(new_limited_cards_s, pl)
+
+		if len(new_semi_limited_cards_s):
+			pl.notify(pl._("Semi-limited cards (only allowed twice):"))
+			self.__list_cards(new_semi_limited_cards_s, pl)
+
+		if len(changed_cards_s):
+			pl.notify(pl._("Amount of allowed cards changed:"))
+			self.__list_cards(changed_cards_s, pl, current_cards, diff_cards)
+
+		if len(removed_cards_s):
+			pl.notify(pl._("Removed cards (no longer on banlist):"))
+			self.__list_cards(removed_cards_s, pl, previously_allowed = diff_cards)
 
 	@property
 	def name(self):
