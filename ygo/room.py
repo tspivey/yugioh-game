@@ -44,7 +44,10 @@ class Room(Joinable):
 		self.say.add_recipient(player)
 		for pl in self.get_all_players():
 			if pl is player:
-				pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
+				if self.points[0] > 0 or self.points[1] > 0:
+					pl.notify(pl._("You joined %s's room. The match however started already, thus you can only watch the following duels.")%(self.creator.nickname))
+				else:
+					pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
 				self.show(pl)
 			else:
 				pl.notify(pl._("%s joined this room.")%(player.nickname))
