@@ -250,7 +250,7 @@ def who(caller):
 				else:
 					who_output.append(caller.connection._("%s (dueling %s)") %(pl.nickname, other))
 		elif pl.room and pl.room.open and not pl.room.private and "prepare" in showing:
-			if pl.room.points[0] > 0 or pl.room.points[1] > 0:
+			if pl.room.duel_count > 0:
 				who_output.append(caller.connection._("%s (preparing to continue match)")%(pl.nickname))
 			else:
 				who_output.append(caller.connection._("%s (preparing to duel)")%(pl.nickname))

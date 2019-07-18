@@ -44,7 +44,7 @@ class Room(Joinable):
 		self.say.add_recipient(player)
 		for pl in self.get_all_players():
 			if pl is player:
-				if self.points[0] > 0 or self.points[1] > 0:
+				if self.duel_count > 0:
 					pl.notify(pl._("You joined %s's room. The match however started already, thus you can only watch the following duels.")%(self.creator.nickname))
 				else:
 					pl.notify(pl._("You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel.")%(self.creator.nickname))
@@ -212,21 +212,21 @@ class Room(Joinable):
 
 	# restore this room to a specific player
 	# called by every duel after the duel finished
-	def restore(self, pl):
+	def restore(self, pl, already_in_room = False):
 		if pl.connection is None:
 			for opl in globals.server.get_all_players():
 				opl.notify(opl._("%s logged out.")%(pl.nickname))
 			self.leave(pl)
 			globals.server.remove_player(pl.nickname)
 		else:
-			op = pl.connection.parser
-			if isinstance(op, DuelReader):
-				op.done = lambda caller: None
+			if isinstance(pl.connection.parser, DuelReader):
+				pl.connection.parser.done = lambda caller: None
 		if self.disbandable:
 			if pl.connection:
+				pl.room = None
 				pl.set_parser('LobbyParser')
 		else:
-			if pl.connection:
+			if not already_in_room and pl.connection:
 				pl.set_parser('RoomParser')
 				pl.room = self
 				self.say.add_recipient(pl)

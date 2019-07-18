@@ -57,21 +57,25 @@ def list(caller):
 		pl.notify(pl._("save - save settings for all your future rooms"))
 
 	if room.open:
-		pl.notify(pl._("deck - select a deck to duel with"))
-		pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
-		pl.notify(pl._("lock - lock/unlock a room so that the duel cannot be started"))
-		pl.notify(pl._("move - move yourself into a team of your choice"))
 		pl.notify(pl._("teams - show teams and associated players"))
+		if room.duel_count == 0 and not room.started:
+			pl.notify(pl._("deck - select a deck to duel with"))
+			pl.notify(pl._("move - move yourself into a team of your choice"))
+		if room.duel_count > 0 and pl not in room.teams[0] and not room.started:
+			pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
+			pl.notify(pl._("lock - lock/unlock a room so that the duel cannot be started"))
+			pl.notify(pl._("scoop - scoop the next duel"))
 
-		if room.creator is pl:
+		if room.creator is pl and not room.started:
 			pl.notify(pl._("invite - invite player into this room"))
 			pl.notify(pl._("remove - remove player from this room"))
 			pl.notify(pl._("start - start duel with current teams"))
 
-	if room.creator is pl:
-		pl.notify(pl._("leave - leave this room and close it"))
-	else:
-		pl.notify(pl._("leave - leave this room"))
+	if room.duel_count == 0 or pl in room.teams[0]:
+		if room.creator is pl:
+			pl.notify(pl._("leave - leave this room and close it"))
+		else:
+			pl.notify(pl._("leave - leave this room"))
 
 @RoomParser.command(names=['finish'], allowed = lambda c: not c.connection.player.room.open and c.connection.player.room.creator is c.connection.player)
 def finish(caller):
@@ -601,3 +605,27 @@ def lock(caller):
 				p.notify(p._("You are no longer locking the room."))
 			else:
 				p.notify(p._("{0} is no longer locking the room.").format(pl.nickname))
+
+@RoomParser.command(names=["scoop"], allowed = lambda c: c.connection.player.room.open and c.connection.player not in c.connection.player.room.teams[0] and c.connection.player.room.duel_count > 0)
+def scoop(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+	
+	if pl in room.teams[1]:
+		winner = room.teams[2][0]
+	else:
+		winner = room.teams[1][0]
+	
+	for p in room.get_all_players():
+		if p is pl:
+			p.notify(p._("You scooped."))
+		else:
+			p.notify(p._("%s scooped.")%(pl.nickname))
+
+	room.announce_victory(winner)
+
+	for p in room.get_all_players():
+		room.restore(p, already_in_room = True)
+
+	room.process()
