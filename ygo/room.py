@@ -251,7 +251,7 @@ class Room(Joinable):
 					pl.notify(pl._("You are now preparing for your next duel."))
 				pl.connection.parser.prompt(pl.connection)
 
-	def announce_draw():
+	def announce_draw(self):
 		self.points[0] += 1
 		self.points[1] += 1
 		self.decider = 0
