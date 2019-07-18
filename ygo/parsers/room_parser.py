@@ -585,10 +585,19 @@ def exchange(caller):
 def lock(caller):
 
 	pl = caller.connection.player
+	room = pl.room
 	
 	pl.locked = not pl.locked
 	
 	if pl.locked:
-		pl.notify(pl._("You're now locking the room."))
+		for p in room.get_all_players():
+			if p is pl:
+				p.notify(p._("You're now locking the room."))
+			else:
+				p.notify(p._("{0} is now locking the room.").format(pl.nickname))
 	else:
-		pl.notify(pl._("You are no longer locking the room."))
+		for p in room.get_all_players():
+			if p is pl:
+				p.notify(p._("You are no longer locking the room."))
+			else:
+				p.notify(p._("{0} is no longer locking the room.").format(pl.nickname))
