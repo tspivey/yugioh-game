@@ -53,6 +53,7 @@ POS_FACEDOWN = 0xa
 
 RACES_OFFSET = 1020
 
+RE_BANLIST = r"([0-9]+\.[0-9]+\.?[0-9]* ?[a-zA-Z]*)?"
 RE_NICKNAME = r'^([A-Za-z][a-zA-Z0-9]+)$'
 
 QUERY_CODE = 1

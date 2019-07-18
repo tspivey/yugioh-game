@@ -10,6 +10,7 @@ deck view deckname - zeigt eine Liste aller in deckname enthaltenen Karten.
 
 banlist - listet alle im Spiel verfügbaren Bannlisten auf
 banlist name - zeigt Dir alle verbotenen, limitierten und semi-limitierten Karten einer Bannliste an.
+banlist name vgl - vergleich die Bannliste name mit der Bannliste vgl und zeigt nur die Änderungen an.
 
 Befehle im Deck Editor:
 /text - suche nach text.

@@ -10,6 +10,7 @@ deck view deckname - shows the list of all cards in deckname.
 
 banlist - lists all banlists available
 banlist name - shows all forbidden, limited and semi-limited cards of a specific banlist
+banlist name cmp - compares banlist name with banlist cmp and only shows the differences between them
 
 Deck editing commands:
 /text - search for text.
