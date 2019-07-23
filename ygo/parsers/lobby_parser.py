@@ -368,7 +368,7 @@ def encoding(caller):
 		return
 	try:
 		codec = codecs.lookup(caller.args[0])
-		if not codec._is_text_encoding:
+		if not codec._is_text_encoding or codec.encode('test')[0] != b'test':
 			raise LookupError
 	except LookupError:
 		caller.connection.notify(caller.connection._("Unknown encoding."))
