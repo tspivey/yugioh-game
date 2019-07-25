@@ -164,7 +164,12 @@ class DeckEditor:
 
 		player_name = ''
 		deck_name = args[0].strip()
-		amount = int(args[1])
+
+		try:
+			amount = int(args[1])
+		except ValueError:
+			self.player.notify(self.player._("I didn't understand the amount of cards you want to draw."))
+			return
 
 		if not deck_name or not amount:
 			self.player.notify(self.player._("Usage: deck draw <deck>=<number>"))
@@ -204,7 +209,7 @@ class DeckEditor:
 			return
 
 		cards = json.loads(deck.content)['cards']
-		cards = [c for c in cards if c in globals.server.all_cards and not (Card(c).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))]
+		cards = [c for c in cards if c in globals.server.all_cards and not Card(c).extra]
 		random.shuffle(cards)
 
 		for i in range(0, min(amount, len(cards))):

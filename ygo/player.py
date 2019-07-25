@@ -80,6 +80,10 @@ class Player(Invitable):
 		return set([c for c in deck if c not in globals.server.all_cards])
 
 	def set_parser(self, p):
+
+		if not self.connection:
+			return
+
 		p=p.lower()
 		if p == 'lobbyparser':
 			self.connection.parser = LobbyParser

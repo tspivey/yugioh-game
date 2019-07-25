@@ -230,6 +230,7 @@ class Duel(Joinable):
 			self.debug_fp.close()
 		self.room.process()
 		self.room = None
+		self.duel = None
 
 	def process(self):
 		res = lib.process(self.duel)

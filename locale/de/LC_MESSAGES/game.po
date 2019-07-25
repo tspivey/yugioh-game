@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-07-18 16:54+0200\n"
+"POT-Creation-Date: 2019-07-25 22:50+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -208,11 +208,11 @@ msgstr "öffentlich"
 msgid "private"
 msgstr "privat"
 
-#: ygo/deck_editor.py:36 ygo/deck_editor.py:536
+#: ygo/deck_editor.py:36 ygo/deck_editor.py:541
 msgid "compatible with no banlist"
 msgstr "mit keiner Bannliste kompatibel"
 
-#: ygo/deck_editor.py:41 ygo/deck_editor.py:542
+#: ygo/deck_editor.py:41 ygo/deck_editor.py:547
 msgid "compatible with {0} banlist"
 msgstr "kompatibel mit {0} Bannliste"
 
@@ -221,7 +221,7 @@ msgid "{deckname} ({privacy}) ({banlist})"
 msgstr "{deckname} ({privacy}) ({banlist})"
 
 #: ygo/deck_editor.py:51 ygo/deck_editor.py:62 ygo/deck_editor.py:85
-#: ygo/deck_editor.py:203 ygo/deck_editor.py:415 ygo/deck_editor.py:428
+#: ygo/deck_editor.py:208 ygo/deck_editor.py:420 ygo/deck_editor.py:433
 #: ygo/parsers/lobby_parser.py:117
 msgid "Deck not found."
 msgstr "Deck nicht gefunden."
@@ -258,17 +258,17 @@ msgstr "Verwendung: deck copy <alt>=<neu>"
 msgid "The copy destination can only be one of your own decks."
 msgstr "Du kannst als Ziel nur ein eigenes Deck wählen."
 
-#: ygo/deck_editor.py:122 ygo/deck_editor.py:181 ygo/parsers/lobby_parser.py:99
+#: ygo/deck_editor.py:122 ygo/deck_editor.py:186 ygo/parsers/lobby_parser.py:99
 #: ygo/parsers/room_parser.py:242
 msgid "You don't need to mention yourself if you want to use your own deck."
 msgstr "Du brauchst Dich nicht selbst erwähnen, wenn Du ein eigenes Deck verwenden möchtest."
 
-#: ygo/deck_editor.py:128 ygo/deck_editor.py:187
+#: ygo/deck_editor.py:128 ygo/deck_editor.py:192
 #: ygo/parsers/lobby_parser.py:105 ygo/parsers/room_parser.py:248
 msgid "Player {0} could not be found."
 msgstr "Spieler {0} wurde nicht gefunden."
 
-#: ygo/deck_editor.py:142 ygo/deck_editor.py:199 ygo/parsers/room_parser.py:258
+#: ygo/deck_editor.py:142 ygo/deck_editor.py:204 ygo/parsers/room_parser.py:258
 msgid "Deck doesn't exist or isn't publically available."
 msgstr "Dieses Deck existiert nicht oder ist nicht öffentlich verfügbar."
 
@@ -276,126 +276,130 @@ msgstr "Dieses Deck existiert nicht oder ist nicht öffentlich verfügbar."
 msgid "Deck copied."
 msgstr "Deck opiert."
 
-#: ygo/deck_editor.py:160 ygo/deck_editor.py:170
+#: ygo/deck_editor.py:160 ygo/deck_editor.py:175
 msgid "Usage: deck draw <deck>=<number>"
 msgstr "Verwendung: deck draw <deckname>=<anzahl karten>"
 
-#: ygo/deck_editor.py:211
+#: ygo/deck_editor.py:171
+msgid "I didn't understand the amount of cards you want to draw."
+msgstr "Ich habe nicht verstanden, wieviele Karten Du ziehen möchtest."
+
+#: ygo/deck_editor.py:216
 #, python-format
 msgid "Drew: %s"
 msgstr "Ziehe: %s"
 
-#: ygo/deck_editor.py:220
+#: ygo/deck_editor.py:225
 msgid "You cannot edit public decks. Switch it back to private by using deck private {0} first."
 msgstr "Du kannst öffentliche Decks nicht bearbeiten. Setze es mit deck private {0} erst wieder auf privat."
 
-#: ygo/deck_editor.py:227
+#: ygo/deck_editor.py:232
 msgid "Deck exists, loading."
 msgstr "Das Deck existiert bereits, es wird geladen."
 
-#: ygo/deck_editor.py:245 ygo/parsers/room_parser.py:281
+#: ygo/deck_editor.py:250 ygo/parsers/room_parser.py:281
 msgid "Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."
 msgstr "Ungültige Karten wurden aus dem Deck entfernt. Dies tritt immer dann auf, wenn vom Server eine neue Datenbank geladen wurde, welche die alten Karten nicht mehr, oder unter einer anderen ID beinhaltet."
 
-#: ygo/deck_editor.py:248
+#: ygo/deck_editor.py:253
 #, python-format
 msgid "Creating new deck %s."
 msgstr "Neues Deck %s erstellt."
 
-#: ygo/deck_editor.py:341
+#: ygo/deck_editor.py:346
 msgid "That deck already exists."
 msgstr "Dieses Deck existiert bereits."
 
-#: ygo/deck_editor.py:347
+#: ygo/deck_editor.py:352
 msgid "Deck created."
 msgstr "Deck erstellt."
 
-#: ygo/deck_editor.py:353 ygo/parsers/lobby_parser.py:715
+#: ygo/deck_editor.py:358 ygo/parsers/lobby_parser.py:715
 msgid "The following banlists are available (from newest to oldest):"
 msgstr "Die folgenden Bannlisten sind verfügbar (neu nach alt):"
 
-#: ygo/deck_editor.py:361
+#: ygo/deck_editor.py:366
 msgid "This banlist is unknown."
 msgstr "Diese Bannliste ist unbekannt."
 
-#: ygo/deck_editor.py:367 ygo/parsers/room_parser.py:302
+#: ygo/deck_editor.py:372 ygo/parsers/room_parser.py:302
 #, python-format
 msgid "%s: limit %d, found %d."
 msgstr "%s: Limit %d, %d gefunden."
 
-#: ygo/deck_editor.py:369 ygo/parsers/room_parser.py:305
+#: ygo/deck_editor.py:374 ygo/parsers/room_parser.py:305
 #, python-format
 msgid "Check completed with %d errors."
 msgstr "Prüfung mit %d Fehlern abgeschlossen."
 
-#: ygo/deck_editor.py:385 ygo/deck_editor.py:391
+#: ygo/deck_editor.py:390 ygo/deck_editor.py:396
 msgid "Usage: deck import <name>=<string>"
 msgstr "Verwendung: deck import <name>=<deck>"
 
-#: ygo/deck_editor.py:396
+#: ygo/deck_editor.py:401
 msgid "Invalid import string."
 msgstr "Ungültiges zu importierendes Deck."
 
-#: ygo/deck_editor.py:402
+#: ygo/deck_editor.py:407
 msgid "Deck already exists."
 msgstr "Ein Deck mit diesem Namen existiert bereits."
 
-#: ygo/deck_editor.py:407
+#: ygo/deck_editor.py:412
 #, python-format
 msgid "Deck %s imported."
 msgstr "Deck %s erfolgreich importiert."
 
-#: ygo/deck_editor.py:433
+#: ygo/deck_editor.py:438
 msgid "This deck is already public."
 msgstr "Dieses Deck ist bereits öffentlich."
 
-#: ygo/deck_editor.py:435
+#: ygo/deck_editor.py:440
 msgid "This deck is already private."
 msgstr "Dieses Deck ist bereits privat."
 
-#: ygo/deck_editor.py:448 ygo/parsers/room_parser.py:286
+#: ygo/deck_editor.py:453 ygo/parsers/room_parser.py:286
 #, python-format
 msgid "Your main deck must contain between 40 and 60 cards (currently %d)."
 msgstr "Dein Deck muss zwischen 40 und 60 Karten beinhalten (derzeit %d)."
 
-#: ygo/deck_editor.py:452 ygo/parsers/room_parser.py:290
+#: ygo/deck_editor.py:457 ygo/parsers/room_parser.py:290
 #, python-format
 msgid "Your extra deck may not contain more than 15 cards (currently %d)."
 msgstr "Dein Extradeck darf nicht mehr als 15 Karten beinhalten (derzeit %d)."
 
-#: ygo/deck_editor.py:459
+#: ygo/deck_editor.py:464
 msgid "This deck is now public."
 msgstr "Dieses Deck ist jetzt öffentlich."
 
-#: ygo/deck_editor.py:461
+#: ygo/deck_editor.py:466
 msgid "This deck is no longer public."
 msgstr "Dieses Deck ist nicht mehr öffentlich."
 
-#: ygo/deck_editor.py:480
+#: ygo/deck_editor.py:485
 #, python-format
 msgid "monsters (%d):"
 msgstr "Monsterkarten (%d):"
 
-#: ygo/deck_editor.py:489
+#: ygo/deck_editor.py:494
 #, python-format
 msgid "spells (%d):"
 msgstr "Zauberkarten (%d):"
 
-#: ygo/deck_editor.py:498
+#: ygo/deck_editor.py:503
 #, python-format
 msgid "traps (%d):"
 msgstr "Fallenkarten (%d):"
 
-#: ygo/deck_editor.py:507
+#: ygo/deck_editor.py:512
 #, python-format
 msgid "extra (%d):"
 msgstr "Extradeck (%d):"
 
-#: ygo/deck_editor.py:531
+#: ygo/deck_editor.py:536
 msgid "{0} public decks available:"
 msgstr "{0} öffentliche Decks verfügbar."
 
-#: ygo/deck_editor.py:545
+#: ygo/deck_editor.py:550
 msgid "{deckname} ({banlist})"
 msgstr "{deckname} ({banlist})"
 
@@ -413,99 +417,99 @@ msgstr "Gib help dueling für eine Liste hilfreicher Befehle ein."
 msgid "%s will go first."
 msgstr "%s ist als Erster dran."
 
-#: ygo/duel.py:218 ygo/duel.py:713
+#: ygo/duel.py:218 ygo/duel.py:714
 msgid "Watching stopped."
 msgstr "Du bist nun kein Zuschauer mehr."
 
-#: ygo/duel.py:445
+#: ygo/duel.py:446
 #, python-format
 msgid "Summonable in attack position: %s"
 msgstr "Kann in Angriffsposition beschworen werden: %s"
 
-#: ygo/duel.py:447
+#: ygo/duel.py:448
 #, python-format
 msgid "Summonable in defense position: %s"
 msgstr "Kann in Verteidigungsposition beschworen werden: %s"
 
-#: ygo/duel.py:449
+#: ygo/duel.py:450
 #, python-format
 msgid "Special summonable: %s"
 msgstr "Kann als Spezialbeschwörung beschworen werden: %s"
 
-#: ygo/duel.py:451
+#: ygo/duel.py:452
 #, python-format
 msgid "Activatable: %s"
 msgstr "Kann aktiviert werden: %s"
 
-#: ygo/duel.py:453
+#: ygo/duel.py:454
 #, python-format
 msgid "Repositionable: %s"
 msgstr "Kann Position verändern: %s"
 
-#: ygo/duel.py:455
+#: ygo/duel.py:456
 #, python-format
 msgid "Settable: %s"
 msgstr "Kann gesetzt werden: %s"
 
-#: ygo/duel.py:499
+#: ygo/duel.py:500
 msgid "deck"
 msgstr "Deck"
 
-#: ygo/duel.py:503
+#: ygo/duel.py:504
 msgid "{position} card ({spec})"
 msgstr "{position} Karte ({spec})"
 
-#: ygo/duel.py:512
+#: ygo/duel.py:513
 msgid "Table is empty."
 msgstr "Keine Karten auf dem Tisch."
 
-#: ygo/duel.py:521
+#: ygo/duel.py:522
 msgid "({attack}) link rating {level}"
 msgstr "({attack}) Linkzahl {level}"
 
-#: ygo/duel.py:524
+#: ygo/duel.py:525
 msgid "({attack}/{defense}) rank {level}"
 msgstr "({attack}/{defense}) Rang {level}"
 
-#: ygo/duel.py:527
+#: ygo/duel.py:528
 msgid "({attack}/{defense}) level {level}"
 msgstr "({attack}/{defense}) Stufe {level}"
 
-#: ygo/duel.py:532
+#: ygo/duel.py:533
 #, python-format
 msgid "xyz materials: %d"
 msgstr "XYZ-Materialien: %d"
 
-#: ygo/duel.py:553
+#: ygo/duel.py:554
 #, python-format
 msgid "(equipped to %s)"
 msgstr "(rüstet %s aus)"
 
-#: ygo/duel.py:572
+#: ygo/duel.py:573
 #, python-format
 msgid "Zone linked by %s (%s): %s"
 msgstr "Durch %s (%s) verlinkte Zonen: %s"
 
-#: ygo/duel.py:577
+#: ygo/duel.py:578
 msgid "No cards."
 msgstr "Keine Karten."
 
-#: ygo/duel.py:589
+#: ygo/duel.py:590
 #, python-format
 msgid "link rating %d"
 msgstr "Linkzahl %d"
 
-#: ygo/duel.py:591
+#: ygo/duel.py:592
 #, python-format
 msgid "rank %d"
 msgstr "Rang %d"
 
-#: ygo/duel.py:593
+#: ygo/duel.py:594
 #, python-format
 msgid "level %d"
 msgstr "Stufe %d"
 
-#: ygo/duel.py:608 ygo/duel.py:609 ygo/duel.py:724 ygo/duel.py:725
+#: ygo/duel.py:609 ygo/duel.py:610 ygo/duel.py:725 ygo/duel.py:726
 #: ygo/parsers/duel_parser.py:26 ygo/parsers/duel_parser.py:41
 #: ygo/parsers/lobby_parser.py:230 ygo/parsers/lobby_parser.py:231
 #: ygo/parsers/lobby_parser.py:241
@@ -513,105 +517,105 @@ msgstr "Stufe %d"
 msgid "team %s"
 msgstr "Gruppe %s"
 
-#: ygo/duel.py:613
+#: ygo/duel.py:614
 #, python-format
 msgid "LP: %s: %d %s: %d"
 msgstr "LP: %s: %d, %s: %d"
 
-#: ygo/duel.py:614
+#: ygo/duel.py:615
 #, python-format
 msgid "Hand: %s: %d %s: %d"
 msgstr "Hand: %s: %d, %s: %d"
 
-#: ygo/duel.py:615
+#: ygo/duel.py:616
 #, python-format
 msgid "Deck: %s: %d %s: %d"
 msgstr "Deck: %s: %d, %s: %d"
 
-#: ygo/duel.py:616
+#: ygo/duel.py:617
 #, python-format
 msgid "Grave: %s: %d %s: %d"
 msgstr "Friedhof: %s: %d, %s: %d"
 
-#: ygo/duel.py:617
+#: ygo/duel.py:618
 #, python-format
 msgid "Removed: %s: %d %s: %d"
 msgstr "Verbannt: %s: %d, %s: %d"
 
-#: ygo/duel.py:619
+#: ygo/duel.py:620
 #, python-format
 msgid "Your LP: %d Opponent LP: %d"
 msgstr "Deine Lebenspunkte: %d, Gegnerische Lebenspunkte: %d"
 
-#: ygo/duel.py:620
+#: ygo/duel.py:621
 #, python-format
 msgid "Hand: You: %d Opponent: %d"
 msgstr "Hand: Du %d Karten, Gegner %d Karten"
 
-#: ygo/duel.py:621
+#: ygo/duel.py:622
 #, python-format
 msgid "Deck: You: %d Opponent: %d"
 msgstr "Deck: Du %d Karten, Gegner %d Karten"
 
-#: ygo/duel.py:622
+#: ygo/duel.py:623
 #, python-format
 msgid "Grave: You: %d Opponent: %d"
 msgstr "Friedhof: Du %d Karten, Gegner %d Karten"
 
-#: ygo/duel.py:623
+#: ygo/duel.py:624
 #, python-format
 msgid "Removed: You: %d Opponent: %d"
 msgstr "Verbannt: Du %d Karten, Gegner %d Karten"
 
-#: ygo/duel.py:625
+#: ygo/duel.py:626
 msgid "This duel is currently paused."
 msgstr "Dieses Duell pausiert derzeit."
 
-#: ygo/duel.py:628
+#: ygo/duel.py:629
 msgid "It's your turn."
 msgstr "Du bist am Zug."
 
-#: ygo/duel.py:630
+#: ygo/duel.py:631
 #, python-format
 msgid "It's %s's turn."
 msgstr "%s ist am Zug."
 
-#: ygo/duel.py:636
+#: ygo/duel.py:637
 #, python-format
 msgid "%s: %s card."
 msgstr "%s: %s Karte"
 
-#: ygo/duel.py:651 ygo/parsers/deck_editor_parser.py:105
+#: ygo/duel.py:652 ygo/parsers/deck_editor_parser.py:105
 #: ygo/parsers/deck_editor_parser.py:185
 msgid "Invalid card."
 msgstr "Ungültige Karte."
 
-#: ygo/duel.py:688
+#: ygo/duel.py:689
 msgid "Duel paused until all duelists reconnect."
 msgstr "Duell wird pausiert, bis alle Duellanten wieder verbunden sind."
 
-#: ygo/duel.py:701
+#: ygo/duel.py:702
 msgid "Duel continues."
 msgstr "Duell wird fortgesetzt."
 
-#: ygo/duel.py:709
+#: ygo/duel.py:710
 msgid "{player} is no longer watching this duel."
 msgstr "{player} schaut diesem Duell nicht mehr zu."
 
-#: ygo/duel.py:729
+#: ygo/duel.py:730
 #, python-format
 msgid "Watching duel between %s and %s."
 msgstr "Schaue Duell zwischen %s und %s zu."
 
-#: ygo/duel.py:733
+#: ygo/duel.py:734
 msgid "{player} is now watching this duel."
 msgstr "{player} schaut jetzt diesem Duell zu."
 
-#: ygo/duel.py:737
+#: ygo/duel.py:738
 msgid "The duel is currently paused due to not all players being connected."
 msgstr "Dieses Duell ist derzeit pausiert, da nicht alle Duellanten verbunden sind."
 
-#: ygo/player.py:147
+#: ygo/player.py:151
 msgid "No help topic."
 msgstr "Keine Hilfeseite gefunden."
 
@@ -2522,3 +2526,4 @@ msgstr "{0} gewinnt und darf nun entscheiden, wer beginnen wird."
 #: ygo/who_goes_first/rps.py:61
 msgid "What do you want to choose?"
 msgstr "Was möchtest Du wählen?"
+
