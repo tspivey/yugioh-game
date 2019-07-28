@@ -75,9 +75,8 @@ def check_sum(cards, acc):
 		return False
 	if not cards:
 		return acc == 0
-	l = cards[0].param
-	l1 = l & 0xffff
-	l2 = l >> 16
+	l1 = cards[0].param[0]
+	l2 = cards[0].param[1]
 	nc = cards[1:]
 	res1 = check_sum(nc, acc - l1)
 	if l2 > 0:

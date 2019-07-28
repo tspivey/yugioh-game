@@ -21,7 +21,8 @@ def msg_select_sum(self, data):
 		card.controller = self.read_u8(data)
 		card.location = self.read_u8(data)
 		card.sequence = self.read_u8(data)
-		card.param = self.read_u32(data)
+		param = self.read_u32(data)
+		card.param = (param&0xff, param>>16, )
 		must_select.append(card)
 	count = self.read_u8(data)
 	select_some = []
@@ -31,23 +32,47 @@ def msg_select_sum(self, data):
 		card.controller = self.read_u8(data)
 		card.location = self.read_u8(data)
 		card.sequence = self.read_u8(data)
-		card.param = self.read_u32(data)
+		param = self.read_u32(data)
+		card.param = (param&0xff, param>>16, )
 		select_some.append(card)
 	self.cm.call_callbacks('select_sum', mode, player, val, select_min, select_max, must_select, select_some)
 	return data.read()
 
 def select_sum(self, mode, player, val, select_min, select_max, must_select, select_some):
 	pl = self.players[player]
-	must_select_value = sum(c.param for c in must_select)
+
+	must_select_levels = []
+
+	if len(must_select) == 1:
+		must_select_levels = list(must_select[0].param)
+	elif len(must_select) > 1:
+		for i in range(len(must_select)):
+			if i == len(must_select) - 1:
+				break
+			c = must_select[i]
+			for j in range(i + 1, len(must_select)):
+				c2 = must_select[j]
+				for l in c.param:
+					for l2 in c2.param:
+						must_select_levels.append(l + l2)
+
+	else:
+		must_select_levels = [0]
+
+	must_select_levels = sorted(set(must_select_levels))
+
 	def prompt():
 		if mode == 0:
-			pl.notify(pl._("Select cards with a total value of %d, seperated by spaces.") % (val - must_select_value))
+			if len(must_select_levels) == 1:
+				pl.notify(pl._("Select cards with a total value of %d, seperated by spaces.") % (val - must_select_levels[0]))
+			else:
+				pl.notify(pl._("Select cards with a total value being one of the following, seperated by spaces: %s") % (', '.join([str(val - l) for l in must_select_levels])))
 		else:
-			pl.notify(pl._("Select cards with a total value of at least %d, seperated by spaces.") % (val - must_select_value))
+			pl.notify(pl._("Select cards with a total value of at least %d, seperated by spaces.") % (val - must_select_levels[0]))
 		for c in must_select:
-			pl.notify("%s must be selected, automatically selected." % c.get_name(pl))
+			pl.notify(pl._("%s must be selected, automatically selected.") % c.get_name(pl))
 		for i, card in enumerate(select_some):
-			pl.notify("%d: %s (%d)" % (i+1, card.get_name(pl), card.param & 0xffff))
+			pl.notify("%d: %s (%s)" % (i+1, card.get_name(pl), (' ' + pl._('or') + ' ').join([str(p) for p in card.param if p > 0])))
 		return pl.notify(DuelReader, r, no_abort="Invalid entry.", restore_parser=DuelParser)
 	def error(t):
 		pl.notify(t)
@@ -59,10 +84,23 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
 		if any(i for i in ints if i < 1 or i > len(select_some) - 1):
 			return error(pl._("Value out of range."))
 		selected = [select_some[i] for i in ints]
-		s = [select_some[i].param & 0xffff	for i in ints]
-		if mode == 1 and (sum(s) < val or sum(s) - min(s) >= val):
+		s = []
+
+		for i in range(len(selected)):
+			if i == len(selected) - 1:
+				break
+			c = selected[i]
+			for j in range(i + 1, len(selected)):
+				c2 = selected[j]
+				for l in c.param:
+					for l2 in c2.param:
+						s.append(l + l2)
+		
+		s = sorted(set(s))
+
+		if mode == 1 and max(s) < val:
 			return error(pl._("Levels out of range."))
-		if mode == 0 and not check_sum(selected, val - must_select_value):
+		if mode == 0 and not any([check_sum(selected, val - m) for m in must_select_levels]):
 			return error(pl._("Selected value does not equal %d.") % (val,))
 		lst = [len(ints) + len(must_select)]
 		lst.extend([0] * len(must_select))
