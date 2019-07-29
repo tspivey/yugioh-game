@@ -59,7 +59,7 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
 	else:
 		must_select_levels = [0]
 
-	must_select_levels = sorted(set(must_select_levels))
+	must_select_levels = sorted(set(filter(lambda l: l, must_select_levels)))
 
 	def prompt():
 		if mode == 0:
