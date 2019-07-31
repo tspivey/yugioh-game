@@ -19,15 +19,34 @@ def msg_select_option(self, data):
 def select_option(self, player, options):
 	pl = self.players[player]
 	def select(caller, idx):
+
+		opt = options[idx]
+
+		for p in self.players+self.watchers:
+
+			if opt > 10000:
+				string = card.get_strings(p)[opt & 0xf]
+			else:
+				string = p._("Unknown option %d" % opt)
+				string = p.strings['system'].get(opt, string)
+
+			if p is pl:
+				p.notify(p._("You selected option {0}: {1}").format(idx + 1, string))
+			else:
+				p.notify(p._("{0} selected option {1}: {2}").format(pl.nickname, idx + 1, string))
+
 		self.set_responsei(idx)
 		reactor.callLater(0, process_duel, self)
+
+	card = None
 	opts = []
 	for opt in options:
 		if opt > 10000:
 			code = opt >> 4
-			string = Card(code).get_strings(pl)[opt & 0xf]
+			card = Card(code)
+			string = card.get_strings(pl)[opt & 0xf]
 		else:
-			string = "Unknown option %d" % opt
+			string = pl._("Unknown option %d" % opt)
 			string = pl.strings['system'].get(opt, string)
 		opts.append(string)
 	m = Menu(pl._("Select option:"), no_abort=pl._("Invalid option."), prompt=pl._("Select option:"), persistent=True, restore_parser=DuelParser)
