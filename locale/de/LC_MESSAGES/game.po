@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-07-28 02:57+0200\n"
+"POT-Creation-Date: 2019-07-31 12:38+0200\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -1014,7 +1014,7 @@ msgid "e: End phase."
 msgstr "E: Zug beenden."
 
 #: ygo/message_handlers/display_battle_menu.py:29
-#: ygo/message_handlers/select_option.py:33
+#: ygo/message_handlers/select_option.py:52
 msgid "Invalid option."
 msgstr "Ungültige Option"
 
@@ -1248,7 +1248,7 @@ msgstr "Wähle %d bis %d Karten (mit Leerzeichen trennen):"
 
 #: ygo/message_handlers/select_card.py:64
 #: ygo/message_handlers/select_place.py:27
-#: ygo/message_handlers/select_sum.py:83 ygo/message_handlers/sort_card.py:42
+#: ygo/message_handlers/select_sum.py:84 ygo/message_handlers/sort_card.py:42
 msgid "Duplicate values not allowed."
 msgstr "Doppelte Werte nicht erlaubt."
 
@@ -1311,7 +1311,21 @@ msgstr "Bitte gib einen %d Werte mit einer Summe von %d an."
 msgid "Do you want to use the effect from {card} in {spec}?"
 msgstr "Möchtest Du den Effekt von {card} in {spec} verwenden?"
 
-#: ygo/message_handlers/select_option.py:33
+#: ygo/message_handlers/select_option.py:30
+#: ygo/message_handlers/select_option.py:49
+#, python-format
+msgid "Unknown option %d"
+msgstr "Unbekannte Option %d"
+
+#: ygo/message_handlers/select_option.py:34
+msgid "You selected option {0}: {1}"
+msgstr "Du hast Option {0} ausgewählt: {1}"
+
+#: ygo/message_handlers/select_option.py:36
+msgid "{0} selected option {1}: {2}"
+msgstr "{0} hat Option {1} ausgewählt: {2}"
+
+#: ygo/message_handlers/select_option.py:52
 msgid "Select option:"
 msgstr "Option auswählen:"
 
@@ -1363,39 +1377,39 @@ msgstr "Offene Verteidigung"
 msgid "Face-down defense"
 msgstr "Verdeckte Verteidigung"
 
-#: ygo/message_handlers/select_sum.py:67
+#: ygo/message_handlers/select_sum.py:68
 #, python-format
 msgid "Select cards with a total value of %d, seperated by spaces."
 msgstr "Wähle Karten mit einem Gesamtwert von %d (mit Leerzeichen getrennt):"
 
-#: ygo/message_handlers/select_sum.py:69
+#: ygo/message_handlers/select_sum.py:70
 #, python-format
 msgid "Select cards with a total value being one of the following, seperated by spaces: %s"
 msgstr "Wähle Karten mit einem Gesamtwert aus der folgenden Liste (mit Leerzeichen getrennt): %s"
 
-#: ygo/message_handlers/select_sum.py:71
+#: ygo/message_handlers/select_sum.py:72
 #, python-format
 msgid "Select cards with a total value of at least %d, seperated by spaces."
 msgstr "Wähle Karten mit einem Gesamtwert von mindestens %d (mit Leerzeichen getrennt):"
 
-#: ygo/message_handlers/select_sum.py:73
+#: ygo/message_handlers/select_sum.py:74
 #, python-format
 msgid "%s must be selected, automatically selected."
 msgstr "%s wird automatisch ausgewählt."
 
-#: ygo/message_handlers/select_sum.py:75
+#: ygo/message_handlers/select_sum.py:76
 msgid "or"
 msgstr "oder"
 
-#: ygo/message_handlers/select_sum.py:85
+#: ygo/message_handlers/select_sum.py:86
 msgid "Value out of range."
 msgstr "Wert nicht im gültigen Bereich"
 
-#: ygo/message_handlers/select_sum.py:102
+#: ygo/message_handlers/select_sum.py:103
 msgid "Levels out of range."
 msgstr "Stufe nicht im gültigen Bereich."
 
-#: ygo/message_handlers/select_sum.py:104
+#: ygo/message_handlers/select_sum.py:105
 #, python-format
 msgid "Selected value does not equal %d."
 msgstr "Dieser Wert beträgt nicht %d."
