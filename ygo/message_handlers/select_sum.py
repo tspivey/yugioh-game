@@ -4,7 +4,7 @@ from twisted.internet import reactor
 from ygo.card import Card
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
-from ygo.utils import parse_ints, process_duel, check_sum
+from ygo.utils import parse_ints, process_duel, check_sum, handle_error
 
 def msg_select_sum(self, data):
 	data = io.BytesIO(data[1:])
@@ -78,6 +78,8 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
 	def error(t):
 		pl.notify(t)
 		return prompt()
+
+	@handle_error
 	def r(caller):
 		ints = [i - 1 for i in parse_ints(caller.text)]
 		if len(ints) != len(set(ints)):

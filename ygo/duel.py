@@ -436,12 +436,12 @@ class Duel(Joinable):
 			setattr(self, n, all_methods[n].__get__(self))
 
 	def show_usable(self, pl):
-		summonable = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.summonable])
-		spsummon = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.spsummon])
-		repos = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.repos])
-		mset = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.idle_mset])
-		idle_set = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.idle_set])
-		idle_activate = natsort.natsorted([card.get_spec(pl.duel_player) for card in self.idle_activate])
+		summonable = natsort.natsorted([card.get_spec(pl) for card in self.summonable])
+		spsummon = natsort.natsorted([card.get_spec(pl) for card in self.spsummon])
+		repos = natsort.natsorted([card.get_spec(pl) for card in self.repos])
+		mset = natsort.natsorted([card.get_spec(pl) for card in self.idle_mset])
+		idle_set = natsort.natsorted([card.get_spec(pl) for card in self.idle_set])
+		idle_activate = natsort.natsorted([card.get_spec(pl) for card in self.idle_activate])
 		if summonable:
 			pl.notify(pl._("Summonable in attack position: %s") % ", ".join(summonable))
 		if mset:
@@ -495,7 +495,7 @@ class Duel(Joinable):
 		return specs
 
 	def cardlist_info_for_player(self, card, pl):
-		spec = card.get_spec(pl.duel_player)
+		spec = card.get_spec(pl)
 		if card.location == LOCATION_DECK:
 			spec = pl._("deck")
 		cls = (card.controller, card.location, card.sequence)
@@ -551,7 +551,7 @@ class Duel(Joinable):
 
 				if card.equip_target:
 
-					s += ' ' + pl._('(equipped to %s)')%(card.equip_target.get_spec(pl.duel_player))
+					s += ' ' + pl._('(equipped to %s)')%(card.equip_target.get_spec(pl))
 
 				counters = []
 				for c in card.counters:
@@ -570,7 +570,7 @@ class Duel(Joinable):
 				zone = self.get_linked_zone(card)
 				if zone == '':
 					continue
-				pl.notify(pl._("Zone linked by %s (%s): %s")%(card.get_name(pl), card.get_spec(player), zone))
+				pl.notify(pl._("Zone linked by %s (%s): %s")%(card.get_name(pl), card.get_spec(pl), zone))
 
 	def show_cards_in_location(self, pl, player, location, hide_facedown=False):
 		cards = self.get_cards_in_location(player, location)
@@ -578,7 +578,7 @@ class Duel(Joinable):
 			pl.notify(pl._("No cards."))
 			return
 		for card in cards:
-			s = card.get_spec(player) + " "
+			s = card.get_spec(pl) + " "
 			if hide_facedown and card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
 				s += card.get_position(pl)
 			else:
@@ -632,7 +632,7 @@ class Duel(Joinable):
 
 	def show_info(self, card, pl):
 		pln = pl.duel_player
-		cs = card.get_spec(pln)
+		cs = card.get_spec(pl)
 		if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION_MZONE) + self.get_cards_in_location(1 - pln, LOCATION_SZONE)):
 			pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
 			return
@@ -645,7 +645,7 @@ class Duel(Joinable):
 				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == pl.duel_player or card.position not in (0x8, 0xa))
 		specs = {}
 		for card in cards:
-			specs[card.get_spec(pl.duel_player)] = card
+			specs[card.get_spec(pl)] = card
 		for i, card in enumerate(pl.card_list):
 			specs[str(i + 1)] = card
 		if spec not in specs:

@@ -9,7 +9,7 @@ def battle_activate(self, pl):
 	pl.notify(pl._("Select card to activate:"))
 	specs = {}
 	for c in self.activatable:
-		spec = c.get_spec(pln)
+		spec = c.get_spec(pl)
 		pl.notify("%s: %s (%d/%d)" % (spec, c.get_name(pl), c.attack, c.defense))
 		specs[spec] = c
 	pl.notify(pl._("z: back."))

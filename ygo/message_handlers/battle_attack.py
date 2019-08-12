@@ -10,7 +10,7 @@ def battle_attack(self, pl):
 	pl.notify(pl._("Select card to attack with:"))
 	specs = {}
 	for c in self.attackable:
-		spec = c.get_spec(pln)
+		spec = c.get_spec(pl)
 		if c.type & TYPE_LINK:
 			pl.notify(pl._("%s: %s (%d)")%(spec, c.get_name(pl), c.attack))
 		else:

@@ -148,7 +148,8 @@ class Card(object):
 		elif self.position == POS_FACEDOWN:
 			return pl._("face down")
 
-	def get_spec(self, player):
+	def get_spec(self, pl):
+		player = pl.duel_player
 		s = ""
 		if self.controller != player:
 			s += "o"

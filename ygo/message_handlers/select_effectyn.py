@@ -23,7 +23,7 @@ def select_effectyn(self, player, card, desc):
 	def no(caller):
 		self.set_responsei(0)
 		reactor.callLater(0, process_duel, self)
-	spec = card.get_spec(player)
+	spec = card.get_spec(pl)
 	question = pl._("Do you want to use the effect from {card} in {spec}?").format(card=card.get_name(pl), spec=spec)
 	s = card.get_effect_description(pl, desc, True)
 	if s != '':

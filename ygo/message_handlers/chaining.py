@@ -31,8 +31,8 @@ def chaining(self, card, tc, tl, ts, desc, cs):
 		if self.players[o].soundpack:
 			self.players[o].notify("### activate_trap")
 
-	self.players[c].notify(self.players[c]._("Activating {0} ({1})").format(card.get_spec(c), card.get_name(self.players[c])))
-	self.players[o].notify(self.players[o]._("{0} activating {1} ({2})").format(n, card.get_spec(o), card.get_name(self.players[o])))
+	self.players[c].notify(self.players[c]._("Activating {0} ({1})").format(card.get_spec(self.players[c]), card.get_name(self.players[c])))
+	self.players[o].notify(self.players[o]._("{0} activating {1} ({2})").format(n, card.get_spec(self.players[o]), card.get_name(self.players[o])))
 	for pl in self.watchers:
 		if card.type & 0x2:
 			if pl.soundpack:
@@ -40,7 +40,7 @@ def chaining(self, card, tc, tl, ts, desc, cs):
 		if card.type & 0x4:
 			if pl.soundpack:
 				pl.notify("### activate_trap")
-		pl.notify(pl._("{0} activating {1} ({2})").format(n, card.get_spec(pl.duel_player), card.get_name(pl)))
+		pl.notify(pl._("{0} activating {1} ({2})").format(n, card.get_spec(pl), card.get_name(pl)))
 
 MESSAGES = {70: msg_chaining}
 

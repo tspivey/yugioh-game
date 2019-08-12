@@ -15,14 +15,14 @@ def msg_pos_change(self, data):
 	return data.read()
 
 def pos_change(self, card, prevpos):
-	cs = card.get_spec(card.controller)
-	cso = card.get_spec(1 - card.controller)
 	cpl = self.players[card.controller]
 	op = self.players[1 - card.controller]
+	cs = card.get_spec(cpl)
+	cso = card.get_spec(op)
 	cpl.notify(cpl._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(cpl), card.get_position(cpl)))
 	op.notify(op._("The position of card %s (%s) was changed to %s.") % (cso, card.get_name(op), card.get_position(op)))
 	for w in self.watchers:
-		cs = card.get_spec(w.duel_player)
+		cs = card.get_spec(w)
 		w.notify(w._("The position of card %s (%s) was changed to %s.") % (cs, card.get_name(w), card.get_position(w)))
 
 MESSAGES = {53: msg_pos_change}
