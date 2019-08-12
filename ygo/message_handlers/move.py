@@ -2,6 +2,7 @@ import io
 
 from ygo.card import Card
 from ygo.constants import *
+from ygo.utils import handle_error
 
 def msg_move(self, data):
 	data = io.BytesIO(data[1:])
@@ -12,109 +13,111 @@ def msg_move(self, data):
 	self.cm.call_callbacks('move', code, location, newloc, reason)
 	return data.read()
 
+@handle_error
 def move(self, code, location, newloc, reason):
 	card = Card(code)
 	card.set_location(location)
+	cnew = Card(code)
+	cnew.set_location(newloc)
 	pl = self.players[card.controller]
 	op = self.players[1 - card.controller]
 	plspec = card.get_spec(pl)
-	ploc = (location >> 8) & 0xff
-	pnewloc = (newloc >> 8) & 0xff
-	if reason & 0x01 and ploc != pnewloc:
-		pl.notify(pl._("Card %s (%s) destroyed.") % (plspec, card.get_name(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			w.notify(w._("Card %s (%s) destroyed.") % (s, card.get_name(w)))
-	elif ploc == pnewloc and ploc in (LOCATION_MZONE, LOCATION_SZONE):
-		cnew = Card(code)
-		cnew.set_location(newloc)
+	opspec = card.get_spec(op)
+	plnewspec = cnew.get_spec(pl)
+	opnewspec = cnew.get_spec(op)
 
-		if (location & 0xff) != (newloc & 0xff):
+	getspec = lambda p: plspec if p.duel_player == pl.duel_player else opspec
+	getnewspec = lambda p: plnewspec if p.duel_player == pl.duel_player else opnewspec
+
+	card_visible = True
+	
+	if card.position == cnew.position and card.position in (POS_FACEDOWN, POS_FACEDOWN_DEFENSE):
+		card_visible = False
+
+	getvisiblename = lambda p: card.get_name(p) if card_visible else p._("Face-down card")
+
+	if reason & 0x01 and card.location != cnew.location:
+		self.inform(
+			pl,
+			(INFORM.ALLIES, lambda p: p._("Card %s (%s) destroyed.") % (plspec, card.get_name(p))),
+			(INFORM.OPPONENTS, lambda p: p._("Card %s (%s) destroyed.") % (opspec, card.get_name(p)))
+		)
+	elif card.location == cnew.location and card.location in (LOCATION_MZONE, LOCATION_SZONE):
+		if card.controller != cnew.controller:
 			# controller changed too (e.g. change of heart)
-			pl.notify(pl._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(pl), op = op.nickname, targetspec = cnew.get_spec(pl)))
-			op.notify(op._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=card.get_spec(op), name = card.get_name(op), targetspec = cnew.get_spec(op)))
-			for w in self.watchers:
-				s = card.get_spec(w)
-				ts = cnew.get_spec(w)
-				w.notify(w._("{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(plname=pl.nickname, op=op.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
+			self.inform(
+				pl,
+				(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(p), op = op.nickname, targetspec = plnewspec)),
+				(INFORM.OPPONENT, lambda p: p._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=opspec, name = card.get_name(p), targetspec = opnewspec)),
+				(INFORM.WATCHERS | INFORM.TAG_PLAYERS, lambda p: w._("{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(plname=pl.nickname, op=op.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
+			)
 		else:
-			# only place changed (alien decks e.g.)
-			pl.notify(pl._("your card {spec} ({name}) switched its zone to {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=cnew.get_spec(pl)))
-			for w in self.watchers+[op]:
-				s = card.get_spec(w)
-				ts = cnew.get_spec(w)
-				w.notify(w._("{plname}s card {spec} ({name}) changed its zone to {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
-	elif reason & 0x4000 and ploc != pnewloc:
-		pl.notify(pl._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			w.notify(w._("{plname} discarded {spec} ({name}).").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
-	elif ploc == LOCATION_REMOVED and pnewloc in (LOCATION_SZONE, LOCATION_MZONE):
-		cnew = Card(code)
-		cnew.set_location(newloc)
-		pl.notify(pl._("your banished card {spec} ({name}) returns to the field at {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=cnew.get_spec(pl)))
-		for w in self.watchers+[op]:
-			s=card.get_spec(w)
-			ts = cnew.get_spec(w)
-			w.notify(w._("{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=s, targetspec=ts, name=card.get_name(w)))
-	elif ploc == LOCATION_GRAVE and pnewloc in (LOCATION_SZONE, LOCATION_MZONE):
-		cnew = Card(code)
-		cnew.set_location(newloc)
-		pl.notify(pl._("your card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(spec=plspec, name=card.get_name(pl), targetspec=cnew.get_spec(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			ts = cnew.get_spec(w)
-			w.notify(w._("{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(plname = pl.nickname, spec=s, targetspec=ts, name = card.get_name(w)))
-	elif pnewloc == LOCATION_HAND and ploc != pnewloc:
-		pl.notify(pl._("Card {spec} ({name}) returned to hand.")
-			.format(spec=plspec, name=card.get_name(pl)))
-		for w in self.watchers+[op]:
-			if card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
-				name = w._("Face-down card")
-			else:
-				name = card.get_name(w)
-			s = card.get_spec(w)
-			w.notify(w._("{plname}'s card {spec} ({name}) returned to their hand.")
-				.format(plname=pl.nickname, spec=s, name=name))
-	elif reason & 0x12 and ploc != pnewloc:
-		pl.notify(pl._("You tribute {spec} ({name}).")
-			.format(spec=plspec, name=card.get_name(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			if card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
-				name = w._("%s card") % card.get_position(w)
-			else:
-				name = card.get_name(w)
-			w.notify(w._("{plname} tributes {spec} ({name}).")
-				.format(plname=pl.nickname, spec=s, name=name))
-	elif ploc == LOCATION_OVERLAY+LOCATION_MZONE and pnewloc in (LOCATION_GRAVE, LOCATION_REMOVED):
-		pl.notify(pl._("you detached %s.")%(card.get_name(pl)))
-		for w in self.watchers+[op]:
-			w.notify(w._("%s detached %s")%(pl.nickname, card.get_name(w)))
-	elif ploc != pnewloc and pnewloc == LOCATION_GRAVE:
-		pl.notify(pl._("your card {spec} ({name}) was sent to the graveyard.").format(spec=plspec, name=card.get_name(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			w.notify(w._("{plname}'s card {spec} ({name}) was sent to the graveyard.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
-	elif ploc != pnewloc and pnewloc == LOCATION_REMOVED:
-		pl.notify(pl._("your card {spec} ({name}) was banished.").format(spec=plspec, name=card.get_name(pl)))
-		for w in self.watchers+[op]:
-			if card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
-				name = w._("%s card")%(card.get_position(w))
-			else:
-				name = card.get_name(w)
-			s = card.get_spec(w)
-			w.notify(w._("{plname}'s card {spec} ({name}) was banished.").format(plname=pl.nickname, spec=s, name=name))
-	elif ploc != pnewloc and pnewloc == LOCATION_DECK:
-		pl.notify(pl._("your card {spec} ({name}) returned to your deck.").format(spec=plspec, name=card.get_name(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			w.notify(w._("{plname}'s card {spec} ({name}) returned to their deck.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
-	elif ploc != pnewloc and pnewloc == LOCATION_EXTRA:
-		pl.notify(pl._("your card {spec} ({name}) returned to your extra deck.").format(spec=plspec, name=card.get_name(pl)))
-		for w in self.watchers+[op]:
-			s = card.get_spec(w)
-			w.notify(w._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=s, name=card.get_name(w)))
+			# only column changed (alien decks e.g.)
+			self.inform(
+				pl,
+				(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) switched its zone to {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
+				(INFORM.OTHER, lambda p: p._("{plname}s card {spec} ({name}) changed its zone to {targetspec}.").format(plname=pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
+			)
+	elif reason & 0x4000 and card.location != cnew.location:
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("{plname} discarded {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
+		)
+	elif card.location == LOCATION_REMOVED and cnew.location in (LOCATION_SZONE, LOCATION_MZONE):
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your banished card {spec} ({name}) returns to the field at {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
+			(INFORM.OTHER, lambda p: p._("{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
+		)
+	elif card.location == LOCATION_GRAVE and cnew.location in (LOCATION_SZONE, LOCATION_MZONE):
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
+			(INFORM.OTHER, lambda p: p._("{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(plname = pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name = card.get_name(p))),
+		)
+	elif cnew.location == LOCATION_HAND and card.location != cnew.location:
+		self.inform(
+			pl,
+			(INFORM.PLAYER | INFORM.TAG_PLAYER, lambda p: p._("Card {spec} ({name}) returned to hand.").format(spec=plspec, name=card.get_name(p))),
+			(INFORM.WATCHERS | INFORM.OPPONENTS, lambda p: p._("{plname}'s card {spec} ({name}) returned to their hand.").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
+		)
+	elif reason & 0x12 and card.location != cnew.location:
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("You tribute {spec} ({name}).").format(spec=plspec, name=card.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("{plname} tributes {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
+		)
+	elif card.location == LOCATION_OVERLAY+LOCATION_MZONE and cnew.location in (LOCATION_GRAVE, LOCATION_REMOVED):
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("you detached %s.")%(card.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("%s detached %s")%(pl.nickname, card.get_name(p))),
+		)
+	elif card.location != cnew.location and cnew.location == LOCATION_GRAVE:
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) was sent to the graveyard.").format(spec=plspec, name=card.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) was sent to the graveyard.").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
+		)
+	elif card.location != cnew.location and cnew.location == LOCATION_REMOVED:
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) was banished.").format(spec=plspec, name=card.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) was banished.").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
+		)
+	elif card.location != cnew.location and cnew.location == LOCATION_DECK:
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returned to your deck.").format(spec=plspec, name=card.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) returned to their deck.").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
+		)
+	elif card.location != cnew.location and cnew.location == LOCATION_EXTRA:
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returned to your extra deck.").format(spec=plspec, name=card.get_name(pl))),
+			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
+		)
 
 MESSAGES = {50: msg_move}
 

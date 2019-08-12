@@ -737,6 +737,54 @@ class Duel(Joinable):
 		if self.paused:
 			pl.notify(pl._("The duel is currently paused due to not all players being connected."))
 
+	@handle_error
+	def inform(self, ref_player, *inf):
+		"""
+		informs specific players in a duel
+		players can be configured with constants from INFORM enum in constants
+		each message consists of a callable which takes the player and returns the properly formatted text
+		if no callable is received, the message is skipped
+		a player cannot be informed twice through this method.
+		
+		example:
+		duel.inform(pl, (INFORM.ALL_PLAYERS, lambda p: p._("you were informed")))
+		"""
+
+		if not ref_player or ref_player not in self.players:
+			raise ValueError("reference player must be duelling in this duel")
+			
+		players = self.players[:]
+		tag_players = self.tag_players[:]
+		watchers = list(filter(lambda p: p not in tag_players, self.watchers))
+		all = players + tag_players + watchers
+
+		informed = {}
+
+		for t in inf:
+			key = t[0]
+			value = t[1]
+			if not isinstance(key, INFORM):
+				raise TypeError("inform key must be of type INFORM")
+
+			if not callable(value):
+				continue
+			
+			to_be_informed = list(filter(lambda p: \
+				p not in informed and (\
+					(key & INFORM.PLAYER and p is ref_player) or \
+					(key & INFORM.OPPONENT and p is not ref_player and p in players) or \
+					(key & INFORM.TAG_PLAYER and p.duel_player == ref_player.duel_player and p in tag_players) or \
+					(key & INFORM.TAG_OPPONENT and p.duel_player != ref_player.duel_player and p in tag_players) or \
+					(key & INFORM.WATCHERS_PLAYER and p.duel_player == ref_player.duel_player and p in watchers) or \
+					(key & INFORM.WATCHERS_OPPONENT and p.duel_player != ref_player.duel_player and p in watchers)\
+				), all))
+
+			for p in to_be_informed:
+				informed[p] = value
+
+		for pl, cl in informed.items():
+			pl.notify(cl(pl))
+
 	def get_linked_zone(self, card):
 
 		lst = []
