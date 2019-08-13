@@ -49,7 +49,7 @@ def move(self, code, location, newloc, reason):
 				pl,
 				(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(spec=plspec, name = card.get_name(p), op = op.nickname, targetspec = plnewspec)),
 				(INFORM.OPPONENT, lambda p: p._("you now control {plname}s card {spec} ({name}) and its located at {targetspec}.").format(plname=pl.nickname, spec=opspec, name = card.get_name(p), targetspec = opnewspec)),
-				(INFORM.WATCHERS | INFORM.TAG_PLAYERS, lambda p: w._("{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(plname=pl.nickname, op=op.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
+				(INFORM.WATCHERS | INFORM.TAG_PLAYERS, lambda p: p._("{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}.").format(plname=pl.nickname, op=op.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
 			)
 		else:
 			# only column changed (alien decks e.g.)
