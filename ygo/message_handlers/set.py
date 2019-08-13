@@ -16,11 +16,10 @@ def set(self, card):
 	cpl = self.players[c]
 	opl = self.players[1 - c]
 	cpl.notify(cpl._("You set %s (%s) in %s position.") %
-	(card.get_spec(c), card.get_name(cpl), card.get_position(cpl)))
-	op = 1 - c
+	(card.get_spec(cpl), card.get_name(cpl), card.get_position(cpl)))
 	on = self.players[c].nickname
 	opl.notify(opl._("%s sets %s in %s position.") %
-	(on, card.get_spec(op), card.get_position(opl)))
+	(on, card.get_spec(opl), card.get_position(opl)))
 	for pl in self.watchers:
 		pl.notify(pl._("%s sets %s in %s position.") %
 		(on, card.get_spec(pl), card.get_position(pl)))

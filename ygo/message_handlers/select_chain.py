@@ -43,7 +43,7 @@ def select_chain(self, player, size, spe_count, forced, chains):
 		card = chains[i][1]
 		card.chain_index = i
 		desc = chains[i][2]
-		cs = card.get_spec(player)
+		cs = card.get_spec(pl)
 		chain_count = chain_cards.count(card)
 		if chain_count > 1:
 			cs += chr(ord('a')+list(specs.values()).count(card))

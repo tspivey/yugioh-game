@@ -17,11 +17,11 @@ def card_hint(self, card, type, value):
 	if type == 3: # race announcement
 		for pl in self.players+self.watchers:
 			races = [pl.strings['system'][1020+i] for i in range(AMOUNT_RACES) if value & (1<<i)]
-			pl.notify(pl._("{spec} ({name}) selected {value}.").format(spec=card.get_spec(pl.duel_player), name=card.get_name(pl), value=', '.join(races)))
+			pl.notify(pl._("{spec} ({name}) selected {value}.").format(spec=card.get_spec(pl), name=card.get_name(pl), value=', '.join(races)))
 	elif type == 4: # attribute announcement
 		for pl in self.players+self.watchers:
 			attributes = [pl.strings['system'][1010+i] for i in range(AMOUNT_ATTRIBUTES) if value & (1<<i)]
-			pl.notify(pl._("{spec} ({name}) selected {value}.").format(spec=card.get_spec(pl.duel_player), name=card.get_name(pl), value=', '.join(attributes)))
+			pl.notify(pl._("{spec} ({name}) selected {value}.").format(spec=card.get_spec(pl), name=card.get_name(pl), value=', '.join(attributes)))
 
 	else:
 		print("unhandled card hint type", type)

@@ -23,7 +23,7 @@ def swap(self, card1, card2):
 	for p in self.watchers+self.players:
 		for card in (card1, card2):
 			plname = self.players[1 - card.controller].nickname
-			s = card.get_spec(p.duel_player)
+			s = card.get_spec(p)
 			if card.location in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN) and p.watching is True:
 				cname = p._("%s card")%(card.get_position(p))
 			else:

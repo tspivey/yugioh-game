@@ -21,7 +21,7 @@ def idle_action(self, pl):
 	for i in (0, 1):
 		for j in (LOCATION_HAND, LOCATION_MZONE, LOCATION_SZONE, LOCATION_GRAVE, LOCATION_EXTRA):
 			cards.extend(self.get_cards_in_location(i, j))
-	specs = set(card.get_spec(self.tp) for card in cards)
+	specs = set(card.get_spec(self.players[self.tp]) for card in cards)
 	def r(caller):
 		if caller.text == 'b' and self.to_bp:
 			self.set_responsei(6)
