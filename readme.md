@@ -1,16 +1,3 @@
-## Required Python version
-
-This project requires Python 3.6 or higher to run. Make sure to install the proper Python version. We'd recommend to setup a virtual environment for this project as well.
-
-The following commands can be an example which might work under your circumstances:
-
-    apt-get update
-    apt-get install python3.6 python3.6-dev python3.6-venv
-
-It might however be required to add certain dependencies to your package sources, like you can do the following when running this project on Ubuntu:
-
-    add-apt-repository ppa:deadsnakes/ppa
-
 ## Install dependencies
 Lua is needed for ygopro-core. To make sure a matching lua version is used, we will compile it on our own:
 
