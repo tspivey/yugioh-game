@@ -118,6 +118,29 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returned to your extra deck.").format(spec=plspec, name=card.get_name(pl))),
 			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
 		)
+	elif card.location == LOCATION_DECK and cnew.location == LOCATION_SZONE:
+		def fn(p):
+			if p.soundpack and cnew.type & TYPE_SPELL:
+				p.notify("### activate_spell")
+			elif p.soundpack and cnew.type & TYPE_TRAP:
+				p.notify("### activate_trap")
+
+			if p is pl:
+				if cnew.position in (POS_FACEDOWN, POS_FACEDOWN_DEFENSE):
+					return p._("You set %s (%s) in %s position.")%(cnew.get_spec(p), cnew.get_name(p), cnew.get_position(p))
+				else:
+					return p._("Activating {0} ({1})").format(cnew.get_spec(p), cnew.get_name(p))
+			else:
+				if cnew.position in (POS_FACEDOWN, POS_FACEDOWN_DEFENSE):
+					return p._("%s sets %s in %s position.")%(pl.nickname, cnew.get_spec(p), cnew.get_position(p))
+				else:
+					return p._("{0} activating {1} ({2})").format(pl.nickname, cnew.get_spec(p), cnew.get_name(p))
+				
+		self.inform(
+			pl,
+			(INFORM.PLAYER, fn),
+			(INFORM.OTHER, fn)
+		)
 
 MESSAGES = {50: msg_move}
 
