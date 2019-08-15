@@ -1,6 +1,7 @@
 import io
 
 from ygo.card import Card
+from ygo.constants import LOCATION
 
 def msg_confirm_decktop(self, data):
 	cards = []
@@ -13,7 +14,7 @@ def msg_confirm_decktop(self, data):
 			code = code ^ 0x80000000 # don't know what this actually does
 		card = Card(code)
 		card.controller = self.read_u8(data)
-		card.location = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u8(data)
 		cards.append(card)
 		

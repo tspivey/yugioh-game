@@ -2,6 +2,7 @@ import io
 from twisted.internet import reactor
 
 from ygo.card import Card
+from ygo.constants import LOCATION
 from ygo.utils import process_duel
 
 def msg_sort_chain(self, data):
@@ -13,7 +14,7 @@ def msg_sort_chain(self, data):
 		code = self.read_u32(data)
 		card = Card(code)
 		card.controller = self.read_u8(data)
-		card.location = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u8(data)
 		cards.append(card)
 	self.cm.call_callbacks('sort_chain', player, cards)

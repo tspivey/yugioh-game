@@ -29,7 +29,7 @@ class Card(object):
 
 	def set_location(self, location):
 		self.controller = location & 0xff
-		self.location = (location >> 8) & 0xff;
+		self.location = LOCATION((location >> 8) & 0xff)
 		self.sequence = (location >> 16) & 0xff
 		self.position = (location >> 24) & 0xff
 
@@ -115,7 +115,7 @@ class Card(object):
 
 		try:
 
-			if self.type & TYPE.XYZ and self.location == LOCATION_MZONE:
+			if self.type & TYPE.XYZ and self.location == LOCATION.MZONE:
 
 				if len(self.xyz_materials):
 
@@ -153,17 +153,17 @@ class Card(object):
 		s = ""
 		if self.controller != player:
 			s += "o"
-		if self.location == LOCATION_HAND:
+		if self.location == LOCATION.HAND:
 			s += "h"
-		elif self.location == LOCATION_MZONE:
+		elif self.location == LOCATION.MZONE:
 			s += "m"
-		elif self.location == LOCATION_SZONE:
+		elif self.location == LOCATION.SZONE:
 			s += "s"
-		elif self.location == LOCATION_GRAVE:
+		elif self.location == LOCATION.GRAVE:
 			s += "g"
-		elif self.location == LOCATION_EXTRA:
+		elif self.location == LOCATION.EXTRA:
 			s += "x"
-		elif self.location == LOCATION_REMOVED:
+		elif self.location == LOCATION.REMOVED:
 			s += "r"
 		s += str(self.sequence + 1)
 		return s

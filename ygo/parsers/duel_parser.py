@@ -10,12 +10,12 @@ DuelParser = parser.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 @DuelParser.command(names=['h', 'hand'])
 def hand(caller):
 	pl = caller.connection.player
-	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION_HAND, pl.watching)
+	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION.HAND, pl.watching)
 
 @DuelParser.command(names=['hand2'])
 def hand2(caller):
 
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_HAND, True)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION.HAND, True)
 
 @DuelParser.command(names=['tab'])
 def tab(caller):
@@ -48,11 +48,11 @@ def tab2(caller):
 
 @DuelParser.command(names=['grave'])
 def grave(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION_GRAVE)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION.GRAVE)
 
 @DuelParser.command(names=['grave2'])
 def grave2(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_GRAVE, True)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION.GRAVE, True)
 
 @DuelParser.command
 def removed(caller):
@@ -60,19 +60,19 @@ def removed(caller):
 		hide = True
 	else:
 		hide = False
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION_REMOVED, hide)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION.REMOVED, hide)
 
 @DuelParser.command
 def removed2(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_REMOVED, True)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION.REMOVED, True)
 
 @DuelParser.command(names=['extra'])
 def extra(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION_EXTRA, caller.connection.player.watching)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION.EXTRA, caller.connection.player.watching)
 
 @DuelParser.command(names=['extra2'])
 def extra2(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION_EXTRA, True)
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION.EXTRA, True)
 
 @DuelParser.command(names=['watchers'])
 def show_watchers(caller):
@@ -165,7 +165,7 @@ def showhand(caller):
 			pl.notify(pl._("Hand shown."))
 			continue
 		player.notify(player._("%s shows you their hand:") % pl.nickname)
-		pl.duel.show_cards_in_location(player, pl.duel_player, LOCATION_HAND, False)
+		pl.duel.show_cards_in_location(player, pl.duel_player, LOCATION.HAND, False)
 
 @DuelParser.command(names=["invite"], args_regexp=RE_NICKNAME)
 def invite(caller):

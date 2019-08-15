@@ -1,13 +1,14 @@
 import io
 
 from ygo.card import Card
+from ygo.constants import LOCATION
 
 def msg_pos_change(self, data):
 	data = io.BytesIO(data[1:])
 	code = self.read_u32(data)
 	card = Card(code)
 	card.controller = self.read_u8(data)
-	card.location = self.read_u8(data)
+	card.location = LOCATION(self.read_u8(data))
 	card.sequence = self.read_u8(data)
 	prevpos = self.read_u8(data)
 	card.position = self.read_u8(data)

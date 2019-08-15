@@ -42,7 +42,7 @@ def move(self, code, location, newloc, reason):
 			(INFORM.ALLIES, lambda p: p._("Card %s (%s) destroyed.") % (plspec, card.get_name(p))),
 			(INFORM.OPPONENTS, lambda p: p._("Card %s (%s) destroyed.") % (opspec, card.get_name(p)))
 		)
-	elif card.location == cnew.location and card.location in (LOCATION_MZONE, LOCATION_SZONE):
+	elif card.location == cnew.location and card.location & (LOCATION.MZONE | LOCATION.SZONE):
 		if card.controller != cnew.controller:
 			# controller changed too (e.g. change of heart)
 			self.inform(
@@ -64,19 +64,19 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname} discarded {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
 		)
-	elif card.location == LOCATION_REMOVED and cnew.location in (LOCATION_SZONE, LOCATION_MZONE):
+	elif card.location == LOCATION.REMOVED and cnew.location & (LOCATION.SZONE | LOCATION.MZONE):
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your banished card {spec} ({name}) returns to the field at {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
 			(INFORM.OTHER, lambda p: p._("{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
 		)
-	elif card.location == LOCATION_GRAVE and cnew.location in (LOCATION_SZONE, LOCATION_MZONE):
+	elif card.location == LOCATION.GRAVE and cnew.location & (LOCATION.SZONE | LOCATION.MZONE):
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
 			(INFORM.OTHER, lambda p: p._("{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(plname = pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name = card.get_name(p))),
 		)
-	elif cnew.location == LOCATION_HAND and card.location != cnew.location:
+	elif cnew.location == LOCATION.HAND and card.location != cnew.location:
 		self.inform(
 			pl,
 			(INFORM.PLAYER | INFORM.TAG_PLAYER, lambda p: p._("Card {spec} ({name}) returned to hand.").format(spec=plspec, name=card.get_name(p))),
@@ -88,37 +88,37 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("You tribute {spec} ({name}).").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname} tributes {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
 		)
-	elif card.location == LOCATION_OVERLAY+LOCATION_MZONE and cnew.location in (LOCATION_GRAVE, LOCATION_REMOVED):
+	elif card.location == LOCATION.OVERLAY | LOCATION.MZONE and cnew.location & (LOCATION.GRAVE | LOCATION.REMOVED):
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("you detached %s.")%(card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("%s detached %s")%(pl.nickname, card.get_name(p))),
 		)
-	elif card.location != cnew.location and cnew.location == LOCATION_GRAVE:
+	elif card.location != cnew.location and cnew.location == LOCATION.GRAVE:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) was sent to the graveyard.").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) was sent to the graveyard.").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
 		)
-	elif card.location != cnew.location and cnew.location == LOCATION_REMOVED:
+	elif card.location != cnew.location and cnew.location == LOCATION.REMOVED:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) was banished.").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) was banished.").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
 		)
-	elif card.location != cnew.location and cnew.location == LOCATION_DECK:
+	elif card.location != cnew.location and cnew.location == LOCATION.DECK:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returned to your deck.").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) returned to their deck.").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
 		)
-	elif card.location != cnew.location and cnew.location == LOCATION_EXTRA:
+	elif card.location != cnew.location and cnew.location == LOCATION.EXTRA:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returned to your extra deck.").format(spec=plspec, name=card.get_name(pl))),
 			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
 		)
-	elif card.location == LOCATION_DECK and cnew.location == LOCATION_SZONE:
+	elif card.location == LOCATION.DECK and cnew.location == LOCATION.SZONE:
 		def fn(p):
 			if p.soundpack and cnew.type & TYPE.SPELL:
 				p.notify("### activate_spell")
@@ -138,8 +138,7 @@ def move(self, code, location, newloc, reason):
 				
 		self.inform(
 			pl,
-			(INFORM.PLAYER, fn),
-			(INFORM.OTHER, fn)
+			(INFORM.ALL, fn)
 		)
 
 MESSAGES = {50: msg_move}

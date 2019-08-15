@@ -19,7 +19,7 @@ def idle_action(self, pl):
 		restore_parser=DuelParser)
 	cards = []
 	for i in (0, 1):
-		for j in (LOCATION_HAND, LOCATION_MZONE, LOCATION_SZONE, LOCATION_GRAVE, LOCATION_EXTRA):
+		for j in (LOCATION.HAND, LOCATION.MZONE, LOCATION.SZONE, LOCATION.GRAVE, LOCATION.EXTRA):
 			cards.extend(self.get_cards_in_location(i, j))
 	specs = set(card.get_spec(self.players[self.tp]) for card in cards)
 	def r(caller):

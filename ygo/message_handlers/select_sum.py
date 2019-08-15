@@ -2,6 +2,7 @@ import io
 from twisted.internet import reactor
 
 from ygo.card import Card
+from ygo.constants import LOCATION
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import parse_ints, process_duel, check_sum, handle_error
@@ -19,7 +20,7 @@ def msg_select_sum(self, data):
 		code = self.read_u32(data)
 		card = Card(code)
 		card.controller = self.read_u8(data)
-		card.location = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u8(data)
 		param = self.read_u32(data)
 		card.param = (param&0xff, param>>16, )
@@ -30,7 +31,7 @@ def msg_select_sum(self, data):
 		code = self.read_u32(data)
 		card = Card(code)
 		card.controller = self.read_u8(data)
-		card.location = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u8(data)
 		param = self.read_u32(data)
 		card.param = (param&0xff, param>>16, )

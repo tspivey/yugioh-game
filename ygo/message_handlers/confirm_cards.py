@@ -1,5 +1,7 @@
 import io
 
+from ygo.constants import LOCATION
+
 def msg_confirm_cards(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
@@ -8,7 +10,7 @@ def msg_confirm_cards(self, data):
 	for i in range(size):
 		code = self.read_u32(data)
 		c = self.read_u8(data)
-		l = self.read_u8(data)
+		l = LOCATION(self.read_u8(data))
 		s = self.read_u8(data)
 		card = self.get_card(c, l, s)
 		cards.append(card)

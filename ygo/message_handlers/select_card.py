@@ -2,6 +2,7 @@ import io
 from twisted.internet import reactor
 
 from ygo.card import Card
+from ygo.constants import LOCATION
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel, parse_ints
@@ -18,7 +19,7 @@ def msg_select_tribute(self, data):
 		code = self.read_u32(data)
 		card = Card(code)
 		card.controller = self.read_u8(data)
-		card.location = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u8(data)
 		card.position = self.get_card(card.controller, card.location, card.sequence).position
 		card.release_param = self.read_u8(data)

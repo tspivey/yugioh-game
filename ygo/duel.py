@@ -152,12 +152,12 @@ class Duel(Joinable):
 		for sc in c[::-1]:
 			if tag is True:
 				if Card(sc).extra:
-					location = LOCATION_EXTRA
+					location = LOCATION.EXTRA.value
 				else:
-					location = LOCATION_DECK
+					location = LOCATION.DECK.value
 				lib.new_tag_card(self.duel, sc, player.duel_player, location)
 			else:
-				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE)
+				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION.DECK.value, 0, POS_FACEDOWN_DEFENSE)
 
 	def add_players(self, players, shuffle_players=True, shuffle_decks = True):
 		if len(players) == 4:
@@ -258,7 +258,7 @@ class Duel(Joinable):
 		for i in range(size):
 			code = self.read_u32(data)
 			controller = self.read_u8(data)
-			location = self.read_u8(data)
+			location = LOCATION(self.read_u8(data))
 			sequence = self.read_u8(data)
 			card = self.get_card(controller, location, sequence)
 			if extra:
@@ -290,7 +290,7 @@ class Duel(Joinable):
 	def get_cards_in_location(self, player, location):
 		cards = []
 		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS | QUERY_LINK
-		bl = lib.query_field_card(self.duel, player, location, flags, ffi.cast('byte *', self.buf), False)
+		bl = lib.query_field_card(self.duel, player, location.value, flags, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
 			if buf.tell() == bl:
@@ -318,7 +318,7 @@ class Duel(Joinable):
 
 				equip_target = self.read_u32(buf)
 				pl = equip_target & 0xff
-				loc = (equip_target >> 8) & 0xff
+				loc = LOCATION((equip_target >> 8) & 0xff)
 				seq = (equip_target >> 16) & 0xff
 				card.equip_target = self.get_card(pl, loc, seq)
 
@@ -348,7 +348,7 @@ class Duel(Joinable):
 
 	def get_card(self, player, loc, seq):
 		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_LINK
-		bl = lib.query_card(self.duel, player, loc, seq, flags, ffi.cast('byte *', self.buf), False)
+		bl = lib.query_card(self.duel, player, loc.value, seq, flags, ffi.cast('byte *', self.buf), False)
 		if bl == 0:
 			return
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
@@ -378,7 +378,7 @@ class Duel(Joinable):
 
 	def unpack_location(self, loc):
 		controller = loc & 0xff
-		location = (loc >> 8) & 0xff
+		location = LOCATION((loc >> 8) & 0xff)
 		sequence = (loc >> 16) & 0xff
 		position = (loc >> 24) & 0xff
 		return (controller, location, sequence, position)
@@ -462,17 +462,17 @@ class Duel(Joinable):
 		if not r:
 			return (None, None)
 		if r.group(1) == 'h':
-			l = LOCATION_HAND
+			l = LOCATION.HAND
 		elif r.group(1) == 'm':
-			l = LOCATION_MZONE
+			l = LOCATION.MZONE
 		elif r.group(1) == 's':
-			l = LOCATION_SZONE
+			l = LOCATION.SZONE
 		elif r.group(1) == 'g':
-			l = LOCATION_GRAVE
+			l = LOCATION.GRAVE
 		elif r.group(1) == 'x':
-			l = LOCATION_EXTRA
+			l = LOCATION.EXTRA
 		elif r.group(1) == 'r':
-			l = LOCATION_REMOVED
+			l = LOCATION.REMOVED
 		else:
 			return None, None
 		return l, int(r.group(2)) - 1
@@ -496,7 +496,7 @@ class Duel(Joinable):
 
 	def cardlist_info_for_player(self, card, pl):
 		spec = card.get_spec(pl)
-		if card.location == LOCATION_DECK:
+		if card.location == LOCATION.DECK:
 			spec = pl._("deck")
 		cls = (card.controller, card.location, card.sequence)
 		if card.controller != pl.duel_player and card.position in (0x8, 0xa) and cls not in self.revealed:
@@ -507,8 +507,8 @@ class Duel(Joinable):
 		return "{name} ({spec})".format(name=name, spec=spec)
 
 	def show_table(self, pl, player, hide_facedown=False):
-		mz = self.get_cards_in_location(player, LOCATION_MZONE)
-		sz = self.get_cards_in_location(player, LOCATION_SZONE)
+		mz = self.get_cards_in_location(player, LOCATION.MZONE)
+		sz = self.get_cards_in_location(player, LOCATION.SZONE)
 		if len(mz+sz) == 0:
 			pl.notify(pl._("Table is empty."))
 			return
@@ -583,7 +583,7 @@ class Duel(Joinable):
 				s += card.get_position(pl)
 			else:
 				s += card.get_name(pl)
-				if location != LOCATION_HAND:
+				if location != LOCATION.HAND:
 					s += " " + card.get_position(pl)
 				if card.type & TYPE.MONSTER:
 					if card.type & TYPE.LINK:
@@ -596,14 +596,14 @@ class Duel(Joinable):
 
 	def show_score(self, pl):
 		player = pl.duel_player
-		deck = lib.query_field_count(self.duel, player, LOCATION_DECK)
-		odeck = lib.query_field_count(self.duel, 1 - player, LOCATION_DECK)
-		grave = lib.query_field_count(self.duel, player, LOCATION_GRAVE)
-		ograve = lib.query_field_count(self.duel, 1 - player, LOCATION_GRAVE)
-		hand = lib.query_field_count(self.duel, player, LOCATION_HAND)
-		ohand = lib.query_field_count(self.duel, 1 - player, LOCATION_HAND)
-		removed = lib.query_field_count(self.duel, player, LOCATION_REMOVED)
-		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION_REMOVED)
+		deck = lib.query_field_count(self.duel, player, LOCATION.DECK.value)
+		odeck = lib.query_field_count(self.duel, 1 - player, LOCATION.DECK.value)
+		grave = lib.query_field_count(self.duel, player, LOCATION.GRAVE.value)
+		ograve = lib.query_field_count(self.duel, 1 - player, LOCATION.GRAVE.value)
+		hand = lib.query_field_count(self.duel, player, LOCATION.HAND.value)
+		ohand = lib.query_field_count(self.duel, 1 - player, LOCATION.HAND.value)
+		removed = lib.query_field_count(self.duel, player, LOCATION.REMOVED.value)
+		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION.REMOVED.value)
 		if pl.watching:
 			if self.tag is True:
 				nick0 = pl._("team %s")%(self.players[player].nickname+", "+self.tag_players[player].nickname)
@@ -633,7 +633,7 @@ class Duel(Joinable):
 	def show_info(self, card, pl):
 		pln = pl.duel_player
 		cs = card.get_spec(pl)
-		if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION_MZONE) + self.get_cards_in_location(1 - pln, LOCATION_SZONE)):
+		if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION.MZONE) + self.get_cards_in_location(1 - pln, LOCATION.SZONE)):
 			pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
 			return
 		pl.notify(card.get_info(pl))
@@ -641,7 +641,7 @@ class Duel(Joinable):
 	def show_info_cmd(self, pl, spec):
 		cards = []
 		for i in (0, 1):
-			for j in (LOCATION_MZONE, LOCATION_SZONE, LOCATION_GRAVE, LOCATION_REMOVED, LOCATION_HAND, LOCATION_EXTRA):
+			for j in (LOCATION.MZONE, LOCATION.SZONE, LOCATION.GRAVE, LOCATION.REMOVED, LOCATION.HAND, LOCATION.EXTRA):
 				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == pl.duel_player or card.position not in (0x8, 0xa))
 		specs = {}
 		for card in cards:
@@ -789,7 +789,7 @@ class Duel(Joinable):
 
 		lst = []
 
-		zone = lib.query_linked_zone(self.duel, card.controller, card.location, card.sequence)
+		zone = lib.query_linked_zone(self.duel, card.controller, card.location.value, card.sequence)
 
 		i = 0
 

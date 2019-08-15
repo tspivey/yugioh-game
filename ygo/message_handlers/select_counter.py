@@ -3,6 +3,7 @@ import struct
 from twisted.internet import reactor
 
 from ygo.card import Card
+from ygo.constants import LOCATION
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import parse_ints, process_duel
@@ -17,7 +18,7 @@ def msg_select_counter(self, data):
 	for i in range(size):
 		card = Card(self.read_u32(data))
 		card.controller = self.read_u8(data)
-		card.location = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u8(data)
 		card.counter = self.read_u16(data)
 		cards.append(card)
