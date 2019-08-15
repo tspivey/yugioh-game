@@ -1,5 +1,7 @@
 import io
 
+from ygo.constants import POSITION
+
 def msg_become_target(self, data):
 	data = io.BytesIO(data[1:])
 	u = self.read_u8(data)
@@ -19,7 +21,7 @@ def become_target(self, tc, tl, tseq):
 	for pl in self.players + self.watchers:
 		spec = card.get_spec(pl)
 		tcname = card.get_name(pl)
-		if (pl.watching or card.controller != pl.duel_player) and card.position in (0x8, 0xa):
+		if (pl.watching or card.controller != pl.duel_player) and card.position & POSITION.FACEDOWN:
 			tcname = pl._("%s card") % card.get_position(pl)
 		pl.notify(pl._("%s targets %s (%s)") % (name, spec, tcname))
 

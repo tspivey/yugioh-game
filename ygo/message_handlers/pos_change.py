@@ -1,7 +1,7 @@
 import io
 
 from ygo.card import Card
-from ygo.constants import LOCATION
+from ygo.constants import LOCATION, POSITION
 
 def msg_pos_change(self, data):
 	data = io.BytesIO(data[1:])
@@ -10,8 +10,8 @@ def msg_pos_change(self, data):
 	card.controller = self.read_u8(data)
 	card.location = LOCATION(self.read_u8(data))
 	card.sequence = self.read_u8(data)
-	prevpos = self.read_u8(data)
-	card.position = self.read_u8(data)
+	prevpos = POSITION(self.read_u8(data))
+	card.position = POSITION(self.read_u8(data9))
 	self.cm.call_callbacks('pos_change', card, prevpos)
 	return data.read()
 

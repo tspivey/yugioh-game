@@ -53,7 +53,7 @@ def idle_action(self, pl):
 			prompt()
 			return
 		if plr == 1 - self.tp:
-			if card.position in (0x8, 0xa):
+			if card.position & POSITION.FACEDOWN:
 				pl.notify(pl._("Face-down card."))
 				return prompt()
 		self.act_on_card(caller, card)

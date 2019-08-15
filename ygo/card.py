@@ -31,7 +31,7 @@ class Card(object):
 		self.controller = location & 0xff
 		self.location = LOCATION((location >> 8) & 0xff)
 		self.sequence = (location >> 16) & 0xff
-		self.position = (location >> 24) & 0xff
+		self.position = POSITION((location >> 24) & 0xff)
 
 	def __eq__(self, other):
 		return self.code == other.code and self.location == other.location and self.sequence == other.sequence
@@ -135,17 +135,17 @@ class Card(object):
 		return "\n".join(lst)
 
 	def get_position(self, pl):
-		if self.position == POS_FACEUP_ATTACK:
+		if self.position == POSITION.FACEUP_ATTACK:
 			return pl._("face-up attack")
-		elif self.position == POS_FACEDOWN_ATTACK:
+		elif self.position == POSITION.FACEDOWN_ATTACK:
 			return pl._("face-down attack")
-		elif self.position == POS_FACEUP_DEFENSE:
+		elif self.position == POSITION.FACEUP_DEFENSE:
 			return pl._("face-up defense")
-		elif self.position == POS_FACEUP:
+		elif self.position == POSITION.FACEUP:
 			return pl._("face-up")
-		elif self.position == POS_FACEDOWN_DEFENSE:
+		elif self.position == POSITION.FACEDOWN_DEFENSE:
 			return pl._("face-down defense")
-		elif self.position == POS_FACEDOWN:
+		elif self.position == POSITION.FACEDOWN:
 			return pl._("face down")
 
 	def get_spec(self, pl):

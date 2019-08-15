@@ -1,5 +1,7 @@
 import io
 
+from ygo.constants import POSITION
+
 def msg_attack(self, data):
 	data = io.BytesIO(data[1:])
 	attacker = self.read_u32(data)
@@ -32,7 +34,7 @@ def attack(self, ac, al, aseq, apos, tc, tl, tseq, tpos):
 		aspec = acard.get_spec(pl)
 		tspec = tcard.get_spec(pl)
 		tcname = tcard.get_name(pl)
-		if (tcard.controller != pl.duel_player or pl.watching) and tcard.position in (0x8, 0xa):
+		if (tcard.controller != pl.duel_player or pl.watching) and tcard.position & POSITION.FACEDOWN:
 			tcname = pl._("%s card") % tcard.get_position(pl)
 		pl.notify(pl._("%s prepares to attack %s (%s) with %s (%s)") % (name, tspec, tcname, aspec, acard.get_name(pl)))
 

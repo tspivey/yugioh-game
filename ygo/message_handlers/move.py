@@ -31,7 +31,7 @@ def move(self, code, location, newloc, reason):
 
 	card_visible = True
 	
-	if card.position == cnew.position and card.position in (POS_FACEDOWN, POS_FACEDOWN_DEFENSE):
+	if card.position == cnew.position and card.position & POSITION.FACEDOWN:
 		card_visible = False
 
 	getvisiblename = lambda p: card.get_name(p) if card_visible else p._("Face-down card")
@@ -42,7 +42,7 @@ def move(self, code, location, newloc, reason):
 			(INFORM.ALLIES, lambda p: p._("Card %s (%s) destroyed.") % (plspec, card.get_name(p))),
 			(INFORM.OPPONENTS, lambda p: p._("Card %s (%s) destroyed.") % (opspec, card.get_name(p)))
 		)
-	elif card.location == cnew.location and card.location & (LOCATION.MZONE | LOCATION.SZONE):
+	elif card.location == cnew.location and card.location & LOCATION.ONFIELD:
 		if card.controller != cnew.controller:
 			# controller changed too (e.g. change of heart)
 			self.inform(
@@ -64,13 +64,13 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname} discarded {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
 		)
-	elif card.location == LOCATION.REMOVED and cnew.location & (LOCATION.SZONE | LOCATION.MZONE):
+	elif card.location == LOCATION.REMOVED and cnew.location & LOCATION.ONFIELD:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your banished card {spec} ({name}) returns to the field at {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
 			(INFORM.OTHER, lambda p: p._("{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}.").format(plname=pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
 		)
-	elif card.location == LOCATION.GRAVE and cnew.location & (LOCATION.SZONE | LOCATION.MZONE):
+	elif card.location == LOCATION.GRAVE and cnew.location & LOCATION.ONFIELD:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returns from the graveyard to the field at {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
@@ -88,7 +88,7 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("You tribute {spec} ({name}).").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname} tributes {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
 		)
-	elif card.location == LOCATION.OVERLAY | LOCATION.MZONE and cnew.location & (LOCATION.GRAVE | LOCATION.REMOVED):
+	elif card.location == LOCATION.OVERLAY | LOCATION.MZONE and cnew.location & LOCATION.ONFIELD:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("you detached %s.")%(card.get_name(p))),
@@ -126,12 +126,12 @@ def move(self, code, location, newloc, reason):
 				p.notify("### activate_trap")
 
 			if p is pl:
-				if cnew.position in (POS_FACEDOWN, POS_FACEDOWN_DEFENSE):
+				if cnew.position & POSITION.FACEDOWN:
 					return p._("You set %s (%s) in %s position.")%(cnew.get_spec(p), cnew.get_name(p), cnew.get_position(p))
 				else:
 					return p._("Activating {0} ({1})").format(cnew.get_spec(p), cnew.get_name(p))
 			else:
-				if cnew.position in (POS_FACEDOWN, POS_FACEDOWN_DEFENSE):
+				if cnew.position & POSITION.FACEDOWN:
 					return p._("%s sets %s in %s position.")%(pl.nickname, cnew.get_spec(p), cnew.get_position(p))
 				else:
 					return p._("{0} activating {1} ({2})").format(pl.nickname, cnew.get_spec(p), cnew.get_name(p))

@@ -157,7 +157,7 @@ class Duel(Joinable):
 					location = LOCATION.DECK.value
 				lib.new_tag_card(self.duel, sc, player.duel_player, location)
 			else:
-				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION.DECK.value, 0, POS_FACEDOWN_DEFENSE)
+				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION.DECK.value, 0, POSITION.FACEDOWN_DEFENSE.value)
 
 	def add_players(self, players, shuffle_players=True, shuffle_decks = True):
 		if len(players) == 4:
@@ -380,7 +380,7 @@ class Duel(Joinable):
 		controller = loc & 0xff
 		location = LOCATION((loc >> 8) & 0xff)
 		sequence = (loc >> 16) & 0xff
-		position = (loc >> 24) & 0xff
+		position = POSITION((loc >> 24) & 0xff)
 		return (controller, location, sequence, position)
 
 	# all modules in ygo.message_handlers package will be imported here
@@ -499,7 +499,7 @@ class Duel(Joinable):
 		if card.location == LOCATION.DECK:
 			spec = pl._("deck")
 		cls = (card.controller, card.location, card.sequence)
-		if card.controller != pl.duel_player and card.position in (0x8, 0xa) and cls not in self.revealed:
+		if card.controller != pl.duel_player and card.position & POSITION.FACEDOWN and cls not in self.revealed:
 			position = card.get_position(pl)
 			return (pl._("{position} card ({spec})")
 				.format(position=position, spec=spec))
@@ -514,7 +514,7 @@ class Duel(Joinable):
 			return
 		for card in mz:
 			s = "m%d: " % (card.sequence + 1)
-			if hide_facedown and card.position in (0x8, 0xa):
+			if hide_facedown and card.position & POSITION.FACEDOWN:
 				s += card.get_position(pl)
 			else:
 				s += card.get_name(pl) + " "
@@ -543,7 +543,7 @@ class Duel(Joinable):
 			pl.notify(s)
 		for card in sz:
 			s = "s%d: " % (card.sequence + 1)
-			if hide_facedown and card.position in (0x8, 0xa):
+			if hide_facedown and card.position & POSITION.FACEDOWN:
 				s += card.get_position(pl)
 			else:
 				s += card.get_name(pl) + " "
@@ -579,7 +579,7 @@ class Duel(Joinable):
 			return
 		for card in cards:
 			s = card.get_spec(pl) + " "
-			if hide_facedown and card.position in (POS_FACEDOWN_DEFENSE, POS_FACEDOWN):
+			if hide_facedown and card.position & POSITION.FACEDOWN:
 				s += card.get_position(pl)
 			else:
 				s += card.get_name(pl)
@@ -633,7 +633,7 @@ class Duel(Joinable):
 	def show_info(self, card, pl):
 		pln = pl.duel_player
 		cs = card.get_spec(pl)
-		if card.position in (0x8, 0xa) and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION.MZONE) + self.get_cards_in_location(1 - pln, LOCATION.SZONE)):
+		if card.position & POSITION.FACEDOWN and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION.MZONE) + self.get_cards_in_location(1 - pln, LOCATION.SZONE)):
 			pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
 			return
 		pl.notify(card.get_info(pl))
@@ -642,7 +642,7 @@ class Duel(Joinable):
 		cards = []
 		for i in (0, 1):
 			for j in (LOCATION.MZONE, LOCATION.SZONE, LOCATION.GRAVE, LOCATION.REMOVED, LOCATION.HAND, LOCATION.EXTRA):
-				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == pl.duel_player or card.position not in (0x8, 0xa))
+				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == pl.duel_player or not card.position & POSITION.FACEDOWN)
 		specs = {}
 		for card in cards:
 			specs[card.get_spec(pl)] = card
