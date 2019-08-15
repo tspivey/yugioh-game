@@ -268,13 +268,13 @@ class DeckEditor:
 		"""
 		Use the above function to group all cards, then sort them into groups.
 		"""
-		extras = [c for c in cardlist if (Card(c).type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))]
+		extras = [c for c in cardlist if (Card(c).type & TYPE.EXTRA)]
 		for c in extras: cardlist.remove(c)
-		traps = [c for c in cardlist if (Card(c).type & 4)]
+		traps = [c for c in cardlist if (Card(c).type & TYPE.TRAP)]
 		for c in traps: cardlist.remove(c)
-		monsters = [c for c in cardlist if (Card(c).type&1)]
+		monsters = [c for c in cardlist if (Card(c).type & TYPE.MONSTER)]
 		for c in monsters: cardlist.remove(c)
-		spells = [c for c in cardlist if (Card(c).type & 2)]
+		spells = [c for c in cardlist if (Card(c).type & TYPE.SPELL)]
 		for c in spells: cardlist.remove(c)
 		other=cardlist
 		extras_group = self.group_cards(extras)

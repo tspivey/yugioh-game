@@ -1,7 +1,7 @@
 import io
 
 from ygo.card import Card
-from ygo.constants import TYPE_LINK
+from ygo.constants import TYPE
 
 def msg_summoned(self, data):
 	return data[1:]
@@ -19,7 +19,7 @@ def summoning(self, card, special=False):
 	for pl in self.players + self.watchers:
 		pos = card.get_position(pl)
 		if special:
-			if card.type & TYPE_LINK:
+			if card.type & TYPE.LINK:
 				pl.notify(pl._("%s special summoning %s (%d) in %s position.") % (nick, card.get_name(pl), card.attack, pos))
 			else:
 				pl.notify(pl._("%s special summoning %s (%d/%d) in %s position.") % (nick, card.get_name(pl), card.attack, card.defense, pos))

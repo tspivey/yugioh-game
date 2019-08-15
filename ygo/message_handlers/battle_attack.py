@@ -1,7 +1,7 @@
 from twisted.internet import reactor
 
 from ygo.duel_reader import DuelReader
-from ygo.constants import TYPE_LINK
+from ygo.constants import TYPE
 from ygo.utils import process_duel
 from ygo.parsers.duel_parser import DuelParser
 
@@ -11,7 +11,7 @@ def battle_attack(self, pl):
 	specs = {}
 	for c in self.attackable:
 		spec = c.get_spec(pl)
-		if c.type & TYPE_LINK:
+		if c.type & TYPE.LINK:
 			pl.notify(pl._("%s: %s (%d)")%(spec, c.get_name(pl), c.attack))
 		else:
 			pl.notify("%s: %s (%d/%d)" % (spec, c.get_name(pl), c.attack, c.defense))

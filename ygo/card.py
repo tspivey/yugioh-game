@@ -11,7 +11,7 @@ class Card(object):
 		self.code = code
 		self.alias = row['alias']
 		self.setcode = row['setcode']
-		self.type = row['type']
+		self.type = TYPE(row['type'])
 		self.level = row['level'] & 0xff
 		self.lscale = (row['level'] >> 24) & 0xff
 		self.rscale = (row['level'] >> 16) & 0xff
@@ -88,8 +88,8 @@ class Card(object):
 	def get_info(self, pl):
 		lst = []
 		types = []
-		t = str(self.type)
-		for i in range(26):
+		t = str(self.type.value)
+		for i in range(len(TYPE)):
 			if self.type & (1 << i):
 				types.append(pl.strings['system'][1050+i])
 		for i in range(AMOUNT_ATTRIBUTES):
@@ -100,22 +100,22 @@ class Card(object):
 				types.append(pl.strings['system'][RACES_OFFSET+i])
 
 		lst.append("%s (%s)" % (self.get_name(pl), ", ".join(types)))
-		if self.type & TYPE_MONSTER:
-			if self.type & TYPE_LINK:
+		if self.type & TYPE.MONSTER:
+			if self.type & TYPE.LINK:
 				lst.append(pl._("Attack: %d Link rating: %d")%(self.attack, self.level))
-			elif self.type & TYPE_XYZ:
+			elif self.type & TYPE.XYZ:
 				lst.append(pl._("Attack: %d Defense: %d Rank: %d") % (self.attack, self.defense, self.level))
 			else:
 				lst.append(pl._("Attack: %d Defense: %d Level: %d") % (self.attack, self.defense, self.level))
-		if self.type & TYPE_PENDULUM:
+		if self.type & TYPE.PENDULUM:
 			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
-		elif self.type & TYPE_LINK:
+		elif self.type & TYPE.LINK:
 			lst.append(pl._("Link Markers: %s")%(self.get_link_markers(pl)))
 		lst.append(self.get_desc(pl))
 
 		try:
 
-			if self.type & TYPE_XYZ and self.location == LOCATION_MZONE:
+			if self.type & TYPE.XYZ and self.location == LOCATION_MZONE:
 
 				if len(self.xyz_materials):
 
@@ -180,4 +180,4 @@ class Card(object):
 
 	@property
 	def extra(self):
-		return bool(self.type & (TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK))
+		return bool(self.type & TYPE.EXTRA)

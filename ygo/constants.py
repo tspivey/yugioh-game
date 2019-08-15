@@ -1,7 +1,7 @@
 try:
-	from enum import Flag, auto, unique
+	from enum import Flag, auto, unique, IntFlag
 except ImportError:
-	from aenum import Flag, auto, unique
+	from aenum import Flag, auto, unique, IntFlag
 
 __ = lambda s: s
 
@@ -72,14 +72,35 @@ QUERY_OVERLAY_CARD = 0x10000
 QUERY_COUNTERS = 0x20000
 QUERY_LINK = 0x800000
 
-TYPE_MONSTER = 0x1
-TYPE_SPELL = 0x2
-TYPE_TRAP = 0x4
-TYPE_FUSION = 0x40
-TYPE_SYNCHRO = 0x2000
-TYPE_XYZ = 0x800000
-TYPE_PENDULUM = 0x1000000
-TYPE_LINK = 0x4000000
+@unique
+class TYPE(IntFlag):
+	MONSTER = 0x1
+	SPELL = 0x2
+	TRAP = 0x4
+	NORMAL = 0x10
+	EFFECT = 0x20
+	FUSION = 0x40
+	RITUAL = 0x80
+	TRAPMONSTER = 0x100
+	SPIRIT = 0x200
+	UNION = 0x400
+	DUAL = 0x800
+	TUNER = 0x1000
+	SYNCHRO = 0x2000
+	TOKEN = 0x4000
+	QUICKPLAY = 0x10000
+	CONTINUOUS = 0x20000
+	EQUIP = 0x40000
+	FIELD = 0x80000
+	COUNTER = 0x100000
+	FLIP = 0x200000
+	TOON = 0x400000
+	XYZ = 0x800000
+	PENDULUM = 0x1000000
+	SPSUMMON = 0x2000000
+	LINK = 0x4000000
+	# for this mud only
+	EXTRA = XYZ | SYNCHRO | FUSION | LINK
 
 @unique
 class INFORM(Flag):

@@ -42,7 +42,7 @@ if DUEL_AVAILABLE:
 		cd.rscale = (row['level'] >> 16) & 0xff
 		cd.attack = row['atk']
 		cd.defense = row['def']
-		if cd.type & TYPE_LINK:
+		if cd.type & TYPE.LINK:
 			cd.link_marker = cd.defense
 			cd.defense = 0
 		else:
@@ -116,13 +116,13 @@ class Duel(Joinable):
 		for tc in full_deck[::-1]:
 			cc = Card(tc)
 			if cc.extra:
-				if cc.type & TYPE_FUSION:
+				if cc.type & TYPE.FUSION:
 					fusion.append([tc, cc.level])
-				if cc.type & TYPE_XYZ:
+				if cc.type & TYPE.XYZ:
 					xyz.append([tc, cc.level])
-				if cc.type & TYPE_SYNCHRO:
+				if cc.type & TYPE.SYNCHRO:
 					synchro.append([tc, cc.level])
-				if cc.type & TYPE_LINK:
+				if cc.type & TYPE.LINK:
 					link.append([tc, cc.level])
 			else:
 				c.append(tc)
@@ -518,10 +518,10 @@ class Duel(Joinable):
 				s += card.get_position(pl)
 			else:
 				s += card.get_name(pl) + " "
-				if card.type & TYPE_LINK:
+				if card.type & TYPE.LINK:
 					s += (pl._("({attack}) link rating {level}")
 						.format(attack=card.attack, level=card.level))
-				elif card.type & TYPE_XYZ:
+				elif card.type & TYPE.XYZ:
 					s += (pl._("({attack}/{defense}) rank {level}")
 						.format(attack=card.attack, defense=card.defense, level=card.level))
 				else:
@@ -566,7 +566,7 @@ class Duel(Joinable):
 			pl.notify(s)
 
 		for card in mz:
-			if card.type & TYPE_LINK:
+			if card.type & TYPE.LINK:
 				zone = self.get_linked_zone(card)
 				if zone == '':
 					continue
@@ -585,10 +585,10 @@ class Duel(Joinable):
 				s += card.get_name(pl)
 				if location != LOCATION_HAND:
 					s += " " + card.get_position(pl)
-				if card.type & TYPE_MONSTER:
-					if card.type & TYPE_LINK:
+				if card.type & TYPE.MONSTER:
+					if card.type & TYPE.LINK:
 						s += " " + pl._("link rating %d") % card.level
-					elif card.type & TYPE_XYZ:
+					elif card.type & TYPE.XYZ:
 						s += " " + pl._("rank %d") % card.level
 					else:
 						s += " " + pl._("level %d") % card.level

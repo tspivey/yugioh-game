@@ -1,6 +1,6 @@
 import io
 
-from ygo.constants import TYPE_LINK
+from ygo.constants import TYPE
 
 def msg_battle(self, data):
 	data = io.BytesIO(data[1:])
@@ -28,13 +28,13 @@ def battle(self, attacker, aa, ad, bd0, tloc, da, dd, bd1):
 	else:
 		target = None
 	for pl in self.players + self.watchers:
-		if card.type & TYPE_LINK:
+		if card.type & TYPE.LINK:
 			attacker_points = "%d"%aa
 		else:
 			attacker_points = "%d/%d"%(aa, ad)
 
 		if target:
-			if target.type & TYPE_LINK:
+			if target.type & TYPE.LINK:
 				defender_points = "%d"%da
 			else:
 				defender_points = "%d/%d"%(da, dd)

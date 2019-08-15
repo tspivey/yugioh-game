@@ -65,7 +65,7 @@ class Player(Invitable):
 		main = 0
 		extra = 0
 		for row in rows:
-			if row[1]&(TYPE_XYZ | TYPE_SYNCHRO | TYPE_FUSION | TYPE_LINK):
+			if row[1] & TYPE.EXTRA:
 				extra += deck.count(row[0])
 			else:
 				main += deck.count(row[0])

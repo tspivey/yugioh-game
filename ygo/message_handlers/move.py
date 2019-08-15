@@ -120,9 +120,9 @@ def move(self, code, location, newloc, reason):
 		)
 	elif card.location == LOCATION_DECK and cnew.location == LOCATION_SZONE:
 		def fn(p):
-			if p.soundpack and cnew.type & TYPE_SPELL:
+			if p.soundpack and cnew.type & TYPE.SPELL:
 				p.notify("### activate_spell")
-			elif p.soundpack and cnew.type & TYPE_TRAP:
+			elif p.soundpack and cnew.type & TYPE.TRAP:
 				p.notify("### activate_trap")
 
 			if p is pl:
