@@ -36,7 +36,7 @@ def move(self, code, location, newloc, reason):
 
 	getvisiblename = lambda p: card.get_name(p) if card_visible else p._("Face-down card")
 
-	if reason & 0x01 and card.location != cnew.location:
+	if reason & REASON.DESTROY and card.location != cnew.location:
 		self.inform(
 			pl,
 			(INFORM.ALLIES, lambda p: p._("Card %s (%s) destroyed.") % (plspec, card.get_name(p))),
@@ -58,7 +58,7 @@ def move(self, code, location, newloc, reason):
 				(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) switched its zone to {targetspec}.").format(spec=plspec, name=card.get_name(p), targetspec=plnewspec)),
 				(INFORM.OTHER, lambda p: p._("{plname}s card {spec} ({name}) changed its zone to {targetspec}.").format(plname=pl.nickname, spec=getspec(p), targetspec=getnewspec(p), name=card.get_name(p))),
 			)
-	elif reason & 0x4000 and card.location != cnew.location:
+	elif reason & REASON.DISCARD and card.location != cnew.location:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("you discarded {spec} ({name}).").format(spec = plspec, name = card.get_name(p))),
@@ -82,7 +82,7 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER | INFORM.TAG_PLAYER, lambda p: p._("Card {spec} ({name}) returned to hand.").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.WATCHERS | INFORM.OPPONENTS, lambda p: p._("{plname}'s card {spec} ({name}) returned to their hand.").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
 		)
-	elif reason & 0x12 and card.location != cnew.location:
+	elif reason & (REASON.RELEASE | REASON.SUMMON) and card.location != cnew.location:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("You tribute {spec} ({name}).").format(spec=plspec, name=card.get_name(p))),
