@@ -289,8 +289,8 @@ class Duel(Joinable):
 
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY_CODE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_ATTACK | QUERY_DEFENSE | QUERY_EQUIP_CARD | QUERY_OVERLAY_CARD | QUERY_COUNTERS | QUERY_LINK
-		bl = lib.query_field_card(self.duel, player, location.value, flags, ffi.cast('byte *', self.buf), False)
+		flags = QUERY.CODE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.ATTACK | QUERY.DEFENSE | QUERY.EQUIP_CARD | QUERY.OVERLAY_CARD | QUERY.COUNTERS | QUERY.LINK
+		bl = lib.query_field_card(self.duel, player, location.value, flags.value, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
 			if buf.tell() == bl:
@@ -314,7 +314,7 @@ class Duel(Joinable):
 
 			card.equip_target = None
 
-			if f & QUERY_EQUIP_CARD == QUERY_EQUIP_CARD: # optional
+			if f & QUERY.EQUIP_CARD: # optional
 
 				equip_target = self.read_u32(buf)
 				pl = equip_target & 0xff
@@ -347,8 +347,8 @@ class Duel(Joinable):
 		return cards
 
 	def get_card(self, player, loc, seq):
-		flags = QUERY_CODE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_POSITION | QUERY_LEVEL | QUERY_RANK | QUERY_LINK
-		bl = lib.query_card(self.duel, player, loc.value, seq, flags, ffi.cast('byte *', self.buf), False)
+		flags = QUERY.CODE | QUERY.ATTACK | QUERY.DEFENSE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.LINK
+		bl = lib.query_card(self.duel, player, loc.value, seq, flags.value, ffi.cast('byte *', self.buf), False)
 		if bl == 0:
 			return
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
