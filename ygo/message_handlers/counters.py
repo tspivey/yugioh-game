@@ -27,7 +27,7 @@ def counters(self, card, type, count, added):
 
 	for pl in self.players+self.watchers:
 
-		stype = pl.strings['counter'][type]
+		stype = pl.strings['counter'].get(type, 'Counter %d' % type)
 
 		if added:
 			 pl.notify(pl._("{amount} counters of type {counter} placed on {card}").format(amount=count, counter=stype, card=card.get_name(pl)))
