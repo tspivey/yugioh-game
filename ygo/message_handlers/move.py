@@ -141,6 +141,15 @@ def move(self, code, location, newloc, reason):
 			(INFORM.ALL, fn)
 		)
 
+	elif cnew.location == (LOCATION.OVERLAY | LOCATION.MZONE):
+		attached_to = self.get_card(cnew.controller, cnew.location ^ LOCATION.OVERLAY, cnew.sequence)
+
+		self.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material").format(spec=getspec(p), name=card.get_name(p), targetspec=attached_to.get_spec(p), targetname=attached_to.get_name(p))),
+			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material").format(spec=getspec(p), name=card.get_name(p), targetspec=attached_to.get_spec(p), targetname=attached_to.get_name(p), plname=pl.nickname)),
+		)
+
 MESSAGES = {50: msg_move}
 
 CALLBACKS = {'move': move}
