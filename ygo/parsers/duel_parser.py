@@ -198,10 +198,10 @@ def invite(caller):
 	elif target.room is not None:
 		pl.notify(pl._("This player is already preparing to duel."))
 		return
-	elif target.nickname in pl.ignores:
+	elif pl.is_ignoring(target):
 		pl.notify(pl._("You're ignoring this player."))
 		return
-	elif pl.nickname in target.ignores:
+	elif target.is_ignoring(pl):
 		pl.notify(pl._("This player ignores you."))
 		return
 

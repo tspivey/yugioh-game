@@ -417,10 +417,10 @@ def tell(caller):
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
 	# need to handle ignorings here externally, to prevent buffering
-	if player.nickname in caller.connection.player.ignores:
+	if caller.connection.player.is_ignoring(player):
 		caller.connection.notify(caller.connection._("You are ignoring %s.")%(player.nickname))
 		return
-	elif caller.connection.player.nickname in player.ignores:
+	elif player.is_ignoring(caller.connection.player):
 		caller.connection.notify(caller.connection._("%s is ignoring you.")%(player.nickname))
 		return
 	if player.afk is True:
@@ -443,10 +443,10 @@ def reply(caller):
 		caller.connection.notify(caller.connection._("That player is not online."))
 		return
 	# see above
-	if player.nickname in caller.connection.player.ignores:
+	if caller.connection.player.is_ignoring(player):
 		caller.connection.notify(caller.connection._("You are ignoring %s.")%(player.nickname))
 		return
-	elif caller.connection.player.nickname in player.ignores:
+	elif player.is_ignoring(caller.connection.player):
 		caller.connection.notify(caller.connection._("%s is ignoring you.")%(player.nickname))
 		return
 	if player.afk is True:
@@ -582,17 +582,17 @@ def join(caller):
 
 	target = players[0]  
 
-	if target.nickname in pl.ignores:
+	if pl.is_ignoring(target):
 		pl.notify(pl._("You're ignoring this player."))
-	elif pl.nickname in target.ignores:
+	elif target.is_ignoring(pl):
 		pl.notify(pl._("This player ignores you."))
 	elif target.duel is not None:
 		pl.notify(pl._("This player is currently in a duel."))
 	elif target.room is None or target.room.open is not True or (target.room.private is True and not target.room.can_join(pl)):
 		pl.notify(pl._("This player currently doesn't prepare to duel or you may not enter the room."))
-	elif target.room.creator.nickname in pl.ignores:
+	elif pl.is_ignoring(target.room.creator):
 		pl.notify(pl._("You're currently ignoring %s, who is the owner of this room.")%(target.room.creator.nickname))
-	elif pl.nickname in target.room.creator.ignores:
+	elif target.room.creator.is_ignoring(pl):
 		pl.notify(pl._("%s, who is the owner of this room, is ignoring you.")%(target.room.creator.nickname))
 	else:
 		target.room.join(pl)

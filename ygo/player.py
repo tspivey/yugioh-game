@@ -163,6 +163,15 @@ class Player(Invitable):
 	def toggle_language_chat(self, lang):
 		self.language_chats[lang] = not self.language_chats.get(lang, False)
 
+	def is_ignoring(self, pl):
+		if not isinstance(pl, Player):
+			return False
+		
+		if pl.is_admin:
+			return False
+		
+		return pl.nickname in self.ignores
+
 	@property
 	def cdb(self):
 		return globals.language_handler.get_language(self.language)['db']

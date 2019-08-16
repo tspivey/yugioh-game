@@ -23,7 +23,7 @@ class Channel:
 
 	# derive to add e.g. messages, whenever message sent to ignorant person
 	def is_ignoring(self, recipient, sender):
-		return sender is not None and sender.nickname in recipient.ignores
+		return recipient.is_ignoring(sender)
 
 	# adds a recipient into the list
 	def add_recipient(self, player):
