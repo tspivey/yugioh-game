@@ -395,6 +395,7 @@ class Duel(Joinable):
 	# the Duel object, same goes for all additional methods mentioned
 	# in an additional METHODS dictionary attribute
 
+	@handle_error
 	def bind_message_handlers(self):
 
 		all_handlers = {}
