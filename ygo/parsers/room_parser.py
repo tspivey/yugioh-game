@@ -341,6 +341,10 @@ def start(caller):
 		pl.notify(pl._("Players currently locking this room: {0}").format(', '.join([(p.nickname if p is not pl else pl._("you")) for p in p_l])))
 		return
 
+	if globals.rebooting and room.duel_count == 0:
+		pl.notify(pl._("This server is going to reboot soon, you cannot start a duel right now."))
+		return
+
 	# is it a tag duel?
 	if len(room.teams[1]) > 1:
 		room.options = room.options | 0x20

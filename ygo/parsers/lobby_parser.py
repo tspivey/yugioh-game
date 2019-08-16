@@ -547,8 +547,15 @@ def echo(caller):
 
 @LobbyParser.command(names=['create'], allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None and c.connection.parser is LobbyParser)
 def create(caller):
-	r = Room(caller.connection.player)
-	r.join(caller.connection.player)
+
+	pl = caller.connection.player
+
+	if globals.rebooting:
+		pl.notify(pl._("This server is going to reboot soon, you cannot create a room right now."))
+		return
+
+	r = Room(pl)
+	r.join(pl)
 	caller.connection.parser.prompt(caller.connection)
 
 @LobbyParser.command(names=['join'], args_regexp=RE_NICKNAME, allowed = lambda c: c.connection.player.room is None and c.connection.player.duel is None and c.connection.parser is LobbyParser)
@@ -597,6 +604,9 @@ def uptime(caller):
 	delta = datetime.datetime.utcnow() - globals.server.started
 
 	caller.connection.notify(caller.connection._("This server has been running for %s.")%(format_timedelta(delta, locale=caller.connection.player.get_locale())))
+
+	if globals.rebooting:
+		caller.connection.notify(caller.connection._("This server is going to reboot soon."))
 
 @LobbyParser.command(names=['chathistory'], args_regexp=r'(\d*)')
 def chathistory(caller):
