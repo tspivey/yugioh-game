@@ -1,5 +1,3 @@
-from logging import getLogger
-logger = getLogger('callback_manager')
 from collections import defaultdict
 
 class CallbackManager(object):
@@ -19,12 +17,6 @@ class CallbackManager(object):
 	def call_callbacks(self, type, *args, **kwargs):
 		"""Calls all callbacks for a given event type with the provided args and kwargs"""
 		for callback in self.callbacks[type]:
-			try:
-				callback(*args, **kwargs)
-			except Exception as e:
-				logger.exception("Error calling callback %r" % callback)
+			callback(*args, **kwargs)
 		for callback in self.callbacks['*']:
-			try:
-				callback(type, *args, **kwargs)
-			except Exception as e:
-				logger.exception("Error calling callback %r" % callback)
+			callback(type, *args, **kwargs)

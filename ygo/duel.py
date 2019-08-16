@@ -287,6 +287,7 @@ class Duel(Joinable):
 		lib.set_responseb(self.duel, ffi.cast('byte *', buf))
 		self.cm.call_callbacks('debug', event_type='set_responseb', response=r.decode('latin1'))
 
+	@handle_error
 	def get_cards_in_location(self, player, location):
 		cards = []
 		flags = QUERY.CODE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.ATTACK | QUERY.DEFENSE | QUERY.EQUIP_CARD | QUERY.OVERLAY_CARD | QUERY.COUNTERS | QUERY.LINK
@@ -346,6 +347,7 @@ class Duel(Joinable):
 			cards.append(card)
 		return cards
 
+	@handle_error
 	def get_card(self, player, loc, seq):
 		flags = QUERY.CODE | QUERY.ATTACK | QUERY.DEFENSE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.LINK
 		bl = lib.query_card(self.duel, player, loc.value, seq, flags.value, ffi.cast('byte *', self.buf), False)
@@ -376,6 +378,7 @@ class Duel(Joinable):
 			card.defense = link_marker
 		return card
 
+	@handle_error
 	def unpack_location(self, loc):
 		controller = loc & 0xff
 		location = LOCATION((loc >> 8) & 0xff)

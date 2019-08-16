@@ -1,19 +1,19 @@
 import io
 
-from ygo.constants import POSITION
+from ygo.constants import LOCATION, POSITION
 
 def msg_attack(self, data):
 	data = io.BytesIO(data[1:])
 	attacker = self.read_u32(data)
 	ac = attacker & 0xff
-	al = (attacker >> 8) & 0xff
+	al = LOCATION((attacker >> 8) & 0xff)
 	aseq = (attacker >> 16) & 0xff
-	apos = (attacker >> 24) & 0xff
+	apos = POSITION((attacker >> 24) & 0xff)
 	target = self.read_u32(data)
 	tc = target & 0xff
-	tl = (target >> 8) & 0xff
+	tl = LOCATION((target >> 8) & 0xff)
 	tseq = (target >> 16) & 0xff
-	tpos = (target >> 24) & 0xff
+	tpos = POSITION((target >> 24) & 0xff)
 	self.cm.call_callbacks('attack', ac, al, aseq, apos, tc, tl, tseq, tpos)
 	return data.read()
 

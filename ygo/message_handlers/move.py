@@ -9,7 +9,7 @@ def msg_move(self, data):
 	code = self.read_u32(data)
 	location = self.read_u32(data)
 	newloc = self.read_u32(data)
-	reason = self.read_u32(data)
+	reason = REASON(self.read_u32(data))
 	self.cm.call_callbacks('move', code, location, newloc, reason)
 	return data.read()
 
@@ -31,7 +31,7 @@ def move(self, code, location, newloc, reason):
 
 	card_visible = True
 	
-	if card.position == cnew.position and card.position & POSITION.FACEDOWN:
+	if card.position & POSITION.FACEDOWN and cnew.position & POSITION.FACEDOWN:
 		card_visible = False
 
 	getvisiblename = lambda p: card.get_name(p) if card_visible else p._("Face-down card")

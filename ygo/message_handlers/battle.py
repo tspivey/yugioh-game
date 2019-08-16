@@ -1,6 +1,6 @@
 import io
 
-from ygo.constants import TYPE
+from ygo.constants import LOCATION, TYPE
 
 def msg_battle(self, data):
 	data = io.BytesIO(data[1:])
@@ -16,12 +16,12 @@ def msg_battle(self, data):
 	return data.read()
 
 def battle(self, attacker, aa, ad, bd0, tloc, da, dd, bd1):
-	loc = (attacker >> 8) & 0xff
+	loc = LOCATION((attacker >> 8) & 0xff)
 	seq = (attacker >> 16) & 0xff
 	c2 = attacker & 0xff
 	card = self.get_card(c2, loc, seq)
 	tc = tloc & 0xff
-	tl = (tloc >> 8) & 0xff
+	tl = LOCATION((tloc >> 8) & 0xff)
 	tseq = (tloc >> 16) & 0xff
 	if tloc:
 		target = self.get_card(tc, tl, tseq)
