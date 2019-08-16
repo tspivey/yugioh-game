@@ -42,6 +42,17 @@ class login_parser(parser.Parser):
 	def handle_password(self, caller):
 		account = caller.connection.login_state[2]
 		if account.check_password(caller.text):
+
+			if account.banned:
+				caller.connection.notify("You have been banned and thus may not log in.")
+
+				# lets update the ip address
+				account.ip_address = caller.connection.host
+				caller.connection.session.commit()
+
+				globals.server.disconnect(caller.connection)
+				return
+
 			self.login(caller.connection, account)
 		else:
 			caller.connection.notify("Wrong password.")
@@ -130,6 +141,7 @@ class login_parser(parser.Parser):
 			globals.server.add_player(connection.player)
 			connection.notify(connection.player.motd)
 		connection.account = None
+		account.ip_address = connection.host
 		account.last_logged_in = func.now()
 		connection.session.commit()
 

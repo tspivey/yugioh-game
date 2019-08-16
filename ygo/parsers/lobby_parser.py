@@ -755,6 +755,84 @@ def banlist(caller):
 	else:
 		globals.banlists[banlist].show_diff(globals.banlists[diff_list], pl)
 
+@LobbyParser.command(names=["ban"], args_regexp='(.*)', allowed = lambda c: c.connection.player.is_admin)
+def ban(caller):
+
+	session = caller.connection.session
+	
+	if len(caller.args) == 0 or not caller.args[0].strip():
+		banned = session.query(models.Account).filter_by(banned = True).all()
+
+		if len(banned) == 0:
+			caller.connection.notify(caller.connection._("No banned players yet."))
+			return
+		
+		caller.connection.notify(caller.connection._("Banned players:"))
+
+		for a in natsort.natsorted(banned, key = lambda a: a.name):
+			caller.connection.notify("\t" + a.name.title())
+
+		return
+		
+	nick = caller.args[0].strip()
+
+	account = session.query(models.Account).filter_by(name=nick.title()).first()
+	
+	if not account:
+		caller.connection.notify(caller.connection._("No account with that name found."))
+		return
+		
+	if account.is_admin:
+		caller.connection.notify(caller.connection._("You cannot ban admins. Please remove the admin status first."))
+		return
+
+	if account.banned:
+		caller.connection.notify(caller.connection._("{player} is already banned.").format(player = account.name.title()))
+		return
+
+	account.banned = True
+
+	ip = account.ip_address
+
+	session.commit()
+	
+	players = globals.server.get_all_players()
+	
+	players = filter(lambda p: p.get_account().ip_address == ip, players)
+
+	for p in players:
+		p.notify(p._("You were banned by {admin}. Only you might know why.").format(admin = caller.connection.player.nickname))
+		globals.server.disconnect(p.connection)
+
+	caller.connection.notify(caller.connection._("Ban successful."))
+
+@LobbyParser.command(names=["unban"], args_regexp='(.*)', allowed = lambda c: c.connection.player.is_admin)
+def unban(caller):
+
+	session = caller.connection.session
+	
+	if len(caller.args) == 0 or not caller.args[0].strip():
+		caller.connection.notify(caller.connection._("You need to enter a nickname. To see a list ofanned players, use ban."))
+		return
+
+	nick = caller.args[0].strip()
+
+	account = session.query(models.Account).filter_by(name=nick.title()).first()
+	
+	if not account:
+		caller.connection.notify(caller.connection._("No account with that name found."))
+		return
+		
+	if not account.banned:
+		caller.connection.notify(caller.connection._("{player} is not banned.").format(player = account.name.title()))
+		return
+
+	account.banned = False
+
+	session.commit()
+	
+	caller.connection.notify(caller.connection._("Ban removed."))
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DeckEditorParser.commands:

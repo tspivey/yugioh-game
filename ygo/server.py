@@ -48,8 +48,21 @@ class Server(gsb.Server):
 			elif con.player.room is not None:
 				con.player.room.leave(con.player)
 			self.remove_player(con.player.nickname)
+			con.session.close()
 			for pl in self.get_all_players():
 				pl.notify(pl._("%s logged out.") % con.player.nickname)
+
+	def is_banned(self, host):
+		session = self.session_factory()
+		
+		banned = session.query(models.Account).filter_by(ip_address = host, banned = True).all()
+
+		session.close()
+
+		if len(banned) > 0:
+			return True
+		
+		return False
 
 	def get_player(self, name):
 		return self.players.get(name.lower())

@@ -41,6 +41,8 @@ class Account(Base):
 	ignores = relationship('Ignore', cascade='all, delete-orphan', foreign_keys='Ignore.account_id')
 	duel_rules = Column(Integer, nullable=False, default=4)
 	banlist = Column(String(50), nullable = False, default = 'tcg')
+	ip_address = Column(String(100), nullable=False, default='')
+	banned = Column(Boolean, nullable=False, default=False)
 	statistics = relationship('Statistics', cascade='all, delete-orphan', foreign_keys=[Statistics.account_id])
 
 	def set_password(self, password):
