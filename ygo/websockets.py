@@ -55,6 +55,10 @@ class WSProtocol(WebSocketServerProtocol):
 		"""Notify this connection of something."""
 		self.server.notify(self, *args, **kwargs)
 
+	@property
+	def host(self):
+		return self.peer
+
 def start_websocket_server(port, cert, key):
 	if cert:
 		context_factory = ssl.DefaultOpenSSLContextFactory(key, cert)
