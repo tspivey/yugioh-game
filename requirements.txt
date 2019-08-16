@@ -1,5 +1,6 @@
 aenum==2.2.1; python_version < '3.6'
 attrs==17.2.0
+MailChecker
 twisted==18.4.0
 git+git://github.com/chrisnorman7/game-server-base.git@e2d0f12912bea56796e9b7fe7ab7ac8d2bae1311
 cffi

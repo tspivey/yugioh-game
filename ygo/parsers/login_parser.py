@@ -1,4 +1,5 @@
 import gsb
+from MailChecker import MailChecker
 import os
 import re
 from sqlalchemy import func
@@ -82,7 +83,7 @@ class login_parser(parser.Parser):
 		self.prompt(caller)
 
 	def handle_email(self, caller):
-		if not caller.text or '@' not in caller.text:
+		if not caller.text or '@' not in caller.text or not MailChecker.is_valid(caller.text.strip()):
 			return self.prompt(caller, "Invalid email address.")
 		caller.connection.account.email = caller.text.strip()
 		caller.connection.session.add(caller.connection.account)
