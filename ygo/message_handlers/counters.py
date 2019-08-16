@@ -1,5 +1,7 @@
 import io
 
+from ygo.constants import LOCATION
+
 def msg_counters(self, data):
 	data = io.BytesIO(data[0:])
 
@@ -9,7 +11,7 @@ def msg_counters(self, data):
 
 	pl = self.read_u8(data)
 
-	loc = self.read_u8(data)
+	loc = LOCATION(self.read_u8(data))
 
 	seq = self.read_u8(data)
 
