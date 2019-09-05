@@ -46,6 +46,13 @@ class LanguageHandler:
 		cdb.execute("DETACH new")
 		cdb.execute("CREATE UNIQUE INDEX idx_datas_id ON datas (id)")
 		cdb.execute("CREATE UNIQUE INDEX idx_texts_id ON texts (id)")
+
+		# getting all column names from cards.cdb
+		cursor = cdb.execute("SELECT * FROM datas LIMIT 1")
+		row = cursor.fetchone()
+		columns = row.keys()
+		cursor.close()
+
 		extending_dbs = glob.glob(os.path.join(path, '*.cdb'))
 		count = 0
 		for p in extending_dbs:
@@ -53,7 +60,17 @@ class LanguageHandler:
 				continue
 			count += 1
 			cdb.execute("ATTACH ? as new", (p, ))
-			cdb.execute("INSERT OR REPLACE INTO datas SELECT * FROM new.datas")
+
+			# getting all columns currently available in the merged db
+			cursor = cdb.execute("SELECT * FROM new.datas LIMIT 1")
+			row = cursor.fetchone()
+			new_columns = row.keys()
+			cursor.close()
+
+			# getting all columns which are available in both tables
+			new_columns = [c for c in new_columns if c in columns]
+
+			cdb.execute("INSERT OR REPLACE INTO datas ({0}) SELECT {0} FROM new.datas".format(', '.join(new_columns)))
 			cdb.execute("INSERT OR REPLACE INTO texts SELECT * FROM new.texts")
 			cdb.commit()
 			cdb.execute("DETACH new")
