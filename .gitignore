@@ -16,3 +16,5 @@ locale/it/*.cdb
 locale/ja/*.cdb
 locale/pt/*.cdb
 locale/th/*.cdb
+lflist.conf
+locale/en/strings.conf
