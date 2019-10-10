@@ -41,8 +41,8 @@ class LanguageHandler:
 		cdb.row_factory = sqlite3.Row
 		cdb.create_function('UPPERCASE', 1, lambda s: s.upper())
 		cdb.execute("ATTACH ? AS new", (os.path.join(path, 'cards.cdb'), ))
-		cdb.execute("CREATE TABLE datas AS SELECT * FROM new.datas WHERE id<100000000")
-		cdb.execute("CREATE TABLE texts AS SELECT * FROM new.texts WHERE id<100000000")
+		cdb.execute("CREATE TABLE datas AS SELECT * FROM new.datas")
+		cdb.execute("CREATE TABLE texts AS SELECT * FROM new.texts")
 		cdb.execute("DETACH new")
 		cdb.execute("CREATE UNIQUE INDEX idx_datas_id ON datas (id)")
 		cdb.execute("CREATE UNIQUE INDEX idx_texts_id ON texts (id)")
@@ -70,8 +70,8 @@ class LanguageHandler:
 			# getting all columns which are available in both tables
 			new_columns = [c for c in new_columns if c in columns]
 
-			cdb.execute("INSERT OR REPLACE INTO datas ({0}) SELECT {0} FROM new.datas WHERE id<100000000".format(', '.join(new_columns)))
-			cdb.execute("INSERT OR REPLACE INTO texts SELECT * FROM new.texts WHERE id<100000000")
+			cdb.execute("INSERT OR REPLACE INTO datas ({0}) SELECT {0} FROM new.datas".format(', '.join(new_columns)))
+			cdb.execute("INSERT OR REPLACE INTO texts SELECT * FROM new.texts")
 			cdb.commit()
 			cdb.execute("DETACH new")
 		print("Merged {count} databases into cards.cdb".format(count = count))
