@@ -157,6 +157,8 @@ class Room(Joinable):
 			s += pl._("Traditional")
 		elif self.rules == 0:
 			s += pl._("Default")
+		elif self.rules == 5:
+			s += pl._("MR 5")
 
 		pl.notify(s)
 
