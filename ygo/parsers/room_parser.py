@@ -176,7 +176,7 @@ def private(caller):
 	else:
 		pl.notify(pl._("This room is now public."))
 
-@RoomParser.command(names=['rules'], args_regexp=r'([a-zA-Z]+)', allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
+@RoomParser.command(names=['rules'], args_regexp=r'([a-zA-Z0-9]+)', allowed = lambda c: c.connection.player.room.creator is c.connection.player and not c.connection.player.room.open)
 def rules(caller):
 
 	pl = caller.connection.player
@@ -184,10 +184,11 @@ def rules(caller):
 
 	if len(caller.args) == 0:
 		pl.notify(pl._("Following rules can be defined:"))
-		pl.notify(pl._("Default - The default duelling behaviour before link summons came in"))
-		pl.notify(pl._("Link - Enable link summons"))
+		pl.notify(pl._("MR5 - The new update to the rules that applys since April 1st, 2020 (MR 5 is an unofficial name)"))
+		pl.notify(pl._("Link - Enable link summons (Master Rule 4)"))
+		pl.notify(pl._("Default - The default duelling behaviour before link summons came in (Master Rule 3, we advise you to use MR 5 over this one)"))
 		pl.notify(pl._("Traditional - Duel rules from the first days of Yu-Gi-Oh"))
-	elif caller.args[0] is None or caller.args[0].lower() not in ('link', 'default', 'traditional'):
+	elif caller.args[0] is None or caller.args[0].lower() not in ('link', 'default', 'traditional', 'mr5'):
 		pl.notify(pl._("Invalid duel rules specified. See rules command to get the possible arguments."))
 	else:
 		rule = caller.args[0].lower()
@@ -195,8 +196,10 @@ def rules(caller):
 			room.rules = 4
 		elif rule == 'traditional':
 			room.rules = 1
+		elif rule == 'mr5':
+			room.rules = 5
 		else:
-			room.rules = 0
+			room.rules = 0 # Shouldn't this be 3 now? A bit unsure, looking at ygocore's code. 0 seems to be working though.
 
 		s = pl._("Duel rules were set to %s.")
 
@@ -206,6 +209,8 @@ def rules(caller):
 			s2 = pl._("Traditional")
 		elif room.rules == 4:
 			s2 = pl._("Link")
+		elif room.rules == 5:
+			s2 = pl._("MR 5")
 
 		s = s%(s2)
 
