@@ -1,3 +1,7 @@
+## Description
+This is a MUD (multi-user domain), meaning it is primarily text-based. https://en.wikipedia.org/wiki/MUD
+Therefore, this client does not contain any copyright images of yugioh cards. All actions and moves are done via text based commands. This allows those with visual impairment to play the game. Text to speech software is used externally to read the text displayed in the game.
+
 ## Install dependencies
 Lua is needed for ygopro-core. To make sure a matching lua version is used, we will compile it on our own:
 
