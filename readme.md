@@ -1,3 +1,8 @@
+## Description
+
+This is a text-based Yu-Gi-Oh [MUD](https://en.wikipedia.org/wiki/MUD) server, written in Python.
+It allows multiple players to duel with Yu-Gi-Oh cards.
+
 ## Install dependencies
 Lua is needed for ygopro-core. To make sure a matching lua version is used, we will compile it on our own:
 
