@@ -7,7 +7,7 @@ cffi
 autobahn==17.9.2
 natsort==5.1.0
 passlib==1.7.1
-pyopenssl==17.3.0
+pyopenssl==17.5.0
 sqlalchemy==1.3.4
 alembic==1.0.10
 Babel
