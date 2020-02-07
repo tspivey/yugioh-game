@@ -102,7 +102,7 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
 		
 		s = sorted(set(s))
 
-		if mode == 1 and max(s) < val:
+		if mode == 1 and not check(must_select + selected, val):
 			return error(pl._("Levels out of range."))
 		if mode == 0 and not any([check_sum(selected, val - m) for m in must_select_levels]):
 			return error(pl._("Selected value does not equal %d.") % (val,))
@@ -113,6 +113,25 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
 		self.set_responseb(b)
 		reactor.callLater(0, process_duel, self)
 	prompt()
+
+def check(cards, acc):
+	sum = 0
+	mx = 0
+	mn = 0x7fffffff
+	for c in cards:
+		o1 = c.param[0]
+		o2 = c.param[1]
+		if o2 and o2 < o1:
+			ms = o2
+		else:
+			ms = o1
+		sum += ms
+		mx += max(o2, o1)
+		if ms < mn:
+			mn = ms
+	if mx < acc or sum - mn >= acc:
+		return False
+	return True
 
 MESSAGES = {23: msg_select_sum}
 
