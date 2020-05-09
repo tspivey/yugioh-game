@@ -553,8 +553,10 @@ class Duel(Joinable):
 				s += card.get_name(pl) + " "
 				s += card.get_position(pl)
 
-				if card.equip_target:
+				if card.type & TYPE.PENDULUM:
+					s += " (" + pl._("Pendulum scale: %d/%d") % (card.lscale, card.rscale) + ")"
 
+				if card.equip_target:
 					s += ' ' + pl._('(equipped to %s)')%(card.equip_target.get_spec(pl))
 
 				counters = []
