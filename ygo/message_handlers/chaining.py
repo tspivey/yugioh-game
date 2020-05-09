@@ -32,8 +32,16 @@ def chaining(self, card, tc, tl, ts, desc, cs):
 		if self.players[o].soundpack:
 			self.players[o].notify("### activate_trap")
 
-	self.players[c].notify(self.players[c]._("Activating {0} ({1})").format(card.get_spec(self.players[c]), card.get_name(self.players[c])))
-	self.players[o].notify(self.players[o]._("{0} activating {1} ({2})").format(n, card.get_spec(self.players[o]), card.get_name(self.players[o])))
+	type = ""
+	if card.type & TYPE.MONSTER:
+		type = self.players[c]._("monster card")
+	if card.type & TYPE.SPELL:
+		type = self.players[c]._("spell card")
+	if card.type & TYPE.TRAP:
+		type = self.players[c]._("trap card")
+
+	self.players[c].notify(self.players[c]._("Activating {2} at {0} ({1})").format(card.get_spec(self.players[c]), card.get_name(self.players[c]), type))
+	self.players[o].notify(self.players[o]._("{0} activating {3} at {1} ({2})").format(n, card.get_spec(self.players[o]), card.get_name(self.players[o]), type))
 	for pl in self.watchers:
 		if card.type & TYPE.SPELL:
 			if pl.soundpack:
@@ -41,7 +49,7 @@ def chaining(self, card, tc, tl, ts, desc, cs):
 		if card.type & TYPE.TRAP:
 			if pl.soundpack:
 				pl.notify("### activate_trap")
-		pl.notify(pl._("{0} activating {1} ({2})").format(n, card.get_spec(pl), card.get_name(pl)))
+		pl.notify(pl._("{0} activating {3} at {1} ({2})").format(n, card.get_spec(pl), card.get_name(pl), type))
 
 MESSAGES = {70: msg_chaining}
 
