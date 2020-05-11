@@ -7,473 +7,772 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-12-16 12:35-0800\n"
-"PO-Revision-Date: 2017-12-16 12:37-0800\n"
+"POT-Creation-Date: 2020-05-09 12:19+0900\n"
+"PO-Revision-Date: 2020-05-09 12:47+0900\n"
 "Last-Translator: Yukio Nozawa <personal@nyanchangames.com>\n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.8.0\n"
+"X-Generator: Poedit 2.3\n"
 
-#: ygo/card.py:70
+#: ygo/banlist.py:122
+msgid "{0} (now at {1}, previously at {2})"
+msgstr "{0} (現在の位置 {1}, 以前の位置 {2})"
+
+#: ygo/banlist.py:124
+msgid "{0}, (previously at {1})"
+msgstr "{0}, (以前の位置 {1})"
+
+#: ygo/banlist.py:138 ygo/banlist.py:171
+msgid "Forbidden cards (not allowed at all):"
+msgstr "禁止カード (1枚も許可されない):"
+
+#: ygo/banlist.py:142 ygo/banlist.py:175
+msgid "Limited cards (only allowed once):"
+msgstr "制限カード (1枚だけ許可):"
+
+#: ygo/banlist.py:146 ygo/banlist.py:179
+msgid "Semi-limited cards (only allowed twice):"
+msgstr "準制限カード (2枚だけ許可):"
+
+#: ygo/banlist.py:168
+msgid "Changes between {0} and {1} banlist:"
+msgstr "禁止カードリスト {0} と {1} の変更点:"
+
+#: ygo/banlist.py:183
+msgid "Amount of allowed cards changed:"
+msgstr "変更によって許可されたカード:"
+
+#: ygo/banlist.py:187
+msgid "Removed cards (no longer on banlist):"
+msgstr "禁止カードリストから除外されたカード:"
+
+#: ygo/card.py:74
 msgid "Activate this card."
 msgstr "このカードを使用"
 
-#: ygo/card.py:101
+#: ygo/card.py:105
 #, python-format
-msgid "Attack: %d Level: %d"
-msgstr "攻撃力:%d, レベル:%d"
+msgid "Attack: %d Link rating: %d"
+msgstr "攻撃力: %d  リンクレーティング: %d"
 
-#: ygo/card.py:103
+#: ygo/card.py:107
+#, python-format
+msgid "Attack: %d Defense: %d Rank: %d"
+msgstr "攻撃力: %d 守備力: %d ランク: %d"
+
+#: ygo/card.py:109
 #, python-format
 msgid "Attack: %d Defense: %d Level: %d"
-msgstr "攻撃力:%d, 守備力:%d, レベル:%d"
+msgstr "攻撃力: %d 守備力: %d レベル: %d"
 
-#: ygo/card.py:105
+#: ygo/card.py:111
 #, python-format
 msgid "Pendulum scale: %d/%d"
 msgstr "ペンデュラムスケール:%d/%d"
 
-#: ygo/card.py:107
+#: ygo/card.py:113
 #, python-format
 msgid "Link Markers: %s"
 msgstr "リンクマーカー:%s"
 
-#: ygo/card.py:116
+#: ygo/card.py:122
 msgid "attached xyz materials:"
 msgstr "付属しているxyz素材:"
 
-#: ygo/card.py:123
+#: ygo/card.py:129
 msgid "no xyz materials attached"
 msgstr "xyz素材は付属していません"
 
-#: ygo/card.py:133
+#: ygo/card.py:139
 msgid "face-up attack"
 msgstr "表向き　攻撃"
 
-#: ygo/card.py:135
+#: ygo/card.py:141
 msgid "face-down attack"
 msgstr "裏向き　攻撃"
 
-#: ygo/card.py:137
+#: ygo/card.py:143
 msgid "face-up defense"
 msgstr "表向き　守備"
 
-#: ygo/card.py:139
+#: ygo/card.py:145
 msgid "face-up"
 msgstr "表向き"
 
-#: ygo/card.py:141
+#: ygo/card.py:147
 msgid "face-down defense"
 msgstr "裏向き　守備"
 
-#: ygo/card.py:143
+#: ygo/card.py:149
 msgid "face down"
 msgstr "裏向き"
 
-#: ygo/channel.py:76
+#: ygo/channel.py:82
 msgid "You currently don't receive messages from this channel, so you may not see the history."
 msgstr "現在、このチャンネルからのメッセージは受信されていません。そのため、メッセージ履歴はありません。"
 
-#: ygo/channel.py:80
+#: ygo/channel.py:86
 msgid "No messages yet."
 msgstr "まだメッセージはありません"
 
-#: ygo/constants.py:14
+#: ygo/constants.py:20
 msgid "bottom left"
 msgstr "左下"
 
-#: ygo/constants.py:15
+#: ygo/constants.py:21
 msgid "bottom"
 msgstr "下"
 
-#: ygo/constants.py:16
+#: ygo/constants.py:22
 msgid "bottom right"
 msgstr "右下"
 
-#: ygo/constants.py:17
+#: ygo/constants.py:23
 msgid "left"
 msgstr "左"
 
-#: ygo/constants.py:18
+#: ygo/constants.py:24
 msgid "right"
 msgstr "右"
 
-#: ygo/constants.py:19
+#: ygo/constants.py:25
 msgid "top left"
 msgstr "左上"
 
-#: ygo/constants.py:20
+#: ygo/constants.py:26
 msgid "top"
 msgstr "上"
 
-#: ygo/constants.py:21
+#: ygo/constants.py:27
 msgid "top right"
 msgstr "右上"
 
-#: ygo/constants.py:34
+#: ygo/constants.py:45
 msgid "draw phase"
 msgstr "ドローフェイズ"
 
-#: ygo/constants.py:35
+#: ygo/constants.py:46
 msgid "standby phase"
 msgstr "スタンバイフェイズ"
 
-#: ygo/constants.py:36
+#: ygo/constants.py:47
 msgid "main1 phase"
 msgstr "メインフェイズ１"
 
-#: ygo/constants.py:37
+#: ygo/constants.py:48
 msgid "battle start phase"
 msgstr "バトルスタートフェイズ"
 
-#: ygo/constants.py:38
+#: ygo/constants.py:49
 msgid "battle step phase"
 msgstr "バトルステップフェイズ"
 
-#: ygo/constants.py:39
+#: ygo/constants.py:50
 msgid "damage phase"
 msgstr "ダメージフェイズ"
 
-#: ygo/constants.py:40
+#: ygo/constants.py:51
 msgid "damage calculation phase"
 msgstr "ダメージ計算フェイズ"
 
-#: ygo/constants.py:41
+#: ygo/constants.py:52
 msgid "battle phase"
 msgstr "バトルフェイズ"
 
-#: ygo/constants.py:42
+#: ygo/constants.py:53
 msgid "main2 phase"
 msgstr "メインフェイズ２"
 
-#: ygo/constants.py:43
+#: ygo/constants.py:54
 msgid "end phase"
 msgstr "エンドフェイズ"
 
-#: ygo/deck_editor.py:21
+#: ygo/deck_editor.py:26
 msgid "No decks."
 msgstr "デッキなし"
 
-#: ygo/deck_editor.py:23
+#: ygo/deck_editor.py:28
 #, python-format
 msgid "You own %d decks:"
 msgstr "%d種類のデッキを所有しています:"
 
-#: ygo/deck_editor.py:32 ygo/deck_editor.py:43 ygo/deck_editor.py:66
+#: ygo/deck_editor.py:32 ygo/room.py:167
+msgid "public"
+msgstr "公開"
+
+#: ygo/deck_editor.py:34 ygo/room.py:167
+msgid "private"
+msgstr "プライベート"
+
+#: ygo/deck_editor.py:36 ygo/deck_editor.py:541
+msgid "compatible with no banlist"
+msgstr "適合している禁止カードリストなし"
+
+#: ygo/deck_editor.py:41 ygo/deck_editor.py:547
+msgid "compatible with {0} banlist"
+msgstr "{0} 禁止カードリストに適合"
+
+#: ygo/deck_editor.py:44
+msgid "{deckname} ({privacy}) ({banlist})"
+msgstr ""
+
+#: ygo/deck_editor.py:51 ygo/deck_editor.py:62 ygo/deck_editor.py:85
+#: ygo/deck_editor.py:208 ygo/deck_editor.py:420 ygo/deck_editor.py:433
+#: ygo/parsers/lobby_parser.py:117
 msgid "Deck not found."
 msgstr "デッキが見つかりません"
 
-#: ygo/deck_editor.py:36
+#: ygo/deck_editor.py:55
 msgid "Deck cleared."
 msgstr "デッキをクリアしました"
 
-#: ygo/deck_editor.py:47
+#: ygo/deck_editor.py:66
 msgid "Deck deleted."
 msgstr "デッキを削除しました"
 
-#: ygo/deck_editor.py:51 ygo/deck_editor.py:57
+#: ygo/deck_editor.py:70 ygo/deck_editor.py:76
 msgid "Usage: deck rename <old>=<new>"
 msgstr "使い方: deck rename <旧デッキ名>=<新デッキ名>"
 
-#: ygo/deck_editor.py:60
+#: ygo/deck_editor.py:79 ygo/deck_editor.py:106
 msgid "Deck names may not contain =."
 msgstr "デッキ名にイコールを含めることはできません"
 
-#: ygo/deck_editor.py:70
+#: ygo/deck_editor.py:89 ygo/deck_editor.py:148
 msgid "Destination deck already exists"
 msgstr "リネーム先のデッキがすでに存在します"
 
-#: ygo/deck_editor.py:74
+#: ygo/deck_editor.py:93
 msgid "Deck renamed."
 msgstr "デッキの名前を変更しました"
 
-#: ygo/deck_editor.py:83
+#: ygo/deck_editor.py:97 ygo/deck_editor.py:103
+msgid "Usage: deck copy <old>=<new>"
+msgstr "使い方: deck copy <コピー元デッキ>=<コピー先デッキ>"
+
+#: ygo/deck_editor.py:110
+msgid "The copy destination can only be one of your own decks."
+msgstr "コピー先は、自分のデッキのうちの1つでなければなりません。"
+
+#: ygo/deck_editor.py:122 ygo/deck_editor.py:186 ygo/parsers/lobby_parser.py:99
+#: ygo/parsers/room_parser.py:247
+msgid "You don't need to mention yourself if you want to use your own deck."
+msgstr "自分のデッキを使いたい場合は、自分自身の名前を入れる必要はありません。"
+
+#: ygo/deck_editor.py:128 ygo/deck_editor.py:192
+#: ygo/parsers/lobby_parser.py:105 ygo/parsers/room_parser.py:253
+msgid "Player {0} could not be found."
+msgstr "プレイヤー {0} が見つかりませんでした。"
+
+#: ygo/deck_editor.py:142 ygo/deck_editor.py:204 ygo/parsers/room_parser.py:263
+msgid "Deck doesn't exist or isn't publically available."
+msgstr "デッキが存在しないか、有効な公開デッキではありません。"
+
+#: ygo/deck_editor.py:155
+msgid "Deck copied."
+msgstr "デッキをコピーしました。"
+
+#: ygo/deck_editor.py:160 ygo/deck_editor.py:175
+msgid "Usage: deck draw <deck>=<number>"
+msgstr "使い方: deck draw <デッキ名>=<数字>"
+
+#: ygo/deck_editor.py:171
+msgid "I didn't understand the amount of cards you want to draw."
+msgstr "何枚のカードをドローするか読み取れませんでした。"
+
+#: ygo/deck_editor.py:216
+#, python-format
+msgid "Drew: %s"
+msgstr "%s をドロー"
+
+#: ygo/deck_editor.py:225
+msgid "You cannot edit public decks. Switch it back to private by using deck private {0} first."
+msgstr "公開デッキは編集できません。 deck private {0} でプライベートに戻してから実行してください。"
+
+#: ygo/deck_editor.py:232
 msgid "Deck exists, loading."
 msgstr "デッキが見つかりました、読み込んでいます"
 
-#: ygo/deck_editor.py:88 ygo/parsers/room_parser.py:245
+#: ygo/deck_editor.py:250 ygo/parsers/room_parser.py:286
 msgid "Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."
 msgstr "不正なカードがデッキから削除されました。これは多くの場合、サーバー側のカードデータの更新の結果、削除されたカードがあった場合に発生します。"
 
-#: ygo/deck_editor.py:90
+#: ygo/deck_editor.py:253
 #, python-format
 msgid "Creating new deck %s."
 msgstr "%s という新しいデッキを作成中"
 
-#: ygo/deck_editor.py:183
+#: ygo/deck_editor.py:346
 msgid "That deck already exists."
 msgstr "そのデッキはすでに存在します。"
 
-#: ygo/deck_editor.py:189
+#: ygo/deck_editor.py:352
 msgid "Deck created."
 msgstr "デッキを作成しました。"
 
-#: ygo/deck_editor.py:198
-msgid "Invalid entry."
-msgstr "不正なエントリです"
+#: ygo/deck_editor.py:358 ygo/parsers/lobby_parser.py:725
+msgid "The following banlists are available (from newest to oldest):"
+msgstr "以下の禁止カードリストが利用可能です（新しい順）: "
 
-#: ygo/deck_editor.py:207 ygo/parsers/room_parser.py:266
+#: ygo/deck_editor.py:366
+msgid "This banlist is unknown."
+msgstr "不明な禁止カードリストです。"
+
+#: ygo/deck_editor.py:372 ygo/parsers/room_parser.py:307
 #, python-format
 msgid "%s: limit %d, found %d."
 msgstr "%s: 制限 %d枚、 現在 %d枚"
 
-#: ygo/deck_editor.py:209 ygo/parsers/room_parser.py:270
+#: ygo/deck_editor.py:374 ygo/parsers/room_parser.py:310
 #, python-format
 msgid "Check completed with %d errors."
 msgstr "チェック完了、エラー%d"
 
-#: ygo/duel.py:157 ygo/duel.py:161
+#: ygo/deck_editor.py:390 ygo/deck_editor.py:396
+msgid "Usage: deck import <name>=<string>"
+msgstr "使い方: deck import <名前>=<文字列>"
+
+#: ygo/deck_editor.py:401
+msgid "Invalid import string."
+msgstr "インポート文字列が不正です。"
+
+#: ygo/deck_editor.py:407
+msgid "Deck already exists."
+msgstr "すでにデッキが存在します。"
+
+#: ygo/deck_editor.py:412
+#, python-format
+msgid "Deck %s imported."
+msgstr "デッキ %s をインポートしました。"
+
+#: ygo/deck_editor.py:438
+msgid "This deck is already public."
+msgstr "このデッキはすでに公開されています。"
+
+#: ygo/deck_editor.py:440
+msgid "This deck is already private."
+msgstr "このデッキはすでに非公開状態です。"
+
+#: ygo/deck_editor.py:453 ygo/parsers/room_parser.py:291
+#, python-format
+msgid "Your main deck must contain between 40 and 60 cards (currently %d)."
+msgstr "メインデッキは、40枚から60枚のカードで構築しなければなりません (現在 %d)。"
+
+#: ygo/deck_editor.py:457 ygo/parsers/room_parser.py:295
+#, python-format
+msgid "Your extra deck may not contain more than 15 cards (currently %d)."
+msgstr "エクストラデッキには15枚までしかカードを入れられません。現在%d枚です。"
+
+#: ygo/deck_editor.py:464
+msgid "This deck is now public."
+msgstr "デッキが公開されました。"
+
+#: ygo/deck_editor.py:466
+msgid "This deck is no longer public."
+msgstr "デッキの公開を中止しました。"
+
+#: ygo/deck_editor.py:485
+#, python-format
+msgid "monsters (%d):"
+msgstr "モンスター(%d): "
+
+#: ygo/deck_editor.py:494
+#, python-format
+msgid "spells (%d):"
+msgstr "スペル(%d): "
+
+#: ygo/deck_editor.py:503
+#, python-format
+msgid "traps (%d):"
+msgstr "トラップ(%d): "
+
+#: ygo/deck_editor.py:512
+#, python-format
+msgid "extra (%d):"
+msgstr "エクストラ(%d): "
+
+#: ygo/deck_editor.py:536
+msgid "{0} public decks available:"
+msgstr "{0}種類の公開デッキが利用可能:"
+
+#: ygo/deck_editor.py:550
+msgid "{deckname} ({banlist})"
+msgstr ""
+
+#: ygo/duel.py:201 ygo/duel.py:205
 #, python-format
 msgid "Duel created. You are player %d."
 msgstr "デュエルを作成しました。あなたはプレイヤー%dです。"
 
-#: ygo/duel.py:158 ygo/duel.py:162
+#: ygo/duel.py:202 ygo/duel.py:206
 msgid "Type help dueling for a list of usable commands."
 msgstr "利用可能なコマンドのリストを表示するには、help dueling を入力してください。"
 
-#: ygo/duel.py:163
+#: ygo/duel.py:207
 #, python-format
 msgid "%s will go first."
 msgstr "%s が先攻です。"
 
-#: ygo/duel.py:171 ygo/duel.py:658
+#: ygo/duel.py:218 ygo/duel.py:718
 msgid "Watching stopped."
 msgstr "観察を終了しました。"
 
-#: ygo/duel.py:185 ygo/server.py:54
-#, python-format
-msgid "%s logged out."
-msgstr "%s がログアウトしました。"
-
-#: ygo/duel.py:405
+#: ygo/duel.py:450
 #, python-format
 msgid "Summonable in attack position: %s"
 msgstr "攻撃表示で召喚可能: %s"
 
-#: ygo/duel.py:407
+#: ygo/duel.py:452
 #, python-format
 msgid "Summonable in defense position: %s"
 msgstr "守備表示で召喚可能: %s"
 
-#: ygo/duel.py:409
+#: ygo/duel.py:454
 #, python-format
 msgid "Special summonable: %s"
 msgstr "特殊召喚可能: %s"
 
-#: ygo/duel.py:411
+#: ygo/duel.py:456
 #, python-format
 msgid "Activatable: %s"
 msgstr "仕様可能: %s"
 
-#: ygo/duel.py:413
+#: ygo/duel.py:458
 #, python-format
 msgid "Repositionable: %s"
 msgstr "位置を変更可能: %s"
 
-#: ygo/duel.py:415
+#: ygo/duel.py:460
 #, python-format
 msgid "Settable: %s"
 msgstr "セット可能: %s"
 
-#: ygo/duel.py:459
+#: ygo/duel.py:504
 msgid "deck"
 msgstr "デッキ"
 
-#: ygo/duel.py:463
+#: ygo/duel.py:508
 msgid "{position} card ({spec})"
 msgstr "{position} カード ({spec})"
 
-#: ygo/duel.py:472
+#: ygo/duel.py:517
 msgid "Table is empty."
 msgstr "テーブルは空です。"
 
-#: ygo/duel.py:481
-msgid "({attack}) level {level}"
-msgstr "{attack}レベル{level}"
+#: ygo/duel.py:526
+msgid "({attack}) link rating {level}"
+msgstr "({attack}) リンクレイティング {level}"
 
-#: ygo/duel.py:484
+#: ygo/duel.py:529
+msgid "({attack}/{defense}) rank {level}"
+msgstr ""
+
+#: ygo/duel.py:532
 msgid "({attack}/{defense}) level {level}"
 msgstr "{attack}/{defense}レベル: {level}"
 
-#: ygo/duel.py:489
+#: ygo/duel.py:537
 #, python-format
 msgid "xyz materials: %d"
 msgstr "エクシーズ素材: %d"
 
-#: ygo/duel.py:510
+#: ygo/duel.py:558
 #, python-format
 msgid "(equipped to %s)"
 msgstr "%s に装備しました。"
 
-#: ygo/duel.py:529
+#: ygo/duel.py:577
 #, python-format
 msgid "Zone linked by %s (%s): %s"
 msgstr "ゾーンが %s によってリンクされました (%s): %s"
 
-#: ygo/duel.py:534
+#: ygo/duel.py:582
 msgid "No cards."
 msgstr "カードなし。"
 
-#: ygo/duel.py:545
+#: ygo/duel.py:594
+#, python-format
+msgid "link rating %d"
+msgstr "リンクレイティング %d"
+
+#: ygo/duel.py:596
+#, python-format
+msgid "rank %d"
+msgstr "ランク %d"
+
+#: ygo/duel.py:598
 #, python-format
 msgid "level %d"
 msgstr "レベル %d"
 
-#: ygo/duel.py:560 ygo/duel.py:561 ygo/duel.py:669 ygo/duel.py:670
+#: ygo/duel.py:613 ygo/duel.py:614 ygo/duel.py:729 ygo/duel.py:730
 #: ygo/parsers/duel_parser.py:26 ygo/parsers/duel_parser.py:41
-#: ygo/parsers/lobby_parser.py:126 ygo/parsers/lobby_parser.py:127
-#: ygo/parsers/lobby_parser.py:137
+#: ygo/parsers/lobby_parser.py:230 ygo/parsers/lobby_parser.py:231
+#: ygo/parsers/lobby_parser.py:241
 #, python-format
 msgid "team %s"
 msgstr "チーム %s"
 
-#: ygo/duel.py:565
+#: ygo/duel.py:618
 #, python-format
 msgid "LP: %s: %d %s: %d"
 msgstr "LP: %s: %d %s: %d"
 
-#: ygo/duel.py:566
+#: ygo/duel.py:619
 #, python-format
 msgid "Hand: %s: %d %s: %d"
 msgstr "手札: %s: %d %s: %d"
 
-#: ygo/duel.py:567
+#: ygo/duel.py:620
 #, python-format
 msgid "Deck: %s: %d %s: %d"
 msgstr "デッキ: %s: %d %s: %d"
 
-#: ygo/duel.py:568
+#: ygo/duel.py:621
 #, python-format
 msgid "Grave: %s: %d %s: %d"
 msgstr "墓地: %s: %d %s: %d"
 
-#: ygo/duel.py:569
+#: ygo/duel.py:622
 #, python-format
 msgid "Removed: %s: %d %s: %d"
 msgstr "除外: %s: %d %s: %d"
 
-#: ygo/duel.py:571
+#: ygo/duel.py:624
 #, python-format
 msgid "Your LP: %d Opponent LP: %d"
 msgstr "自分のLP: %d 相手のLP: %d"
 
-#: ygo/duel.py:572
+#: ygo/duel.py:625
 #, python-format
 msgid "Hand: You: %d Opponent: %d"
 msgstr "手札: 自分: %d 相手: %d"
 
-#: ygo/duel.py:573
+#: ygo/duel.py:626
 #, python-format
 msgid "Deck: You: %d Opponent: %d"
 msgstr "デッキ: 自分: %d 相手: %d"
 
-#: ygo/duel.py:574
+#: ygo/duel.py:627
 #, python-format
 msgid "Grave: You: %d Opponent: %d"
 msgstr "墓地: 自分: %d 相手: %d"
 
-#: ygo/duel.py:575
+#: ygo/duel.py:628
 #, python-format
 msgid "Removed: You: %d Opponent: %d"
 msgstr "除外: 自分: %d 相手: %d"
 
-#: ygo/duel.py:577
+#: ygo/duel.py:630
 msgid "This duel is currently paused."
 msgstr "このデュエルは、現在ポーズ状態です。"
 
-#: ygo/duel.py:580
+#: ygo/duel.py:633
 msgid "It's your turn."
 msgstr "あなたのターン。"
 
-#: ygo/duel.py:582
+#: ygo/duel.py:635
 #, python-format
 msgid "It's %s's turn."
 msgstr "%s のターン。"
 
-#: ygo/duel.py:588
+#: ygo/duel.py:641
 #, python-format
 msgid "%s: %s card."
 msgstr "%s: %s カード。"
 
-#: ygo/duel.py:603 ygo/parsers/deck_editor_parser.py:96
-#: ygo/parsers/deck_editor_parser.py:202
+#: ygo/duel.py:656 ygo/parsers/deck_editor_parser.py:105
+#: ygo/parsers/deck_editor_parser.py:185
 msgid "Invalid card."
 msgstr "不正なカードです。"
 
-#: ygo/duel.py:637
+#: ygo/duel.py:693
 msgid "Duel paused until all duelists reconnect."
 msgstr "全てのデュエリストが再接続するまで、デュエルをポーズします。"
 
-#: ygo/duel.py:648
+#: ygo/duel.py:706
 msgid "Duel continues."
 msgstr "デュエルが再開されます。"
 
-#: ygo/duel.py:654
+#: ygo/duel.py:714
 msgid "{player} is no longer watching this duel."
 msgstr "{player} が、このデュエルの観察をやめました。"
 
-#: ygo/duel.py:674
+#: ygo/duel.py:734
 #, python-format
 msgid "Watching duel between %s and %s."
 msgstr "%s と %s とのデュエルを観察中"
 
-#: ygo/duel.py:676
+#: ygo/duel.py:738
 msgid "{player} is now watching this duel."
 msgstr "{player} が、このデュエルを観察しています。"
 
-#: ygo/duel.py:680
+#: ygo/duel.py:742
 msgid "The duel is currently paused due to not all players being connected."
 msgstr "デュエリストとの接続が切れているため、このデュエルは一時停止されています。"
 
-#: ygo/room.py:33
-msgid "You joined your new room. You need to finish the setup to make it available to the other players."
-msgstr "新しいルームに入室しました。ほかのプレイヤーから見えるようにするには、ルーム設定を完了させてください。"
+#: ygo/player.py:151
+msgid "No help topic."
+msgstr "ヘルプトピックなし"
 
-#: ygo/room.py:35
+#: ygo/room.py:48
+#, python-format
+msgid "You joined %s's room. The match however started already, thus you can only watch the following duels."
+msgstr "%s のルームに入室しました。すでに試合が始まっているため、このデュエルを観戦します。"
+
+#: ygo/room.py:50
 #, python-format
 msgid "You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel."
 msgstr "%s のルームに入室しました。teams または move コマンドを使ってチームを設定できます。どのチームにも所属しないことで、デュエルを観察することができます。"
 
-#: ygo/room.py:37
+#: ygo/room.py:53
 #, python-format
 msgid "%s joined this room."
 msgstr "%s が入室しました。"
 
-#: ygo/room.py:55
+#: ygo/room.py:76
 msgid "You left the room."
 msgstr "ルームから退室しました。"
 
-#: ygo/room.py:58
+#: ygo/room.py:79
 #, python-format
 msgid "%s left this room."
 msgstr "%s が退室しました。"
 
-#: ygo/room.py:68
+#: ygo/room.py:90
 msgid "The room creator disbanded the room."
 msgstr "ルーム作成者が、このルームを削除しました。"
 
-#: ygo/room.py:70
+#: ygo/room.py:92
 msgid "The room was disbanded."
 msgstr "ルームが削除されました。"
 
-#: ygo/room.py:73
+#: ygo/room.py:95
 msgid "{player} disbanded their duel room."
 msgstr "{player} が自分のルームを削除しました。"
 
-#: ygo/server.py:44
+#: ygo/room.py:104
+msgid "Duel aborted."
+msgstr "デュエルを中止しました。"
+
+#: ygo/room.py:148
+msgid "The following settings are defined for this room:"
+msgstr "このルームには、以下の設定が定義されています: "
+
+#: ygo/room.py:150
+#, python-format
+msgid "Banlist: %s"
+msgstr "禁止リスト: %s"
+
+#: ygo/room.py:152
+msgid "Duel Rules:"
+msgstr "デュエルのルール: "
+
+#: ygo/parsers/room_parser.py:211 ygo/room.py:155
+msgid "Link"
+msgstr "リンク"
+
+#: ygo/parsers/room_parser.py:209 ygo/room.py:157
+msgid "Traditional"
+msgstr "トラディショナル"
+
+#: ygo/parsers/room_parser.py:207 ygo/room.py:159
+msgid "Default"
+msgstr "デフォルト"
+
+#: ygo/parsers/room_parser.py:213 ygo/room.py:161
+msgid "MR 5"
+msgstr ""
+
+#: ygo/room.py:165
+#, python-format
+msgid "Lifepoints - %s: %d, %s: %d"
+msgstr "ライフポイント - %s: %d, %s: %d"
+
+#: ygo/parsers/room_parser.py:133 ygo/parsers/room_parser.py:135
+#: ygo/parsers/room_parser.py:162 ygo/parsers/room_parser.py:164
+#: ygo/parsers/room_parser.py:463 ygo/room.py:165
+#, python-format
+msgid "team %d"
+msgstr "チーム %d"
+
+#: ygo/room.py:167
+#, python-format
+msgid "Privacy: %s"
+msgstr "公開設定: %s"
+
+#: ygo/parsers/room_parser.py:535 ygo/room.py:170
+msgid "Match mode enabled."
+msgstr "マッチモードが有効になりました。"
+
+#: ygo/room.py:172
+msgid "Team 1 score: {0}"
+msgstr "チーム1のスコア: {0}"
+
+#: ygo/room.py:173
+msgid "Team 2 score: {0}"
+msgstr "チーム2のスコア: {0}"
+
+#: ygo/parsers/room_parser.py:537 ygo/room.py:175
+msgid "Match mode disabled."
+msgstr "マッチモードをが無効化されました。"
+
+#: ygo/room.py:195
+msgid "The duel between {player1} and {player2} has begun!"
+msgstr "{player1} と {player2} のデュエルが始まりました！"
+
+#: ygo/room.py:213
+msgid "Duels aren't available right now."
+msgstr "デュエルが利用可能ではありません。"
+
+#: ygo/room.py:220 ygo/server.py:53
+#, python-format
+msgid "%s logged out."
+msgstr "%s がログアウトしました。"
+
+#: ygo/room.py:251
+msgid "You're now waiting for all players to get ready for their next duel."
+msgstr "次のデュエルの準備ができるまで、他のプレイヤーを待機します。"
+
+#: ygo/room.py:253
+msgid "You are now preparing for your next duel."
+msgstr "次のデュエルの準備をしてください。"
+
+#: ygo/room.py:286
+msgid "{player1} has cowardly submitted to {player2}."
+msgstr "{player1} は {player2} を前にギブアップしました。"
+
+#: ygo/room.py:304
+msgid "{player1} and {player2} ended up in a draw."
+msgstr "{player1} と {player2} は引き分けました。"
+
+#: ygo/room.py:340
+msgid "{winner} won the match between {player1} and {player2}."
+msgstr "{winner} が {player1} と {player2} のマッチに勝利しました。"
+
+#: ygo/room.py:342
+msgid "{winner} won the duel between {player1} and {player2}."
+msgstr "{winner} が {player1} と {player2} のデュエルに勝利しました。"
+
+#: ygo/server.py:42
 #, python-format
 msgid "%s lost connection while in a duel."
 msgstr "デュエル中の %s との接続が切れました。"
 
-#: ygo/server.py:119
+#: ygo/server.py:143
 msgid "Rebooting."
 msgstr "再起動します…"
 
-#: ygo/channels/challenge.py:14 ygo/channels/watchers.py:16
+#: ygo/utils.py:110
+msgid "A critical error was encountered."
+msgstr "重大なエラーが発生しました。"
+
+#: ygo/channels/challenge.py:17 ygo/channels/watchers.py:16
 msgid "message"
 msgstr "メッセージ"
 
@@ -481,6 +780,11 @@ msgstr "メッセージ"
 #, python-format
 msgid "%s chats: %s"
 msgstr "%s からチャット: %s"
+
+#: ygo/channels/language_chat.py:9
+#, python-format
+msgid "%s talks in %s: %s"
+msgstr "%s が %s で発言: %s"
 
 #: ygo/channels/say.py:5
 #, python-format
@@ -504,15 +808,14 @@ msgstr "%s から %s"
 
 #: ygo/message_handlers/act_on_card.py:14
 #: ygo/message_handlers/act_on_card.py:40
-#: ygo/message_handlers/announce_card.py:20
-#: ygo/message_handlers/announce_card_filter.py:24
+#: ygo/message_handlers/announce_card.py:24
 #: ygo/message_handlers/announce_number.py:22
 #: ygo/message_handlers/battle_attack.py:31
 #: ygo/message_handlers/display_battle_menu.py:31
-#: ygo/message_handlers/select_chain.py:67 ygo/message_handlers/sort_card.py:29
-#: ygo/parsers/deck_editor_parser.py:10 ygo/parsers/lobby_parser.py:235
-#: ygo/parsers/lobby_parser.py:241 ygo/parsers/lobby_parser.py:243
-#: ygo/parsers/lobby_parser.py:251
+#: ygo/message_handlers/select_chain.py:67 ygo/message_handlers/sort_card.py:30
+#: ygo/parsers/deck_editor_parser.py:9 ygo/parsers/lobby_parser.py:337
+#: ygo/parsers/lobby_parser.py:343 ygo/parsers/lobby_parser.py:345
+#: ygo/parsers/lobby_parser.py:353
 msgid "Invalid command."
 msgstr "不正なコマンドです。"
 
@@ -555,19 +858,15 @@ msgstr "戻る"
 msgid "Invalid action."
 msgstr "不正なアクションです。"
 
-#: ygo/message_handlers/announce_card.py:19
-#: ygo/message_handlers/announce_card_filter.py:23
+#: ygo/message_handlers/announce_card.py:23
 msgid "Enter the name of a card:"
 msgstr "カードの名前を入力してください: "
 
-#: ygo/message_handlers/announce_card.py:27
-#: ygo/message_handlers/announce_card_filter.py:31
-#: ygo/parsers/lobby_parser.py:220
+#: ygo/message_handlers/announce_card.py:31 ygo/parsers/lobby_parser.py:322
 msgid "No results found."
 msgstr "見つかりませんでした。"
 
-#: ygo/message_handlers/announce_card.py:29
-#: ygo/message_handlers/announce_card_filter.py:35
+#: ygo/message_handlers/announce_card.py:35
 msgid "Wrong type."
 msgstr "異なるタイプです。"
 
@@ -575,19 +874,18 @@ msgstr "異なるタイプです。"
 msgid "Select a number, one of: {opts}"
 msgstr "{opts} の中から、数字を一つ選んでください。"
 
-#: ygo/message_handlers/attack.py:26
+#: ygo/message_handlers/attack.py:28
 #, python-format
 msgid "%s prepares to attack with %s (%s)"
 msgstr "%s は %s (%s) で攻撃準備"
 
-#: ygo/message_handlers/attack.py:36 ygo/message_handlers/become_target.py:23
-#: ygo/message_handlers/move.py:85 ygo/message_handlers/move.py:103
+#: ygo/message_handlers/attack.py:38 ygo/message_handlers/become_target.py:25
 #: ygo/message_handlers/swap.py:28
 #, python-format
 msgid "%s card"
 msgstr "%s カード"
 
-#: ygo/message_handlers/attack.py:37
+#: ygo/message_handlers/attack.py:39
 #, python-format
 msgid "%s prepares to attack %s (%s) with %s (%s)"
 msgstr "%s は %s (%s) を %s (%s) で攻撃準備"
@@ -631,7 +929,7 @@ msgstr "%s: %s (%d)"
 msgid "Select a card:"
 msgstr "カードを選んでください: "
 
-#: ygo/message_handlers/become_target.py:24
+#: ygo/message_handlers/become_target.py:26
 #, python-format
 msgid "%s targets %s (%s)"
 msgstr "%s は %s (%s) をターゲット"
@@ -644,17 +942,16 @@ msgstr "ダメージフェイズ開始"
 msgid "{spec} ({name}) selected {value}."
 msgstr "{spec} ({name}) 選択中 {value}."
 
-#: ygo/message_handlers/chaining.py:34
-#, python-format
-msgid "Activating %s"
-msgstr "%s を有効化します"
+#: ygo/message_handlers/chaining.py:35 ygo/message_handlers/move.py:132
+msgid "Activating {0} ({1})"
+msgstr "{0} ({1}) を発動"
 
-#: ygo/message_handlers/chaining.py:35 ygo/message_handlers/chaining.py:43
-#, python-format
-msgid "%s activating %s"
-msgstr "%s は %s を発動"
+#: ygo/message_handlers/chaining.py:36 ygo/message_handlers/chaining.py:44
+#: ygo/message_handlers/move.py:137
+msgid "{0} activating {1} ({2})"
+msgstr "{0} は {1} ({2}) を発動"
 
-#: ygo/message_handlers/confirm_cards.py:23
+#: ygo/message_handlers/confirm_cards.py:25
 msgid "{player} shows you {count} cards."
 msgstr "{player} は {count} 枚のカードを宣言。"
 
@@ -676,15 +973,24 @@ msgstr "自分のLPが %d 減少しました、残り %d"
 msgid "%s's lp decreased by %d, now %d"
 msgstr "%s のlpが %d 減少しました、残り %d"
 
-#: ygo/message_handlers/decktop.py:19
+#: ygo/message_handlers/decktop.py:38
 #, python-format
 msgid "you reveal your top deck card to be %s"
 msgstr "一番上のカードが %s であることを宣言"
 
-#: ygo/message_handlers/decktop.py:21
+#: ygo/message_handlers/decktop.py:40
 #, python-format
 msgid "%s reveals their top deck card to be %s"
 msgstr "%s は、一番上のカードが %s であることを宣言"
+
+#: ygo/message_handlers/decktop.py:46
+msgid "you reveal the following cards from your deck:"
+msgstr "以下のカードをデッキから相手に見せます:"
+
+#: ygo/message_handlers/decktop.py:48
+#, python-format
+msgid "%s reveals the following cards from their deck:"
+msgstr "%s は、デッキから以下のカードを見せます:"
 
 #: ygo/message_handlers/display_battle_menu.py:8
 msgid "Battle menu:"
@@ -708,7 +1014,7 @@ msgid "e: End phase."
 msgstr "e: エンドフェイズへ"
 
 #: ygo/message_handlers/display_battle_menu.py:29
-#: ygo/message_handlers/select_option.py:34
+#: ygo/message_handlers/select_option.py:52
 msgid "Invalid option."
 msgstr "不正なオプションです。"
 
@@ -745,7 +1051,7 @@ msgstr "{target} に装備しました。"
 msgid "Field locations %s are disabled."
 msgstr "フィールドロケーション %s が無効化されました。"
 
-#: ygo/message_handlers/flipsummoning.py:19
+#: ygo/message_handlers/flipsummoning.py:21
 msgid "{player} flip summons {card} ({spec})."
 msgstr "{player} は {card} ({spec}) を反転召喚。"
 
@@ -775,94 +1081,94 @@ msgstr "その位置にはカードがありません。"
 msgid "Face-down card."
 msgstr "裏向きのカード。"
 
-#: ygo/message_handlers/move.py:24 ygo/message_handlers/move.py:27
+#: ygo/message_handlers/move.py:37
+msgid "Face-down card"
+msgstr "裏向きのカード"
+
+#: ygo/message_handlers/move.py:42 ygo/message_handlers/move.py:43
 #, python-format
 msgid "Card %s (%s) destroyed."
 msgstr "カード %s (%s) が破壊されました。"
 
-#: ygo/message_handlers/move.py:34
+#: ygo/message_handlers/move.py:50
 msgid "your card {spec} ({name}) changed controller to {op} and is now located at {targetspec}."
 msgstr "自分のカード {spec} ({name}) の制御が {op} に変更され、 {targetspec} として存在します。"
 
-#: ygo/message_handlers/move.py:35
+#: ygo/message_handlers/move.py:51
 msgid "you now control {plname}s card {spec} ({name}) and its located at {targetspec}."
 msgstr "現在、 {plname} のカード {spec} ({name}) の制御を奪い、そのカードは {targetspec} として存在します。"
 
-#: ygo/message_handlers/move.py:39
+#: ygo/message_handlers/move.py:52
 msgid "{plname}s card {spec} ({name}) changed controller to {op} and is now located at {targetspec}."
 msgstr "{plname} のカード {spec} ({name}) は、制御を {op} に変更され、 {targetspec} として存在します。"
 
-#: ygo/message_handlers/move.py:42
+#: ygo/message_handlers/move.py:58
 msgid "your card {spec} ({name}) switched its zone to {targetspec}."
 msgstr "自分のカード {spec} ({name}) のゾーンが {targetspec} に変更されました."
 
-#: ygo/message_handlers/move.py:46
+#: ygo/message_handlers/move.py:59
 msgid "{plname}s card {spec} ({name}) changed its zone to {targetspec}."
 msgstr "{plname} のカード {spec} ({name}) のゾーンが {targetspec} に変更されました。"
 
-#: ygo/message_handlers/move.py:48
+#: ygo/message_handlers/move.py:64
 msgid "you discarded {spec} ({name})."
 msgstr "{spec} ({name}) を捨てました。"
 
-#: ygo/message_handlers/move.py:51
+#: ygo/message_handlers/move.py:65
 msgid "{plname} discarded {spec} ({name})."
 msgstr "{plname}  は {spec} ({name}) を捨てました。"
 
-#: ygo/message_handlers/move.py:55
+#: ygo/message_handlers/move.py:70
 msgid "your banished card {spec} ({name}) returns to the field at {targetspec}."
 msgstr "自分の除外カード {spec} ({name}) がフィールドの {targetspec} に復活しました。"
 
-#: ygo/message_handlers/move.py:59
+#: ygo/message_handlers/move.py:71
 msgid "{plname}'s banished card {spec} ({name}) returned to their field at {targetspec}."
 msgstr "{plname}の除外カード {spec} ({name}) がフィールドの {targetspec} に復活しました。"
 
-#: ygo/message_handlers/move.py:63
+#: ygo/message_handlers/move.py:76
 msgid "your card {spec} ({name}) returns from the graveyard to the field at {targetspec}."
 msgstr "自分のカード {spec} ({name}) が、墓地からフィールドの {targetspec} に復活しました。"
 
-#: ygo/message_handlers/move.py:67
+#: ygo/message_handlers/move.py:77
 msgid "{plname}s card {spec} ({name}) returns from the graveyard to the field at {targetspec}."
 msgstr "{plname}のカード {spec} ({name}) が、墓地からフィールドの {targetspec} に復活しました。"
 
-#: ygo/message_handlers/move.py:69
+#: ygo/message_handlers/move.py:82
 msgid "Card {spec} ({name}) returned to hand."
 msgstr "カード {spec} ({name}) を手札に戻しました。"
 
-#: ygo/message_handlers/move.py:73
-msgid "Face-down card"
-msgstr "裏向きのカード"
-
-#: ygo/message_handlers/move.py:77
+#: ygo/message_handlers/move.py:83
 msgid "{plname}'s card {spec} ({name}) returned to their hand."
 msgstr "{plname}のカード {spec} ({name}) が手札に戻りました。"
 
-#: ygo/message_handlers/move.py:80
+#: ygo/message_handlers/move.py:88
 msgid "You tribute {spec} ({name})."
 msgstr "{spec} ({name}) をリリースします。"
 
-#: ygo/message_handlers/move.py:88
+#: ygo/message_handlers/move.py:89
 msgid "{plname} tributes {spec} ({name})."
 msgstr "{plname} は {spec} ({name}) をリリース"
 
-#: ygo/message_handlers/move.py:91
+#: ygo/message_handlers/move.py:94
 #, python-format
 msgid "you detached %s."
 msgstr "%s を外しました。"
 
-#: ygo/message_handlers/move.py:93
+#: ygo/message_handlers/move.py:95
 #, python-format
 msgid "%s detached %s"
 msgstr "%s は %s を外しました。"
 
-#: ygo/message_handlers/move.py:95
+#: ygo/message_handlers/move.py:100
 msgid "your card {spec} ({name}) was sent to the graveyard."
 msgstr "自分のカード {spec} ({name}) が墓地へ送られました。"
 
-#: ygo/message_handlers/move.py:98
+#: ygo/message_handlers/move.py:101
 msgid "{plname}'s card {spec} ({name}) was sent to the graveyard."
 msgstr "{plname} のカード {spec} ({name}) が墓地へ送られました。"
 
-#: ygo/message_handlers/move.py:100
+#: ygo/message_handlers/move.py:106
 msgid "your card {spec} ({name}) was banished."
 msgstr "自分のカード {spec} ({name}) は除外されました。"
 
@@ -870,21 +1176,40 @@ msgstr "自分のカード {spec} ({name}) は除外されました。"
 msgid "{plname}'s card {spec} ({name}) was banished."
 msgstr "{plname} のカード {spec} ({name}) は除外されました。"
 
-#: ygo/message_handlers/move.py:109
+#: ygo/message_handlers/move.py:112
 msgid "your card {spec} ({name}) returned to your deck."
 msgstr "自分のカード {spec} ({name}) がデッキへ戻りました。"
 
-#: ygo/message_handlers/move.py:112
+#: ygo/message_handlers/move.py:113
 msgid "{plname}'s card {spec} ({name}) returned to their deck."
 msgstr "{plname} のカード {spec} ({name}) がデッキへ戻りました。"
 
-#: ygo/message_handlers/move.py:114
+#: ygo/message_handlers/move.py:118
 msgid "your card {spec} ({name}) returned to your extra deck."
 msgstr "自分のカード {spec} ({name}) がエクストラデッキに戻りました。"
 
-#: ygo/message_handlers/move.py:117
+#: ygo/message_handlers/move.py:119
 msgid "{plname}'s card {spec} ({name}) returned to their extra deck."
 msgstr "{plname} のカード {spec} ({name}) がエクストラデッキに戻りました。"
+
+#: ygo/message_handlers/move.py:130 ygo/message_handlers/set.py:18
+#, python-format
+msgid "You set %s (%s) in %s position."
+msgstr "%s (%s) を %s表示でセットします。"
+
+#: ygo/message_handlers/move.py:135 ygo/message_handlers/set.py:21
+#: ygo/message_handlers/set.py:24
+#, python-format
+msgid "%s sets %s in %s position."
+msgstr "%s は %s を %s表示でセット。"
+
+#: ygo/message_handlers/move.py:149
+msgid "your card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material"
+msgstr "自分のカード {spec} ({name}) がエクシーズ素材として {targetspec} ({targetname}) にアタッチされました。"
+
+#: ygo/message_handlers/move.py:150
+msgid "{plname}'s card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material"
+msgstr "{plname}のカード {spec} ({name}) ががエクシーズ素材として {targetspec} ({targetname}) にアタッチされました。"
 
 #: ygo/message_handlers/new_turn.py:8
 msgid "Your turn."
@@ -905,13 +1230,13 @@ msgstr "%d のLPを支払います、残り %d。"
 msgid "%s pays %d LP. Their LP is now %d."
 msgstr "%s は %d のLPを支払います、残り %d"
 
-#: ygo/message_handlers/phase.py:13
+#: ygo/message_handlers/phase.py:17
 #, python-format
 msgid "entering %s."
 msgstr "%s開始"
 
-#: ygo/message_handlers/pos_change.py:22 ygo/message_handlers/pos_change.py:23
-#: ygo/message_handlers/pos_change.py:26
+#: ygo/message_handlers/pos_change.py:23 ygo/message_handlers/pos_change.py:24
+#: ygo/message_handlers/pos_change.py:27
 #, python-format
 msgid "The position of card %s (%s) was changed to %s."
 msgstr "カード %s (%s) のポジションが %s に変更されました。"
@@ -930,32 +1255,32 @@ msgstr "%s のLPが %d 増加しました、現在 %d"
 msgid "all decks are now reversed."
 msgstr "全てのデッキが逆順になりました。"
 
-#: ygo/message_handlers/select_card.py:51
+#: ygo/message_handlers/select_card.py:52
 #, python-format
 msgid "Select %d to %d cards to tribute separated by spaces:"
 msgstr "リリースする %d枚から %d枚のカードを、スペースで区切って指定してください:"
 
-#: ygo/message_handlers/select_card.py:53
+#: ygo/message_handlers/select_card.py:54
 #, python-format
 msgid "Select %d to %d cards separated by spaces:"
 msgstr "%d枚から %d枚のカードを、スペースで区切って指定してください:"
 
-#: ygo/message_handlers/select_card.py:64
+#: ygo/message_handlers/select_card.py:65
 #: ygo/message_handlers/select_place.py:27
-#: ygo/message_handlers/select_sum.py:58 ygo/message_handlers/sort_card.py:42
+#: ygo/message_handlers/select_sum.py:87 ygo/message_handlers/sort_card.py:43
 msgid "Duplicate values not allowed."
 msgstr "重複した入力があります。"
 
-#: ygo/message_handlers/select_card.py:66
+#: ygo/message_handlers/select_card.py:67
 #, python-format
 msgid "Please enter between %d and %d cards."
 msgstr "指定する枚数は、%d枚から %d枚までにしてください。"
 
-#: ygo/message_handlers/select_card.py:68
+#: ygo/message_handlers/select_card.py:69
 msgid "Invalid value."
 msgstr "不正な数値です。"
 
-#: ygo/message_handlers/select_card.py:75
+#: ygo/message_handlers/select_card.py:76
 msgid "Not enough tributes."
 msgstr "リリースが足りません。"
 
@@ -1005,7 +1330,21 @@ msgstr "%dつの値を、%d の合計値とともに入力してください。"
 msgid "Do you want to use the effect from {card} in {spec}?"
 msgstr "{spec} にある {card} の効果を使用しますか?"
 
+#: ygo/message_handlers/select_option.py:30
+#: ygo/message_handlers/select_option.py:49
+#, python-format
+msgid "Unknown option %d"
+msgstr "無効なオプション %d"
+
 #: ygo/message_handlers/select_option.py:34
+msgid "You selected option {0}: {1}"
+msgstr "オプション {0}: {1} を選択しました。"
+
+#: ygo/message_handlers/select_option.py:36
+msgid "{0} selected option {1}: {2}"
+msgstr "{0} は、オプション {1}: {2} を選択しました。"
+
+#: ygo/message_handlers/select_option.py:52
 msgid "Select option:"
 msgstr "オプションを選択してください: "
 
@@ -1023,10 +1362,11 @@ msgstr "カードの %d 箇所を、 %s から選んでください。"
 #: ygo/message_handlers/select_place.py:31
 #: ygo/message_handlers/select_place.py:34
 #: ygo/message_handlers/select_place.py:46
+#: ygo/message_handlers/select_unselect_card.py:65
 msgid "Invalid command"
 msgstr "不正なコマンドです。"
 
-#: ygo/message_handlers/select_place.py:30 ygo/message_handlers/sort_card.py:40
+#: ygo/message_handlers/select_place.py:30 ygo/message_handlers/sort_card.py:41
 #, python-format
 msgid "Please enter %d values."
 msgstr "%dつの数字を入力してください。"
@@ -1035,59 +1375,88 @@ msgstr "%dつの数字を入力してください。"
 msgid "Invalid cardspec. Try again."
 msgstr "カードの位置指定が間違っています。もう一度入力してください。"
 
-#: ygo/message_handlers/select_position.py:20
+#: ygo/message_handlers/select_position.py:21
 #, python-format
 msgid "Select position for %s:"
 msgstr "%s の位置を選択してください: "
 
-#: ygo/message_handlers/select_position.py:25
+#: ygo/message_handlers/select_position.py:26
 msgid "Face-up attack"
 msgstr "表向き攻撃"
 
-#: ygo/message_handlers/select_position.py:27
+#: ygo/message_handlers/select_position.py:28
 msgid "Face-down attack"
 msgstr "裏向き攻撃"
 
-#: ygo/message_handlers/select_position.py:29
+#: ygo/message_handlers/select_position.py:30
 msgid "Face-up defense"
 msgstr "表向き守備"
 
-#: ygo/message_handlers/select_position.py:31
+#: ygo/message_handlers/select_position.py:32
 msgid "Face-down defense"
 msgstr "裏向き守備"
 
-#: ygo/message_handlers/select_sum.py:44
+#: ygo/message_handlers/select_sum.py:69
 #, python-format
 msgid "Select cards with a total value of %d, seperated by spaces."
 msgstr "合計値が %d となるように、カードを選択してください。指定はスペースで区切ってください。"
 
-#: ygo/message_handlers/select_sum.py:46
+#: ygo/message_handlers/select_sum.py:71
+#, python-format
+msgid "Select cards with a total value being one of the following, seperated by spaces: %s"
+msgstr "合計値が以下の1つになるように、 スペース区切りでカードを選択してください: %s"
+
+#: ygo/message_handlers/select_sum.py:73
 #, python-format
 msgid "Select cards with a total value of at least %d, seperated by spaces."
 msgstr "合計値が少なくとも %d となるように、カードを選択してください。指定はスペースで区切ってください。"
 
-#: ygo/message_handlers/select_sum.py:60
+#: ygo/message_handlers/select_sum.py:75
+#, python-format
+msgid "%s must be selected, automatically selected."
+msgstr "%s を選択しなければなりません、 自動的に選択されました。"
+
+#: ygo/message_handlers/select_sum.py:77
+msgid "or"
+msgstr " または "
+
+#: ygo/message_handlers/select_sum.py:89
 msgid "Value out of range."
 msgstr "範囲外の数値です。"
 
-#: ygo/message_handlers/select_sum.py:64
+#: ygo/message_handlers/select_sum.py:106
 msgid "Levels out of range."
 msgstr "範囲外のレベルです。"
 
-#: ygo/message_handlers/select_sum.py:66
+#: ygo/message_handlers/select_sum.py:108
 #, python-format
 msgid "Selected value does not equal %d."
 msgstr "選択された値が %d と一致しません。"
 
-#: ygo/message_handlers/set.py:18
+#: ygo/message_handlers/select_unselect_card.py:39
 #, python-format
-msgid "You set %s (%s) in %s position."
-msgstr "%s (%s) を %s表示でセットします。"
+msgid "Check or uncheck %d to %d cards by entering their number"
+msgstr "数値を入力して、カードにチェックを付けてください。"
 
-#: ygo/message_handlers/set.py:22 ygo/message_handlers/set.py:25
-#, python-format
-msgid "%s sets %s in %s position."
-msgstr "%s は %s を %s表示でセット。"
+#: ygo/message_handlers/select_unselect_card.py:41
+msgid "Enter c to cancel"
+msgstr "Cでキャンセル"
+
+#: ygo/message_handlers/select_unselect_card.py:43
+msgid "Enter f to finish"
+msgstr "Fで確定"
+
+#: ygo/message_handlers/select_unselect_card.py:48
+msgid "unchecked"
+msgstr "チェックなし"
+
+#: ygo/message_handlers/select_unselect_card.py:50
+msgid "checked"
+msgstr "チェック"
+
+#: ygo/message_handlers/select_unselect_card.py:67
+msgid "Number not in range"
+msgstr "数値が範囲内ではありません"
 
 #: ygo/message_handlers/shuffle.py:11
 msgid "you shuffled your deck."
@@ -1098,12 +1467,12 @@ msgstr "デッキをシャッフルしました。"
 msgid "%s shuffled their deck."
 msgstr "%s はデッキをシャッフル"
 
-#: ygo/message_handlers/sort_card.py:26
+#: ygo/message_handlers/sort_card.py:27
 #, python-format
 msgid "Sort %d cards by entering numbers separated by spaces (c = cancel):"
 msgstr "スペース区切りの数字を入力して、 %d 枚のカードを並べ替えます。 (cでキャンセル):"
 
-#: ygo/message_handlers/sort_card.py:44
+#: ygo/message_handlers/sort_card.py:45
 #, python-format
 msgid "Please enter values between 1 and %d."
 msgstr "1から%dの数字を入力してください。"
@@ -1142,38 +1511,35 @@ msgstr "%s と位置を入れ替え、注意深く観察しています。"
 msgid "%s switches in for %s and continues the duel."
 msgstr "%s が %s と位置を入れ替え、デュエルを継続します。"
 
-#: ygo/message_handlers/win.py:22
-msgid "{player1} and {player2} ended up in a draw."
-msgstr "{player1} と {player2} は引き分けました。"
-
-#: ygo/message_handlers/win.py:42
+#: ygo/message_handlers/win.py:27
 #, python-format
 msgid "%s and you won (%s)."
 msgstr "%s とあなたの勝利です (%s)"
 
-#: ygo/message_handlers/win.py:44
+#: ygo/message_handlers/win.py:29
 #, python-format
 msgid "You won (%s)."
 msgstr "あなたの勝利です(%s)"
 
-#: ygo/message_handlers/win.py:50
+#: ygo/message_handlers/win.py:32
 #, python-format
 msgid "%s and you lost (%s)."
 msgstr "%s とあなたの敗北です(%s)"
 
-#: ygo/message_handlers/win.py:52
+#: ygo/message_handlers/win.py:34
 #, python-format
 msgid "You lost (%s)."
 msgstr "あなたの敗北です(%s)"
 
-#: ygo/message_handlers/win.py:63
+#: ygo/message_handlers/win.py:42
 #, python-format
 msgid "%s won (%s)."
 msgstr "%s の勝利です(%s)"
 
-#: ygo/message_handlers/win.py:71
-msgid "{winner} won the duel between {player1} and {player2} ({reason})."
-msgstr "{winner} が {player1} と {player2} のデュエルに勝利しました ({reason})."
+#: ygo/message_handlers/yesno.py:29
+#, python-format
+msgid "Unknown question from %s. Yes or no?"
+msgstr "%s からの未知の質問。 Yes or no?"
 
 #: ygo/parsers/deck_editor_parser.py:24
 #, python-format
@@ -1181,74 +1547,83 @@ msgid "%d in deck."
 msgstr "デッキ %d 枚"
 
 #: ygo/parsers/deck_editor_parser.py:27
+#, python-format
+msgid "%d in side deck."
+msgstr "サイドデッキ%d枚。"
+
+#: ygo/parsers/deck_editor_parser.py:31
 msgid "u: up d: down /: search forward ?: search backward t: top"
 msgstr "u: 上へ d: 下へ /: 前方へ検索 ?: 後方に検索 t: 先頭"
 
-#: ygo/parsers/deck_editor_parser.py:28
+#: ygo/parsers/deck_editor_parser.py:32
 msgid "s: send to deck r: remove from deck l: list deck g: go to card in deck q: quit"
 msgstr "s: デッキに入れる r: デッキから抜く l: デッキを一覧 g: デッキ内のカードへ q: 終了"
 
-#: ygo/parsers/deck_editor_parser.py:29
-msgid "c: check deck against banlist"
-msgstr "c: 禁止カードリストと照合"
+#: ygo/parsers/deck_editor_parser.py:33
+msgid "c: check deck against banlist w: switch between main deck and side deck"
+msgstr "c: 禁止カードリストと照合 w: メインデッキとサイドデッキを切り替え"
 
-#: ygo/parsers/deck_editor_parser.py:31
+#: ygo/parsers/deck_editor_parser.py:35
 #, python-format
-msgid "Command (%d cards in main deck, %d cards in extra deck):"
-msgstr "コマンド(メインデッキ%d枚、 エクストラデッキ%d枚):"
+msgid "Command (%d cards in main deck, %d cards in extra deck, %d cards in side deck):"
+msgstr "コマンド (メインデッキ%d枚、エクストラデッキ%d枚、サイドデッキ%d枚):"
 
-#: ygo/parsers/deck_editor_parser.py:57
+#: ygo/parsers/deck_editor_parser.py:37
+msgid "editing main deck."
+msgstr "メインデッキを編集中。"
+
+#: ygo/parsers/deck_editor_parser.py:39
+msgid "editing side deck."
+msgstr "サイドデッキを編集中。"
+
+#: ygo/parsers/deck_editor_parser.py:66
 msgid "bottom of list."
 msgstr "リストの末尾"
 
-#: ygo/parsers/deck_editor_parser.py:63
+#: ygo/parsers/deck_editor_parser.py:72
 msgid "Top of list."
 msgstr "リストの先頭"
 
-#: ygo/parsers/deck_editor_parser.py:70
+#: ygo/parsers/deck_editor_parser.py:79
 msgid "Top."
 msgstr "先頭"
 
-#: ygo/parsers/deck_editor_parser.py:77
+#: ygo/parsers/deck_editor_parser.py:86
 msgid "You may only have 3 of this card (or cards with the same name) in your deck."
 msgstr "このカード、またはこれと同じ名前のカードは3枚までしか持つことができません。"
 
-#: ygo/parsers/deck_editor_parser.py:101
+#: ygo/parsers/deck_editor_parser.py:110
 msgid "This card isn't in your deck."
 msgstr "このカードはデッキに入っていません。"
 
-#: ygo/parsers/deck_editor_parser.py:104
+#: ygo/parsers/deck_editor_parser.py:113
 #, python-format
 msgid "Removed %s from your deck."
 msgstr "%s をデッキから削除しました。"
 
-#: ygo/parsers/deck_editor_parser.py:124 ygo/parsers/deck_editor_parser.py:144
+#: ygo/parsers/deck_editor_parser.py:133 ygo/parsers/deck_editor_parser.py:153
 msgid "Not found."
 msgstr "見つかりませんでした。"
 
-#: ygo/parsers/deck_editor_parser.py:157
-#, python-format
-msgid "monsters (%d):"
-msgstr "モンスター(%d): "
+#: ygo/parsers/deck_editor_parser.py:165
+msgid "main deck:"
+msgstr "メインデッキ:"
 
-#: ygo/parsers/deck_editor_parser.py:166
-#, python-format
-msgid "spells (%d):"
-msgstr "スペル(%d): "
+#: ygo/parsers/deck_editor_parser.py:172
+msgid "side deck:"
+msgstr "サイドデッキ:"
 
-#: ygo/parsers/deck_editor_parser.py:175
-#, python-format
-msgid "traps (%d):"
-msgstr "トラップ(%d): "
-
-#: ygo/parsers/deck_editor_parser.py:184
-#, python-format
-msgid "extra (%d):"
-msgstr "エクストラ(%d): "
-
-#: ygo/parsers/deck_editor_parser.py:213
+#: ygo/parsers/deck_editor_parser.py:196
 msgid "Quit."
 msgstr "終了"
+
+#: ygo/parsers/deck_editor_parser.py:221
+msgid "now editing side deck"
+msgstr "サイドデッキ編集に切り替えました。"
+
+#: ygo/parsers/deck_editor_parser.py:224
+msgid "now editing main deck"
+msgstr "メインデッキ編集に切り替えました。"
 
 #: ygo/parsers/duel_parser.py:29 ygo/parsers/duel_parser.py:44
 #, python-format
@@ -1271,695 +1646,1018 @@ msgstr "このデュエルの観察者は誰もいません。"
 msgid "People watching this duel:"
 msgstr "このデュエルの観察者: "
 
-#: ygo/parsers/duel_parser.py:97
+#: ygo/parsers/duel_parser.py:98
+#, python-format
+msgid "%s has ended the match."
+msgstr ""
+
+#: ygo/parsers/duel_parser.py:100
 #, python-format
 msgid "%s has ended the duel."
 msgstr "%s がデュエルを終了しました。"
 
-#: ygo/parsers/duel_parser.py:104
-msgid "{player1} has cowardly submitted to {player2}."
-msgstr "{player1} は {player2} を前にギブアップしました。"
+#: ygo/parsers/duel_parser.py:121 ygo/parsers/room_parser.py:631
+msgid "You scooped."
+msgstr "デュエルを棄権しました。"
 
-#: ygo/parsers/duel_parser.py:122
+#: ygo/parsers/duel_parser.py:123 ygo/parsers/room_parser.py:633
+#, python-format
+msgid "%s scooped."
+msgstr "%s がデュエルを棄権しました。"
+
+#: ygo/parsers/duel_parser.py:130
+msgid "{player1} scooped against {player2}."
+msgstr "{1} が {2} とのデュエルを棄権しました。"
+
+#: ygo/parsers/duel_parser.py:138
+msgid "You can type 'room' if you want to see more information about the duel settings."
+msgstr "詳細なルーム情報を確認するには、 room と入力してください。"
+
+#: ygo/parsers/duel_parser.py:144
 msgid "You need to send some text to this channel."
 msgstr "このチャンネルに何かテキストを送る必要があります。"
 
-#: ygo/parsers/lobby_parser.py:32
-msgid "You are now AFK."
-msgstr "AFKになりました。"
+#: ygo/parsers/duel_parser.py:161
+msgid "Watchers cannot use this command."
+msgstr ""
 
-#: ygo/parsers/lobby_parser.py:36
-msgid "You are no longer AFK."
-msgstr "AFKから戻りました。"
+#: ygo/parsers/duel_parser.py:165
+msgid "Hand shown."
+msgstr "手札を見せました。"
 
-#: ygo/parsers/lobby_parser.py:51
-msgid "This command requires more information to operate with."
-msgstr "このコマンドを実行するには、情報が不足しています。"
-
-#: ygo/parsers/lobby_parser.py:65
-msgid "Invalid deck command."
-msgstr "デッキコマンドが不正です。"
-
-#: ygo/parsers/lobby_parser.py:73 ygo/parsers/lobby_parser.py:79
-msgid "Chat on."
-msgstr "chatコマンド　有効"
-
-#: ygo/parsers/lobby_parser.py:75
-msgid "Chat off."
-msgstr "chatコマンド　無効"
-
-#: ygo/parsers/lobby_parser.py:93 ygo/parsers/lobby_parser.py:100
-msgid "Say on."
-msgstr "sayコマンド　有効"
-
-#: ygo/parsers/lobby_parser.py:95
-msgid "Say off."
-msgstr "sayコマンド　無効"
-
-#: ygo/parsers/lobby_parser.py:117
+#: ygo/parsers/duel_parser.py:167
 #, python-format
-msgid "Invalid filter: %s"
-msgstr "不正なフィルター値です: %s"
+msgid "%s shows you their hand:"
+msgstr "%s が手札を見せます。"
 
-#: ygo/parsers/lobby_parser.py:119
-msgid "Online players:"
-msgstr "オンラインのプレイヤー: "
+#: ygo/parsers/duel_parser.py:177
+msgid "You can invite any player to join this duel. Simply type invite <player> to do so."
+msgstr "このルームにプレイヤーを招待できます。 invite <プレイヤー名> コマンドを利用してください。"
 
-#: ygo/parsers/lobby_parser.py:123
-msgid "[AFK]"
-msgstr "AFK"
+#: ygo/parsers/duel_parser.py:181 ygo/parsers/duel_parser.py:187
+#: ygo/parsers/room_parser.py:409 ygo/parsers/room_parser.py:415
+#: ygo/parsers/room_parser.py:489 ygo/parsers/room_parser.py:495
+msgid "No player with this name found."
+msgstr "そのような名前のプレイヤーは見つかりません。"
 
-#: ygo/parsers/lobby_parser.py:131
-#, python-format
-msgid "%s (Watching duel with %s and %s)"
-msgstr "%s (%s と %s のデュエルを観察中)"
-
-#: ygo/parsers/lobby_parser.py:139
-#, python-format
-msgid "%s (privately dueling %s together with %s"
-msgstr "%s (%s を相手に %s とプライベート・デュエル中"
-
-#: ygo/parsers/lobby_parser.py:141
-#, python-format
-msgid "%s (dueling %s together with %s)"
-msgstr "%s (%s で %s とデュエル中)"
-
-#: ygo/parsers/lobby_parser.py:145
-#, python-format
-msgid "%s (privately dueling %s)"
-msgstr "%s (%s とプライベート・デュエル中)"
-
-#: ygo/parsers/lobby_parser.py:147
-#, python-format
-msgid "%s (dueling %s)"
-msgstr "%s (%s とデュエル中)"
-
-#: ygo/parsers/lobby_parser.py:149
-#, python-format
-msgid "%s (preparing to duel)"
-msgstr "%s (デュエル準備中)"
-
-#: ygo/parsers/lobby_parser.py:156
-#, python-format
-msgid "%d online, %d max this reboot."
-msgstr "%d オンライン, %d このリブートでのマックス。"
-
-#: ygo/parsers/lobby_parser.py:174
-#, python-format
-msgid "%s is not logged in."
-msgstr "%s はログインしていません。"
-
-#: ygo/parsers/lobby_parser.py:177
-#, python-format
-msgid "%s is already dueling."
-msgstr "%s はすでにデュエル中です。"
-
-#: ygo/parsers/lobby_parser.py:180
-#, python-format
-msgid "%s is currently in a duel room."
-msgstr "%s はデュエルルームに入っています。"
-
-#: ygo/parsers/lobby_parser.py:205
-msgid "No help topic."
-msgstr "ヘルプトピックなし"
-
-#: ygo/parsers/lobby_parser.py:212
-msgid "Goodbye."
-msgstr "Goodbye"
-
-#: ygo/parsers/lobby_parser.py:233
-msgid "Incorrect password."
-msgstr "パスワードが正しくありません。"
-
-#: ygo/parsers/lobby_parser.py:235 ygo/parsers/lobby_parser.py:241
-msgid "New password:"
-msgstr "新しいパスワード: "
-
-#: ygo/parsers/lobby_parser.py:240
-msgid "Passwords must be at least 6 characters."
-msgstr "パスワードは6文字以上にしてください。"
-
-#: ygo/parsers/lobby_parser.py:243
-msgid "Confirm password:"
-msgstr "パスワードを再入力: "
-
-#: ygo/parsers/lobby_parser.py:246
-msgid "Passwords don't match."
-msgstr "パスワードが一致しません。"
-
-#: ygo/parsers/lobby_parser.py:250
-msgid "Password changed."
-msgstr "パスワードを変更しました。"
-
-#: ygo/parsers/lobby_parser.py:251
-msgid "Current password:"
-msgstr "現在のパスワード: "
-
-#: ygo/parsers/lobby_parser.py:267
-msgid "Language set."
-msgstr "言語を設定しました。"
-
-#: ygo/parsers/lobby_parser.py:272
-msgid "Encoding is not needed when using the web client."
-msgstr "Webクライアント使用時は、エンコーディングの設定は不要です。"
-
-#: ygo/parsers/lobby_parser.py:279
-msgid "Unknown encoding."
-msgstr "不正なエンコーディングです。"
-
-#: ygo/parsers/lobby_parser.py:285
-msgid "Encoding set."
-msgstr "エンコーディングを設定しました。"
-
-#: ygo/parsers/lobby_parser.py:290
-msgid "Websocket server not enabled."
-msgstr "ウェブソケットサーバーが有効化されていません。"
-
-#: ygo/parsers/lobby_parser.py:292
-msgid "Stopping server..."
-msgstr "サーバーを停止します。"
-
-#: ygo/parsers/lobby_parser.py:295
-msgid "Done, restarting."
-msgstr "完了、再起動します。"
-
-#: ygo/parsers/lobby_parser.py:303
-msgid "Announce what?"
-msgstr "何をアナウンスしますか？"
-
-#: ygo/parsers/lobby_parser.py:306
-#, python-format
-msgid "Announcement: %s"
-msgstr "アナウンス: %s"
-
-#: ygo/parsers/lobby_parser.py:312
-msgid "Usage: tell <player> <message>"
-msgstr "使い方: tell <player> <message>"
-
-#: ygo/parsers/lobby_parser.py:319 ygo/parsers/lobby_parser.py:391
-#: ygo/parsers/lobby_parser.py:477 ygo/parsers/room_parser.py:360
+#: ygo/parsers/duel_parser.py:190 ygo/parsers/lobby_parser.py:414
+#: ygo/parsers/lobby_parser.py:486 ygo/parsers/lobby_parser.py:580
+#: ygo/parsers/room_parser.py:418 ygo/parsers/room_parser.py:498
 #, python-format
 msgid "Multiple players match this name: %s"
 msgstr "この名前には複数のプレイヤーがマッチします: %s"
 
-#: ygo/parsers/lobby_parser.py:322 ygo/parsers/lobby_parser.py:348
-#: ygo/parsers/lobby_parser.py:394
-msgid "That player is not online."
-msgstr "そのプレイヤーはオンラインではありません。"
+#: ygo/parsers/duel_parser.py:196 ygo/parsers/room_parser.py:424
+msgid "This player is already in a duel."
+msgstr "このプレイヤーはすでにデュエル中です。"
 
-#: ygo/parsers/lobby_parser.py:326 ygo/parsers/lobby_parser.py:352
-#, python-format
-msgid "You are ignoring %s."
-msgstr "あなたは %s をミュートしています。"
+#: ygo/parsers/duel_parser.py:199 ygo/parsers/room_parser.py:427
+msgid "This player is already preparing to duel."
+msgstr "このプレイヤーは、すでにデュエル準備中です。"
 
-#: ygo/parsers/lobby_parser.py:329 ygo/parsers/lobby_parser.py:355
-#, python-format
-msgid "%s is ignoring you."
-msgstr "%s にミュートされています。"
+#: ygo/parsers/duel_parser.py:202 ygo/parsers/lobby_parser.py:586
+#: ygo/parsers/room_parser.py:430
+msgid "You're ignoring this player."
+msgstr "このプレイヤーをミュートにしています。"
 
-#: ygo/parsers/lobby_parser.py:332 ygo/parsers/lobby_parser.py:358
-#: ygo/parsers/room_parser.py:381
+#: ygo/parsers/duel_parser.py:205 ygo/parsers/lobby_parser.py:588
+#: ygo/parsers/room_parser.py:433
+msgid "This player ignores you."
+msgstr "このプレイヤーはあなたをミュートにしています。"
+
+#: ygo/parsers/duel_parser.py:213 ygo/parsers/lobby_parser.py:427
+#: ygo/parsers/lobby_parser.py:453 ygo/parsers/room_parser.py:441
 #, python-format
 msgid "%s is AFK and may not be paying attention."
 msgstr "%s はAFKなので、すぐには気がつかないかもしれません。"
 
-#: ygo/parsers/lobby_parser.py:341
+#: ygo/parsers/duel_parser.py:215
+#, python-format
+msgid "%s invites you to watch his duel. Type watch %s to do so."
+msgstr "%s から、このデュエルの観戦に招待されています。 watch %s で、デュエルを観戦できます。"
+
+#: ygo/parsers/duel_parser.py:217 ygo/parsers/room_parser.py:445
+#, python-format
+msgid "An invitation was sent to %s."
+msgstr "%s にルームへの招待が送られました。"
+
+#: ygo/parsers/duel_parser.py:221
+msgid "{0} already got an invitation to this duel."
+msgstr "{0} は、すでにこのデュエルに招待されています。"
+
+#: ygo/parsers/lobby_parser.py:33
+msgid "You are now AFK."
+msgstr "AFKになりました。"
+
+#: ygo/parsers/lobby_parser.py:37
+msgid "You are no longer AFK."
+msgstr "AFKから戻りました。"
+
+#: ygo/parsers/lobby_parser.py:60
+msgid "This command requires more information to operate with."
+msgstr "このコマンドを実行するには、情報が不足しています。"
+
+#: ygo/parsers/lobby_parser.py:123
+msgid "Invalid deck command."
+msgstr "デッキコマンドが不正です。"
+
+#: ygo/parsers/lobby_parser.py:131 ygo/parsers/lobby_parser.py:137
+msgid "Chat on."
+msgstr "chatコマンド　有効"
+
+#: ygo/parsers/lobby_parser.py:133
+msgid "Chat off."
+msgstr "chatコマンド　無効"
+
+#: ygo/parsers/lobby_parser.py:155 ygo/parsers/lobby_parser.py:161
+msgid "{language} talk on."
+msgstr "{language} トークをオンにしました。"
+
+#: ygo/parsers/lobby_parser.py:157
+msgid "{language} talk off."
+msgstr "{language} トークをオフにしました。"
+
+#: ygo/parsers/lobby_parser.py:177
+msgid "This language is unknown."
+msgstr "この言語はサポートしていません。"
+
+#: ygo/parsers/lobby_parser.py:197 ygo/parsers/lobby_parser.py:204
+msgid "Say on."
+msgstr "sayコマンド　有効"
+
+#: ygo/parsers/lobby_parser.py:199
+msgid "Say off."
+msgstr "sayコマンド　無効"
+
+#: ygo/parsers/lobby_parser.py:221
+#, python-format
+msgid "Invalid filter: %s"
+msgstr "不正なフィルター値です: %s"
+
+#: ygo/parsers/lobby_parser.py:223
+msgid "Online players:"
+msgstr "オンラインのプレイヤー: "
+
+#: ygo/parsers/lobby_parser.py:227
+msgid "[AFK]"
+msgstr "AFK"
+
+#: ygo/parsers/lobby_parser.py:235
+#, python-format
+msgid "%s (Watching duel with %s and %s)"
+msgstr "%s (%s と %s のデュエルを観察中)"
+
+#: ygo/parsers/lobby_parser.py:243
+#, python-format
+msgid "%s (privately dueling %s together with %s"
+msgstr "%s (%s を相手に %s とプライベート・デュエル中"
+
+#: ygo/parsers/lobby_parser.py:245
+#, python-format
+msgid "%s (dueling %s together with %s)"
+msgstr "%s (%s で %s とデュエル中)"
+
+#: ygo/parsers/lobby_parser.py:249
+#, python-format
+msgid "%s (privately dueling %s)"
+msgstr "%s (%s とプライベート・デュエル中)"
+
+#: ygo/parsers/lobby_parser.py:251
+#, python-format
+msgid "%s (dueling %s)"
+msgstr "%s (%s とデュエル中)"
+
+#: ygo/parsers/lobby_parser.py:254
+#, python-format
+msgid "%s (preparing to continue match)"
+msgstr "%s (マッチ最下位の準備をしています)"
+
+#: ygo/parsers/lobby_parser.py:256
+#, python-format
+msgid "%s (preparing to duel)"
+msgstr "%s (デュエル準備中)"
+
+#: ygo/parsers/lobby_parser.py:263
+#, python-format
+msgid "%d online, %d max this reboot."
+msgstr "%d オンライン, %d このリブートでのマックス。"
+
+#: ygo/parsers/lobby_parser.py:281
+#, python-format
+msgid "%s is not logged in."
+msgstr "%s はログインしていません。"
+
+#: ygo/parsers/lobby_parser.py:284
+#, python-format
+msgid "%s is already dueling."
+msgstr "%s はすでにデュエル中です。"
+
+#: ygo/parsers/lobby_parser.py:287
+#, python-format
+msgid "%s is currently in a duel room."
+msgstr "%s はデュエルルームに入っています。"
+
+#: ygo/parsers/lobby_parser.py:314
+msgid "Goodbye."
+msgstr "Goodbye"
+
+#: ygo/parsers/lobby_parser.py:335
+msgid "Incorrect password."
+msgstr "パスワードが正しくありません。"
+
+#: ygo/parsers/lobby_parser.py:337 ygo/parsers/lobby_parser.py:343
+msgid "New password:"
+msgstr "新しいパスワード: "
+
+#: ygo/parsers/lobby_parser.py:342
+msgid "Passwords must be at least 6 characters."
+msgstr "パスワードは6文字以上にしてください。"
+
+#: ygo/parsers/lobby_parser.py:345
+msgid "Confirm password:"
+msgstr "パスワードを再入力: "
+
+#: ygo/parsers/lobby_parser.py:348
+msgid "Passwords don't match."
+msgstr "パスワードが一致しません。"
+
+#: ygo/parsers/lobby_parser.py:352
+msgid "Password changed."
+msgstr "パスワードを変更しました。"
+
+#: ygo/parsers/lobby_parser.py:353
+msgid "Current password:"
+msgstr "現在のパスワード: "
+
+#: ygo/parsers/lobby_parser.py:362
+msgid "Language set."
+msgstr "言語を設定しました。"
+
+#: ygo/parsers/lobby_parser.py:367
+msgid "Encoding is not needed when using the web client."
+msgstr "Webクライアント使用時は、エンコーディングの設定は不要です。"
+
+#: ygo/parsers/lobby_parser.py:374
+msgid "Unknown encoding."
+msgstr "不正なエンコーディングです。"
+
+#: ygo/parsers/lobby_parser.py:380
+msgid "Encoding set."
+msgstr "エンコーディングを設定しました。"
+
+#: ygo/parsers/lobby_parser.py:385
+msgid "Websocket server not enabled."
+msgstr "ウェブソケットサーバーが有効化されていません。"
+
+#: ygo/parsers/lobby_parser.py:387
+msgid "Stopping server..."
+msgstr "サーバーを停止します。"
+
+#: ygo/parsers/lobby_parser.py:390
+msgid "Done, restarting."
+msgstr "完了、再起動します。"
+
+#: ygo/parsers/lobby_parser.py:398
+msgid "Announce what?"
+msgstr "何をアナウンスしますか？"
+
+#: ygo/parsers/lobby_parser.py:401
+#, python-format
+msgid "Announcement: %s"
+msgstr "アナウンス: %s"
+
+#: ygo/parsers/lobby_parser.py:407
+msgid "Usage: tell <player> <message>"
+msgstr "使い方: tell <player> <message>"
+
+#: ygo/parsers/lobby_parser.py:417 ygo/parsers/lobby_parser.py:443
+#: ygo/parsers/lobby_parser.py:489
+msgid "That player is not online."
+msgstr "そのプレイヤーはオンラインではありません。"
+
+#: ygo/parsers/lobby_parser.py:421 ygo/parsers/lobby_parser.py:447
+#, python-format
+msgid "You are ignoring %s."
+msgstr "あなたは %s をミュートしています。"
+
+#: ygo/parsers/lobby_parser.py:424 ygo/parsers/lobby_parser.py:450
+#, python-format
+msgid "%s is ignoring you."
+msgstr "%s にミュートされています。"
+
+#: ygo/parsers/lobby_parser.py:436
 msgid "Usage: reply <message>"
 msgstr "使い方: reply <message>"
 
-#: ygo/parsers/lobby_parser.py:344
+#: ygo/parsers/lobby_parser.py:439
 msgid "No one to reply to."
 msgstr "リプライする人がいません。"
 
-#: ygo/parsers/lobby_parser.py:376
+#: ygo/parsers/lobby_parser.py:471
 msgid "Watch notification enabled."
 msgstr "観察通知を有効化しました。"
 
-#: ygo/parsers/lobby_parser.py:378
+#: ygo/parsers/lobby_parser.py:473
 msgid "Watch notification disabled."
 msgstr "観察通知を無効化しました。"
 
-#: ygo/parsers/lobby_parser.py:382
+#: ygo/parsers/lobby_parser.py:477
 msgid "You aren't watching a duel."
 msgstr "あなたはデュエルを観察していません。"
 
-#: ygo/parsers/lobby_parser.py:388
+#: ygo/parsers/lobby_parser.py:483
 msgid "You are already in a duel."
 msgstr "あなたはすでにデュエル中です。"
 
-#: ygo/parsers/lobby_parser.py:397
+#: ygo/parsers/lobby_parser.py:492
 msgid "That player is not in a duel."
 msgstr "そのプレイヤーはデュエル中ではありません。"
 
-#: ygo/parsers/lobby_parser.py:400
-msgid "That duel is private."
-msgstr "そのデュエルはプライベートです。"
+#: ygo/parsers/lobby_parser.py:495
+msgid "That duel is private and you don't have an invitation to watch it."
+msgstr "そのデュエルはプライベートであり、観戦するための招待を受け取っていません。"
 
-#: ygo/parsers/lobby_parser.py:409
+#: ygo/parsers/lobby_parser.py:505
 msgid "Ignored accounts:"
 msgstr "ミュートしたアカウント:"
 
-#: ygo/parsers/lobby_parser.py:415
+#: ygo/parsers/lobby_parser.py:511
 msgid "You cannot ignore yourself."
 msgstr "自分自身はミュートにできません。"
 
-#: ygo/parsers/lobby_parser.py:419
+#: ygo/parsers/lobby_parser.py:515
 msgid "That account doesn't exist. Make sure you enter the full name (no auto-completion for security reasons)."
 msgstr "そのアカウントは存在しません。セキュリティ的な理由により、オートコレクトはされません。フルネームを入力してください。"
 
-#: ygo/parsers/lobby_parser.py:426
+#: ygo/parsers/lobby_parser.py:522
 #, python-format
 msgid "Ignoring %s."
 msgstr "%s をミュートにします。"
 
-#: ygo/parsers/lobby_parser.py:430
+#: ygo/parsers/lobby_parser.py:526
 #, python-format
 msgid "Stopped ignoring %s."
 msgstr "%s のミュートを解除します。"
 
-#: ygo/parsers/lobby_parser.py:439
+#: ygo/parsers/lobby_parser.py:535
 msgid "Challenge on."
 msgstr "チャレンジ　オン"
 
-#: ygo/parsers/lobby_parser.py:441
+#: ygo/parsers/lobby_parser.py:537
 msgid "Challenge off."
 msgstr "チャレンジ　オフ"
 
-#: ygo/parsers/lobby_parser.py:468
+#: ygo/parsers/lobby_parser.py:554
+msgid "This server is going to reboot soon, you cannot create a room right now."
+msgstr "このサーバーはまもなく再起動されます。現在、新しいゲームを作ることはできません。"
+
+#: ygo/parsers/lobby_parser.py:571
 msgid "Invalid player name."
 msgstr "不正なプレイヤー名です。"
 
-#: ygo/parsers/lobby_parser.py:474
+#: ygo/parsers/lobby_parser.py:577
 msgid "This player isn't online."
 msgstr "このプレイヤーはオンラインではありません。"
 
-#: ygo/parsers/lobby_parser.py:483 ygo/parsers/room_parser.py:372
-msgid "You're ignoring this player."
-msgstr "このプレイヤーをミュートにしています。"
-
-#: ygo/parsers/lobby_parser.py:485 ygo/parsers/room_parser.py:375
-msgid "This player ignores you."
-msgstr "このプレイヤーはあなたをミュートにしています。"
-
-#: ygo/parsers/lobby_parser.py:487
+#: ygo/parsers/lobby_parser.py:590
 msgid "This player is currently in a duel."
 msgstr "このプレイヤーは現在デュエル中です。"
 
-#: ygo/parsers/lobby_parser.py:489
+#: ygo/parsers/lobby_parser.py:592
 msgid "This player currently doesn't prepare to duel or you may not enter the room."
 msgstr "このプレイヤーは、まだデュエルの準備ができていないので、ルームには入室できません。"
 
-#: ygo/parsers/lobby_parser.py:491
+#: ygo/parsers/lobby_parser.py:594
 #, python-format
 msgid "You're currently ignoring %s, who is the owner of this room."
 msgstr "このルームのオーナーである %s をあなたがミュートに設定しています。"
 
-#: ygo/parsers/lobby_parser.py:493
+#: ygo/parsers/lobby_parser.py:596
 #, python-format
 msgid "%s, who is the owner of this room, is ignoring you."
 msgstr "このルームのオーナーである %s が、あなたのことをミュートに設定しています。"
 
-#: ygo/parsers/lobby_parser.py:503
+#: ygo/parsers/lobby_parser.py:606
 #, python-format
 msgid "This server has been running for %s."
 msgstr "このサーバーは %s の間動いています。"
 
-#: ygo/parsers/lobby_parser.py:564
+#: ygo/parsers/lobby_parser.py:609
+msgid "This server is going to reboot soon."
+msgstr "このサーバーはまもなく再起動されます。"
+
+#: ygo/parsers/lobby_parser.py:670
 msgid "No player with that name found."
 msgstr "そのような名前のプレイヤーは見つかりませんでした。"
 
-#: ygo/parsers/lobby_parser.py:569
+#: ygo/parsers/lobby_parser.py:675
 #, python-format
 msgid "Finger report for %s"
 msgstr "%s のフィンガーレポート:"
 
-#: ygo/parsers/lobby_parser.py:571
+#: ygo/parsers/lobby_parser.py:677
 #, python-format
 msgid "Created on %s"
 msgstr "%s のうえに作成しました。"
 
-#: ygo/parsers/lobby_parser.py:574
+#: ygo/parsers/lobby_parser.py:680
 msgid "Currently logged in"
 msgstr "現在ログイン中"
 
-#: ygo/parsers/lobby_parser.py:576
+#: ygo/parsers/lobby_parser.py:682
 #, python-format
 msgid "Last logged in on %s"
 msgstr "最後のログイン: %s"
 
-#: ygo/parsers/lobby_parser.py:585
+#: ygo/parsers/lobby_parser.py:691
 msgid "Duel statistics:"
 msgstr "デュエル統計: "
 
-#: ygo/parsers/lobby_parser.py:589
+#: ygo/parsers/lobby_parser.py:695
 #, python-format
 msgid "%s - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d"
 msgstr "%s - 勝利: %d, 敗北: %d, 引き分け: %d, 降伏: %d"
 
-#: ygo/parsers/lobby_parser.py:596
+#: ygo/parsers/lobby_parser.py:702
 #, python-format
 msgid "Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d"
 msgstr "結論 - 勝利: %d, 敗北: %d, 引き分け: %d, 降伏: %d"
 
-#: ygo/parsers/lobby_parser.py:601
+#: ygo/parsers/lobby_parser.py:707
 #, python-format
 msgid "%.2f%% Success."
 msgstr "%.2f%% 成功率。"
 
-#: ygo/parsers/login_parser.py:102
+#: ygo/parsers/lobby_parser.py:711
+msgid "Reloading languages..."
+msgstr "言語を再読込しています..."
+
+#: ygo/parsers/lobby_parser.py:714
+msgid "Success."
+msgstr "成功。"
+
+#: ygo/parsers/lobby_parser.py:716
+msgid "An error occurred: {error}"
+msgstr "エラーが発生しました: {error}"
+
+#: ygo/parsers/lobby_parser.py:740 ygo/parsers/lobby_parser.py:746
+msgid "Banlist {0} is unknown."
+msgstr "禁止カード {0} を認識できません。"
+
+#: ygo/parsers/lobby_parser.py:750
+msgid "You cannot compare a banlist to itself."
+msgstr "同じ禁止カードリストでは比較できません。"
+
+#: ygo/parsers/lobby_parser.py:767
+msgid "No banned players yet."
+msgstr "ブロックしたプレイヤーはいません。"
+
+#: ygo/parsers/lobby_parser.py:770
+msgid "Banned players:"
+msgstr "ブロックしたプレイヤー"
+
+#: ygo/parsers/lobby_parser.py:782 ygo/parsers/lobby_parser.py:823
+msgid "No account with that name found."
+msgstr "そのようなアカウントのプレイヤーは見つかりません。"
+
+#: ygo/parsers/lobby_parser.py:786
+msgid "You cannot ban admins. Please remove the admin status first."
+msgstr "管理者をブロックすることはできません。管理者ステータスを外してください。"
+
+#: ygo/parsers/lobby_parser.py:790
+msgid "{player} is already banned."
+msgstr "すでに {player} をブロックしています。"
+
+#: ygo/parsers/lobby_parser.py:804
+msgid "You were banned by {admin}. Only you might know why."
+msgstr "貴方は {admin} によってブロックされました。理由については、自分の心に聞いてみてください。"
+
+#: ygo/parsers/lobby_parser.py:807
+msgid "Ban successful."
+msgstr "ブロックしました。"
+
+#: ygo/parsers/lobby_parser.py:815
+msgid "You need to enter a nickname. To see a list ofanned players, use ban."
+msgstr "ニックネームを入力する必要があります。ブロックしたプレイヤーのリストを確認するには、 ban コマンドを使用してください。"
+
+#: ygo/parsers/lobby_parser.py:827
+msgid "{player} is not banned."
+msgstr "{player} はブロックされていません。"
+
+#: ygo/parsers/lobby_parser.py:834
+msgid "Ban removed."
+msgstr "ブロックを解除しました。"
+
+#: ygo/parsers/login_parser.py:115
 msgid "Disconnecting old connection."
 msgstr "再接続しました。"
 
-#: ygo/parsers/login_parser.py:111
+#: ygo/parsers/login_parser.py:124
 msgid "Reconnecting..."
 msgstr "再接続しています。"
 
-#: ygo/parsers/login_parser.py:113
+#: ygo/parsers/login_parser.py:126
 #, python-format
 msgid "%s reconnected."
 msgstr "%s が再接続しました。"
 
-#: ygo/parsers/login_parser.py:127
+#: ygo/parsers/login_parser.py:140
 #, python-format
 msgid "%s logged in."
 msgstr "%s がログインしました。"
 
-#: ygo/parsers/room_parser.py:13
+#: ygo/parsers/room_parser.py:20
 msgid "Enter ? to show all commands and room preferences"
 msgstr "全てのコマンドとルーム設定の詳細を表示するには、?を入力してください。"
 
-#: ygo/parsers/room_parser.py:16
+#: ygo/parsers/room_parser.py:23
+msgid "Don't forget to remove the lock when you are ready. Type lock to do so."
+msgstr "準備ができたら、ロックを外すのを忘れないでください。 lock 入力して、ロックを外してください。"
+
+#: ygo/parsers/room_parser.py:26
 msgid "This command isn't available right now."
 msgstr "このコマンドは現在使用できません。"
 
-#: ygo/parsers/room_parser.py:36
-msgid "The following settings are defined for this room:"
-msgstr "このルームには、以下の設定が定義されています: "
-
-#: ygo/parsers/room_parser.py:38
-#, python-format
-msgid "Banlist: %s"
-msgstr "禁止リスト: %s"
-
-#: ygo/parsers/room_parser.py:40
-msgid "Duel Rules:"
-msgstr "デュエルのルール: "
-
-#: ygo/parsers/room_parser.py:43 ygo/parsers/room_parser.py:207
-msgid "Link"
-msgstr "リンク"
-
-#: ygo/parsers/room_parser.py:45 ygo/parsers/room_parser.py:205
-msgid "Traditional"
-msgstr "トラディショナル"
-
-#: ygo/parsers/room_parser.py:47 ygo/parsers/room_parser.py:203
-msgid "Default"
-msgstr "デフォルト"
-
-#: ygo/parsers/room_parser.py:51
-#, python-format
-msgid "Lifepoints - %s: %d, %s: %d"
-msgstr "ライフポイント - %s: %d, %s: %d"
-
-#: ygo/parsers/room_parser.py:51 ygo/parsers/room_parser.py:132
-#: ygo/parsers/room_parser.py:134 ygo/parsers/room_parser.py:161
-#: ygo/parsers/room_parser.py:163 ygo/parsers/room_parser.py:399
-#, python-format
-msgid "team %d"
-msgstr "チーム %d"
-
-#: ygo/parsers/room_parser.py:53
-#, python-format
-msgid "Privacy: %s"
-msgstr "公開設定: %s"
-
-#: ygo/parsers/room_parser.py:53
-msgid "private"
-msgstr "プライベート"
-
-#: ygo/parsers/room_parser.py:53
-msgid "public"
-msgstr "公開"
-
-#: ygo/parsers/room_parser.py:55
+#: ygo/parsers/room_parser.py:48
 msgid "The following commands are available for you:"
 msgstr "以下のコマンドが使用可能です: "
 
-#: ygo/parsers/room_parser.py:58
+#: ygo/parsers/room_parser.py:51
 msgid "banlist - define banlist"
 msgstr "banlist - 禁止カードリストを定義する"
 
-#: ygo/parsers/room_parser.py:59
+#: ygo/parsers/room_parser.py:52
 msgid "finish - finish room creation and open it to other players"
 msgstr "finish - ルーム作成を終了し、ほかのプレイヤーに公開する"
 
-#: ygo/parsers/room_parser.py:60
+#: ygo/parsers/room_parser.py:53
 msgid "lifepoints - set lifepoints per team"
 msgstr "lifepoints - チームのライフポイントを設定する"
 
-#: ygo/parsers/room_parser.py:61
+#: ygo/parsers/room_parser.py:54
+msgid "match - toggle match mode on or off"
+msgstr "match - マッチモードを切り替え"
+
+#: ygo/parsers/room_parser.py:55
 msgid "private - toggles privacy"
 msgstr "private - 公開設定を切り替える"
 
-#: ygo/parsers/room_parser.py:62
+#: ygo/parsers/room_parser.py:56
 msgid "rules - define duel rules"
 msgstr "rules - デュエルのルールを設定する"
 
-#: ygo/parsers/room_parser.py:63
+#: ygo/parsers/room_parser.py:57
 msgid "save - save settings for all your future rooms"
 msgstr "save - 今後のルーム作成のため、設定を保存する"
 
-#: ygo/parsers/room_parser.py:66
-msgid "deck - select a deck to duel with"
-msgstr "deck - デュエルで使用するデッキを選択する"
-
-#: ygo/parsers/room_parser.py:67
-msgid "move - move yourself into a team of your choice"
-msgstr "move - 自分が所属したいチームを設定する"
-
-#: ygo/parsers/room_parser.py:68
+#: ygo/parsers/room_parser.py:60
 msgid "teams - show teams and associated players"
 msgstr "teams - チームとそのメンバーを表示する"
 
-#: ygo/parsers/room_parser.py:71
+#: ygo/parsers/room_parser.py:62
+msgid "deck - select a deck to duel with"
+msgstr "deck - デュエルで使用するデッキを選択する"
+
+#: ygo/parsers/room_parser.py:63
+msgid "move - move yourself into a team of your choice"
+msgstr "move - 自分が所属したいチームを設定する"
+
+#: ygo/parsers/room_parser.py:65
+msgid "exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"
+msgstr "exchange [<メインデッキ> <サイドデッキ>] - メインデッキとサイドデッキでカードを交換"
+
+#: ygo/parsers/room_parser.py:66
+msgid "lock - lock/unlock a room so that the duel cannot be started"
+msgstr "lock - デュエルを始められないようにロックをかける/外す"
+
+#: ygo/parsers/room_parser.py:67
+msgid "scoop - scoop the next duel"
+msgstr "scoop - 次のデュエルを棄権する"
+
+#: ygo/parsers/room_parser.py:70
 msgid "invite - invite player into this room"
 msgstr "invite - ほかのプレイヤーをルームに招待する"
+
+#: ygo/parsers/room_parser.py:71
+msgid "remove - remove player from this room"
+msgstr "remove - プレイヤーをルームから退室させる"
 
 #: ygo/parsers/room_parser.py:72
 msgid "start - start duel with current teams"
 msgstr "start - 現在のチームでデュエルを開始する"
 
-#: ygo/parsers/room_parser.py:75
+#: ygo/parsers/room_parser.py:76
 msgid "leave - leave this room and close it"
 msgstr "leave - ルームを閉じ、退室する"
 
-#: ygo/parsers/room_parser.py:77
+#: ygo/parsers/room_parser.py:78
 msgid "leave - leave this room"
 msgstr "leave - ルームを退室する"
 
-#: ygo/parsers/room_parser.py:87
+#: ygo/parsers/room_parser.py:88
 msgid "You finished the room setup."
 msgstr "ルーム設定を終了しました。"
 
-#: ygo/parsers/room_parser.py:90
+#: ygo/parsers/room_parser.py:91
 msgid "You can now invite players to join this room."
 msgstr "ほかのプレイヤーを招待することができます。"
 
-#: ygo/parsers/room_parser.py:92
+#: ygo/parsers/room_parser.py:93
 msgid "Players can now join this room, or you can invite them to join you."
 msgstr "ほかのプレイヤーはこのルームに入室できます。あなたから招待することもできます。"
 
-#: ygo/parsers/room_parser.py:93
+#: ygo/parsers/room_parser.py:94
 msgid "{player} created a new duel room."
 msgstr "{player} が新しいルームを作成しました。"
 
-#: ygo/parsers/room_parser.py:110
+#: ygo/parsers/room_parser.py:111
 msgid "You can set the banlist to ocg or tcg, which will automatically select the newest tcg/ocg banlist for you."
 msgstr "禁止カードリストを ocg または tcg に設定できます。これにより、対応する最新の禁止カードリストを取り込めます。"
 
-#: ygo/parsers/room_parser.py:112
+#: ygo/parsers/room_parser.py:113
 msgid "You can also set the banlist to none or one of the following:"
 msgstr "禁止カードリストを none または次のいずれかに設定することもできます: "
 
-#: ygo/parsers/room_parser.py:116
+#: ygo/parsers/room_parser.py:117
 msgid "Invalid banlist specified."
 msgstr "不正な禁止カードリストが指定されました。"
 
-#: ygo/parsers/room_parser.py:120
+#: ygo/parsers/room_parser.py:121
 #, python-format
 msgid "The banlist for this room was set to %s."
 msgstr "このルームにおける禁止カードリストが %s に設定されました。"
 
-#: ygo/parsers/room_parser.py:122
+#: ygo/parsers/room_parser.py:123
 msgid "This game doesn't know this banlist. Check the banlist command to get all possible arguments to this command."
 msgstr "このゲームでは、指定された禁止カードリストは認識できません。 banlist コマンドをチェックして、有効な文字列を入力してください。"
 
-#: ygo/parsers/room_parser.py:132
+#: ygo/parsers/room_parser.py:133
 #, python-format
 msgid "No players in %s."
 msgstr "%s にはプレイヤーがいません。"
 
-#: ygo/parsers/room_parser.py:134
+#: ygo/parsers/room_parser.py:135
 #, python-format
 msgid "Players in %s: %s"
 msgstr "%s にいるプレイヤー: %s"
 
-#: ygo/parsers/room_parser.py:137
+#: ygo/parsers/room_parser.py:138
 msgid "No remaining players in this room."
 msgstr "このルームにはプレイヤーが残っていません。"
 
-#: ygo/parsers/room_parser.py:139
+#: ygo/parsers/room_parser.py:140
 #, python-format
 msgid "Players not yet in a team: %s"
 msgstr "まだチームに所属していないプレイヤーがいます: %s"
 
-#: ygo/parsers/room_parser.py:148
+#: ygo/parsers/room_parser.py:149
 msgid "You can move yourself into team 0, 1 or 2, where 0 means that you remove yourself from any team."
 msgstr "team 0 から team 2 のどれかに所属することができます。team 0 の場合には、実際のデュエルは行わず、試合を観戦します。"
 
-#: ygo/parsers/room_parser.py:155
+#: ygo/parsers/room_parser.py:156
 msgid "You were removed from any team."
 msgstr "チームから外れました。"
 
-#: ygo/parsers/room_parser.py:157
+#: ygo/parsers/room_parser.py:158
 #, python-format
 msgid "%s was removed from any team."
 msgstr "%s がチームから外れました。"
 
-#: ygo/parsers/room_parser.py:161
+#: ygo/parsers/room_parser.py:162
 #, python-format
 msgid "You were moved into %s."
 msgstr "%s にチームを移動しました。"
 
-#: ygo/parsers/room_parser.py:163
+#: ygo/parsers/room_parser.py:164
 #, python-format
 msgid "%s was moved into %s."
 msgstr "%s が %s にチームを移動しました。"
 
-#: ygo/parsers/room_parser.py:174
+#: ygo/parsers/room_parser.py:175
 msgid "This room is now private."
 msgstr "このルームをプライベートにしました。"
 
-#: ygo/parsers/room_parser.py:176
+#: ygo/parsers/room_parser.py:177
 msgid "This room is now public."
 msgstr "このルームをパブリックにしました。"
 
-#: ygo/parsers/room_parser.py:185
+#: ygo/parsers/room_parser.py:186
 msgid "Following rules can be defined:"
 msgstr "以下のルールが指定できます: "
 
-#: ygo/parsers/room_parser.py:186
-msgid "Default - The default duelling behaviour before link summons came in"
-msgstr "Default - 通常のデュエル行動はリンク召喚の前に行われます。"
-
 #: ygo/parsers/room_parser.py:187
-msgid "Link - Enable link summons"
-msgstr "Link - リンク召喚を有効にします。"
+msgid "MR5 - The new update to the rules that applys since April 1st, 2020 (MR 5 is an unofficial name)"
+msgstr "MR5 - 2020年4月1日から適用される新ルール (MR 5 は非公式な名前です)"
 
 #: ygo/parsers/room_parser.py:188
+msgid "Link - Enable link summons (Master Rule 4)"
+msgstr "Link - リンク召喚を有効にする (マスタールール4)"
+
+#: ygo/parsers/room_parser.py:189
+msgid "Default - The default duelling behaviour before link summons came in (Master Rule 3, we advise you to use MR 5 over this one)"
+msgstr "Default - リンク召喚が登場する前の挙動 (マスタールール3、これではなく MR 5 を使うことをお勧めします)"
+
+#: ygo/parsers/room_parser.py:190
 msgid "Traditional - Duel rules from the first days of Yu-Gi-Oh"
 msgstr "Traditional - 遊戯王開始時の初期ルールです。"
 
-#: ygo/parsers/room_parser.py:190
+#: ygo/parsers/room_parser.py:192
 msgid "Invalid duel rules specified. See rules command to get the possible arguments."
 msgstr "不正なルールが指定されました。 rules コマンドで、利用可能な値をチェックしてください。"
 
-#: ygo/parsers/room_parser.py:200
+#: ygo/parsers/room_parser.py:204
 #, python-format
 msgid "Duel rules were set to %s."
 msgstr "デュエルのルールを %s に設定しました。"
 
-#: ygo/parsers/room_parser.py:234
-msgid "Deck doesn't exist."
-msgstr "デッキがありません。"
-
-#: ygo/parsers/room_parser.py:250
+#: ygo/parsers/room_parser.py:299
 #, python-format
-msgid "Your main deck must contain between 40 and 200 cards (currently %d)."
-msgstr "デッキには、40枚から200枚のカードを入れる必要があります。現在%d枚です。"
+msgid "Your side deck may not contain more than 15 cards (currently %d)."
+msgstr "サイドデッキは15枚以下にする必要があります (現在 %d)。"
 
-#: ygo/parsers/room_parser.py:254
-#, python-format
-msgid "Your extra deck may not contain more than 15 cards (currently %d)."
-msgstr "エクストラデッキには15枚までしかカードを入れられません。現在%d枚です。"
-
-#: ygo/parsers/room_parser.py:274
+#: ygo/parsers/room_parser.py:314
 #, python-format
 msgid "Deck loaded with %d cards."
 msgstr "%d 枚のカードをデッキから読み込みました。"
 
-#: ygo/parsers/room_parser.py:278
+#: ygo/parsers/room_parser.py:318
 #, python-format
 msgid "%s loaded a deck."
 msgstr "%s がデッキを読み込みました。"
 
-#: ygo/parsers/room_parser.py:289
+#: ygo/parsers/room_parser.py:329
 msgid "Both teams must have the same amount of players."
 msgstr "双方のチームの人数は同じでなければなりません。"
 
-#: ygo/parsers/room_parser.py:293
+#: ygo/parsers/room_parser.py:333
 msgid "Both teams may only have one or two players."
 msgstr "各チームメンバーは、1人または2人である必要があります。"
 
-#: ygo/parsers/room_parser.py:299
+#: ygo/parsers/room_parser.py:339
 #, python-format
 msgid "%s doesn't have a deck loaded yet."
 msgstr "%s がまだデッキを読み込んでいません。"
 
-#: ygo/parsers/room_parser.py:308
+#: ygo/parsers/room_parser.py:346
+msgid "Players currently locking this room: {0}"
+msgstr "このルームをロックしているプレイヤー: {0}"
+
+#: ygo/parsers/room_parser.py:346
+msgid "you"
+msgstr "自分"
+
+#: ygo/parsers/room_parser.py:350
+msgid "This server is going to reboot soon, you cannot start a duel right now."
+msgstr "このサーバーはまもなく再起動されます。デュエルを開始することはできません。"
+
+#: ygo/parsers/room_parser.py:362
 msgid "You start the duel."
 msgstr "デュエルを開始します。"
 
-#: ygo/parsers/room_parser.py:310
+#: ygo/parsers/room_parser.py:364
 #, python-format
 msgid "%s starts the duel."
 msgstr "%s がデュエルを開始します。"
 
-#: ygo/parsers/room_parser.py:325
-msgid "The duel between {player1} and {player2} has begun!"
-msgstr "{player1} と {player2} のデュエルが始まりました！"
+#: ygo/parsers/room_parser.py:380
+msgid "You need to play rock paper scissors to decide upon who will go first."
+msgstr "じゃんけんで先攻を決めます。"
 
-#: ygo/parsers/room_parser.py:347
+#: ygo/parsers/room_parser.py:382
+msgid "{0} and {1} will now play rock paper scissors to decide upon who will go first."
+msgstr "{0} と {1} は、じゃんけんで先攻を決めます。"
+
+#: ygo/parsers/room_parser.py:390
+msgid "You've lost the last duel of this match, thus you may decide who'll go first."
+msgstr "貴方はこのマッチにおいて、前回のデュエルに敗北したので、先攻を決められます。"
+
+#: ygo/parsers/room_parser.py:392
+msgid "You've won the last duel of this match, thus your opponent may decide who will go first."
+msgstr "貴方はこのマッチにおいて、前回のデュエルに勝利したので、対戦相手が先攻を決めます。"
+
+#: ygo/parsers/room_parser.py:394
+msgid "{0} lost the last duel of this match and thus may decide who will go first."
+msgstr "{0} が、このマッチにおいて前回のデュエルに敗北したので、先攻を決めます。"
+
+#: ygo/parsers/room_parser.py:405
 msgid "You can invite any player to join this room. Simply type invite <player> to do so."
 msgstr "誰でもプレイヤーを招待できます。 invite <プレイヤー名> で実行できます。"
 
-#: ygo/parsers/room_parser.py:351 ygo/parsers/room_parser.py:357
-msgid "No player with this name found."
-msgstr "そのような名前のプレイヤーは見つかりません。"
-
-#: ygo/parsers/room_parser.py:366
-msgid "This player is already in a duel."
-msgstr "このプレイヤーはすでにデュエル中です。"
-
-#: ygo/parsers/room_parser.py:369
-msgid "This player is already preparing to duel."
-msgstr "このプレイヤーは、すでにデュエル準備中です。"
-
-#: ygo/parsers/room_parser.py:383
+#: ygo/parsers/room_parser.py:443
 #, python-format
 msgid "%s invites you to join his duel room. Type join %s to do so."
 msgstr "%s からデュエルルームへの招待が届いています。 join %s で参加できます。"
 
-#: ygo/parsers/room_parser.py:385
-#, python-format
-msgid "An invitation was sent to %s."
-msgstr "%s にルームへの招待が送られました。"
+#: ygo/parsers/room_parser.py:449
+msgid "{0} already got an invitation to this room."
+msgstr "{0} は、すでにこのルームへの招待を受け取っています。"
 
-#: ygo/parsers/room_parser.py:394
+#: ygo/parsers/room_parser.py:458
 msgid "Usage: lifepoints <team> <lp>"
 msgstr "使い方: lifepoints <team> <lp>"
 
-#: ygo/parsers/room_parser.py:399
+#: ygo/parsers/room_parser.py:463
 #, python-format
 msgid "Lifepoints for %s set to %d."
 msgstr "%s のライフポイントを %d に設定しました。"
 
-#: ygo/parsers/room_parser.py:412
+#: ygo/parsers/room_parser.py:476
 msgid "Settings saved."
 msgstr "設定を保存しました。"
 
-#: ygo/parsers/yes_or_no_parser.py:25
+#: ygo/parsers/room_parser.py:485
+msgid "You can remove any player from this room, except yourself. Type remove <player> to do so."
+msgstr "自分以外のプレイヤーを、ルームから退室させることができます。 remove <プレイヤー名> コマンドを利用してください。"
+
+#: ygo/parsers/room_parser.py:504
+msgid "You cannot remove yourself from this room."
+msgstr "自分自身をルームから出すことはできません。"
+
+#: ygo/parsers/room_parser.py:508
+msgid "{0} is currently not in this room."
+msgstr "{0} は、このルームにいません。"
+
+#: ygo/parsers/room_parser.py:512
+msgid "You can only remove watchers after starting the duel or match."
+msgstr "デュエル、またはマッチを開始した後に、観戦者を退室させられます。"
+
+#: ygo/parsers/room_parser.py:515
+msgid "You ask {0} friendly to leave this room."
+msgstr "{0} に、ルームへの退室を依頼します。"
+
+#: ygo/parsers/room_parser.py:517
+msgid "{0} asks you friendly to leave the room."
+msgstr "{0} が、貴方にこのルームから退室するように依頼しています。"
+
+#: ygo/parsers/room_parser.py:522
+msgid "{0} asks {1} friendly to leave this room."
+msgstr "{0} が、 {1} にルームから退室するように依頼しています。"
+
+#: ygo/parsers/room_parser.py:545
+msgid "You have no deck loaded, so you can't exchange cards between main and side deck yet."
+msgstr "デッキをロードしていないため、メインデッキとサイドデッキ間でのカード交換はできません。"
+
+#: ygo/parsers/room_parser.py:549
+msgid "Main deck:"
+msgstr "メインデッキ:"
+
+#: ygo/parsers/room_parser.py:552
+msgid "Side deck:"
+msgstr "サイドデッキ:"
+
+#: ygo/parsers/room_parser.py:558
+msgid "You can only exchange cards after the first duel of the match ended."
+msgstr "マッチでの最初のデュエルが終了した後に、メインデッキン・サイドデッキ間でカードを交換できます。"
+
+#: ygo/parsers/room_parser.py:562
+msgid "Your side deck doesn't contain any cards, so you can't exchange cards with your main deck."
+msgstr "サイドデッキにカードが入っていないため、メインデッキと入れ替えることができません。"
+
+#: ygo/parsers/room_parser.py:587
+msgid "You can only exchange a card located in the main deck against another card from the main deck and same goes for the extra deck."
+msgstr "メインデッキのカード同士、エクストラデッキのカード同士のみ交換できます。"
+
+#: ygo/parsers/room_parser.py:595
+msgid "You exchange {0} from your main deck against {1} from your side deck."
+msgstr "メインデッキの {0} を、サイドデッキの {1} と交換しました。"
+
+#: ygo/parsers/room_parser.py:608
+msgid "You're now locking the room."
+msgstr "ルームにロックをかけました。"
+
+#: ygo/parsers/room_parser.py:610
+msgid "{0} is now locking the room."
+msgstr "{0} が、ルームにロックをかけました。"
+
+#: ygo/parsers/room_parser.py:614
+msgid "You are no longer locking the room."
+msgstr "ルームのロックを外しました。"
+
+#: ygo/parsers/room_parser.py:616
+msgid "{0} is no longer locking the room."
+msgstr "{0} が、ルームのロックを外しました。"
+
+#: ygo/parsers/yes_or_no_parser.py:24
 msgid "Please enter y or n."
 msgstr "y または n を入力してください。"
 
+#: ygo/who_goes_first/decision.py:22
+msgid "You decide to go first."
+msgstr "先攻を取ります。"
+
+#: ygo/who_goes_first/decision.py:24
+msgid "You decide to go second."
+msgstr "後攻を取ります。"
+
+#: ygo/who_goes_first/decision.py:27
+msgid "{0} decides to go first."
+msgstr "{0} は、先攻を取ります。"
+
+#: ygo/who_goes_first/decision.py:29
+msgid "{0} decides to go second."
+msgstr "{0} は、後攻を取ります。"
+
+#: ygo/who_goes_first/decision.py:33
+msgid "Do you want to go first?"
+msgstr "先攻を取りますか？"
+
+#: ygo/who_goes_first/decision.py:35
+msgid "Yes"
+msgstr "Yes"
+
+#: ygo/who_goes_first/decision.py:36
+msgid "No"
+msgstr "No"
+
+#: ygo/who_goes_first/rps.py:15
+msgid "You choose {0}."
+msgstr "{0} を選択。"
+
+#: ygo/who_goes_first/rps.py:15 ygo/who_goes_first/rps.py:22
+#: ygo/who_goes_first/rps.py:23 ygo/who_goes_first/rps.py:66
+msgid "Rock"
+msgstr "グー"
+
+#: ygo/who_goes_first/rps.py:15 ygo/who_goes_first/rps.py:22
+#: ygo/who_goes_first/rps.py:23 ygo/who_goes_first/rps.py:67
+msgid "Paper"
+msgstr "パー"
+
+#: ygo/who_goes_first/rps.py:15 ygo/who_goes_first/rps.py:22
+#: ygo/who_goes_first/rps.py:23 ygo/who_goes_first/rps.py:68
+msgid "Scissors"
+msgstr "チョキ"
+
+#: ygo/who_goes_first/rps.py:18
+msgid "You now need to wait for {0} to choose."
+msgstr "{0} の手を待ちます。"
+
+#: ygo/who_goes_first/rps.py:21
+msgid "Here are the results:"
+msgstr "じゃんけんの結果:"
+
+#: ygo/who_goes_first/rps.py:22 ygo/who_goes_first/rps.py:23
+msgid "{0} has chosen {1}."
+msgstr "{0} は {1} を出しました。"
+
+#: ygo/who_goes_first/rps.py:27
+msgid "Noone will be the victor this round."
+msgstr "あいこです。"
+
+#: ygo/who_goes_first/rps.py:38 ygo/who_goes_first/rps.py:50
+msgid "Since you've won, you may now choose who will go first."
+msgstr "勝ったので、先攻/後攻を決められます。"
+
+#: ygo/who_goes_first/rps.py:40 ygo/who_goes_first/rps.py:52
+msgid "You've lost, so you must wait for your opponent to choose if they want to go first."
+msgstr "負けたので、対戦相手が先攻/後攻を選びます。"
+
+#: ygo/who_goes_first/rps.py:42 ygo/who_goes_first/rps.py:54
+msgid "{0} wins and may now choose who will go first."
+msgstr "{0} が勝ち、先攻/後攻を選びます。"
+
+#: ygo/who_goes_first/rps.py:61
+msgid "What do you want to choose?"
+msgstr "どれを選択しますか？"
+
+#~ msgid "Attack: %d Level: %d"
+#~ msgstr "攻撃力:%d, レベル:%d"
+
+#~ msgid "Invalid entry."
+#~ msgstr "不正なエントリです"
+
+#~ msgid "({attack}) level {level}"
+#~ msgstr "{attack}レベル{level}"
+
+#~ msgid "You joined your new room. You need to finish the setup to make it available to the other players."
+#~ msgstr "新しいルームに入室しました。ほかのプレイヤーから見えるようにするには、ルーム設定を完了させてください。"
+
+#~ msgid "Activating %s"
+#~ msgstr "%s を有効化します"
+
+#~ msgid "%s activating %s"
+#~ msgstr "%s は %s を発動"
+
+#~ msgid "{winner} won the duel between {player1} and {player2} ({reason})."
+#~ msgstr "{winner} が {player1} と {player2} のデュエルに勝利しました ({reason})."
+
+#~ msgid "c: check deck against banlist"
+#~ msgstr "c: 禁止カードリストと照合"
+
+#~ msgid "Command (%d cards in main deck, %d cards in extra deck):"
+#~ msgstr "コマンド(メインデッキ%d枚、 エクストラデッキ%d枚):"
+
+#~ msgid "That duel is private."
+#~ msgstr "そのデュエルはプライベートです。"
+
+#~ msgid "Default - The default duelling behaviour before link summons came in"
+#~ msgstr "Default - 通常のデュエル行動はリンク召喚の前に行われます。"
+
+#~ msgid "Link - Enable link summons"
+#~ msgstr "Link - リンク召喚を有効にします。"
+
+#~ msgid "Deck doesn't exist."
+#~ msgstr "デッキがありません。"
+
+#~ msgid "Your main deck must contain between 40 and 200 cards (currently %d)."
+#~ msgstr "デッキには、40枚から200枚のカードを入れる必要があります。現在%d枚です。"
