@@ -1,0 +1,20 @@
+Commands usable while dueling:
+h/hand - show cards in your hand.
+hand2 - shows you the hand of your opponent
+tab and tab2 - show your and your opponent's table.
+grave/grave2 - show your and your opponent's graveyards.
+extra/extra2 - show your and your opponent's extra decks.
+removed and removed2 - show cards removed from play/banished.
+score - show duel progress
+info cardspec - show info on cardspec.
+m1-m5 for your monster zones, s1-s5 for your spell/trap zones, s6 for your field card zone, s7-s8 for pendulum zones, as well as g1-gX for your graveyard, r1-rX for your banished cards, h1-hX for your hand cards and x1-xX for your extra deck cards.
+ATTENTION: all the above references are valid for pre-link rules only and might change when playing in link format.
+All those locations can be prefixed with o to target at your opponents cards.
+showhand - shows all other players and watchers your hand (useful for newbies).
+giveup - end the current duel/match and add a giveup to both player's statistics.
+scoop - end the current duel, but your opponent wins and you lose. Matches will possibly continue.
+
+invite - invites a player to watch this duel (even if the duel is private)
+watchers - shows the list of watching players
+say - writes a message to all players duelling/watching this duel.
+tag - writes to your tag team members only.
