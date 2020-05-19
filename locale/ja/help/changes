@@ -1,0 +1,38 @@
+2017-10-12
+Added duel rooms.
+Duel rooms can be created with create, and joined with join.
+Added link summons.
+2017-10-14
+Missing cards will now be removed when editing decks, and decks with these cards can't be loaded.
+Uptime command added
+2017-10-15
+The deck editor now sorts cards when listing.
+2017-10-16
+Tag duels
+2017-10-23
+Fix watch channel
+Fix g in the deck editor
+Fix passwd command
+When watching duels, watching isn't limited to player 0.
+Add hand2 command to show cards in your opponent's hand, when needed.
+Players can now check tables, hand, etc in paused duels.
+tag and taghistory added for talking to your partner in tag duels.
+Lifepoints can be set in rooms.
+2017-10-25
+Added finger command to get info on players.
+2017-11-01
+Searching for accented characters now works.
+Lobby parser commands can now be used in the deck editor.
+2017-11-15
+Removed deck check, since it was useless.
+Updated banlist to 2017.11 TCG.
+Hopefully fixed connections dropping after inactivity.
+2018-02-28
+Added deck copy.
+Typing deck now shows the help file, instead of causing an error.
+Help files can now be translated.
+2019-03-06
+Scoop command added
+
+2019-06-06
+new public deck system added. see help public decks

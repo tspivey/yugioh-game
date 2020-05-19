@@ -1,0 +1,20 @@
+deck list - list the decks associated with your account.
+deck list text - lists all your decks which contain the text in their title
+deck clear deckname - clear a deck.
+deck delete deckname - delete a deck.
+deck edit deckname
+deck rename old=new - rename old to new.
+deck copy source=destination - copies a deckand saves it under a new name.
+deck draw deck=amount - simulates a draw from your deck. amount is the amount of cards you want to draw.
+deck view deckname - shows the list of all cards in deckname.
+
+banlist - lists all banlists available
+banlist name - shows all forbidden, limited and semi-limited cards of a specific banlist
+banlist name cmp - compares banlist name with banlist cmp and only shows the differences between them
+
+Deck editing commands:
+/text - search for text.
+Example: /magician
+/ - search for the last searched for text.
+?text and ? - search backward.
+The rest of the commands are explained in the editor.
