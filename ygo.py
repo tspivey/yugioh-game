@@ -1,4 +1,7 @@
 import argparse
+import re
+if not hasattr(re, '_pattern_type'):
+	re._pattern_type = re.Pattern
 import os.path
 import sys
 
