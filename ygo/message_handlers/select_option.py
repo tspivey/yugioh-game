@@ -1,8 +1,8 @@
-from gsb.intercept import Menu
 import io
 from twisted.internet import reactor
 
 from ygo.card import Card
+from ygo.duel_menu import DuelMenu
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
 
@@ -49,7 +49,7 @@ def select_option(self, player, options):
 			string = pl._("Unknown option %d" % opt)
 			string = pl.strings['system'].get(opt, string)
 		opts.append(string)
-	m = Menu(pl._("Select option:"), no_abort=pl._("Invalid option."), prompt=pl._("Select option:"), persistent=True, restore_parser=DuelParser)
+	m = DuelMenu(pl._("Select option:"), no_abort=pl._("Invalid option."), prompt=pl._("Select option:"), persistent=True, restore_parser=DuelParser)
 	for idx, opt in enumerate(opts):
 		m.item(opt)(lambda caller, idx=idx: select(caller, idx))
 	pl.notify(m)

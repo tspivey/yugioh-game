@@ -1,9 +1,9 @@
-from gsb.intercept import Menu
 import io
 from twisted.internet import reactor
 
 from ygo.card import Card
 from ygo.constants import POSITION
+from ygo.duel_menu import DuelMenu
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel
 
@@ -18,7 +18,7 @@ def msg_select_position(self, data):
 
 def select_position(self, player, card, positions):
 	pl = self.players[player]
-	m = Menu(pl._("Select position for %s:") % (card.get_name(pl),), no_abort="Invalid option.", persistent=True, restore_parser=DuelParser)
+	m = DuelMenu(pl._("Select position for %s:") % (card.get_name(pl),), no_abort="Invalid option.", persistent=True, restore_parser=DuelParser)
 	def set(caller, pos=None):
 		self.set_responsei(pos)
 		reactor.callLater(0, process_duel, self)
