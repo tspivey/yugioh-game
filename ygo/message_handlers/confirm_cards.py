@@ -18,12 +18,18 @@ def msg_confirm_cards(self, data):
 	return data.read()
 
 def confirm_cards(self, player, cards):
-	pl = self.players[player]
-	op = self.players[1 - player]
-	players = [pl] + self.watchers
+	if self.reverse_players:
+		# We're setting a card from the main deck to the s&t.
+		cpl = self.players[player]
+		op = self.players[1 - player]
+		self.reverse_players = False
+	else:
+		cpl = self.players[1 - player]
+		op = self.players[player]
+	players = [op] + self.watchers
 	for pl in players:
-		pl.notify(pl._("{player} shows you {count} cards.")
-			.format(player=op.nickname, count=len(cards)))
+		pl.notify(pl._("-_confirm {player} shows you {count} cards.")
+			.format(player=cpl.nickname, count=len(cards)))
 		for i, c in enumerate(cards):
 			pl.notify("%s: %s" % (i + 1, c.get_name(pl)))
 			self.revealed[(c.controller, c.location, c.sequence)] = True
