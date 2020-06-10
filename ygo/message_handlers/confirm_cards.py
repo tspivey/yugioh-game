@@ -28,7 +28,7 @@ def confirm_cards(self, player, cards):
 		op = self.players[player]
 	players = [op] + self.watchers
 	for pl in players:
-		pl.notify(pl._("-_confirm {player} shows you {count} cards.")
+		pl.notify(pl._("{player} shows you {count} cards.")
 			.format(player=cpl.nickname, count=len(cards)))
 		for i, c in enumerate(cards):
 			pl.notify("%s: %s" % (i + 1, c.get_name(pl)))
