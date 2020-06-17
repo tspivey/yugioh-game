@@ -2,6 +2,9 @@ from collections import OrderedDict, Counter
 import json
 import random
 import natsort
+import base64
+import binascii
+import struct
 
 from .card import Card
 from . import globals
@@ -396,8 +399,8 @@ class DeckEditor:
 			self.player.notify(self.player._("Usage: deck import <name>=<string>"))
 			return
 		try:
-			json.loads(s)
-		except ValueError:
+			deck_string = json.dumps(parse_ydke(s))
+		except URLParseError:
 			self.player.notify(self.player._("Invalid import string."))
 			return
 		account = self.player.get_account()
@@ -406,7 +409,7 @@ class DeckEditor:
 		if deck:
 			self.player.notify(self.player._("Deck already exists."))
 			return
-		deck = models.Deck(account_id=account.id, name=name, content=s)
+		deck = models.Deck(account_id=account.id, name=name, content=deck_string)
 		account.decks.append(deck)
 		session.commit()
 		self.player.notify(self.player._("Deck %s imported.") % name)
@@ -419,7 +422,7 @@ class DeckEditor:
 		if not deck:
 			self.player.notify(self.player._("Deck not found."))
 			return
-		s = deck.content
+		s = deck_to_ydke(json.loads(deck.content))
 		self.player.notify("deck import %s=%s" % (deck.name, s))
 
 	def set_public(self, name, pub):
@@ -548,3 +551,29 @@ class DeckEditor:
 					break
 
 			pl.notify(pl._("{deckname} ({banlist})").format(deckname = acc, banlist = banlist_text))
+
+class URLParseError(Exception):
+	pass
+
+def parse_ydke(url):
+	if url.startswith('ydke://'):
+		s = url[7:]
+	else:
+		raise URLParseError
+	components = s.split('!')
+	try:
+		components = [base64.decodebytes(c.encode('ascii')) for c in components]
+	except binascii.Error:
+		raise URLParseError
+	components = [struct.unpack('<%di' % (len(c) / 4), c) for c in components]
+	deck = {"cards": components[0] + components[1]}
+	if len(components) > 2:
+		deck['side'] = components[2]
+	return deck
+
+def deck_to_ydke(deck):
+	cards = struct.pack('<%di' % len(deck['cards']), *deck['cards'])
+	cards = base64.standard_b64encode(cards).decode('ascii')
+	side = struct.pack('<%di' % len(deck.get('side', [])), *deck.get('side', []))
+	side = base64.standard_b64encode(side).decode('ascii')
+	return 'ydke://%s!!%s' % (cards, side)
