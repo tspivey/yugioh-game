@@ -226,6 +226,9 @@ def deck(caller):
 		pl.deck_editor.list_public_decks()
 		pl.deck_editor.list_decks([])
 		return
+	if caller.args[0] == "-n":
+		pl.deck_editor.list_decks([])
+		return
 
 	name = caller.args[0]
 
