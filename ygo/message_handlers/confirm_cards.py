@@ -20,12 +20,15 @@ def msg_confirm_cards(self, data):
 def confirm_cards(self, player, cards):
 	if self.reverse_players:
 		# We're setting a card from the main deck to the s&t.
-		cpl = self.players[player]
-		op = self.players[1 - player]
+		# We probably don't need this anymore. Let's keep it there just in case.
+		#cpl = self.players[player]
+		#op = self.players[1 - player]
 		self.reverse_players = False
-	else:
-		cpl = self.players[1 - player]
-		op = self.players[player]
+	#else:
+		#cpl = self.players[1 - player]
+		#op = self.players[player]
+	cpl = self.players[cards[0].controller]
+	op = self.players[1 - cards[0].controller]
 	players = [op] + self.watchers
 	for pl in players:
 		pl.notify(pl._("{player} shows you {count} cards.")
