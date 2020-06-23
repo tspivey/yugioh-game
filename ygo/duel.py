@@ -100,7 +100,6 @@ class Duel(Joinable):
 		self.tags = [Tag(), Tag()]
 		self.bind_message_handlers()
 		self.pause_timer = None
-		self.reverse_players = False
 
 	def set_player_info(self, player, lp):
 		self.lp[player] = lp
