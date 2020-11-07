@@ -87,7 +87,7 @@ class DeckEditor:
 		try:
 			(decks, filtered_decks) = self.get_decks(selector=selector, name=name, banlist=banlist)
 		except BanlistNotFoundError:
-			pl.notify(pl._(f"no banlist with name {banlist} found."))
+			pl.notify(pl._("no banlist with name {banlist} found.").format(banlist = banlist))
 			return
 
 		public_decks = [deck for deck in decks if deck.public]
