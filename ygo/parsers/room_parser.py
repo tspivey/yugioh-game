@@ -3,7 +3,7 @@ import json
 import random
 
 from ..card import Card
-from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME, __
+from ..constants import COMMAND_SUBSTITUTIONS, DECK, RE_NICKNAME, __
 from ..duel import Duel
 from .. import globals
 from .. import models
@@ -223,8 +223,7 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
-		pl.deck_editor.list_public_decks(room.get_banlist())
-		pl.deck_editor.list_decks(banlist = room.get_banlist())
+		pl.deck_editor.list_decks(selector = DECK.PUBLIC | DECK.OWNED, banlist = room.get_banlist())
 		return
 
 	name = caller.args[0]

@@ -5,6 +5,7 @@ import natsort
 import base64
 import binascii
 import struct
+from sqlalchemy import or_
 
 from .card import Card
 from . import globals
@@ -20,14 +21,34 @@ class DeckEditor:
 		self.player = player
 		self.deck_key = 'cards'
 
-	def list_decks(self, name = '', banlist = ''):
+	def list_decks(self, selector = DECK.OWNED, name = '', banlist = ''):
 
-		all_decks = self.player.get_account().decks
-		decks = all_decks[:]
 		filtered_decks = 0
 		o_banlist = None
+		other_decks = []
+		owned_decks = []
+		params = []
+		pl = self.player
+		public_decks = []
+		session = pl.connection.session
 
-		self.player.notify(self.player._("You own %d decks:")%(len(decks)))
+		query = session.query(models.Deck)
+
+		if selector & DECK.PUBLIC == DECK.PUBLIC:
+			params.append(models.Deck.public == True)
+
+		if selector & DECK.ALL == DECK.ALL:
+			pass
+		elif selector & DECK.OWNED == DECK.OWNED:
+			params.append(models.Deck.account_id == pl.get_account().id)
+		elif selector & DECK.OTHER == DECK.OTHER:
+			params.append(models.Deck.account_id != pl.get_account().id)
+
+		query = query.filter(or_(*params))
+
+		all_decks = query.all()
+
+		decks = all_decks[:]
 
 		if name:
 			name = name.lower()
@@ -55,24 +76,86 @@ class DeckEditor:
 								
 		all_decks = decks[:]
 
-		self.player.notify(self.player._("{shown} decks shown, {filtered} decks filtered").format(shown = len(all_decks), filtered = filtered_decks))
+		public_decks = [deck for deck in all_decks if deck.public]
+		all_decks = [deck for deck in all_decks if deck not in public_decks]
 
-		for deck in all_decks:
+		owned_decks = [deck for deck in all_decks if deck.account_id == pl.get_account().id]
+		all_decks = [deck for deck in all_decks if deck not in owned_decks]
 
-			if deck.public:
-				privacy = self.player._("public")
-			else:
-				privacy = self.player._("private")
+		other_decks = all_decks
 
-			banlist_text = self.player._("compatible with no banlist")
+		public_decks = natsort.natsorted(public_decks, key = lambda d: d.account.name + "/" + d.name)
+		owned_decks = natsort.natsorted(owned_decks, key = lambda d: d.name)
+		other_decks = natsort.natsorted(other_decks, key = lambda d: d.account.name + "/" + d.name)
 
-			for b in globals.banlists.values():
-				content = json.loads(deck.content)
-				if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
-					banlist_text = self.player._("compatible with {0} banlist").format(b.name)
-					break
+		if len(public_decks):
 
-			self.player.notify(self.player._("{deckname} ({privacy}) ({banlist})").format(deckname=deck.name, privacy=privacy, banlist=banlist_text))
+			pl.notify(pl._("There are {amount} public decks available:").format(amount = len(public_decks)))
+
+			for deck in public_decks:
+
+				banlist_text = pl._("compatible with no banlist")
+
+				if o_banlist:
+					banlist_text = pl._("compatible with {0} banlist").format(o_banlist.name)
+				else:
+					for b in globals.banlists.values():
+						content = json.loads(deck.content)
+						if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
+							banlist_text = pl._("compatible with {0} banlist").format(b.name)
+							break
+
+				pl.notify(pl._("{deckname} ({banlist})").format(deckname=deck.account.name + "/" + deck.name, banlist=banlist_text))
+
+		if len(owned_decks):
+
+			pl.notify(pl._("You own {amount} decks:").format(amount = len(owned_decks)))
+
+			for deck in owned_decks:
+
+				if deck.public:
+					privacy = pl._("public")
+				else:
+					privacy = pl._("private")
+
+				banlist_text = pl._("compatible with no banlist")
+
+				if o_banlist:
+					banlist_text = pl._("compatible with {0} banlist").format(o_banlist.name)
+				else:
+					for b in globals.banlists.values():
+						content = json.loads(deck.content)
+						if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
+							banlist_text = pl._("compatible with {0} banlist").format(b.name)
+							break
+
+				pl.notify(pl._("{deckname} ({privacy}) ({banlist})").format(deckname=deck.name, privacy=privacy, banlist=banlist_text))
+
+		if len(other_decks):
+
+			pl.notify(pl._("There are {amount} other decks available:").format(amount = len(other_decks)))
+
+			for deck in other_decks:
+
+				if deck.public:
+					privacy = pl._("public")
+				else:
+					privacy = pl._("private")
+
+				banlist_text = pl._("compatible with no banlist")
+
+				if o_banlist:
+					banlist_text = pl._("compatible with {0} banlist").format(o_banlist.name)
+				else:
+					for b in globals.banlists.values():
+						content = json.loads(deck.content)
+						if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
+							banlist_text = pl._("compatible with {0} banlist").format(b.name)
+							break
+
+				pl.notify(pl._("{deckname} ({privacy}) ({banlist})").format(deckname=deck.account.name + "/" + deck.name, privacy=privacy, banlist=banlist_text))
+
+		pl.notify(pl._("{shown} decks shown, {filtered} decks filtered").format(shown = len(public_decks) + len(owned_decks) + len(other_decks), filtered = filtered_decks))
 
 	def clear(self, name):
 		account = self.player.get_account()
@@ -548,54 +631,6 @@ class DeckEditor:
 				else:
 					pl.notify("%d: %s" % (i, card.get_name(pl)))
 				i += 1
-
-	def list_public_decks(self, banlist = ''):
-
-		filtered_decks = 0
-		o_banlist = None
-		pl = self.player
-
-		if isinstance(banlist, str):
-			o_banlist = globals.banlists.get(banlist, None)
-			
-			if not o_banlist:
-				
-				pl.notify(pl._(f"no banlist with name {banlist} found."))
-				return
-
-		session = pl.connection.session
-		
-		decks = list(session.query(models.Deck).filter_by(public = True))
-
-		accs = {}
-		
-		for deck in decks:
-
-			d = json.loads(deck.content)
-			d_name = deck.account.name + "/" + deck.name
-
-			if o_banlist:
-				if len(o_banlist.check(d.get('cards', []) + d.get('side', []))) > 0:
-					filtered_decks += 1
-					continue
-
-			accs[d_name] = d
-
-		accs = OrderedDict(natsort.natsorted(accs.items()))
-
-		pl.notify(pl._("{shown} decks shown, {filtered} decks filtered").format(shown = len(accs), filtered = filtered_decks))
-
-		for acc in accs.keys():
-			d = accs[acc]
-
-			banlist_text = pl._("compatible with no banlist")
-			
-			for b in globals.banlists.values():
-				if len(b.check(d.get('cards', []) + d.get('side', []))) == 0:
-					banlist_text = pl._("compatible with {0} banlist").format(b.name)
-					break
-
-			pl.notify(pl._("{deckname} ({banlist})").format(deckname = acc, banlist = banlist_text))
 
 class URLParseError(Exception):
 	pass
