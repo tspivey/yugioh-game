@@ -11,6 +11,7 @@ from .card import Card
 from . import globals
 from . import models
 from .constants import *
+from .exceptions import BanlistNotFoundError
 from .parsers.deck_editor_parser import DeckEditorParser
 
 class DeckEditor:
@@ -21,7 +22,7 @@ class DeckEditor:
 		self.player = player
 		self.deck_key = 'cards'
 
-	def list_decks(self, selector = DECK.OWNED, name = '', banlist = ''):
+	def get_decks(self, selector = DECK.OWNED, name = '', banlist = ''):
 
 		filtered_decks = 0
 		o_banlist = None
@@ -63,8 +64,7 @@ class DeckEditor:
 			
 			if not o_banlist:
 				
-				pl.notify(pl._(f"no banlist with name {banlist} found."))
-				return
+				raise BanlistNotFoundError()
 
 			for deck in all_decks:
 
@@ -74,15 +74,29 @@ class DeckEditor:
 					decks.remove(deck)
 					filtered_decks += 1
 								
-		all_decks = decks[:]
+		return (decks, filtered_decks, )
 
-		public_decks = [deck for deck in all_decks if deck.public]
-		all_decks = [deck for deck in all_decks if deck not in public_decks]
+	def list_decks(self, selector = DECK.OWNED, name = '', banlist = ''):
 
-		owned_decks = [deck for deck in all_decks if deck.account_id == pl.get_account().id]
-		all_decks = [deck for deck in all_decks if deck not in owned_decks]
+		filtered_decks = 0
+		other_decks = []
+		owned_decks = []
+		pl = self.player
+		public_decks = []
 
-		other_decks = all_decks
+		try:
+			(decks, filtered_decks) = self.get_decks(selector=selector, name=name, banlist=banlist)
+		except BanlistNotFoundError:
+			pl.notify(pl._(f"no banlist with name {banlist} found."))
+			return
+
+		public_decks = [deck for deck in decks if deck.public]
+		decks = [deck for deck in decks if deck not in public_decks]
+
+		owned_decks = [deck for deck in decks if deck.account_id == pl.get_account().id]
+		decks = [deck for deck in decks if deck not in owned_decks]
+
+		other_decks = decks
 
 		public_decks = natsort.natsorted(public_decks, key = lambda d: d.account.name + "/" + d.name)
 		owned_decks = natsort.natsorted(owned_decks, key = lambda d: d.name)
@@ -96,8 +110,8 @@ class DeckEditor:
 
 				banlist_text = pl._("compatible with no banlist")
 
-				if o_banlist:
-					banlist_text = pl._("compatible with {0} banlist").format(o_banlist.name)
+				if banlist:
+					banlist_text = pl._("compatible with {0} banlist").format(banlist)
 				else:
 					for b in globals.banlists.values():
 						content = json.loads(deck.content)
@@ -120,8 +134,8 @@ class DeckEditor:
 
 				banlist_text = pl._("compatible with no banlist")
 
-				if o_banlist:
-					banlist_text = pl._("compatible with {0} banlist").format(o_banlist.name)
+				if banlist:
+					banlist_text = pl._("compatible with {0} banlist").format(banlist)
 				else:
 					for b in globals.banlists.values():
 						content = json.loads(deck.content)
@@ -144,8 +158,8 @@ class DeckEditor:
 
 				banlist_text = pl._("compatible with no banlist")
 
-				if o_banlist:
-					banlist_text = pl._("compatible with {0} banlist").format(o_banlist.name)
+				if banlist:
+					banlist_text = pl._("compatible with {0} banlist").format(banlist)
 				else:
 					for b in globals.banlists.values():
 						content = json.loads(deck.content)
