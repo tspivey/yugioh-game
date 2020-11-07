@@ -59,7 +59,7 @@ def list(caller):
 	if room.open:
 		pl.notify(pl._("teams - show teams and associated players"))
 		if room.duel_count == 0 and not room.started:
-			pl.notify(pl._("deck - select a deck to duel with"))
+			pl.notify(pl._("deck - select a banlist-compatible deck to duel with"))
 			pl.notify(pl._("move - move yourself into a team of your choice"))
 		if room.duel_count > 0 and pl not in room.teams[0] and not room.started:
 			pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
@@ -223,8 +223,8 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
-		pl.deck_editor.list_public_decks()
-		pl.deck_editor.list_decks([])
+		pl.deck_editor.list_public_decks(room.get_banlist())
+		pl.deck_editor.list_decks(banlist = room.get_banlist())
 		return
 
 	name = caller.args[0]

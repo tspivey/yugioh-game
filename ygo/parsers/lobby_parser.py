@@ -48,7 +48,7 @@ def deck(caller):
 	cmd = lst[0]
 	caller.args = lst[1:]
 	if cmd == 'list':
-		caller.connection.player.deck_editor.list_decks(caller.args)
+		caller.connection.player.deck_editor.list_decks(name = caller.args[0] if len(caller.args) > 0 else '')
 		return
 
 	elif cmd == 'publiclist':

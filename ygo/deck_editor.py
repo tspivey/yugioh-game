@@ -20,16 +20,44 @@ class DeckEditor:
 		self.player = player
 		self.deck_key = 'cards'
 
-	def list_decks(self, args):
-		decks = self.player.get_account().decks
-		if args:
-			s = args[0].lower()
-			decks = [deck for deck in decks if s in deck.name.lower()]
-		if not decks:
-			self.player.notify(self.player._("No decks."))
-			return
+	def list_decks(self, name = '', banlist = ''):
+
+		all_decks = self.player.get_account().decks
+		decks = all_decks[:]
+		filtered_decks = 0
+		o_banlist = None
+
 		self.player.notify(self.player._("You own %d decks:")%(len(decks)))
-		for deck in decks:
+
+		if name:
+			name = name.lower()
+
+			decks = [deck for deck in all_decks if name in deck.name.lower()]
+			filtered_decks += len(all_decks) - len(decks)
+
+		all_decks = decks[:]
+
+		if banlist:
+			o_banlist = globals.banlists.get(banlist, None)
+			
+			if not o_banlist:
+				
+				pl.notify(pl._(f"no banlist with name {banlist} found."))
+				return
+
+			for deck in all_decks:
+
+				content = json.loads(deck.content)
+				
+				if len(o_banlist.check(content.get('cards', []) + content.get('side', []))) > 0:
+					decks.remove(deck)
+					filtered_decks += 1
+								
+		all_decks = decks[:]
+
+		self.player.notify(self.player._("{shown} decks shown, {filtered} decks filtered").format(shown = len(all_decks), filtered = filtered_decks))
+
+		for deck in all_decks:
 
 			if deck.public:
 				privacy = self.player._("public")
@@ -521,9 +549,19 @@ class DeckEditor:
 					pl.notify("%d: %s" % (i, card.get_name(pl)))
 				i += 1
 
-	def list_public_decks(self):
+	def list_public_decks(self, banlist = ''):
 
+		filtered_decks = 0
+		o_banlist = None
 		pl = self.player
+
+		if isinstance(banlist, str):
+			o_banlist = globals.banlists.get(banlist, None)
+			
+			if not o_banlist:
+				
+				pl.notify(pl._(f"no banlist with name {banlist} found."))
+				return
 
 		session = pl.connection.session
 		
@@ -532,11 +570,20 @@ class DeckEditor:
 		accs = {}
 		
 		for deck in decks:
-			accs[deck.account.name + "/" + deck.name] = deck
+
+			d = json.loads(deck.content)
+			d_name = deck.account.name + "/" + deck.name
+
+			if o_banlist:
+				if len(o_banlist.check(d.get('cards', []) + d.get('side', []))) > 0:
+					filtered_decks += 1
+					continue
+
+			accs[d_name] = d
 
 		accs = OrderedDict(natsort.natsorted(accs.items()))
 
-		pl.notify(pl._("{0} public decks available:").format(len(decks)))
+		pl.notify(pl._("{shown} decks shown, {filtered} decks filtered").format(shown = len(accs), filtered = filtered_decks))
 
 		for acc in accs.keys():
 			d = accs[acc]
@@ -544,9 +591,7 @@ class DeckEditor:
 			banlist_text = pl._("compatible with no banlist")
 			
 			for b in globals.banlists.values():
-				content = json.loads(d.content)
-
-				if len(b.check(content.get('cards', []) + content.get('side', []))) == 0:
+				if len(b.check(d.get('cards', []) + d.get('side', []))) == 0:
 					banlist_text = pl._("compatible with {0} banlist").format(b.name)
 					break
 
