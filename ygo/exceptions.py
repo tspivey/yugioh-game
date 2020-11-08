@@ -1,3 +1,6 @@
+class BanlistNotFoundError(Exception):
+	pass
+
 class CardNotFoundError(Exception):
 	pass
 

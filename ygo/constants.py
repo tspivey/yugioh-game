@@ -172,3 +172,11 @@ class INFORM(Flag):
 	NON_PLAYERS = TAG_PLAYERS | WATCHERS
 	ALL = ALL_PLAYERS | WATCHERS
 	OTHER = ALL ^ PLAYER
+
+@unique
+class DECK(Flag):
+	OWNED = auto()
+	OTHER = auto()
+	PUBLIC = auto()
+	ALL = OWNED | OTHER  # should only be used for admins
+	VISIBLE = OWNED | PUBLIC  # default scope for players

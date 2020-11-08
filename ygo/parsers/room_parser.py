@@ -3,8 +3,9 @@ import json
 import random
 
 from ..card import Card
-from ..constants import COMMAND_SUBSTITUTIONS, RE_NICKNAME, __
+from ..constants import COMMAND_SUBSTITUTIONS, DECK, RE_NICKNAME, __
 from ..duel import Duel
+from ..exceptions import BanlistNotFoundError
 from .. import globals
 from .. import models
 from .. import parser
@@ -59,8 +60,9 @@ def list(caller):
 	if room.open:
 		pl.notify(pl._("teams - show teams and associated players"))
 		if room.duel_count == 0 and not room.started:
-			pl.notify(pl._("deck - select a deck to duel with"))
+			pl.notify(pl._("deck - select a banlist-compatible deck to duel with"))
 			pl.notify(pl._("move - move yourself into a team of your choice"))
+			pl.notify(pl._("random - select a banlist-compatible deck to duel with at random"))
 		if room.duel_count > 0 and pl not in room.teams[0] and not room.started:
 			pl.notify(pl._("exchange [<maindeck> <sidedeck>] - exchange cards between main deck and side deck"))
 			pl.notify(pl._("lock - lock/unlock a room so that the duel cannot be started"))
@@ -223,8 +225,7 @@ def deck(caller):
 	room = pl.room
 
 	if len(caller.args) == 0:
-		pl.deck_editor.list_public_decks()
-		pl.deck_editor.list_decks([])
+		pl.deck_editor.list_decks(selector = DECK.PUBLIC | DECK.OWNED, banlist = room.get_banlist())
 		return
 
 	name = caller.args[0]
@@ -638,3 +639,82 @@ def scoop(caller):
 		room.restore(p, already_in_room = True)
 
 	room.process()
+
+@RoomParser.command(names=['random'], args_regexp=r'(.+)', allowed = lambda c: c.connection.player.room.open and not c.connection.player.room.started and c.connection.player.room.duel_count == 0)
+def cmd_random(caller):
+
+	pl = caller.connection.player
+	room = pl.room
+
+	if len(caller.args) == 0:
+		pl.notify(pl._("You can either use random public to select a random public deck, random private to randomly select one of your private decks or random all to select a deck from both distinct lists."))
+		return
+
+	cmd = caller.args[0].lower()
+	selector = 0
+
+	if cmd == "all":
+		selector = DECK.VISIBLE
+	elif cmd == "public":
+		selector = DECK.PUBLIC
+	elif cmd == "private":
+		selector = DECK.OWNED
+	else:
+		pl.notify(pl._("You need to select a random deck from either all, private or public decks."))
+		return
+
+	try:
+		(decks, filtered) = pl.deck_editor.get_decks(selector = selector, banlist = room.get_banlist())
+	except BanlistNotFoundError:
+		pl.notify(pl._("no banlist with name {banlist} found.").format(banlist = room.get_banlist()))
+
+	if len(decks) == 0:
+		pl.notify(pl._("no decks found to choose from."))
+		return
+
+	deck = random.choice(decks)
+
+	content = json.loads(deck.content)
+
+	# we parsed the deck now we execute several checks
+
+	# we filter all invalid cards first
+	found = False
+
+	invalid_cards = pl.get_invalid_cards_in_deck(content.get('cards', []))
+
+	if invalid_cards:
+		content['cards'] = [c for c in content['cards'] if c not in invalid_cards]
+		found = True
+
+	invalid_cards = pl.get_invalid_cards_in_deck(content.get('side', []))
+
+	if invalid_cards:
+		content['side'] = [c for c in content['side'] if c not in invalid_cards]
+		found = True
+
+	if found:
+		pl.notify(pl._("Invalid cards were removed from this deck. This usually occurs after the server loading a new database which doesn't know those cards anymore."))
+
+	# we check card limits first
+	main, extra = pl.count_deck_cards(content['cards'])
+	if main < 40 or main > 60:
+		pl.notify(pl._("Your main deck must contain between 40 and 60 cards (currently %d).") % main)
+		return
+
+	if extra > 15:
+		pl.notify(pl._("Your extra deck may not contain more than 15 cards (currently %d).")%extra)
+		return
+
+	if len(content.get('side', [])) > 15:
+		pl.notify(pl._("Your side deck may not contain more than 15 cards (currently %d).")%len(content.get('side', [])))
+		return
+
+	pl.deck = content
+
+	pl.notify(pl._("Randomly selected deck {deckname}").format(deckname = deck.name if pl.get_account().id == deck.account_id else deck.account.name + "/" + deck.name))
+	pl.notify(pl._("Deck loaded with %d cards.") % len(content['cards']))
+
+	for p in room.get_all_players():
+		if p is not pl:
+			p.notify(p._("%s loaded a deck.")%(pl.nickname))
