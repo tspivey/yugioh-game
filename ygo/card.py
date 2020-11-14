@@ -111,7 +111,14 @@ class Card(object):
 			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
 		elif self.type & TYPE.LINK:
 			lst.append(pl._("Link Markers: %s")%(self.get_link_markers(pl)))
+
+		if pl.soundpack:
+			lst.append("### card_text_follows")
+
 		lst.append(self.get_desc(pl))
+
+		if pl.soundpack:
+			lst.append("### card_text_finished")
 
 		try:
 
