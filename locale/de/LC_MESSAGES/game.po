@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-11-07 21:26+0100\n"
+"POT-Creation-Date: 2020-11-17 15:25+0100\n"
 "PO-Revision-Date: 2017-08-29 10:25-0700\n"
 "Last-Translator: \n"
 "Language: de\n"
@@ -54,62 +54,74 @@ msgstr "Entfernte Karten (nicht mehr auf der Bannliste):"
 msgid "Activate this card."
 msgstr "Aktiviere diese Karte."
 
-#: ygo/card.py:105
+#: ygo/card.py:106
 #, python-format
 msgid "Attack: %d Link rating: %d"
 msgstr "Angriff: %d Linkzahl: %d"
 
-#: ygo/card.py:107
+#: ygo/card.py:108
 #, python-format
 msgid "Attack: %d Defense: %d Rank: %d"
 msgstr "Angriff: %d Verteidigung: %d Rang: %d"
 
-#: ygo/card.py:109
+#: ygo/card.py:110
 #, python-format
 msgid "Attack: %d Defense: %d Level: %d"
 msgstr "Angriff: %d Verteidigung: %d Stufe: %d"
 
-#: ygo/card.py:111 ygo/duel.py:557
+#: ygo/card.py:112 ygo/duel.py:557
 #, python-format
 msgid "Pendulum scale: %d/%d"
 msgstr "Pendelbereich: %d/%d"
 
-#: ygo/card.py:113
+#: ygo/card.py:114
 #, python-format
 msgid "Link Markers: %s"
 msgstr "Linkpfeile: %s"
 
-#: ygo/card.py:122
+#: ygo/card.py:116
+msgid "Set: {set}"
+msgstr "Set: {set}"
+
+#: ygo/card.py:132
 msgid "attached xyz materials:"
 msgstr "Angehängte XYZ-Materialien:"
 
-#: ygo/card.py:129
+#: ygo/card.py:139
 msgid "no xyz materials attached"
 msgstr "Keine XYZ-Materialien angehängt."
 
-#: ygo/card.py:139
+#: ygo/card.py:149
 msgid "face-up attack"
 msgstr "Offener Angriff"
 
-#: ygo/card.py:141
+#: ygo/card.py:151
 msgid "face-down attack"
 msgstr "Verdeckter Angriff"
 
-#: ygo/card.py:143
-msgid "face-up defense"
-msgstr "Offene Verteidigung"
-
-#: ygo/card.py:145
+#: ygo/card.py:154 ygo/card.py:157
 msgid "face-up"
 msgstr "offen"
 
-#: ygo/card.py:147
+#: ygo/card.py:155
+msgid "face-up defense"
+msgstr "Offene Verteidigung"
+
+#: ygo/card.py:160 ygo/card.py:163
+msgid "face down"
+msgstr "Verdeckt"
+
+#: ygo/card.py:161
 msgid "face-down defense"
 msgstr "Verdeckte Verteidigung"
 
-#: ygo/card.py:149
-msgid "face down"
-msgstr "Verdeckt"
+#: ygo/card.py:201
+msgid "unknown"
+msgstr "unbekannt"
+
+#: ygo/card.py:205
+msgid "no set"
+msgstr "kein Set"
 
 #: ygo/channel.py:82
 msgid "You currently don't receive messages from this channel, so you may not see the history."
@@ -697,7 +709,7 @@ msgstr "Standardregeln"
 
 #: ygo/parsers/room_parser.py:215 ygo/room.py:161
 msgid "MR 5"
-msgstr ""
+msgstr "MR 5"
 
 #: ygo/room.py:165
 #, python-format
@@ -952,12 +964,12 @@ msgstr "Schadensberechnung"
 msgid "{spec} ({name}) selected {value}."
 msgstr "Für {spec} ({name}) wurde {value} gewählt."
 
-#: ygo/message_handlers/chaining.py:35 ygo/message_handlers/move.py:132
+#: ygo/message_handlers/chaining.py:35 ygo/message_handlers/move.py:129
 msgid "Activating {0} ({1})"
 msgstr "Aktiviere {0} ({1})"
 
 #: ygo/message_handlers/chaining.py:36 ygo/message_handlers/chaining.py:44
-#: ygo/message_handlers/move.py:137
+#: ygo/message_handlers/move.py:131
 msgid "{0} activating {1} ({2})"
 msgstr "{0} aktiviert {1} ({2})"
 
@@ -1202,22 +1214,11 @@ msgstr "Deine Karte {spec} ({name}) wurde in Dein Extradeck gelegt."
 msgid "{plname}'s card {spec} ({name}) returned to their extra deck."
 msgstr "{plname}s Karte {spec} ({name}) wurde in sein Extradeck gelegt."
 
-#: ygo/message_handlers/move.py:130 ygo/message_handlers/set.py:18
-#, python-format
-msgid "You set %s (%s) in %s position."
-msgstr "Du setzt %s (%s) in %s Position."
-
-#: ygo/message_handlers/move.py:135 ygo/message_handlers/set.py:21
-#: ygo/message_handlers/set.py:24
-#, python-format
-msgid "%s sets %s in %s position."
-msgstr "%s setzt %s in %s Position."
-
-#: ygo/message_handlers/move.py:149
+#: ygo/message_handlers/move.py:143
 msgid "your card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material"
 msgstr "Deine Karte {spec} ({name}) wurde als XYZ-Material an {targetspec} ({targetname}) angehängt."
 
-#: ygo/message_handlers/move.py:150
+#: ygo/message_handlers/move.py:144
 msgid "{plname}'s card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material"
 msgstr "{plname}s Karte {spec} ({name}) wurde als XYZ-Material an {targetspec} ({targetname}) angehängt."
 
@@ -1467,6 +1468,16 @@ msgstr "ausgewählt"
 #: ygo/message_handlers/select_unselect_card.py:67
 msgid "Number not in range"
 msgstr "Eine Karte mit dieser Nummer gibt es nicht"
+
+#: ygo/message_handlers/set.py:18
+#, python-format
+msgid "You set %s (%s) in %s position."
+msgstr "Du setzt %s (%s) in %s Position."
+
+#: ygo/message_handlers/set.py:21 ygo/message_handlers/set.py:24
+#, python-format
+msgid "%s sets %s in %s position."
+msgstr "%s setzt %s in %s Position."
 
 #: ygo/message_handlers/shuffle.py:11
 msgid "you shuffled your deck."
