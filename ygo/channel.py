@@ -1,12 +1,13 @@
 from babel.dates import format_time
 from collections import deque
 import datetime
-import re
 
 NO_SEND_CHECK = 0x1
 NO_ESCAPE = 0x2
 
 class Channel:
+
+	_unformatter = str.maketrans({'{': '{{', '}': '}}'})
 	# buffer_size: amount of messages stored for history
 	# flags: possible values
 	#   NO_SEND_CHECK - don't check if player is a recipient of this channel when
@@ -57,7 +58,7 @@ class Channel:
 			return
 
 		if not self.flags & NO_ESCAPE:
-			message = re.sub(r"([{}]+)", r"\1\1", message)
+			message = message.translate(self._unformatter)
 
 		success = 0
 		
