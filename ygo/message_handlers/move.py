@@ -88,7 +88,7 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("You tribute {spec} ({name}).").format(spec=plspec, name=card.get_name(p))),
 			(INFORM.OTHER, lambda p: p._("{plname} tributes {spec} ({name}).").format(plname=pl.nickname, spec=getspec(p), name=getvisiblename(p))),
 		)
-	elif card.location == LOCATION.OVERLAY | LOCATION.MZONE and cnew.location & LOCATION.ONFIELD:
+	elif card.location == LOCATION.OVERLAY | LOCATION.MZONE and cnew.location & LOCATION.GRAVE:
 		self.inform(
 			pl,
 			(INFORM.PLAYER, lambda p: p._("you detached %s.")%(card.get_name(p))),
