@@ -139,9 +139,12 @@ class Server(gsb.Server):
 			return
 
 		if globals.rebooting:
-			for pl in self.get_all_players():
-				pl.notify(pl._("Rebooting."))
-			reactor.callLater(0.2, reactor.stop)
+			self.reboot()
+
+	def reboot(self):
+		for pl in self.get_all_players():
+			pl.notify(pl._("Rebooting."))
+		reactor.callLater(0.2, reactor.stop)
 
 	@property
 	def all_cards(self):

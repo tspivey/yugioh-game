@@ -48,12 +48,12 @@ def deck(caller):
 	cmd = lst[0]
 	caller.args = lst[1:]
 	if cmd == 'list':
-		caller.connection.player.deck_editor.list_decks(selector = DECK.OWNED, name = caller.args[0] if len(caller.args) > 0 else '')
+		caller.connection.player.deck_editor.list_decks(caller.args)
 		return
 
 	elif cmd == 'publiclist':
 
-		caller.connection.player.deck_editor.list_decks(selector = DECK.PUBLIC)
+		caller.connection.player.deck_editor.list_public_decks()
 		return
 
 	if len(caller.args) == 0:
@@ -536,10 +536,20 @@ def challenge(caller):
 	else:
 		con.notify(con._("Challenge off."))
 
-@LobbyParser.command(allowed=lambda c: c.connection.player.is_admin)
+@LobbyParser.command(args_regexp=r'(.*)', allowed=lambda c: c.connection.player.is_admin)
 def reboot(caller):
-	globals.rebooting = True
-	globals.server.check_reboot()
+	if caller.args[0] == "force":
+		return globals.server.reboot()
+	globals.rebooting = not globals.rebooting
+	if globals.rebooting:
+		for pl in globals.server.get_all_players():
+			if pl.is_admin:
+				pl.notify("Reboot started.")
+		globals.server.check_reboot()
+	else:
+		for pl in globals.server.get_all_players():
+			if pl.is_admin:
+				pl.notify("Reboot canceled.")
 
 @LobbyParser.command(args_regexp=r'(.*)')
 def echo(caller):
