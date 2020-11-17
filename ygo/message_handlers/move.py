@@ -118,7 +118,7 @@ def move(self, code, location, newloc, reason):
 			(INFORM.PLAYER, lambda p: p._("your card {spec} ({name}) returned to your extra deck.").format(spec=plspec, name=card.get_name(pl))),
 			(INFORM.OTHER, lambda p: p._("{plname}'s card {spec} ({name}) returned to their extra deck.").format(plname=pl.nickname, spec=getspec(p), name=card.get_name(p))),
 		)
-	elif card.location == LOCATION.DECK and cnew.location == LOCATION.SZONE:
+	elif card.location == LOCATION.DECK and cnew.location == LOCATION.SZONE and cnew.position != POSITION.FACEDOWN:
 		def fn(p):
 			if p.soundpack and cnew.type & TYPE.SPELL:
 				p.notify("### activate_spell")
@@ -126,15 +126,9 @@ def move(self, code, location, newloc, reason):
 				p.notify("### activate_trap")
 
 			if p is pl:
-				if cnew.position & POSITION.FACEDOWN:
-					return p._("You set %s (%s) in %s position.")%(cnew.get_spec(p), cnew.get_name(p), cnew.get_position(p))
-				else:
-					return p._("Activating {0} ({1})").format(cnew.get_spec(p), cnew.get_name(p))
+				return p._("Activating {0} ({1})").format(cnew.get_spec(p), cnew.get_name(p))
 			else:
-				if cnew.position & POSITION.FACEDOWN:
-					return p._("%s sets %s in %s position.")%(pl.nickname, cnew.get_spec(p), cnew.get_position(p))
-				else:
-					return p._("{0} activating {1} ({2})").format(pl.nickname, cnew.get_spec(p), cnew.get_name(p))
+				return p._("{0} activating {1} ({2})").format(pl.nickname, cnew.get_spec(p), cnew.get_name(p))
 				
 		self.inform(
 			pl,
