@@ -135,22 +135,26 @@ class Card(object):
 
 					lst.append(pl._("no xyz materials attached"))
 
-
 		except AttributeError:
 			pass
 
 		return "\n".join(lst)
 
 	def get_position(self, pl):
+
 		if self.position == POSITION.FACEUP_ATTACK:
 			return pl._("face-up attack")
 		elif self.position == POSITION.FACEDOWN_ATTACK:
 			return pl._("face-down attack")
 		elif self.position == POSITION.FACEUP_DEFENSE:
+			if self.location & LOCATION.EXTRA:
+				return pl._("face-up")
 			return pl._("face-up defense")
 		elif self.position == POSITION.FACEUP:
 			return pl._("face-up")
 		elif self.position == POSITION.FACEDOWN_DEFENSE:
+			if self.location & LOCATION.EXTRA:
+				return pl._("face down")
 			return pl._("face-down defense")
 		elif self.position == POSITION.FACEDOWN:
 			return pl._("face down")
