@@ -195,11 +195,14 @@ class Card(object):
 	def get_set(self, pl):
 
 		def _get_text(i):
-			text = pl.strings['setname'].get(i, '')
+			try:
+				text = pl.strings['setname'].get(i, '')
 
-			if not text:
+				if not text:
+					return pl._('unknown')
+				return text
+			except KeyError:
 				return pl._('unknown')
-			return text
 		
 		if not self.setcode:
 			return pl._("no set")
