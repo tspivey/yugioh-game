@@ -86,6 +86,7 @@ class Card(object):
 		return s
 
 	def get_info(self, pl):
+
 		lst = []
 		types = []
 		t = str(self.type.value)
@@ -111,6 +112,8 @@ class Card(object):
 			lst.append(pl._("Pendulum scale: %d/%d") % (self.lscale, self.rscale))
 		elif self.type & TYPE.LINK:
 			lst.append(pl._("Link Markers: %s")%(self.get_link_markers(pl)))
+
+		lst.append(pl._("Set: {set}").format(set = self.get_set(pl)))
 
 		if pl.soundpack:
 			lst.append("### card_text_follows")
@@ -188,6 +191,37 @@ class Card(object):
 				lst.append(pl._(LINK_MARKERS[m]))
 
 		return ', '.join(lst)
+
+	def get_set(self, pl):
+
+		def _get_text(i):
+			text = pl.strings['setname'].get(i, '')
+
+			if not text:
+				return pl._('unknown')
+			return text
+		
+		if not self.setcode:
+			return pl._("no set")
+		
+		set1 = self.setcode & 0xffff
+		set2 = (self.setcode & 0xffff0000) >> 16
+
+		desc = []
+		
+		if set:
+			if set1 & 0xff:
+				desc.append(_get_text(set1 & 0xff))
+			if set1 & 0xff00:
+				desc.append(_get_text(set1))
+
+		if set2:
+			if set2 & 0xff:
+				desc.append(_get_text(set2 & 0xff))
+			if set2 & 0xff00:
+				desc.append(_get_text(set2))
+
+		return ', '.join(desc)
 
 	@property
 	def extra(self):
