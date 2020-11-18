@@ -48,12 +48,11 @@ def deck(caller):
 	cmd = lst[0]
 	caller.args = lst[1:]
 	if cmd == 'list':
-		caller.connection.player.deck_editor.list_decks(caller.args)
+		caller.connection.player.deck_editor.list_decks(selector = DECK.OWNED, name = caller.args[0] if len(caller.args) > 0 else '')
 		return
 
 	elif cmd == 'publiclist':
-
-		caller.connection.player.deck_editor.list_public_decks()
+		caller.connection.player.deck_editor.list_decks(selector = DECK.PUBLIC)
 		return
 
 	if len(caller.args) == 0:
