@@ -379,6 +379,7 @@ class DeckEditor:
 
 		else:
 			con.notify(con._("Creating new deck %s.") % deck_name)
+			con.player.deck = {'cards': [], 'side': []}
 		self.deck_name = deck_name
 		con.parser.prompt(con)
 	
