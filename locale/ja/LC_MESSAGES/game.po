@@ -1436,7 +1436,7 @@ msgstr "選択された値が %d と一致しません。"
 #: ygo/message_handlers/select_unselect_card.py:39
 #, python-format
 msgid "Check or uncheck %d to %d cards by entering their number"
-msgstr "数値を入力して、カードにチェックを付けてください。"
+msgstr "数値を入力して、%d枚から%d枚のカードにチェックを付けてください。"
 
 #: ygo/message_handlers/select_unselect_card.py:41
 msgid "Enter c to cancel"
@@ -1667,7 +1667,7 @@ msgstr "%s がデュエルを棄権しました。"
 
 #: ygo/parsers/duel_parser.py:130
 msgid "{player1} scooped against {player2}."
-msgstr "{1} が {2} とのデュエルを棄権しました。"
+msgstr "{player1} が {player2} とのデュエルを棄権しました。"
 
 #: ygo/parsers/duel_parser.py:138
 msgid "You can type 'room' if you want to see more information about the duel settings."
