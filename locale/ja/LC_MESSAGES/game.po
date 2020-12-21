@@ -489,7 +489,7 @@ msgstr "%s に装備しました。"
 #: ygo/duel.py:577
 #, python-format
 msgid "Zone linked by %s (%s): %s"
-msgstr "ゾーンが %s によってリンクされました (%s): %s"
+msgstr "%s (%s) によるリンク状態のゾーン : %s"
 
 #: ygo/duel.py:582
 msgid "No cards."
@@ -708,7 +708,7 @@ msgstr "公開設定: %s"
 
 #: ygo/parsers/room_parser.py:535 ygo/room.py:170
 msgid "Match mode enabled."
-msgstr "マッチモードが有効になりました。"
+msgstr "マッチモード有効。"
 
 #: ygo/room.py:172
 msgid "Team 1 score: {0}"
@@ -720,7 +720,7 @@ msgstr "チーム2のスコア: {0}"
 
 #: ygo/parsers/room_parser.py:537 ygo/room.py:175
 msgid "Match mode disabled."
-msgstr "マッチモードをが無効化されました。"
+msgstr "マッチモード無効。"
 
 #: ygo/room.py:195
 msgid "The duel between {player1} and {player2} has begun!"
@@ -794,7 +794,7 @@ msgstr "%s の発言: %s"
 #: ygo/channels/tag.py:7
 #, python-format
 msgid "%s tags: %s"
-msgstr "%s のタグ付け: %s"
+msgstr "%s からタッグ: %s"
 
 #: ygo/channels/tell.py:11 ygo/channels/tell.py:17
 #, python-format
@@ -1205,11 +1205,11 @@ msgstr "%s は %s を %s表示でセット。"
 
 #: ygo/message_handlers/move.py:149
 msgid "your card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material"
-msgstr "自分のカード {spec} ({name}) がエクシーズ素材として {targetspec} ({targetname}) にアタッチされました。"
+msgstr "自分のカード {spec} ({name}) が {targetspec} ({targetname}) のエクシーズ素材になりました。"
 
 #: ygo/message_handlers/move.py:150
 msgid "{plname}'s card {spec} ({name}) was attached to {targetspec} ({targetname}) as XYZ material"
-msgstr "{plname}のカード {spec} ({name}) ががエクシーズ素材として {targetspec} ({targetname}) にアタッチされました。"
+msgstr "{plname}のカード {spec} ({name}) が {targetspec} ({targetname}) のエクシーズ素材になりました。"
 
 #: ygo/message_handlers/new_turn.py:8
 msgid "Your turn."
@@ -1290,19 +1290,19 @@ msgstr "対戦相手を待っています。"
 
 #: ygo/message_handlers/select_chain.py:55
 msgid "Select chain:"
-msgstr "チェインを選んでください: "
+msgstr "チェーンを選んでください: "
 
 #: ygo/message_handlers/select_chain.py:57
 msgid "Select chain (c to cancel):"
-msgstr "チェインを選んでください(cで取り消し)。"
+msgstr "チェーンを選んでください(cで取り消し)。"
 
 #: ygo/message_handlers/select_chain.py:64
 msgid "Select card to chain:"
-msgstr "チェインするカードを選んでください。"
+msgstr "チェーンするカードを選んでください。"
 
 #: ygo/message_handlers/select_chain.py:66
 msgid "Select card to chain (c = cancel):"
-msgstr "チェインするカードを選んでください(cでキャンセル): "
+msgstr "チェーンするカードを選んでください(cでキャンセル): "
 
 #: ygo/message_handlers/select_chain.py:80
 msgid "Invalid spec."
@@ -2058,7 +2058,7 @@ msgstr "%s のフィンガーレポート:"
 #: ygo/parsers/lobby_parser.py:677
 #, python-format
 msgid "Created on %s"
-msgstr "%s のうえに作成しました。"
+msgstr "%s に登録。"
 
 #: ygo/parsers/lobby_parser.py:680
 msgid "Currently logged in"
@@ -2081,12 +2081,12 @@ msgstr "%s - 勝利: %d, 敗北: %d, 引き分け: %d, 降伏: %d"
 #: ygo/parsers/lobby_parser.py:702
 #, python-format
 msgid "Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d"
-msgstr "結論 - 勝利: %d, 敗北: %d, 引き分け: %d, 降伏: %d"
+msgstr "総括 - 勝利: %d, 敗北: %d, 引き分け: %d, 降伏: %d"
 
 #: ygo/parsers/lobby_parser.py:707
 #, python-format
 msgid "%.2f%% Success."
-msgstr "%.2f%% 成功率。"
+msgstr "勝率 %.2f%%。"
 
 #: ygo/parsers/lobby_parser.py:711
 msgid "Reloading languages..."
