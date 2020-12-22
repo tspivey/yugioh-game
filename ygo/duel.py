@@ -290,7 +290,7 @@ class Duel(Joinable):
 	@handle_error
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY.CODE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.ATTACK | QUERY.DEFENSE | QUERY.EQUIP_CARD | QUERY.OVERLAY_CARD | QUERY.COUNTERS | QUERY.LINK
+		flags = QUERY.CODE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.ATTACK | QUERY.DEFENSE | QUERY.EQUIP_CARD | QUERY.OVERLAY_CARD | QUERY.COUNTERS | QUERY.LSCALE | QUERY.RSCALE | QUERY.LINK
 		bl = lib.query_field_card(self.duel, player, location.value, flags.value, ffi.cast('byte *', self.buf), False)
 		buf = io.BytesIO(ffi.unpack(self.buf, bl))
 		while True:
@@ -335,6 +335,9 @@ class Duel(Joinable):
 			for i in range(cs):
 				card.counters.append(self.read_u32(buf))
 
+			card.lscale = self.read_u32(buf)
+			card.rscale = self.read_u32(buf)
+
 			link = self.read_u32(buf)
 			link_marker = self.read_u32(buf)
 
@@ -349,7 +352,7 @@ class Duel(Joinable):
 
 	@handle_error
 	def get_card(self, player, loc, seq):
-		flags = QUERY.CODE | QUERY.ATTACK | QUERY.DEFENSE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.LINK
+		flags = QUERY.CODE | QUERY.ATTACK | QUERY.DEFENSE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.LSCALE | QUERY.RSCALE | QUERY.LINK
 		bl = lib.query_card(self.duel, player, loc.value, seq, flags.value, ffi.cast('byte *', self.buf), False)
 		if bl == 0:
 			return
@@ -370,6 +373,8 @@ class Duel(Joinable):
 			card.level = rank & 0xff
 		card.attack = self.read_u32(buf)
 		card.defense = self.read_u32(buf)
+		card.lscale = self.read_u32(buf)
+		card.rscale = self.read_u32(buf)
 		link = self.read_u32(buf)
 		link_marker = self.read_u32(buf)
 		if (link & 0xff) > 0:
