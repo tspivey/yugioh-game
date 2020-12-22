@@ -21,6 +21,7 @@ class Player(Invitable):
 		self.deck = {'cards': [], 'side': []}
 		self.deck_editor = DeckEditor(self)
 		self.duel = None
+		self.cancel_request = False
 		self.locked = False
 		self.ignores = set()
 		self.is_admin = False

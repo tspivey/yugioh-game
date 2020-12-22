@@ -207,6 +207,9 @@ class Room(Joinable):
 				self.say.remove_recipient(p)
 				p.room = None
 
+			for p in self.get_all_players():
+				p.cancel_request = False
+
 		else:
 			self.started = False
 			for p in self.get_all_players():
@@ -272,18 +275,24 @@ class Room(Joinable):
 		if self.disbandable:
 			self.inform(announce)
 
-	def announce_giveup(self, pl):
+	def announce_cancel(self):
 
 		if self.private:
 			return
 
-		duel = pl.duel
+		duel = self.get_all_players()[0].duel
 
 		if self.tag is True:
-			op = "team "+duel.players[1 - pl.duel_player].nickname+", "+duel.tag_players[1 - pl.duel_player].nickname
+			pl = "team "+duel.players[0].nickname+", "+duel.tag_players[0].nickname
+			op = "team "+duel.players[1].nickname+", "+duel.tag_players[1].nickname
 		else:
-			op = duel.players[1 - pl.duel_player].nickname
-		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = pl.nickname, player2 = op)
+			pl = duel.players[0].nickname
+			op = duel.players[1].nickname
+
+		if self.match:
+			globals.server.challenge.send_message(None, __("{player1} and {player2} decided to cancel the match."), player1 = pl, player2 = op)
+		else:
+			globals.server.challenge.send_message(None, __("{player1} and {player2} decided to cancel the duel."), player1 = pl, player2 = op)
 
 	# informs players globally and handles statistics
 	def inform(self, announce = True):

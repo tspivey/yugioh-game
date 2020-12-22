@@ -11,7 +11,7 @@ m1-m5 for your monster zones, s1-s5 for your spell/trap zones, s6 for your field
 ATTENTION: all the above references are valid for pre-link rules only and might change when playing in link format.
 All those locations can be prefixed with o to target at your opponents cards.
 showhand - shows all other players and watchers your hand (useful for newbies).
-giveup - end the current duel/match, but don't count a win/loss. The opponent will need to accept though.
+cancel - end the current duel/match, but don't count a win/loss. The opponent will need to accept though.
 scoop - end the current duel, but your opponent wins and you lose. Matches will possibly continue.
 
 invite - invites a player to watch this duel (even if the duel is private)

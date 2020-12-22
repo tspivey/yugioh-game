@@ -11,7 +11,7 @@ m1-m5 für Deine Monsterzonen, s1-s5 für Deine Zauber/Fallenkartenzonen, s6 fü
 ACHTUNG: alle diese Angaben beziehen sich auf die Duellregelungen vor den Linkregeln.
 Alle diese Positionen können mit o (om1-om5 etc) ausgeführt werden, um sich auf das gegnerische Feld zu beziehen.
 showhand - zeigt allen Spielern und Zuschauern Deine hand (bei Anfängern nützlich)
-giveup - beendet das Duell/Match, verzeichnet aber keine(n) Sieg/Niederlage. Der Gegner wird um seine Zustimmung gebeten.
+cancel - beendet das Duell/Match, verzeichnet aber keine(n) Sieg/Niederlage. Der Gegner wird um seine Zustimmung gebeten.
 scoop - beendet das Duell, gesteht dem Gegner allerdings einen Sieg ein. Matches werden bei Bedarf fortgesetzt.
 
 invite - lädt einen Spieler als Zuschauer ein (auch, wenn das Duell privat ist)
