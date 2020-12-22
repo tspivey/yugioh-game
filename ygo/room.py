@@ -285,11 +285,6 @@ class Room(Joinable):
 			op = duel.players[1 - pl.duel_player].nickname
 		globals.server.challenge.send_message(None, __("{player1} has cowardly submitted to {player2}."), player1 = pl.nickname, player2 = op)
 
-		for p1 in self.teams[1]:
-			for p2 in self.teams[2]:
-				p1.giveup_against(p2)
-				p2.giveup_against(p1)
-
 	# informs players globally and handles statistics
 	def inform(self, announce = True):
 		if self.points[0] == self.points[1]:
