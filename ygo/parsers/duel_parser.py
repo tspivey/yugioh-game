@@ -88,23 +88,54 @@ def show_watchers(caller):
 def info(caller):
 	caller.connection.player.duel.show_info_cmd(caller.connection.player, caller.args[0])
 
-@DuelParser.command(names=['giveup'], allowed = lambda c: c.connection.player.watching is False)
-def giveup(caller):
+@DuelParser.command(names=['cancel'], allowed = lambda c: c.connection.player.watching is False)
+def cancel(caller):
 
 	duel = caller.connection.player.duel
 
-	for pl in duel.players+duel.watchers:
-		if duel.room.match:
-			pl.notify(pl._("%s has ended the match.")%(caller.connection.player.nickname))
-		else:
-			pl.notify(pl._("%s has ended the duel.")%(caller.connection.player.nickname))
+	pl = caller.connection.player
+	op = duel.players[1 - pl.duel_player]
 
-	duel.room.announce_giveup(caller.connection.player)
+	if pl.cancel_request:
+		pl.notify(pl._("You already asked to cancel the duel. Wait for your opponent to accept your request."))
+		return
 
-	duel.end()
+	pl.cancel_request = True
+	
+	try:
+		duel.tag_players[pl.duel_player].cancel_request = True
+	except IndexError:
+		pass
 
-	if caller.connection.player.room:
-		caller.connection.player.room.leave(caller.connection.player)
+	if op.cancel_request or (len(duel.tag_players) > pl.duel_player and duel.tag_players[pl.duel_player].cancel_request):
+
+		duel.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("You accepted the request to cancel the duel.")),
+			(INFORM.OTHER, lambda p: p._("%s accepted the request to cancel the duel.")%(pl.nickname))
+		)
+
+		for p in duel.players+duel.watchers:
+			if duel.room.match:
+				p.notify(p._("The match was canceled."))
+			else:
+				p.notify(p._("The duel was canceled."))
+
+		duel.room.announce_cancel()
+
+		duel.end()
+
+		if pl.room:
+			pl.room.leave(pl.room.creator)
+	else:
+
+		duel.inform(
+			pl,
+			(INFORM.PLAYER, lambda p: p._("You announced that you want to cancel this duel and are now waiting for your opponent to accept.")),
+			(INFORM.OTHER, lambda p: p._("%s announced that they want to cancel the duel.")%(pl.nickname))
+		)
+
+		op.notify(op._("Type cancel to accept the request."))
 
 @DuelParser.command(names=['scoop'], allowed = lambda c: c.connection.player.watching is False)
 def scoop(caller):

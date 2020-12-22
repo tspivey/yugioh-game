@@ -701,14 +701,13 @@ def finger(caller):
 
 	for stat in stats:
 
-		pl.notify(pl._("%s - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(stat.opponent.name, stat.win, stat.lose, stat.draw, stat.giveup))
+		pl.notify(pl._("%s - Won: %d, Lost: %d, Drawn: %d")%(stat.opponent.name, stat.win, stat.lose, stat.draw))
 
 	won = sum([s.win for s in stats])
 	lost = sum([s.lose for s in stats])
 	drawn = sum([s.draw for s in stats])
-	surrendered = sum([s.giveup for s in stats])
 
-	pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d, Surrendered: %d")%(won, lost, drawn, surrendered))
+	pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d")%(won, lost, drawn))
 
 	if won+lost > 0:
 		average = float(won)*100/(float(won)+float(lost))

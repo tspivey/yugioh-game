@@ -18,7 +18,6 @@ class Statistics(Base):
 	win = Column(Integer, nullable=False, default='0')
 	lose = Column(Integer, nullable=False, default='0')
 	draw = Column(Integer, nullable=False, default='0')
-	giveup = Column(Integer, nullable=False, default='0')
 	account = relationship('Account', foreign_keys=[account_id])
 	opponent = relationship('Account', foreign_keys=[opponent_id])
 	__table_args__ = (

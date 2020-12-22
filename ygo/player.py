@@ -21,6 +21,7 @@ class Player(Invitable):
 		self.deck = {'cards': [], 'side': []}
 		self.deck_editor = DeckEditor(self)
 		self.duel = None
+		self.cancel_request = False
 		self.locked = False
 		self.ignores = set()
 		self.is_admin = False
@@ -135,9 +136,6 @@ class Player(Invitable):
 
 	def draw_against(self, player):
 		return self.__statistics(player, draw = 1)
-
-	def giveup_against(self, player):
-		return self.__statistics(player, giveup = 1)
 
 	def get_locale(self):
 		return locale.normalize(self.language_short).split('_')[0]
