@@ -841,6 +841,20 @@ def unban(caller):
 	
 	caller.connection.notify(caller.connection._("Ban removed."))
 
+@LobbyParser.command(names=["email"], args_regexp='(.*)')
+def email(caller):
+	session = caller.connection.session
+	account = caller.connection.player.get_account()
+	if not caller.args or caller.args[0].strip() == '':
+		caller.connection.notify(caller.connection._("Your current email address is %s.") % (account.email,))
+		session.commit()
+		return
+	new_email = caller.args[0].strip()
+	account.email = new_email
+	session.commit()
+	caller.connection.notify(caller.connection._("Your new email address is %s.") % (new_email,))
+
+
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
 	if not key in DeckEditorParser.commands:
