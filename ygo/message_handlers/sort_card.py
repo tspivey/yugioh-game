@@ -43,7 +43,7 @@ def sort_card(self, player, cards):
 			return error(pl._("Duplicate values not allowed."))
 		if any(i < 0 or i > len(cards) - 1 for i in ints):
 			return error(pl._("Please enter values between 1 and %d.") % len(cards))
-		self.set_responseb(bytes(ints))
+		self.set_responseb(bytes([ints.index(c) for c in range(len(cards))]))
 		reactor.callLater(0, process_duel, self)
 	prompt()
 
