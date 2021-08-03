@@ -54,7 +54,7 @@ uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequen
 libraries = ['ygo'],
 library_dirs=['.'],
 source_extension='.cpp',
-include_dirs=['../ygopro-core'],
+include_dirs=['../ygopro-core', './core'],
 extra_compile_args=['-std=c++0x'],
 extra_link_args=['-Wl,-rpath,.'],
 )
