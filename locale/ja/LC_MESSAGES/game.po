@@ -420,7 +420,7 @@ msgstr "%s が先攻です。"
 
 #: ygo/duel.py:218 ygo/duel.py:718
 msgid "Watching stopped."
-msgstr "観察を終了しました。"
+msgstr "観戦を終了しました。"
 
 #: ygo/duel.py:450
 #, python-format
@@ -601,16 +601,16 @@ msgstr "デュエルが再開されます。"
 
 #: ygo/duel.py:714
 msgid "{player} is no longer watching this duel."
-msgstr "{player} が、このデュエルの観察をやめました。"
+msgstr "{player} が、このデュエルの観戦をやめました。"
 
 #: ygo/duel.py:734
 #, python-format
 msgid "Watching duel between %s and %s."
-msgstr "%s と %s とのデュエルを観察中"
+msgstr "%s と %s とのデュエルを観戦中"
 
 #: ygo/duel.py:738
 msgid "{player} is now watching this duel."
-msgstr "{player} が、このデュエルを観察しています。"
+msgstr "{player} が、このデュエルを観戦しています。"
 
 #: ygo/duel.py:742
 msgid "The duel is currently paused due to not all players being connected."
@@ -628,7 +628,7 @@ msgstr "%s のルームに入室しました。すでに試合が始まってい
 #: ygo/room.py:50
 #, python-format
 msgid "You joined %s's room. Use the teams and move command to move yourself into a team, or stay outside of any team to watch the duel."
-msgstr "%s のルームに入室しました。teams または move コマンドを使ってチームを設定できます。どのチームにも所属しないことで、デュエルを観察することができます。"
+msgstr "%s のルームに入室しました。teams または move コマンドを使ってチームを設定できます。どのチームにも所属しないことで、デュエルを観戦することができます。"
 
 #: ygo/room.py:53
 #, python-format
@@ -1504,7 +1504,7 @@ msgstr "%s と位置を入れ替え、デュエルに備えます。"
 #: ygo/message_handlers/tag_swap.py:43
 #, python-format
 msgid "You switch places with %s and watch carefully."
-msgstr "%s と位置を入れ替え、注意深く観察しています。"
+msgstr "%s と位置を入れ替え、注意深く観戦しています。"
 
 #: ygo/message_handlers/tag_swap.py:47
 #, python-format
@@ -1640,11 +1640,11 @@ msgstr "相手のテーブル: "
 
 #: ygo/parsers/duel_parser.py:81
 msgid "No one is watching this duel."
-msgstr "このデュエルの観察者は誰もいません。"
+msgstr "このデュエルの観戦者は誰もいません。"
 
 #: ygo/parsers/duel_parser.py:83
 msgid "People watching this duel:"
-msgstr "このデュエルの観察者: "
+msgstr "このデュエルの観戦者: "
 
 #: ygo/parsers/duel_parser.py:98
 #, python-format
@@ -1805,7 +1805,7 @@ msgstr "AFK"
 #: ygo/parsers/lobby_parser.py:235
 #, python-format
 msgid "%s (Watching duel with %s and %s)"
-msgstr "%s (%s と %s のデュエルを観察中)"
+msgstr "%s (%s と %s のデュエルを観戦中)"
 
 #: ygo/parsers/lobby_parser.py:243
 #, python-format
@@ -1830,7 +1830,7 @@ msgstr "%s (%s とデュエル中)"
 #: ygo/parsers/lobby_parser.py:254
 #, python-format
 msgid "%s (preparing to continue match)"
-msgstr "%s (マッチ最下位の準備をしています)"
+msgstr "%s (マッチ再会の準備をしています)"
 
 #: ygo/parsers/lobby_parser.py:256
 #, python-format
@@ -1955,15 +1955,15 @@ msgstr "リプライする人がいません。"
 
 #: ygo/parsers/lobby_parser.py:471
 msgid "Watch notification enabled."
-msgstr "観察通知を有効化しました。"
+msgstr "観戦通知を有効化しました。"
 
 #: ygo/parsers/lobby_parser.py:473
 msgid "Watch notification disabled."
-msgstr "観察通知を無効化しました。"
+msgstr "観戦通知を無効化しました。"
 
 #: ygo/parsers/lobby_parser.py:477
 msgid "You aren't watching a duel."
-msgstr "あなたはデュエルを観察していません。"
+msgstr "あなたはデュエルを観戦していません。"
 
 #: ygo/parsers/lobby_parser.py:483
 msgid "You are already in a duel."
