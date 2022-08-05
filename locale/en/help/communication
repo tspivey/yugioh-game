@@ -16,7 +16,7 @@ tag: the tag channel can be used to talk to your team mate within a tag duel.
 You can use the tag command to do so.
 Example: tag test
 
-tell: the tell command allows you to talk to oanother person privately.
+tell: the tell command allows you to talk to another person privately.
 You can use the tell command, followed by the person's name, to do so.
 Example: tell tsp hello, how are you?
 
