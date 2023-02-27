@@ -16,7 +16,7 @@ int32 declarable(card_data *cd, int32 size, uint32 *array) {
 	return is_declarable(*cd, v);
 }
 // modified from query_card()
-uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence) {
+uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 sequence) {
 	if(playerid != 0 && playerid != 1)
 		return 0;
 	duel* ptduel = (duel*)pduel;

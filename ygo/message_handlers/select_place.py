@@ -10,6 +10,7 @@ def msg_select_place(self, data):
 	msg = self.read_u8(data)
 	player = self.read_u8(data)
 	count = self.read_u8(data)
+	if count == 0: count = 1
 	flag = self.read_u32(data)
 	self.cm.call_callbacks('select_place', player, count, flag)
 	return data.read()
