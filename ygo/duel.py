@@ -1,7 +1,8 @@
 try:
 	from _duel import ffi, lib
 	DUEL_AVAILABLE = True
-except ImportError:
+except ImportError as exc:
+	print(exc)
 	DUEL_AVAILABLE = False
 
 import os

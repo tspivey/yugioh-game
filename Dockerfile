@@ -31,7 +31,7 @@ RUN tar xf lua-5.3.5.tar.gz && \
     ./compile.sh ja && \
     ./compile.sh pt
 
-FROM python:3.7.11-slim-buster
+FROM python:3.7.11-slim-bullseye
 
 WORKDIR /usr/src/app
 
