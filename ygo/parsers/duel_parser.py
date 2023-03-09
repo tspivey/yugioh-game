@@ -10,12 +10,20 @@ DuelParser = parser.Parser(command_substitutions = COMMAND_SUBSTITUTIONS)
 @DuelParser.command(names=['h', 'hand'])
 def hand(caller):
 	pl = caller.connection.player
-	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION.HAND, pl.watching)
+	if pl.watching:
+		hide_facedown = not pl.duel.revealing[pl.duel_player]
+	else:
+		hide_facedown = False
+	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION.HAND, hide_facedown)
 
 @DuelParser.command(names=['hand2'])
 def hand2(caller):
-
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION.HAND, True)
+	duel_player = 1 - caller.connection.player.duel_player
+	if caller.connection.player.watching:
+		hide_facedown = not caller.connection.player.duel.revealing[duel_player]
+	else:
+		hide_facedown = True
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, duel_player, LOCATION.HAND, hide_facedown)
 
 @DuelParser.command(names=['tab'])
 def tab(caller):
@@ -197,6 +205,18 @@ def showhand(caller):
 			continue
 		player.notify(player._("%s shows you their hand:") % pl.nickname)
 		pl.duel.show_cards_in_location(player, pl.duel_player, LOCATION.HAND, False)
+
+@DuelParser.command(names=['reveal'])
+def reveal(caller):
+	pl = caller.connection.player
+	if pl.watching:
+		caller.connection.notify(pl._("Watchers cannot use this command."))
+		return
+	pl.duel.revealing[pl.duel_player] = not pl.duel.revealing[pl.duel_player]
+	if pl.duel.revealing[pl.duel_player]:
+		pl.notify(pl._("Revealing hand to watchers."))
+	else:
+		pl.notify(pl._("Not revealing hand to watchers."))
 
 @DuelParser.command(names=["invite"], args_regexp=RE_NICKNAME)
 def invite(caller):
