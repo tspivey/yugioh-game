@@ -1,8 +1,11 @@
+Hinweis: giveup wurde durch "cancel" ersetzt.
 Willkommen im Spiel.
+New player guide: https://forum.audiogames.net/topic/30057/yugioh-mud-guide/
 Schau Dir die letzten Änderungen mit help changes an.
 Es gibt bereits einige vorgefertigte Decks, siehe help öffentliche decks.
 Für deckspezifische Befehle, siehe help deck.
 Um einen Raum zu erstellen und ein Duell zu organisieren, tippe create, oder verwende join Spielername, um einem Raum eines Spielers beizutreten.
 Du kannst Dich mit allen Nutzern via .text (oder chat text) unterhalten.
+Geben Sie help discord ein, um Informationen zum Discord-Server zu erhalten.
 Und who zeigt Dir, wer gerade anwesend ist.
 Noch mehr Details gibt es mit help start.

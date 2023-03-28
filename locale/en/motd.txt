@@ -1,8 +1,12 @@
+Note: giveup has been replaced with cancel.
+MR5 is in. You can set it while creating a room.
+New player guide: https://forum.audiogames.net/topic/30057/yugioh-mud-guide/
 Welcome to the game.
 For latest changes, type help changes.
 There are several public decks available, type help public decks to get a list.
 See help deck for a list of available deck commands.
 Create a new duel room by using create, or join player to join an existing room.
 chat text (or .text with a leading dot) will chat that text to all users.
+Type help discord for discord server information.
 who shows who is online.
 And even more information can be received by using help start.
