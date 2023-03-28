@@ -19,6 +19,6 @@ jobs:
       with:
         host: allinaccess.com
         username: yugioh
-        password: ${{ secrets.SSH_KEY }}
+        key: ${{ secrets.SSH_KEY }}
         script: |
           ./update.sh
