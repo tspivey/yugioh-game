@@ -1,6 +1,9 @@
 name: Game Updater
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
 
 defaults:
   run:
@@ -9,6 +12,7 @@ defaults:
 jobs:
   updater:
     if: github.ref == 'refs/heads/master'
+    if: github.repository_owner == 'tspivey'
     runs-on: ubuntu-latest
     steps:
     - name: SSH into server and run commands
