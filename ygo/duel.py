@@ -646,7 +646,14 @@ class Duel(Joinable):
 	def show_info(self, card, pl):
 		pln = pl.duel_player
 		cs = card.get_spec(pl)
-		if card.position & POSITION.FACEDOWN and (pl.watching or card in self.get_cards_in_location(1 - pln, LOCATION.MZONE) + self.get_cards_in_location(1 - pln, LOCATION.SZONE)):
+		opponent = 1 - pln
+		should_reveal = False
+		if pl.watching:
+			if cs.startswith('o') and self.revealing[opponent]:
+				should_reveal = True
+			elif not cs.startswith('o') and self.revealing[pln]:
+				should_reveal = True
+		if card.position & POSITION.FACEDOWN and ((pl.watching and not should_reveal) or (not pl.watching and card.controller == opponent)):
 			pl.notify(pl._("%s: %s card.") % (cs, card.get_position(pl)))
 			return
 		pl.notify(card.get_info(pl))
@@ -655,7 +662,7 @@ class Duel(Joinable):
 		cards = []
 		for i in (0, 1):
 			for j in (LOCATION.MZONE, LOCATION.SZONE, LOCATION.GRAVE, LOCATION.REMOVED, LOCATION.HAND, LOCATION.EXTRA):
-				cards.extend(card for card in self.get_cards_in_location(i, j) if card.controller == pl.duel_player or not card.position & POSITION.FACEDOWN)
+				cards.extend(card for card in self.get_cards_in_location(i, j))
 		specs = {}
 		for card in cards:
 			specs[card.get_spec(pl)] = card

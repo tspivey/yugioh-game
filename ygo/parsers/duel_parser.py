@@ -76,11 +76,21 @@ def removed2(caller):
 
 @DuelParser.command(names=['extra'])
 def extra(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, caller.connection.player.duel_player, LOCATION.EXTRA, caller.connection.player.watching)
+	pl = caller.connection.player
+	if pl.watching:
+		hide_facedown = not pl.duel.revealing[pl.duel_player]
+	else:
+		hide_facedown = False
+	pl.duel.show_cards_in_location(pl, pl.duel_player, LOCATION.EXTRA, hide_facedown)
 
 @DuelParser.command(names=['extra2'])
 def extra2(caller):
-	caller.connection.player.duel.show_cards_in_location(caller.connection.player, 1 - caller.connection.player.duel_player, LOCATION.EXTRA, True)
+	duel_player = 1 - caller.connection.player.duel_player
+	if caller.connection.player.watching:
+		hide_facedown = not caller.connection.player.duel.revealing[duel_player]
+	else:
+		hide_facedown = True
+	caller.connection.player.duel.show_cards_in_location(caller.connection.player, duel_player, LOCATION.EXTRA, hide_facedown)
 
 @DuelParser.command(names=['watchers'])
 def show_watchers(caller):
