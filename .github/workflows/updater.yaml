@@ -1,0 +1,21 @@
+name: Game Updater
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  updater:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+    - name: SSH into server and run commands
+      uses: appleboy/ssh-action@master
+      with:
+        host: allinaccess.com
+        username: yugioh
+        password: ${{ secrets.SSH_KEY }}
+        script: |
+          ./update.sh
