@@ -11,8 +11,7 @@ defaults:
 
 jobs:
   updater:
-    if: github.ref == 'refs/heads/master'
-    if: github.repository_owner == 'tspivey'
+    if: github.ref == 'refs/heads/master' && github.repository_owner == 'tspivey'
     runs-on: ubuntu-latest
     steps:
     - name: SSH into server and run commands
