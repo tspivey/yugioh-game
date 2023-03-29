@@ -119,7 +119,7 @@ class DeckEditor:
 							banlist_text = pl._("compatible with {0} banlist").format(b.name)
 							break
 
-				pl.notify(pl._("{deckname} ({banlist})").format(deckname=deck.account.name + "/" + deck.name, banlist=banlist_text))
+				pl.notify(pl._("{deck_id}: {deckname} ({banlist})").format(deck_id=deck.id, deckname=deck.account.name + "/" + deck.name, banlist=banlist_text))
 
 		if len(owned_decks):
 
@@ -143,7 +143,7 @@ class DeckEditor:
 							banlist_text = pl._("compatible with {0} banlist").format(b.name)
 							break
 
-				pl.notify(pl._("{deckname} ({privacy}) ({banlist})").format(deckname=deck.name, privacy=privacy, banlist=banlist_text))
+				pl.notify(pl._("{deck_id}: {deckname} ({privacy}) ({banlist})").format(deck_id=deck.id, deckname=deck.name, privacy=privacy, banlist=banlist_text))
 
 		if len(other_decks):
 
