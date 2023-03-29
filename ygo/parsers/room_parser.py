@@ -238,6 +238,19 @@ def deck(caller):
 	player_name = ''
 	deck_name = name
 
+	deck = None
+	# if deck_name only contains a number, it's a deck id
+	if deck_name.isdigit():
+		# first try to find in our own decks
+		deck = models.Deck.find_by_id(session, account, int(deck_name))
+		if not deck:
+			# if not found, try to find in public decks
+			deck = models.Deck.find_public_by_id(session, int(deck_name))
+		# if deck is still None, it means that the deck doesn't exist
+		if not deck:
+			pl.notify(pl._("Deck doesn't exist or isn't publically available."))
+			return
+
 	if '/' in deck_name:
 		player_name = deck_name.split("/")[0].title()
 		deck_name = deck_name[(len(player_name) + 1):]
@@ -256,7 +269,8 @@ def deck(caller):
 
 		deck = models.Deck.find(session, account, deck_name)
 
-	else:
+	# and if the deck is alphanumeric, it's a deck name 
+	if deck_name.isalnum():
 
 		deck = models.Deck.find(session, account, deck_name)
 
