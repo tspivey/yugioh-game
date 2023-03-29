@@ -250,7 +250,7 @@ def deck(caller):
 			deck = models.Deck.find_public_by_id(session, int(deck_name))
 			pl.notify("deck is %s" % deck)
 		# if deck is still None, it means that the deck doesn't exist
-		if not deck:
+		if deck is None:
 			pl.notify(pl._("Deck doesn't exist or isn't publically available."))
 			return
 
@@ -273,7 +273,7 @@ def deck(caller):
 		deck = models.Deck.find(session, account, deck_name)
 
 	# and if the deck is alphanumeric, it's a deck name 
-	if deck_name.isalnum():
+	if deck_name.isalnum() and not deck: # if deck is a name and still hasn't be found
 
 		deck = models.Deck.find(session, account, deck_name)
 
