@@ -98,9 +98,9 @@ class DeckEditor:
 
 		other_decks = decks
 
-		public_decks = natsort.natsorted(public_decks, key = lambda d: d.id + ": " + d.account.name + "/" + d.name)
-		owned_decks = natsort.natsorted(owned_decks, key = lambda d: d.name)
-		other_decks = natsort.natsorted(other_decks, key = lambda d: d.account.name + "/" + d.name)
+		public_decks = natsort.natsorted(public_decks, key = lambda d: str(d.id) + ": " + d.account.name + "/" + d.name)
+		owned_decks = natsort.natsorted(owned_decks, key = lambda d: str(d.id) + ": " + d.name)
+		other_decks = natsort.natsorted(other_decks, key = lambda d: str(d.id) + ": " + d.account.name + "/" + d.name)
 
 		if len(public_decks):
 
