@@ -241,14 +241,11 @@ def deck(caller):
 	deck = None
 	# if deck_name only contains a number, it's a deck id
 	if deck_name.isdigit():
-		pl.notify("deck_name is a number")
 		# first try to find in our own decks
 		deck = models.Deck.find_by_id(session, account, int(deck_name))
-		pl.notify("deck is %s" % deck)
 		if not deck:
 			# if not found, try to find in public decks
 			deck = models.Deck.find_public_by_id(session, int(deck_name))
-			pl.notify("deck is %s" % deck)
 		# if deck is still None, it means that the deck doesn't exist
 		if deck is None:
 			pl.notify(pl._("Deck doesn't exist or isn't publically available."))

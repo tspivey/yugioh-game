@@ -71,7 +71,6 @@ class Deck(Base):
 
 	@staticmethod
 	def find_by_id(session, account, id):
-		print(f"find_by_id: {id}")
 		return session.query(Deck).filter_by(account_id=account.id, id=id).first()
 
 	@staticmethod
