@@ -326,7 +326,7 @@ def deck(caller):
 			return
 
 	pl.deck = content
-	pl.notify(pl._("Deck loaded with %d cards.") % len(content['cards']))
+	pl.notify(pl._("Deck %s loaded with %d cards.") % deck.name, len(content['cards']))
 
 	for p in room.get_all_players():
 		if p is not pl:
