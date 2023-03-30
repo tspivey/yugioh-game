@@ -1782,7 +1782,7 @@ msgstr "%s ist abwesend und könnte Dich eventuell nicht bemerken."
 
 #: ygo/parsers/duel_parser.py:246
 #, python-format
-msgid "%s invites you to watch his duel. Type watch %s to do so."
+msgid "%s invites you to watch their duel. Type watch %s to do so."
 msgstr "%s lädt Dich ein, seinem Duell zuzusehen. Tippe watch %s, um die Einladung anzunehmen."
 
 #: ygo/parsers/duel_parser.py:248 ygo/parsers/room_parser.py:446
@@ -2498,7 +2498,7 @@ msgstr "Du kannst jeden Spieler in diesen Raum einladen. Tippe einfach invite Sp
 
 #: ygo/parsers/room_parser.py:444
 #, python-format
-msgid "%s invites you to join his duel room. Type join %s to do so."
+msgid "%s invites you to join their duel room. Type join %s to do so."
 msgstr "%s lädt Dich ein, seinem Duellraum beizutreten. Tippe join %s, um die Einladung anzunehmen."
 
 #: ygo/parsers/room_parser.py:450
