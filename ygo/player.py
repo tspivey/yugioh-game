@@ -104,7 +104,7 @@ class Player(Invitable):
 				session = self.connection.session
 		return session.query(models.Account).filter_by(name=self.nickname).first()
 
-	def __statistics(self, player, win = 0, lose = 0, draw = 0, giveup = 0):
+	def __statistics(self, player, win = 0, lose = 0, draw = 0):
 		if self.connection is not None:
 			session = self.connection.session
 		elif player.connection is not None:
@@ -120,12 +120,10 @@ class Player(Invitable):
 			stat.win = 0
 			stat.lose = 0
 			stat.draw = 0
-			stat.giveup = 0
 			session.add(stat)
 		stat.win += win
 		stat.lose += lose
 		stat.draw += draw
-		stat.giveup += giveup
 		session.commit()
 
 	def win_against(self, player):
