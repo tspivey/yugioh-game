@@ -269,8 +269,7 @@ def deck(caller):
 
 		deck = models.Deck.find(session, account, deck_name)
 
-	# and if the deck is alphanumeric, it's a deck name 
-	if deck_name.isalnum() and not deck: # if deck is a name and still hasn't been found
+	if not deck: # if deck is a name and still hasn't been found
 
 		deck = models.Deck.find(session, account, deck_name)
 
