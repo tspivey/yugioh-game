@@ -64,7 +64,7 @@ class Deck(Base):
 	@staticmethod
 	def find(session, account, name):
 		if name.isdigit():
-			return session.query(Deck).filter_by(account_id=account.id, id=int(name)).first()
+			return session.query(Deck).filter_by(id=int(name)).first()
 		return session.query(Deck).filter_by(account_id=account.id, name=name).first()
 
 	@staticmethod
