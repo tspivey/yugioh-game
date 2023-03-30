@@ -359,9 +359,6 @@ class DeckEditor:
 			con.notify(con._("You cannot edit public decks. Switch it back to private by using deck private {0} first.").format(deck_name))
 			return
 
-		con.player.paused_parser = con.parser
-		con.parser = DeckEditorParser
-
 		if deck:
 			con.notify(con._("Deck exists, loading."))
 			con.player.deck = json.loads(deck.content)
@@ -389,9 +386,12 @@ class DeckEditor:
 				con.notify(self.player._("Deck names may not be numbers."))
 				return
 			con.player.deck = {'cards': [], 'side': []}
+		con.player.paused_parser = con.parser
+		con.parser = DeckEditorParser
+
 		self.deck_name = deck_name
 		con.parser.prompt(con)
-	
+
 	@staticmethod
 	def group_cards(cardlist):
 		"""
