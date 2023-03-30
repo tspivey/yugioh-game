@@ -206,6 +206,9 @@ class DeckEditor:
 		if '=' in dest:
 			self.player.notify(self.player._("Deck names may not contain =."))
 			return
+		if dest.isdigit():
+			self.player.notify(self.player._("Deck names may not be numbers."))
+			return
 		account = self.player.get_account()
 		session = self.player.connection.session
 		deck = models.Deck.find(session, account, name)
@@ -232,6 +235,9 @@ class DeckEditor:
 			return
 		if '=' in dest:
 			self.player.notify(self.player._("Deck names may not contain =."))
+			return
+		if dest.isdigit():
+			self.player.notify(self.player._("Deck names may not be numbers."))
 			return
 
 		if '/' in dest:
@@ -379,6 +385,9 @@ class DeckEditor:
 
 		else:
 			con.notify(con._("Creating new deck %s.") % deck_name)
+			if deck_name.isdigit():
+				con.notify(self.player._("Deck names may not be numbers."))
+				return
 			con.player.deck = {'cards': [], 'side': []}
 		self.deck_name = deck_name
 		con.parser.prompt(con)
@@ -473,6 +482,9 @@ class DeckEditor:
 		deck = models.Deck.find(session, account, name)
 		if deck:
 			self.player.notify(self.player._("That deck already exists."))
+			return
+		if name.isdigit():
+			self.player.notify(self.player._("Deck names may not be numbers."))
 			return
 		deck = models.Deck(account_id=account.id, name=name)
 		account.decks.append(deck)
