@@ -3,6 +3,7 @@ import io
 from ygo.card import Card
 from ygo.constants import *
 from ygo.utils import handle_error
+import ygo.exceptions
 
 def msg_move(self, data):
 	data = io.BytesIO(data[1:])
@@ -15,7 +16,10 @@ def msg_move(self, data):
 
 @handle_error
 def move(self, code, location, newloc, reason):
-	card = Card(code)
+	try:
+		card = Card(code)
+	except ygo.exceptions.CardNotFoundError:
+		return
 	card.set_location(location)
 	cnew = Card(code)
 	cnew.set_location(newloc)
