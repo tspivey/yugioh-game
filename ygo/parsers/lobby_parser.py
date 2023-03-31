@@ -714,6 +714,14 @@ def finger(caller):
 
 		pl.notify(pl._("%.2f%% Success.")%(average))
 
+		# admin information
+		if account.is_admin:
+			# tell the player that this is an admin
+			pl.notify(pl._("This player is an admin."))
+		if pl.is_admin:
+			# show language and encoding
+			pl.notify(pl._("Language: %s, Encoding: %s")%(account.language, account.encoding))
+
 @LobbyParser.command(names=["reloadlanguages"], allowed = lambda c: c.connection.player.is_admin)
 def reloadlanguages(caller):
 	caller.connection.notify(caller.connection._("Reloading languages..."))
