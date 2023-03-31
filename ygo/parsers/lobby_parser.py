@@ -718,7 +718,12 @@ def finger(caller):
 		pl.notify(pl._("This player is an admin."))
 	if pl.is_admin:
 		# show language and encoding
-		pl.notify(pl._("Language: %s, Encoding: %s")%(account.language, account.encoding))
+		pl.notify(pl._("Admin information:"))
+		pl.notify(pl._("Language: %s.")%(account.language))
+		pl.notify(pl._("Encoding: %s.")%(account.encoding))
+		if account.banned:
+			pl.notify(pl._("This account is banned."))
+		pl.notify(pl._("IP address: %s.")%(account.ip_address))
 
 @LobbyParser.command(names=["reloadlanguages"], allowed = lambda c: c.connection.player.is_admin)
 def reloadlanguages(caller):
