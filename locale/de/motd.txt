@@ -1,6 +1,4 @@
-Hinweis: giveup wurde durch "cancel" ersetzt.
 Willkommen im Spiel.
-New player guide: https://forum.audiogames.net/topic/30057/yugioh-mud-guide/
 Schau Dir die letzten Änderungen mit help changes an.
 Es gibt bereits einige vorgefertigte Decks, siehe help öffentliche decks.
 Für deckspezifische Befehle, siehe help deck.

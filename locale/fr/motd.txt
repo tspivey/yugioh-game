@@ -1,6 +1,4 @@
 Si les caractères ne s'affichent pas correctement, tapez : encoding windows-1252
-New player guide: https://forum.audiogames.net/topic/30057/yugioh-mud-guide/
-New cards. See help newcards.
 Welcome to the game.
 For latest changes, type help changes.
 There are several public decks available, type help public decks to get a list.
