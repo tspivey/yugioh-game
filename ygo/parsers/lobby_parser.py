@@ -694,25 +694,35 @@ def finger(caller):
 
 	stats = natsort.natsorted(stats, key=lambda s: s.opponent.name)
 
-	if len(stats) == 0:
-		return
+	if len(stats) != 0:
+		pl.notify(pl._("Duel statistics:"))
 
-	pl.notify(pl._("Duel statistics:"))
+		for stat in stats:
 
-	for stat in stats:
+			pl.notify(pl._("%s - Won: %d, Lost: %d, Drawn: %d")%(stat.opponent.name, stat.win, stat.lose, stat.draw))
 
-		pl.notify(pl._("%s - Won: %d, Lost: %d, Drawn: %d")%(stat.opponent.name, stat.win, stat.lose, stat.draw))
+		won = sum([s.win for s in stats])
+		lost = sum([s.lose for s in stats])
+		drawn = sum([s.draw for s in stats])
 
-	won = sum([s.win for s in stats])
-	lost = sum([s.lose for s in stats])
-	drawn = sum([s.draw for s in stats])
+		pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d")%(won, lost, drawn))
 
-	pl.notify(pl._("Conclusion - Won: %d, Lost: %d, Drawn: %d")%(won, lost, drawn))
+		if won+lost > 0:
+			average = float(won)*100/(float(won)+float(lost))
 
-	if won+lost > 0:
-		average = float(won)*100/(float(won)+float(lost))
+			pl.notify(pl._("%.2f%% Success.")%(average))
 
-		pl.notify(pl._("%.2f%% Success.")%(average))
+	# admin information
+	if account.is_admin:
+		# tell the player that this is an admin
+		pl.notify(pl._("This player is an admin."))
+	if pl.is_admin:
+		# show language and encoding
+		pl.notify(pl._("Admin information:"))
+		pl.notify(pl._("Language: %s.")%(account.language))
+		pl.notify(pl._("Encoding: %s.")%(account.encoding))
+		if account.banned:
+			pl.notify(pl._("This account is banned."))
 
 @LobbyParser.command(names=["reloadlanguages"], allowed = lambda c: c.connection.player.is_admin)
 def reloadlanguages(caller):
