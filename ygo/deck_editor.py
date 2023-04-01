@@ -438,12 +438,16 @@ class DeckEditor:
 		return full
 
 	def find_next(self, text, start, limit=None, wrapped=False):
-		sql = 'SELECT id FROM texts WHERE UPPERCASE(name) LIKE ? and id in (%s) ORDER BY id ASC LIMIT 1'
+		field = 'name'
+		if text.startswith('d:'):
+			text = text[2:]
+			field = 'desc'
+		sql = 'SELECT id FROM texts WHERE UPPERCASE(%s) LIKE ? and id in (%s) ORDER BY id ASC LIMIT 1'
 		if limit:
 			cards = globals.server.all_cards[start:start+limit]
 		else:
 			cards = globals.server.all_cards[start:]
-		row = self.player.cdb.execute(sql % (', '.join([str(c) for c in cards])), ('%'+text.upper()+'%', )).fetchone()
+		row = self.player.cdb.execute(sql % (field, ', '.join([str(c) for c in cards])), ('%'+text.upper()+'%', )).fetchone()
 		if row is not None:
 			return globals.server.all_cards.index(row[0])
 		if wrapped:
@@ -451,12 +455,16 @@ class DeckEditor:
 		return self.find_next(text, 0, start, wrapped=True)
 
 	def find_prev(self, text, start, end=None, wrapped=False):
-		sql = 'SELECT id FROM texts WHERE UPPERCASE(name) LIKE ? AND id IN (%s) ORDER BY id DESC LIMIT 1'
+		field = 'name'
+		if text.startswith('d:'):
+			text = text[2:]
+			field = 'desc'
+		sql = 'SELECT id FROM texts WHERE UPPERCASE(%s) LIKE ? AND id IN (%s) ORDER BY id DESC LIMIT 1'
 		pos = start
 		if end is None:
 			end = 0
 		cards = globals.server.all_cards[end:start]
-		row = self.player.cdb.execute(sql % (', '.join([str(c) for c in cards])), ('%'+text.upper()+'%', )).fetchone()
+		row = self.player.cdb.execute(sql % (field, ', '.join([str(c) for c in cards])), ('%'+text.upper()+'%', )).fetchone()
 		if row is not None:
 			return globals.server.all_cards.index(row[0])
 		if wrapped:
