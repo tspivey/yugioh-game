@@ -32,6 +32,12 @@ class login_parser(parser.Parser):
 			caller.connection.notify("Please enter a nickname. Your nickname is what you will be known by while playing.")
 			caller.connection.login_state = ("new", "Enter desired nickname:")
 			return self.prompt(caller)
+		
+		# here we are checking for special commands
+		# that can only be executed from localhost
+		if caller.connection.transport.getPeer().host == "127.0.0.1":
+			if globals.server.handle_localhost_commands(caller):
+				return
 		nickname = caller.text.capitalize()
 		account = self.find_account(caller.connection.session, nickname)
 		if not account:
