@@ -146,6 +146,23 @@ class Server(gsb.Server):
 			pl.notify(pl._("Rebooting."))
 		reactor.callLater(0.2, reactor.stop)
 
+	def handle_localhost_commands(self, caller):
+		# shutdown
+		if caller.text == 'shutdown':
+			globals.rebooting = not globals.rebooting
+			if globals.rebooting:
+				for pl in self.get_all_players():
+					if pl.is_admin:
+						pl.notify("Reboot started.")
+				caller.connection.notify("Reboot started.")
+				self.check_reboot()
+			else:
+				for pl in self.get_all_players():
+					if pl.is_admin:
+						pl.notify("Reboot canceled.")
+				caller.connection.notify("Reboot canceled.")
+			return True
+
 	@property
 	def all_cards(self):
 		return globals.language_handler.all_primary_cards
