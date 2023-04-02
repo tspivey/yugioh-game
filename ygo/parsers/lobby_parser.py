@@ -1,3 +1,4 @@
+import urllib.request
 from babel.dates import format_timedelta, format_date
 import codecs
 import collections
@@ -458,6 +459,31 @@ def reply(caller):
 @LobbyParser.command
 def soundpack_on(caller):
 	caller.connection.player.soundpack = True
+
+@LobbyParser.command
+def soundpack(caller):
+	# if args is empty return
+	if len(caller.args) == 0:
+		return
+	# if args 0 is "version"
+	if caller.args[0] == "version":
+		# if args 1 is empty return
+		if len(caller.args) == 1:
+			return
+		current_soundpack_version = caller.args[1]
+		response = urllib.request.urlopen("https://raw.githubusercontent.com/JessicaTegner/yugioh-soundpack/master/ygo.ver")
+		latest_soundpack_version = response.read()
+		# if latest_soundpack_version is bytes convert to string
+		if isinstance(latest_soundpack_version, bytes):
+			latest_soundpack_version = latest_soundpack_version.decode("utf-8")
+		# strip newlines
+		latest_soundpack_version = latest_soundpack_version.strip()
+		# if current_soundpack_version is not equal to latest_soundpack_version
+		if current_soundpack_version != latest_soundpack_version:
+			# notify user that there is a new version
+			caller.connection.notify(caller.connection._('There is a new version of the soundpack available. Please close the game and run "update.bat".'))
+			# print out new version and current version
+			caller.connection.notify(caller.connection._("Your Version: %s. New Version: %s") % (current_soundpack_version, latest_soundpack_version))
 
 @LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None and c.connection.parser is not DeckEditorParser)
 def watch(caller):
