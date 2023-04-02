@@ -462,6 +462,7 @@ def soundpack_on(caller):
 
 @LobbyParser.command
 def soundpack(caller):
+	print(caller.args)
 	# if args is empty return
 	if len(caller.args) == 0:
 		return
