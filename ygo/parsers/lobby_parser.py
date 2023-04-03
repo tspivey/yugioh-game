@@ -1,4 +1,3 @@
-import urllib.request
 from babel.dates import format_timedelta, format_date
 import codecs
 import collections
@@ -474,21 +473,24 @@ def soundpack(caller):
 		# if args 1 is empty return
 		if len(caller.args) == 1:
 			return
+		if caller.args[1] == "check":
+			caller.connection.notify(caller.connection._("Current soundpack version on the server: %s") % globals.server.soundpack_version)
+			return
+		if caller.args[1] == "update":
+			if not caller.connection.player.is_admin:
+				caller.connection.notify(caller.connection._("You are not allowed to do that."))
+				return
+			# update soundpack
+			caller.connection.notify(caller.connection._("Updating soundpack..."))
+			globals.server.update_soundpack_version()
+			caller.connection.notify(caller.connection._("Done."))
+			return
 		current_soundpack_version = caller.args[1]
-		# get latest soundpack version from github
-		response = urllib.request.urlopen("https://raw.githubusercontent.com/JessicaTegner/yugioh-soundpack/master/ygo.ver")
-		latest_soundpack_version = response.read()
-		# if latest_soundpack_version is bytes convert to string
-		if isinstance(latest_soundpack_version, bytes):
-			latest_soundpack_version = latest_soundpack_version.decode("utf-8")
-		# strip newlines
-		latest_soundpack_version = latest_soundpack_version.strip()
-		# if current_soundpack_version is not equal to latest_soundpack_version
-		if current_soundpack_version != latest_soundpack_version:
+		if current_soundpack_version != globals.server.soundpack_version:
 			# notify user that there is a new version
 			caller.connection.notify(caller.connection._('There is a new version of the soundpack available.'))
 			caller.connection.notify(caller.connection._('Please close the game and run "update.bat".'))
-			caller.connection.notify(caller.connection._("Your Version: %s. New Version: %s") % (current_soundpack_version, latest_soundpack_version))
+			caller.connection.notify(caller.connection._("Your Version: %s. New Version: %s") % (current_soundpack_version, globals.server.soundpack_version))
 
 @LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None and c.connection.parser is not DeckEditorParser)
 def watch(caller):
