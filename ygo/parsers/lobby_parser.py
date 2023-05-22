@@ -224,6 +224,8 @@ def who(caller):
 		s = pl.nickname
 		if pl.afk is True:
 			s += " " + caller.connection._("[AFK]")
+		if pl.connection.parser is DeckEditorParser:
+			s += " " + caller.connection._("[in Deck Editor]")
 		if pl.watching and "watch" in showing:
 			if pl.duel.tag is True:
 				pl0 = caller.connection._("team %s")%(pl.duel.players[0].nickname+", "+pl.duel.tag_players[0].nickname)
