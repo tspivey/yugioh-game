@@ -261,13 +261,13 @@ def deck(caller):
 			pl.notify(pl._("You don't need to mention yourself if you want to use your own deck."))
 			return
 
-		account = session.query(models.Account).filter_by(name=player_name).first()
+		target_account = session.query(models.Account).filter_by(name=player_name).first()
 
-		if not account:
+		if not target_account:
 			pl.notify(pl._("Player {0} could not be found.").format(player_name))
 			return
 
-		deck = models.Deck.find(session, account, deck_name)
+		deck = models.Deck.find_public(session, target_account, deck_name)
 
 	if not deck: # if deck is a name and still hasn't been found
 
