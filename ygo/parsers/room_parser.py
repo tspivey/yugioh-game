@@ -271,7 +271,7 @@ def deck(caller):
 
 	if not deck: # if deck is a name and still hasn't been found
 
-		deck = models.Deck.find(session, account, deck_name)
+		deck = models.Deck.find(session, account, name)
 
 	if not deck:
 		pl.notify(pl._("Deck doesn't exist or isn't publically available."))
