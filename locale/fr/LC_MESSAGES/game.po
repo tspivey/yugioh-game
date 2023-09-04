@@ -2017,7 +2017,7 @@ msgstr "Ce joueur se prépare déjà à livrer un duel."
 
 #: ygo/parsers/room_parser.py:383
 #, python-format
-msgid "%s invites you to join his duel room. Type join %s to do so."
+msgid "%s invites you to join their duel room. Type join %s to do so."
 msgstr "%s vous invite à rejoindre sa salle de duel. Tapez join %s pour le faire."
 
 #: ygo/parsers/room_parser.py:385

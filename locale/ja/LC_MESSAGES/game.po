@@ -1733,7 +1733,7 @@ msgstr "%s はAFKなので、すぐには気がつかないかもしれません
 
 #: ygo/parsers/duel_parser.py:215
 #, python-format
-msgid "%s invites you to watch his duel. Type watch %s to do so."
+msgid "%s invites you to watch their duel. Type watch %s to do so."
 msgstr "%s から、このデュエルの観戦に招待されています。 watch %s で、デュエルを観戦できます。"
 
 #: ygo/parsers/duel_parser.py:217 ygo/parsers/room_parser.py:445
@@ -2445,7 +2445,7 @@ msgstr "誰でもプレイヤーを招待できます。 invite <プレイヤー
 
 #: ygo/parsers/room_parser.py:443
 #, python-format
-msgid "%s invites you to join his duel room. Type join %s to do so."
+msgid "%s invites you to join their duel room. Type join %s to do so."
 msgstr "%s からデュエルルームへの招待が届いています。 join %s で参加できます。"
 
 #: ygo/parsers/room_parser.py:449
