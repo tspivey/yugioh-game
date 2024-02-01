@@ -13,6 +13,9 @@ try:
 except ImportError:
 	DUEL_AVAILABLE = False
 
+PROCESSOR_FLAG = 0xf0000000
+PROCESSOR_END = 0x20000000
+
 def parse_lflist(filename):
 
 	lst = {}
@@ -36,9 +39,10 @@ def parse_lflist(filename):
 def process_duel(d):
 	while d.started:
 		res = d.process()
-		if res & 0x20000:
+		flag = res & PROCESSOR_FLAG
+		if flag & PROCESSOR_END:
 			break
-		elif res & 0x10000 and res != 0x10000:
+		elif flag == 0x10000000:
 			if d.keep_processing:
 				d.keep_processing = False
 				continue
