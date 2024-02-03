@@ -42,7 +42,7 @@ def process_duel(d):
 		flag = res & PROCESSOR_FLAG
 		if flag & PROCESSOR_END:
 			break
-		elif flag == 0x10000000:
+		elif flag & 0x10000000 and res != 0x10000000:
 			if d.keep_processing:
 				d.keep_processing = False
 				continue
