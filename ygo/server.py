@@ -1,5 +1,7 @@
 import re
 import socket
+import urllib.request
+
 import gsb
 
 from twisted.internet import reactor
@@ -14,12 +16,24 @@ class Server(gsb.Server):
 
 	def __init__(self, *args, **kwargs):
 		gsb.Server.__init__(self, *args, **kwargs)
+		self.soundpack_version = ""
+		self.update_soundpack_version()
 
 		self.challenge = Challenge()
 		self.chat = Chat()
 		self.players = {}
 		self.session_factory = models.setup()
 		self.max_online = 0
+
+	def update_soundpack_version(self):
+		# download our soundpack version file from the server
+		response = urllib.request.urlopen("https://raw.githubusercontent.com/JessicaTegner/yugioh-soundpack/master/ygo.ver")
+		latest_soundpack_version = response.read()
+		if isinstance(latest_soundpack_version, bytes):
+			latest_soundpack_version = latest_soundpack_version.decode("utf-8")
+		# strip newlines
+		latest_soundpack_version = latest_soundpack_version.strip()
+		self.soundpack_version = latest_soundpack_version
 
 	def on_connect(self, caller):
 		### for backwards compatibility ###

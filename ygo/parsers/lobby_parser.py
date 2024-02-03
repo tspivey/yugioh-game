@@ -461,6 +461,39 @@ def reply(caller):
 def soundpack_on(caller):
 	caller.connection.player.soundpack = True
 
+@LobbyParser.command
+def soundpack(caller):
+	# split caller.text into args.
+	caller.args = caller.text.split(" ")
+	# remove the first element (soundpack)
+	caller.args.pop(0)
+	# if args is empty return
+	if len(caller.args) == 0:
+		return
+	# if args 0 is "version"
+	if caller.args[0] == "version":
+		# if args 1 is empty return
+		if len(caller.args) == 1:
+			return
+		if caller.args[1] == "check":
+			caller.connection.notify(caller.connection._("Current soundpack version on the server: %s") % globals.server.soundpack_version)
+			return
+		if caller.args[1] == "update":
+			if not caller.connection.player.is_admin:
+				caller.connection.notify(caller.connection._("You are not allowed to do that."))
+				return
+			# update soundpack
+			caller.connection.notify(caller.connection._("Updating soundpack..."))
+			globals.server.update_soundpack_version()
+			caller.connection.notify(caller.connection._("Done."))
+			return
+		current_soundpack_version = caller.args[1]
+		if current_soundpack_version != globals.server.soundpack_version:
+			# notify user that there is a new version
+			caller.connection.notify(caller.connection._('There is a new version of the soundpack available.'))
+			caller.connection.notify(caller.connection._('Please close the game and run "update.bat".'))
+			caller.connection.notify(caller.connection._("Your Version: %s. New Version: %s") % (current_soundpack_version, globals.server.soundpack_version))
+
 @LobbyParser.command(args_regexp=r'(.*)', allowed = lambda c: c.connection.player.room is None and c.connection.parser is not DeckEditorParser)
 def watch(caller):
 
