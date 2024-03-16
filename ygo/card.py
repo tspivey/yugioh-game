@@ -113,8 +113,6 @@ class Card(object):
 		elif self.type & TYPE.LINK:
 			lst.append(pl._("Link Markers: %s")%(self.get_link_markers(pl)))
 
-		lst.append(pl._("Set: {set}").format(set = self.get_set(pl)))
-
 		if pl.soundpack:
 			lst.append("### card_text_follows")
 
