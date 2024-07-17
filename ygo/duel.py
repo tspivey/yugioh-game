@@ -36,7 +36,7 @@ if DUEL_AVAILABLE:
 		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
 		cd.code = code
 		cd.alias = row['alias']
-		cd.setcode = row['setcode']
+		lib.set_setcode(data, row['setcode'])
 		cd.type = row['type']
 		cd.level = row['level'] & 0xff
 		cd.lscale = (row['level'] >> 24) & 0xff
@@ -68,6 +68,11 @@ if DUEL_AVAILABLE:
 		return ffi.cast('byte *', scriptbuf)
 
 	lib.set_script_reader(lib.script_reader_callback)
+	@ffi.def_extern()
+	def message_handler_callback(duel, msg):
+		print(f"mhc: {msg}")
+		return None
+	lib.set_message_handler(lib.message_handler_callback)
 
 class Duel(Joinable):
 	def __init__(self, seed=None):

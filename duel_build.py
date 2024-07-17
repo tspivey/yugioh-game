@@ -50,6 +50,10 @@ uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 s
 		return 0;
 	}
 }
+	void set_setcode(struct card_data *cd, uint64 value) {
+		cd->set_setcode(value);
+	}
+
 """,
 libraries = ['ygo'],
 library_dirs=['.'],
@@ -69,7 +73,7 @@ typedef uint64_t uint64;
 struct card_data {
 	uint32 code;
 	uint32 alias;
-	uint64 setcode;
+	uint16_t setcode[16];
 	uint32 type;
 	uint32 level;
 	uint32 attribute;
@@ -81,19 +85,21 @@ struct card_data {
 	uint32 link_marker;
 ...;
 };
+
 extern "Python" uint32 card_reader_callback(uint32, struct card_data *);
 typedef uint32 (*card_reader)(uint32, struct card_data*);
 void set_card_reader(card_reader f);
+void set_setcode(struct card_data *cd, uint64 value);
 typedef byte* (*script_reader)(const char*, int*);
 typedef uint32 (*message_handler)(intptr_t, uint32);
-extern "Python" uint32 message_handler_callback (void *, int32);
+extern "Python" uint32 message_handler_callback (intptr_t, uint32);
 void set_message_handler(message_handler f);
 extern "Python" byte *script_reader_callback(const char *, int *);
 void set_script_reader(script_reader f);
 	ptr create_duel(uint32_t seed);
 void start_duel(ptr pduel, int32 options);
 void end_duel(ptr pduel);
-void get_log_message(ptr pduel, byte* buf);
+void get_log_message(ptr pduel, char* buf);
 int32 get_message(ptr pduel, byte* buf);
 uint32 process(ptr pduel);
 void new_card(ptr pduel, uint32 code, uint8 owner, uint8 playerid, uint8 location, uint8 sequence, uint8 position);
