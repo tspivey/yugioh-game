@@ -6,7 +6,7 @@ except ImportError:
 __ = lambda s: s
 
 AMOUNT_ATTRIBUTES = 7
-AMOUNT_RACES = 25
+AMOUNT_RACES = 26
 
 ATTRIBUTES_OFFSET = 1010
 
