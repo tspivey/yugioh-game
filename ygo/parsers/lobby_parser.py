@@ -866,6 +866,24 @@ def email(caller):
 	session.commit()
 	caller.connection.notify(caller.connection._("Your new email address is %s.") % (new_email,))
 
+@LobbyParser.command(names=["delete"], args_regexp="(.*)")
+def delete_account(caller):
+	if caller.args[0] != "account":
+		caller.connection.notify(caller.connection._("You must type delete account to delete your account."))
+		return
+	old_parser = caller.connection.parser
+	account = caller.connection.player.get_account()
+	caller.connection.notify(caller.connection._("Type your password to delete your account."))
+	def r(caller):
+		if not account.check_password(caller.text):
+			caller.connection.notify(caller.connection._("Incorrect password."))
+			return
+		session = caller.connection.session
+		session.delete(account)
+		session.commit()
+		caller.connection.notify(caller.connection._("Account deleted."))
+		globals.server.disconnect(caller.connection)
+	caller.connection.notify(Reader, r, prompt=caller.connection._("Password:"), no_abort=caller.connection._("Invalid command."), restore_parser=old_parser)
 
 # not the nicest way, but it works
 for key in LobbyParser.commands.keys():
