@@ -43,6 +43,7 @@ class Account(Base):
 	ip_address = Column(String(100), nullable=False, default='')
 	banned = Column(Boolean, nullable=False, default=False)
 	statistics = relationship('Statistics', cascade='all, delete-orphan', foreign_keys=[Statistics.account_id])
+	opponent_statistics = relationship('Statistics', cascade='all, delete-orphan', foreign_keys=[Statistics.opponent_id])
 
 	def set_password(self, password):
 		self.password = pbkdf2_sha256.hash(password)
