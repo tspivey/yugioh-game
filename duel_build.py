@@ -25,7 +25,7 @@ uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 s
 	if(location & LOCATION_ONFIELD)
 		pcard = ptduel->game_field->get_field_card(playerid, location, sequence);
 	else {
-		field::card_vector* lst = 0;
+		card_vector* lst = 0;
 		if(location == LOCATION_HAND )
 			lst = &ptduel->game_field->player[playerid].list_hand;
 		else if(location == LOCATION_GRAVE )
@@ -58,7 +58,7 @@ uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 s
 libraries = ['ygo'],
 library_dirs=['.'],
 source_extension='.cpp',
-include_dirs=['../ygopro-core', './core'],
+include_dirs=['../ygopro-core', './core', '/usr/include/lua5.3'],
 extra_compile_args=['-std=c++0x'],
 extra_link_args=['-Wl,-rpath,.'],
 )
