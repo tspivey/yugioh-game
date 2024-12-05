@@ -717,7 +717,7 @@ class Duel(Joinable):
 				pl.paused_parser = pl.connection.parser
 				pl.set_parser('DuelParser')
 		if not self.pause_timer:
-			self.pause_timer = reactor.callLater(600, self.end, True)
+			self.pause_timer = reactor.callLater(300, self.end, True)
 
 	def unpause(self):
 		for pl in self.players+self.tag_players:
