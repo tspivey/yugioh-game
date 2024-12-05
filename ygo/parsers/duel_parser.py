@@ -273,7 +273,7 @@ def invite(caller):
 		if target.afk is True:
 			pl.notify(pl._("%s is AFK and may not be paying attention.")%(target.nickname))
 
-		target.notify(target._("%s invites you to watch his duel. Type watch %s to do so.")%(pl.nickname, pl.nickname))
+		target.notify(target._("%s invites you to watch their duel. Type watch %s to do so.")%(pl.nickname, pl.nickname))
 
 		pl.notify(pl._("An invitation was sent to %s.")%(target.nickname))
 
