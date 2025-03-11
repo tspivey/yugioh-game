@@ -7,16 +7,16 @@ ffibuilder.set_source("_duel",
 #include "duel.h"
 #include "field.h"
 #include <vector>
-int32 is_declarable(card_data const& cd, const std::vector<uint32>& opcode);
-int32 declarable(card_data *cd, int32 size, uint32 *array) {
-	std::vector<uint32> v;
+int32_t is_declarable(card_data const& cd, const std::vector<uint64_t>& opcodes);
+int32_t declarable(card_data *cd, int32_t size, uint32_t *array) {
+	std::vector<uint64_t> v;
 	for (int i=0; i < size; i++) {
 	v.push_back(array[i]);
 	}
 	return is_declarable(*cd, v);
 }
 // modified from query_card()
-uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 sequence) {
+uint32_t query_linked_zone(intptr_t pduel, uint8_t playerid, uint8_t location, uint8_t sequence) {
 	if(playerid != 0 && playerid != 1)
 		return 0;
 	duel* ptduel = (duel*)pduel;
@@ -40,7 +40,7 @@ uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 s
 			pcard = 0;
 		else {
 			auto cit = lst->begin();
-			for(uint32 i = 0; i < sequence; ++i, ++cit);
+			for(uint32_t i = 0; i < sequence; ++i, ++cit);
 			pcard = *cit;
 		}
 	}
@@ -49,20 +49,17 @@ uint32 query_linked_zone(intptr_t pduel, uint8 playerid, uint8 location, uint8 s
 	else {
 		return 0;
 	}
-}
-	void set_setcode(struct card_data *cd, uint64 value) {
-		cd->set_setcode(value);
-	}
-
+}	
 """,
 libraries = ['ygo'],
 library_dirs=['.'],
 source_extension='.cpp',
 include_dirs=['../ygopro-core', './core', '/usr/include/lua5.3'],
-extra_compile_args=['-std=c++0x'],
+extra_compile_args=['-std=c++17'],
 extra_link_args=['-Wl,-rpath,.'],
 )
 ffibuilder.cdef("""
+typedef void* OCG_Duel;
 typedef long ptr;
 typedef uint32_t uint32;
 typedef int32_t int32;
@@ -70,47 +67,79 @@ typedef uint8_t uint8;
 typedef int32_t int32;
 typedef uint8_t byte;
 typedef uint64_t uint64;
-struct card_data {
-	uint32 code;
-	uint32 alias;
-	uint16_t setcode[16];
-	uint32 type;
-	uint32 level;
-	uint32 attribute;
-	uint32 race;
-	int32 attack;
-	int32 defense;
-	uint32 lscale;
-	uint32 rscale;
-	uint32 link_marker;
-...;
-};
+typedef struct OCG_CardData {
+        uint32_t code;
+        uint32_t alias;
+        uint16_t* setcodes;
+        uint32_t type;
+        uint32_t level;
+        uint32_t attribute;
+        uint64_t race;
+        int32_t attack;
+        int32_t defense;
+        uint32_t lscale;
+        uint32_t rscale;
+        uint32_t link_marker;
+}OCG_CardData;
+typedef struct OCG_Player {
+        uint32_t startingLP;
+        uint32_t startingDrawCount;
+        uint32_t drawCountPerTurn;
+}OCG_Player;
+typedef void (*OCG_DataReader)(void* payload, uint32_t code, OCG_CardData* data);
+typedef int (*OCG_ScriptReader)(void* payload, OCG_Duel duel, const char* name);
+typedef void (*OCG_LogHandler)(void* payload, const char* string, int type);
+typedef void (*OCG_DataReaderDone)(void* payload, OCG_CardData* data);
+typedef struct OCG_NewCardInfo {
+        uint8_t team; /* either 0 or 1 */
+        uint8_t duelist; /* index of original owner */
+        uint32_t code;
+        uint8_t con;
+        uint32_t loc;
+        uint32_t seq;
+        uint32_t pos;
+}OCG_NewCardInfo;
+typedef struct OCG_QueryInfo {
+        uint32_t flags;
+        uint8_t con;
+        uint32_t loc;
+        uint32_t seq;
+        uint32_t overlay_seq;
+}OCG_QueryInfo;
+typedef struct OCG_DuelOptions {
+        uint64_t seed[4];
+        uint64_t flags;
+        OCG_Player team1;
+        OCG_Player team2;
+        OCG_DataReader cardReader;
+        void* payload1; /* relayed to cardReader */
+        OCG_ScriptReader scriptReader;
+        void* payload2; /* relayed to scriptReader */
+        OCG_LogHandler logHandler;
+        void* payload3; /* relayed to errorHandler */
+        OCG_DataReaderDone cardReaderDone;
+        void* payload4; /* relayed to cardReaderDone */
+        uint8_t enableUnsafeLibraries;
+}OCG_DuelOptions;
 
-extern "Python" uint32 card_reader_callback(uint32, struct card_data *);
-typedef uint32 (*card_reader)(uint32, struct card_data*);
-void set_card_reader(card_reader f);
-void set_setcode(struct card_data *cd, uint64 value);
-typedef byte* (*script_reader)(const char*, int*);
+extern "Python" uint32 card_reader_callback(void *, uint32_t, struct OCG_CardData *);
+typedef uint32 (*card_reader)(void *, uint32_t, struct OCG_CardData*);
+typedef int (*script_reader)(void *, OCG_Duel, const char *);
 typedef uint32 (*message_handler)(intptr_t, uint32);
 extern "Python" uint32 message_handler_callback (intptr_t, uint32);
-void set_message_handler(message_handler f);
-extern "Python" byte *script_reader_callback(const char *, int *);
-void set_script_reader(script_reader f);
-	ptr create_duel(uint32_t seed);
-void start_duel(ptr pduel, int32 options);
-void end_duel(ptr pduel);
-void get_log_message(ptr pduel, char* buf);
-int32 get_message(ptr pduel, byte* buf);
-uint32 process(ptr pduel);
-void new_card(ptr pduel, uint32 code, uint8 owner, uint8 playerid, uint8 location, uint8 sequence, uint8 position);
-void new_tag_card(ptr pduel, uint32 code, uint8 owner, uint8 location);
-void set_player_info(ptr pduel, int32 playerid, int32 lp, int32 startcount, int32 drawcount);
-void set_responsei(ptr pduel, int32 value);
-void set_responseb(ptr pduel, byte *value);
-int32 query_card(ptr pduel, uint8 playerid, uint8 location, uint8 sequence, int32 query_flag, byte* buf, int32 use_cache);
-int32 query_field_count(ptr pduel, uint8 playerid, uint8 location);
-int32 query_field_card(ptr pduel, uint8 playerid, uint8 location, int32 query_flag, byte* buf, int32 use_cache);
-uint32 query_linked_zone(ptr pduel, uint8 playerid, uint8 location, uint8 sequence);
+extern "Python" int *script_reader_callback(void *, OCG_Duel, const char *);
+	int OCG_CreateDuel(OCG_Duel* out_ocg_duel, OCG_DuelOptions options);
+void OCG_DestroyDuel(OCG_Duel ocg_duel);
+void OCG_StartDuel(OCG_Duel ocg_duel);
+int OCG_DuelProcess(OCG_Duel ocg_duel);
+void* OCG_DuelGetMessage(OCG_Duel ocg_duel, uint32_t* length);
+void OCG_DuelNewCard(OCG_Duel ocg_duel, OCG_NewCardInfo info);
+void OCG_DuelSetResponse(OCG_Duel ocg_duel, const void* buffer, uint32_t length);
+int OCG_LoadScript(OCG_Duel ocg_duel, const char* buffer, uint32_t length, const char* name);
+uint32_t OCG_DuelQueryCount(OCG_Duel ocg_duel, uint8_t team, uint32_t loc);
+void* OCG_DuelQuery(OCG_Duel ocg_duel, uint32_t* length, OCG_QueryInfo info);
+void* OCG_DuelQueryLocation(OCG_Duel ocg_duel, uint32_t* length, OCG_QueryInfo info);
+void* OCG_DuelQueryField(OCG_Duel ocg_duel, uint32_t* length);
 int32 declarable(struct card_data *cd, int32 size, uint32 *array);
 """)
 
