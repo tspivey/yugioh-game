@@ -122,12 +122,13 @@ typedef struct OCG_DuelOptions {
         uint8_t enableUnsafeLibraries;
 }OCG_DuelOptions;
 
-extern "Python" uint32 card_reader_callback(void *, uint32_t, struct OCG_CardData *);
-typedef uint32 (*card_reader)(void *, uint32_t, struct OCG_CardData*);
+extern "Python" void card_reader_callback(void *, uint32_t, struct OCG_CardData *);
+typedef void (*card_reader)(void *, uint32_t, struct OCG_CardData*);
 typedef int (*script_reader)(void *, OCG_Duel, const char *);
 typedef uint32 (*message_handler)(intptr_t, uint32);
 extern "Python" uint32 message_handler_callback (intptr_t, uint32);
-extern "Python" int *script_reader_callback(void *, OCG_Duel, const char *);
+extern "Python" int script_reader_callback(void *, OCG_Duel, const char *);
+	extern "Python" void log_handler_callback(void *, char *, int);
 	int OCG_CreateDuel(OCG_Duel* out_ocg_duel, OCG_DuelOptions options);
 void OCG_DestroyDuel(OCG_Duel ocg_duel);
 void OCG_StartDuel(OCG_Duel ocg_duel);

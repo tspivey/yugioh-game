@@ -39,10 +39,9 @@ def parse_lflist(filename):
 def process_duel(d):
 	while d.started:
 		res = d.process()
-		flag = res & PROCESSOR_FLAG
-		if flag & PROCESSOR_END:
+		if res == 0:
 			break
-		elif flag & 0x10000000 and res != 0x10000000:
+		elif res == 1:
 			if d.keep_processing:
 				d.keep_processing = False
 				continue

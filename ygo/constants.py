@@ -95,6 +95,9 @@ class QUERY(IntFlag):
 	LSCALE = 0x200000
 	RSCALE = 0x400000
 	LINK = 0x800000
+	IS_HIDDEN = 0x1000000
+	COVER = 0x2000000
+	END = 0x80000000
 
 @unique
 class TYPE(IntFlag):

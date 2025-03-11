@@ -30,13 +30,20 @@ from .channels.tag import Tag
 from .channels.watchers import Watchers
 
 if DUEL_AVAILABLE:
+	setcodes = ffi.new("uint16_t[9]")
 	@ffi.def_extern()
-	def card_reader_callback(code, data):
+	def card_reader_callback(payload, code, data):
 		cd = data[0]
 		row = globals.language_handler.primary_database.execute('select * from datas where id=?', (code,)).fetchone()
 		cd.code = code
 		cd.alias = row['alias']
-		lib.set_setcode(data, row['setcode'])
+		setcode = row['setcode']
+		i = 0
+		while setcode != 0:
+			setcodes[i] = setcode & 0xff
+			setcode >>= 16
+			i += 1
+		setcodes[i] = 0
 		cd.type = row['type']
 		cd.level = row['level'] & 0xff
 		cd.lscale = (row['level'] >> 24) & 0xff
@@ -50,29 +57,41 @@ if DUEL_AVAILABLE:
 			cd.link_marker = 0
 		cd.race = row['race']
 		cd.attribute = row['attribute']
-		return 0
-
-	lib.set_card_reader(lib.card_reader_callback)
 
 	scriptbuf = ffi.new('char[131072]')
 	@ffi.def_extern()
-	def script_reader_callback(name, lenptr):
-		fn = ffi.string(name)
-		if not os.path.exists(fn):
-			lenptr[0] = 0
-			return ffi.NULL
-		s = open(fn, 'rb').read()
+	def script_reader_callback(payload, duel, name):
+		fn = ffi.string(name).decode('utf-8')
+#		print(f"script reader: {fn}")
+		path = find_script(fn)
+		if path is None:
+			return 0
+		load_script(duel, path, fn)
+		return 1
+
+	@ffi.def_extern()
+	def log_handler_callback(payload, msg, type):
+		msg = ffi.string(msg)
+		print(f"log: {type} {msg}")
+		return None
+
+def find_script(fn):
+	path = os.path.join('script', fn)
+	if os.path.exists(path):
+		return path
+	path = os.path.join('script', 'official', fn)
+	if os.path.exists(path):
+		return path
+	path = os.path.join('script', 'unofficial', fn)
+	if os.path.exists(path):
+		return path
+	print(f"Script {fn} not found")
+
+def load_script(duel, path, name):
+		s = open(path, 'rb').read()
 		buf = ffi.buffer(scriptbuf)
 		buf[0:len(s)] = s
-		lenptr[0] = len(s)
-		return ffi.cast('byte *', scriptbuf)
-
-	lib.set_script_reader(lib.script_reader_callback)
-	@ffi.def_extern()
-	def message_handler_callback(duel, msg):
-		print(f"mhc: {msg}")
-		return None
-	lib.set_message_handler(lib.message_handler_callback)
+		lib.OCG_LoadScript(duel, ffi.cast('char *', scriptbuf), len(s), name.encode('utf-8'))
 
 class Duel(Joinable):
 	def __init__(self, seed=None):
@@ -81,7 +100,24 @@ class Duel(Joinable):
 		if seed is None:
 			seed = random.randint(0, 0xffffffff)
 		self.seed = seed
-		self.duel = lib.create_duel(seed)
+		options = ffi.new("OCG_DuelOptions  *")
+#		options.seed[0] = seed
+		options.flags = 0
+		options.team1.startingLP = 8000
+		options.team1.startingDrawCount = 5
+		options.team1.drawCountPerTurn = 1
+		options.team2.startingLP = 8000
+		options.team2.startingDrawCount = 5
+		options.team2.drawCountPerTurn = 1
+		options.cardReader = lib.card_reader_callback
+		options.scriptReader = lib.script_reader_callback
+		options.logHandler = lib.log_handler_callback
+		options.enableUnsafeLibraries = 1
+		duel_ptr = ffi.new("OCG_Duel*")
+		res = lib.OCG_CreateDuel(duel_ptr, options[0])
+		self.duel = duel_ptr[0]
+		load_script(self.duel, "script/constant.lua", "constant.lua")
+		load_script(self.duel, "script/utility.lua", "utility.lua")
 		self.cm = callback_manager.CallbackManager()
 		self.keep_processing = False
 		self.to_ep = False
@@ -110,6 +146,7 @@ class Duel(Joinable):
 
 	def set_player_info(self, player, lp):
 		self.lp[player] = lp
+		return
 		lib.set_player_info(self.duel, player, lp, 5, 1)
 
 	def load_deck(self, player, shuffle = True, tag = False):
@@ -157,14 +194,20 @@ class Duel(Joinable):
 		else:
 			self.cards[player.duel_player] = c
 		for sc in c[::-1]:
+			info = ffi.new("OCG_NewCardInfo *")
+			info.team = player.duel_player
+			info.con = player.duel_player
+			info.duelist = 0
+			info.code = sc
+			info.pos = POSITION.FACEDOWN_DEFENSE.value
 			if tag is True:
 				if Card(sc).extra:
-					location = LOCATION.EXTRA.value
+					info.loc = LOCATION.EXTRA.value
 				else:
-					location = LOCATION.DECK.value
-				lib.new_tag_card(self.duel, sc, player.duel_player, location)
+					info.loc = LOCATION.DECK.value
 			else:
-				lib.new_card(self.duel, sc, player.duel_player, player.duel_player, LOCATION.DECK.value, 0, POSITION.FACEDOWN_DEFENSE.value)
+				info.loc = LOCATION.DECK.value
+			lib.OCG_DuelNewCard(self.duel, info[0])
 
 	def add_players(self, players, shuffle_players=True, shuffle_decks = True):
 		if len(players) == 4:
@@ -202,7 +245,7 @@ class Duel(Joinable):
 	def start(self, options):
 		if os.environ.get('DEBUG', 0):
 			self.start_debug(options)
-		lib.start_duel(self.duel, options)
+		lib.OCG_StartDuel(self.duel)
 		self.started = True
 		for i, pl in enumerate(self.players):
 			pl.notify(pl._("Duel created. You are player %d.") % i)
@@ -218,7 +261,7 @@ class Duel(Joinable):
 		if not timeout and self.pause_timer:
 			self.pause_timer.cancel()
 		self.pause_timer = None
-		lib.end_duel(self.duel)
+		lib.OCG_DestroyDuel(self.duel)
 		self.started = False
 		for pl in self.watchers:
 			if pl.watching is True:
@@ -240,9 +283,10 @@ class Duel(Joinable):
 		self.duel = None
 
 	def process(self):
-		res = lib.process(self.duel)
-		l = lib.get_message(self.duel, ffi.cast('byte *', self.buf))
-		data = ffi.unpack(self.buf, l)
+		res = lib.OCG_DuelProcess(self.duel)
+		length = ffi.new('uint32_t *')
+		buf = lib.OCG_DuelGetMessage(self.duel, length)
+		data = ffi.unpack(ffi.cast('char *', buf), length[0])
 		self.cm.call_callbacks('debug', event_type='process', result=res, data=data.decode('latin1'))
 		data = self.process_messages(data)
 		return res
@@ -250,7 +294,11 @@ class Duel(Joinable):
 	@handle_error
 	def process_messages(self, data):
 		while data:
+			length = struct.unpack('i', data[:4])[0]
+			data = data[4:]
+			if not data: break
 			msg = int(data[0])
+			print(f"process {msg}")
 			fn = self.message_map.get(msg)
 			if fn:
 				data = fn(data)
@@ -261,12 +309,12 @@ class Duel(Joinable):
 
 	def read_cardlist(self, data, extra=False, extra8=False):
 		res = []
-		size = self.read_u8(data)
+		size = self.read_u32(data)
 		for i in range(size):
 			code = self.read_u32(data)
 			controller = self.read_u8(data)
 			location = LOCATION(self.read_u8(data))
-			sequence = self.read_u8(data)
+			sequence = self.read_u32(data)
 			card = self.get_card(controller, location, sequence)
 			if extra:
 				if extra8:
@@ -285,6 +333,58 @@ class Duel(Joinable):
 	def read_u32(self, buf):
 		return struct.unpack('I', buf.read(4))[0]
 
+	def read_u64(self, buf):
+		return struct.unpack('Q', buf.read(8))[0]
+
+	def read_query(self, buf):
+		begin = buf.tell()
+		size = self.read_u16(buf)
+		if size == 0:
+			return None, None
+		type = QUERY(self.read_u32(buf))
+		if type in (QUERY.CODE, QUERY.POSITION, QUERY.ALIAS, QUERY.TYPE, QUERY.LEVEL, QUERY.RANK,
+		QUERY.ATTRIBUTE, QUERY.ATTACK, QUERY.DEFENSE, QUERY.BASE_ATTACK, QUERY.BASE_DEFENSE,
+		QUERY.REASON, QUERY.COVER, QUERY.LSCALE, QUERY.RSCALE):
+			data = (self.read_u32(buf),)
+		elif type == QUERY.EQUIP_CARD:
+			# Controller, location, sequence, position
+			data = (self.read_u8(buf), self.read_u8(buf), self.read_u32(buf), self.read_u32(buf))
+		elif type == QUERY.OVERLAY_CARD:
+			xyz_list = []
+			xyz = self.read_u32(buf)
+			for i in range(xyz):
+				xyz_list.append(self.read_u32(buf))
+			data = (xyz_list,)
+		elif type == QUERY.COUNTERS:
+			counters = []
+			num_counters = self.read_u32(buf)
+			for i in range(num_counters):
+				counters.append(self.read_u32(buf))
+			data = (counters,)
+		elif type == QUERY.LINK:
+			data = (self.read_u32(buf), self.read_u32(buf))
+		elif type == QUERY.END:
+			data = ()
+		else: # Unknown flag
+			raise RuntimeError(f"Unknown flag: {type}")
+		# Check if we read all the data.
+		expected = 2 + size
+		data_read = buf.tell() - begin
+		if data_read != expected:
+			raise RuntimeError(f"Unexpected length read: type {type} expected {expected} read {data_read}")
+		return type, data
+
+	def read_queries(self, buf):
+		d = {}
+		while True:
+			type, data = self.read_query(buf)
+			if type is None:
+				break
+			if type == QUERY.END:
+				break
+			d[type] = data
+		return d
+
 	def set_responsei(self, r):
 		lib.set_responsei(self.duel, r)
 		self.cm.call_callbacks('debug', event_type='set_responsei', response=r)
@@ -297,56 +397,58 @@ class Duel(Joinable):
 	@handle_error
 	def get_cards_in_location(self, player, location):
 		cards = []
-		flags = QUERY.CODE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.ATTACK | QUERY.DEFENSE | QUERY.EQUIP_CARD | QUERY.OVERLAY_CARD | QUERY.COUNTERS | QUERY.LSCALE | QUERY.RSCALE | QUERY.LINK
-		bl = lib.query_field_card(self.duel, player, location.value, flags.value, ffi.cast('byte *', self.buf), False)
-		buf = io.BytesIO(ffi.unpack(self.buf, bl))
+		info = ffi.new('OCG_QueryInfo *')
+		info.flags = (QUERY.CODE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.ATTACK | QUERY.DEFENSE | QUERY.EQUIP_CARD | QUERY.OVERLAY_CARD | QUERY.COUNTERS | QUERY.LSCALE | QUERY.RSCALE | QUERY.LINK).value
+		info.con = player
+		info.loc = location.value
+		length = ffi.new('uint32_t *')
+		data = lib.OCG_DuelQueryLocation(self.duel, length, info[0])
+		buf = io.BytesIO(ffi.unpack(ffi.cast('char *', data), length[0]))
+		size = self.read_u32(buf)
+		begin = buf.tell()
+		seq = -1
 		while True:
-			if buf.tell() == bl:
+			if buf.tell() == begin + size:
 				break
-			length = self.read_u32(buf)
-			if length == 4:
-				continue #No card here
-			f = self.read_u32(buf)
-			code = self.read_u32(buf)
+			queries = self.read_queries(buf)
+			seq += 1
+			if not queries: # Nothing here
+				continue
+			code = queries[QUERY.CODE][0]
 			card = Card(code)
-			position = self.read_u32(buf)
-			card.set_location(position)
-			level = self.read_u32(buf)
+			card.position = POSITION(queries[QUERY.POSITION][0])
+			card.sequence = seq
+			card.location = location
+			card.controller = player
+			level = queries[QUERY.LEVEL][0]
 			if (level & 0xff) > 0:
 				card.level = level & 0xff
-			rank = self.read_u32(buf)
+			rank = queries[QUERY.RANK][0]
 			if (rank & 0xff) > 0:
 				card.level = rank & 0xff
-			card.attack = self.read_u32(buf)
-			card.defense = self.read_u32(buf)
+			card.attack = queries[QUERY.ATTACK][0]
+			card.defense = queries[QUERY.DEFENSE][0]
 
 			card.equip_target = None
 
-			if f & QUERY.EQUIP_CARD: # optional
-
-				equip_target = self.read_u32(buf)
-				pl = equip_target & 0xff
-				loc = LOCATION((equip_target >> 8) & 0xff)
-				seq = (equip_target >> 16) & 0xff
-				card.equip_target = self.get_card(pl, loc, seq)
+			ec, el, es, ep = queries[QUERY.EQUIP_CARD]
+			if el > 0:
+				card.equip_target = self.get_card(ec, el, es)
 
 			card.xyz_materials = []
 
-			xyz = self.read_u32(buf)
+			for code in queries[QUERY.OVERLAY_CARD][0]:
+				card.xyz_materials.append(Card(code))
 
-			for i in range(xyz):
-				card.xyz_materials.append(Card(self.read_u32(buf)))
-
-			cs = self.read_u32(buf)
 			card.counters = []
-			for i in range(cs):
-				card.counters.append(self.read_u32(buf))
+			for c in queries[QUERY.COUNTERS][0]:
+				card.counters.append(c)
 
-			card.lscale = self.read_u32(buf)
-			card.rscale = self.read_u32(buf)
+			card.lscale = queries[QUERY.LSCALE][0]
+			card.rscale = queries[QUERY.RSCALE][0]
 
-			link = self.read_u32(buf)
-			link_marker = self.read_u32(buf)
+			link = queries[QUERY.LINK][0]
+			link_marker = queries[QUERY.LINK][1]
 
 			if (link & 0xff) > 0:
 				card.level = link & 0xff
@@ -359,31 +461,34 @@ class Duel(Joinable):
 
 	@handle_error
 	def get_card(self, player, loc, seq):
-		flags = QUERY.CODE | QUERY.ATTACK | QUERY.DEFENSE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.LSCALE | QUERY.RSCALE | QUERY.LINK
-		bl = lib.query_card(self.duel, player, loc.value, seq, flags.value, ffi.cast('byte *', self.buf), False)
-		if bl == 0:
+		info = ffi.new('OCG_QueryInfo *')
+		info.flags = (QUERY.CODE | QUERY.ATTACK | QUERY.DEFENSE | QUERY.POSITION | QUERY.LEVEL | QUERY.RANK | QUERY.LSCALE | QUERY.RSCALE | QUERY.LINK).value
+		info.con = player
+		info.loc = loc.value
+		info.seq = seq
+		length = ffi.new('uint32_t *')
+		data = lib.OCG_DuelQuery(self.duel, length, info[0])
+		if length[0] == 0:
 			return
-		buf = io.BytesIO(ffi.unpack(self.buf, bl))
-		f = self.read_u32(buf)
-		if f == 4:
-			return
-		f = self.read_u32(buf)
-		code = self.read_u32(buf)
+		buf = io.BytesIO(ffi.unpack(ffi.cast('char *', data), length[0]))
+		queries = self.read_queries(buf)
+		code = queries[QUERY.CODE][0]
 		card = Card(code)
-		position = self.read_u32(buf)
-		card.set_location(position)
-		level = self.read_u32(buf)
+		card.position = queries[QUERY.POSITION][0]
+		card.location = loc
+		card.controller = player
+		card.sequence = seq
+		level = queries[QUERY.LEVEL][0]
 		if (level & 0xff) > 0:
 			card.level = level & 0xff
-		rank = self.read_u32(buf)
+		rank = queries[QUERY.RANK][0]
 		if (rank & 0xff) > 0:
 			card.level = rank & 0xff
-		card.attack = self.read_u32(buf)
-		card.defense = self.read_u32(buf)
-		card.lscale = self.read_u32(buf)
-		card.rscale = self.read_u32(buf)
-		link = self.read_u32(buf)
-		link_marker = self.read_u32(buf)
+		card.attack = queries[QUERY.ATTACK][0]
+		card.defense = queries[QUERY.DEFENSE][0]
+		card.lscale = queries[QUERY.LSCALE][0]
+		card.rscale = queries[QUERY.RSCALE][0]
+		link, link_marker = queries[QUERY.LINK]
 		if (link & 0xff) > 0:
 			card.level = link & 0xff
 		if link_marker > 0:
