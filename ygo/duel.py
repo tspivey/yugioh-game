@@ -17,7 +17,7 @@ import natsort
 from twisted.internet import reactor
 
 from . import callback_manager
-from .card import Card
+from .card import Card, Location
 from .constants import *
 from .constants import __
 from .duel_reader import DuelReader
@@ -101,7 +101,7 @@ class Duel(Joinable):
 			seed = random.randint(0, 0xffffffff)
 		self.seed = seed
 		options = ffi.new("OCG_DuelOptions  *")
-#		options.seed[0] = seed
+		options.seed[0] = 1
 		options.flags = 0
 		options.team1.startingLP = 8000
 		options.team1.startingDrawCount = 5
@@ -288,6 +288,7 @@ class Duel(Joinable):
 		buf = lib.OCG_DuelGetMessage(self.duel, length)
 		data = ffi.unpack(ffi.cast('char *', buf), length[0])
 		self.cm.call_callbacks('debug', event_type='process', result=res, data=data.decode('latin1'))
+		print(f"process: res={res} length={length[0]}")
 		data = self.process_messages(data)
 		return res
 
@@ -307,20 +308,24 @@ class Duel(Joinable):
 				data = b''
 		return data
 
-	def read_cardlist(self, data, extra=False, extra8=False):
+	def read_cardlist(self, data, extra=False, extra8=False, seq8=False):
 		res = []
 		size = self.read_u32(data)
 		for i in range(size):
 			code = self.read_u32(data)
 			controller = self.read_u8(data)
 			location = LOCATION(self.read_u8(data))
-			sequence = self.read_u32(data)
+			if seq8: # for repositionable in MSG_SELECT_IDLECMD
+				sequence = self.read_u8(data)
+			else:
+				sequence = self.read_u32(data)
 			card = self.get_card(controller, location, sequence)
 			if extra:
 				if extra8:
 					card.data = self.read_u8(data)
 				else:
-					card.data = self.read_u32(data)
+					card.data = self.read_u64(data)
+					card.client_mode = self.read_u8(data)
 			res.append(card)
 		return res
 
@@ -385,13 +390,20 @@ class Duel(Joinable):
 			d[type] = data
 		return d
 
+	def read_location(self, data):
+		controller = self.read_u8(data)
+		location = LOCATION(self.read_u8(data))
+		sequence = self.read_u32(data)
+		position = POSITION(self.read_u32(data))
+		return Location(controller, location, sequence, position)
+
 	def set_responsei(self, r):
-		lib.set_responsei(self.duel, r)
+		buf = struct.pack('i', r)
+		lib.OCG_DuelSetResponse(self.duel, buf, 4)
 		self.cm.call_callbacks('debug', event_type='set_responsei', response=r)
 
 	def set_responseb(self, r):
-		buf = ffi.new('char[64]', r)
-		lib.set_responseb(self.duel, ffi.cast('byte *', buf))
+		lib.OCG_DuelSetResponse(self.duel, r, len(r))
 		self.cm.call_callbacks('debug', event_type='set_responseb', response=r.decode('latin1'))
 
 	@handle_error

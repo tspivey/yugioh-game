@@ -7,7 +7,7 @@ def msg_hint(self, data):
 	data = io.BytesIO(data[1:])
 	msg = self.read_u8(data)
 	player = self.read_u8(data)
-	value = self.read_u32(data)
+	value = self.read_u64(data)
 	self.cm.call_callbacks('hint', msg, player, value)
 	return data.read()
 

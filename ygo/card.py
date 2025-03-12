@@ -28,10 +28,10 @@ class Card(object):
 			self.strings.append(row[i])
 
 	def set_location(self, location):
-		self.controller = location & 0xff
-		self.location = LOCATION((location >> 8) & 0xff)
-		self.sequence = (location >> 16) & 0xff
-		self.position = POSITION((location >> 24) & 0xff)
+		self.controller = location.controller
+		self.location = location.location
+		self.sequence = location.sequence
+		self.position = location.position
 
 	def __eq__(self, other):
 		return self.code == other.code and self.location == other.location and self.sequence == other.sequence
@@ -227,3 +227,10 @@ class Card(object):
 	@property
 	def extra(self):
 		return bool(self.type & TYPE.EXTRA)
+
+class Location:
+	def __init__(self, controller, location, sequence, position):
+		self.controller = controller
+		self.location = location
+		self.sequence = sequence
+		self.position = position

@@ -9,20 +9,20 @@ from ygo.utils import process_duel
 def msg_select_chain(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
-	size = self.read_u8(data)
 	spe_count = self.read_u8(data)
 	forced = self.read_u8(data)
 	hint_timing = self.read_u32(data)
 	other_timing = self.read_u32(data)
+	size = self.read_u32(data)
 	chains = []
 	for i in range(size):
-		et = self.read_u8(data)
 		code = self.read_u32(data)
-		loc = self.read_u32(data)
+		loc = self.read_location(data)
 		card = Card(code)
 		card.set_location(loc)
-		desc = self.read_u32(data)
-		chains.append((et, card, desc))
+		desc = self.read_u64(data)
+		client_mode = self.read_u8(data)
+		chains.append((card, desc))
 	self.cm.call_callbacks('select_chain', player, size, spe_count, forced, chains)
 	return data.read()
 
@@ -37,12 +37,12 @@ def select_chain(self, player, size, spe_count, forced, chains):
 	if not op.seen_waiting:
 		op.notify(op._("Waiting for opponent."))
 		op.seen_waiting = True
-	chain_cards = [c[1] for c in chains]
+	chain_cards = [c[0] for c in chains]
 	specs = {}
 	for i in range(len(chains)):
-		card = chains[i][1]
+		card = chains[i][0]
 		card.chain_index = i
-		desc = chains[i][2]
+		desc = chains[i][1]
 		cs = card.get_spec(pl)
 		chain_count = chain_cards.count(card)
 		if chain_count > 1:

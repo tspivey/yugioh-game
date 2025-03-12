@@ -4,11 +4,10 @@ from ygo.constants import AMOUNT_ATTRIBUTES, AMOUNT_RACES
 
 def msg_card_hint(self, data):
 	data = io.BytesIO(data[1:])
-	loc = self.read_u32(data)
-	pl, loc, seq, pos = self.unpack_location(loc)
+	loc = self.read_location(data)
 	type = self.read_u8(data)
-	value = self.read_u32(data)
-	card = self.get_card(pl, loc, seq)
+	value = self.read_u64(data)
+	card = self.get_card(loc.controller, loc.location, loc.sequence)
 	if card:
 		self.cm.call_callbacks('card_hint', card, type, value)
 	return data.read()

@@ -10,7 +10,7 @@ def msg_summoning(self, data, special=False):
 	data = io.BytesIO(data[1:])
 	code = self.read_u32(data)
 	card = Card(code)
-	card.set_location(self.read_u32(data))
+	card.set_location(self.read_location(data))
 	self.cm.call_callbacks('summoning', card, special=special)
 	return data.read()
 

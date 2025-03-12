@@ -5,7 +5,7 @@ from ygo.card import Card
 def msg_set(self, data):
 	data = io.BytesIO(data[1:])
 	code = self.read_u32(data)
-	loc = self.read_u32(data)
+	loc = self.read_location(data)
 	card = Card(code)
 	card.set_location(loc)
 	self.cm.call_callbacks('set', card)

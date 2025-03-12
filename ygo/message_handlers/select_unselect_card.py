@@ -1,4 +1,5 @@
 import io
+import struct
 from twisted.internet import reactor
 
 from ygo.card import Card
@@ -11,21 +12,21 @@ def msg_select_unselect_card(self, data):
   player = self.read_u8(data)
   finishable = self.read_u8(data)
   cancelable = self.read_u8(data)
-  min = self.read_u8(data)
-  max = self.read_u8(data)
-  select_size = self.read_u8(data)
+  min = self.read_u32(data)
+  max = self.read_u32(data)
+  select_size = self.read_u32(data)
   select_cards = []
   for i in range(select_size):
     code = self.read_u32(data)
-    loc = self.read_u32(data)
+    loc = self.read_location(data)
     card = Card(code)
     card.set_location(loc)
     select_cards.append(card)
-  unselect_size = self.read_u8(data)
+  unselect_size = self.read_u32(data)
   unselect_cards = []
   for i in range(unselect_size):
     code = self.read_u32(data)
-    loc = self.read_u32(data)
+    loc = self.read_location(data)
     card = Card(code)
     card.set_location(loc)
     unselect_cards.append(card)
@@ -65,7 +66,7 @@ def select_unselect_card(self, player, finishable, cancelable, min, max, select_
       return error(pl._("Invalid command"))
     if c < 1 or c > len(pl.card_list):
       return error(pl._("Number not in range"))
-    buf = bytes([1, c - 1])
+    buf = struct.pack('ii', 1, c - 1)
     self.set_responseb(buf)
     reactor.callLater(0, process_duel, self)
   return prompt()

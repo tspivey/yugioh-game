@@ -7,9 +7,9 @@ def msg_swap(self, data):
 	data = io.BytesIO(data[1:])
 
 	code1 = self.read_u32(data)
-	location1 = self.read_u32(data)
+	location1 = self.read_location(data)
 	code2 = self.read_u32(data)
-	location2 = self.read_u32(data)
+	location2 = self.read_location(data)
 
 	card1 = Card(code1)
 	card1.set_location(location1)

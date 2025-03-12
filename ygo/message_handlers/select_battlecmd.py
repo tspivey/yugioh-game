@@ -4,7 +4,7 @@ def msg_select_battlecmd(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
 	activatable = self.read_cardlist(data, True)
-	attackable = self.read_cardlist(data, True, True)
+	attackable = self.read_cardlist(data, True, True, seq8=True)
 	to_m2 = self.read_u8(data)
 	to_ep = self.read_u8(data)
 	self.cm.call_callbacks('select_battlecmd', player, activatable, attackable, to_m2, to_ep)

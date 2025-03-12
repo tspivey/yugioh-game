@@ -1,8 +1,9 @@
 import io
+import struct
 from twisted.internet import reactor
 
 from ygo.card import Card
-from ygo.constants import LOCATION
+from ygo.constants import LOCATION, POSITION
 from ygo.duel_reader import DuelReader
 from ygo.parsers.duel_parser import DuelParser
 from ygo.utils import process_duel, parse_ints
@@ -11,17 +12,17 @@ def msg_select_tribute(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
 	cancelable = self.read_u8(data)
-	min = self.read_u8(data)
-	max = self.read_u8(data)
-	size = self.read_u8(data)
+	min = self.read_u32(data)
+	max = self.read_u32(data)
+	size = self.read_u32(data)
 	cards = []
 	for i in range(size):
 		code = self.read_u32(data)
 		card = Card(code)
 		card.controller = self.read_u8(data)
 		card.location = LOCATION(self.read_u8(data))
-		card.sequence = self.read_u8(data)
-		card.position = self.get_card(card.controller, card.location, card.sequence).position
+		card.sequence = self.read_u32(data)
+		card.position = POSITION(self.read_u32(data))
 		card.release_param = self.read_u8(data)
 		cards.append(card)
 	self.cm.call_callbacks('select_tribute', player, cancelable, min, max, cards)
@@ -31,15 +32,17 @@ def msg_select_card(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
 	cancelable = self.read_u8(data)
-	min = self.read_u8(data)
-	max = self.read_u8(data)
-	size = self.read_u8(data)
+	min = self.read_u32(data)
+	max = self.read_u32(data)
+	size = self.read_u32(data)
 	cards = []
 	for i in range(size):
 		code = self.read_u32(data)
-		loc = self.read_u32(data)
 		card = Card(code)
-		card.set_location(loc)
+		card.controller = self.read_u8(data)
+		card.location = LOCATION(self.read_u8(data))
+		card.sequence = self.read_u32(data)
+		card.position = POSITION(self.read_u32(data))
 		cards.append(card)
 	self.cm.call_callbacks('select_card', player, cancelable, min, max, cards)
 	return data.read()
@@ -67,11 +70,12 @@ def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribut
 			return error(pl._("Please enter between %d and %d cards.") % (min_cards, max_cards))
 		if cds and (min(cds) < 0 or max(cds) > len(cards) - 1):
 			return error(pl._("Invalid value."))
-		buf = bytes([len(cds)])
+		buf = struct.pack('i', 2)
+		buf += struct.pack('i', len(cds))
 		tribute_value = 0
 		for i in cds:
 			tribute_value += (cards[i].release_param if is_tribute else 0)
-			buf += bytes([i])
+			buf += struct.pack('i', i)
 		if is_tribute and tribute_value < min_cards:
 			return error(pl._("Not enough tributes."))
 		self.set_responseb(buf)

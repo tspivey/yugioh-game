@@ -8,8 +8,8 @@ import ygo.exceptions
 def msg_move(self, data):
 	data = io.BytesIO(data[1:])
 	code = self.read_u32(data)
-	location = self.read_u32(data)
-	newloc = self.read_u32(data)
+	location = self.read_location(data)
+	newloc = self.read_location(data)
 	reason = REASON(self.read_u32(data))
 	self.cm.call_callbacks('move', code, location, newloc, reason)
 	return data.read()

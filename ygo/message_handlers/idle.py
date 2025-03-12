@@ -6,7 +6,7 @@ def msg_idlecmd(self, data):
 	player = self.read_u8(data)
 	summonable = self.read_cardlist(data)
 	spsummon = self.read_cardlist(data)
-	repos = self.read_cardlist(data)
+	repos = self.read_cardlist(data, seq8=True)
 	idle_mset = self.read_cardlist(data)
 	idle_set = self.read_cardlist(data)
 	idle_activate = self.read_cardlist(data, True)

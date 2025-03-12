@@ -9,8 +9,8 @@ def msg_select_effectyn(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
 	card = Card(self.read_u32(data))
-	card.set_location(self.read_u32(data))
-	desc = self.read_u32(data)
+	card.set_location(self.read_location(data))
+	desc = self.read_u64(data)
 	self.cm.call_callbacks('select_effectyn', player, card, desc)
 	return data.read()
 

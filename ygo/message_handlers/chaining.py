@@ -7,7 +7,7 @@ def msg_chaining(self, data):
 	data = io.BytesIO(data[1:])
 	code = self.read_u32(data)
 	card = Card(code)
-	card.set_location(self.read_u32(data))
+	card.set_location(self.read_location(data))
 	tc = self.read_u8(data)
 	tl = self.read_u8(data)
 	ts = self.read_u8(data)

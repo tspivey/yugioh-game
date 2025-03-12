@@ -5,11 +5,8 @@ from ygo.constants import LOCATION
 def msg_flipsummoning(self, data):
 	data = io.BytesIO(data[1:])
 	code = self.read_u32(data)
-	location = self.read_u32(data)
-	c = location & 0xff
-	loc = LOCATION((location >> 8) & 0xff)
-	seq = (location >> 16) & 0xff
-	card = self.get_card(c, loc, seq)
+	location = self.read_location(data)
+	card = self.get_card(location.controller, location.location, location.sequence)
 	self.cm.call_callbacks('flipsummoning', card)
 	return data.read()
 
