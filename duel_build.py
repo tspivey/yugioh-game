@@ -6,52 +6,10 @@ ffibuilder.set_source("_duel",
 #include "card.h"
 #include "duel.h"
 #include "field.h"
-#include <vector>
-int32_t is_declarable(card_data const& cd, const std::vector<uint64_t>& opcodes);
-int32_t declarable(card_data *cd, int32_t size, uint32_t *array) {
-	std::vector<uint64_t> v;
-	for (int i=0; i < size; i++) {
-	v.push_back(array[i]);
-	}
-	return is_declarable(*cd, v);
-}
-// modified from query_card()
-uint32_t query_linked_zone(intptr_t pduel, uint8_t playerid, uint8_t location, uint8_t sequence) {
-	if(playerid != 0 && playerid != 1)
-		return 0;
-	duel* ptduel = (duel*)pduel;
-	card* pcard = 0;
-	location &= 0x7f;
-	if(location & LOCATION_ONFIELD)
-		pcard = ptduel->game_field->get_field_card(playerid, location, sequence);
-	else {
-		card_vector* lst = 0;
-		if(location == LOCATION_HAND )
-			lst = &ptduel->game_field->player[playerid].list_hand;
-		else if(location == LOCATION_GRAVE )
-			lst = &ptduel->game_field->player[playerid].list_grave;
-		else if(location == LOCATION_REMOVED )
-			lst = &ptduel->game_field->player[playerid].list_remove;
-		else if(location == LOCATION_EXTRA )
-			lst = &ptduel->game_field->player[playerid].list_extra;
-		else if(location == LOCATION_DECK )
-			lst = &ptduel->game_field->player[playerid].list_main;
-		if(!lst || sequence > lst->size())
-			pcard = 0;
-		else {
-			auto cit = lst->begin();
-			for(uint32_t i = 0; i < sequence; ++i, ++cit);
-			pcard = *cit;
-		}
-	}
-	if(pcard)
-		return pcard->get_linked_zone();
-	else {
-		return 0;
-	}
-}	
+extern "C" int32_t declarable(card_data *cd, int32_t size, uint32_t *array);
+uint32_t query_linked_zone(OCG_Duel pduel, uint8_t playerid, uint8_t location, uint8_t sequence);
 """,
-libraries = ['ygo'],
+libraries = ['ocgcore'],
 library_dirs=['.'],
 source_extension='.cpp',
 include_dirs=['../ygopro-core', './core', '/usr/include/lua5.3'],
