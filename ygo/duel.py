@@ -99,10 +99,11 @@ class Duel(Joinable):
 		Joinable.__init__(self)
 		self.buf = ffi.new('char[]', 4096)
 		if seed is None:
-			seed = random.randint(0, 0xffffffff)
+			seed = (random.randint(0, 2**64), random.randint(0, 2**64), random.randint(0, 2**64), random.randint(0, 2**64))
 		self.seed = seed
 		options = ffi.new("OCG_DuelOptions  *")
-		options.seed[0] = 1
+		for i in range(4):
+			options.seed[i] = seed[i]
 		options.flags = DuelOptions.DUEL_MODE_MR5
 		options.team1.startingLP = 8000
 		options.team1.startingDrawCount = 5
@@ -114,11 +115,7 @@ class Duel(Joinable):
 		options.scriptReader = lib.script_reader_callback
 		options.logHandler = lib.log_handler_callback
 		options.enableUnsafeLibraries = 1
-		duel_ptr = ffi.new("OCG_Duel*")
-		res = lib.OCG_CreateDuel(duel_ptr, options[0])
-		self.duel = duel_ptr[0]
-		load_script(self.duel, "script/constant.lua", "constant.lua")
-		load_script(self.duel, "script/utility.lua", "utility.lua")
+		self.options = options
 		self.cm = callback_manager.CallbackManager()
 		self.keep_processing = False
 		self.to_ep = False
@@ -147,8 +144,10 @@ class Duel(Joinable):
 
 	def set_player_info(self, player, lp):
 		self.lp[player] = lp
-		return
-		lib.set_player_info(self.duel, player, lp, 5, 1)
+		if player == 0:
+			self.options.team1.startingLP = lp
+		elif player == 1:
+			self.options.team2.startingLP = lp
 
 	def load_deck(self, player, shuffle = True, tag = False):
 		full_deck = player.deck['cards'][:]
@@ -243,7 +242,14 @@ class Duel(Joinable):
 				self.tags[i].add_recipient(self.tag_players[i])
 				self.load_deck(self.tag_players[i], shuffle_decks, True)
 
-	def start(self, options):
+	def create(self, rules):
+		duel_ptr = ffi.new("OCG_Duel*")
+		res = lib.OCG_CreateDuel(duel_ptr, self.options[0])
+		self.duel = duel_ptr[0]
+		load_script(self.duel, "script/constant.lua", "constant.lua")
+		load_script(self.duel, "script/utility.lua", "utility.lua")
+
+	def start(self):
 		if os.environ.get('DEBUG', 0):
 			self.start_debug(options)
 		lib.OCG_StartDuel(self.duel)

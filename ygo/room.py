@@ -1,6 +1,6 @@
 import random
 
-from .constants import __
+from .constants import __, DuelOptions
 from .duel import Duel, DUEL_AVAILABLE
 from .duel_reader import DuelReader
 from . import globals
@@ -180,9 +180,10 @@ class Room(Joinable):
 			random.shuffle(self.teams[1])
 			random.shuffle(self.teams[2])
 			duel = Duel()
-			duel.add_players(self.teams[start_team]+self.teams[3-start_team], shuffle_players=False)
 			duel.set_player_info(0, self.lp[0])
 			duel.set_player_info(1, self.lp[1])
+			duel.create(self.get_rules())
+			duel.add_players(self.teams[start_team]+self.teams[3-start_team], shuffle_players=False)
 			duel.room = self
 
 			if not self.private:
@@ -194,7 +195,7 @@ class Room(Joinable):
 					pl1 = duel.players[1].nickname
 				globals.server.challenge.send_message(None, __("The duel between {player1} and {player2} has begun!"), player1 = pl0, player2 = pl1)
 
-			duel.start(((self.rules&0xff)<<16)+(self.options&0xffff))
+			duel.start()
 
 			duel.private = self.private
 
@@ -214,6 +215,23 @@ class Room(Joinable):
 			self.started = False
 			for p in self.get_all_players():
 				p.notify(p._("Duels aren't available right now."))
+
+	def get_rules(self):
+		if self.rules == 0:
+			rules = DuelOptions.DUEL_MODE_MR5
+		elif self.rules == 1:
+			rules = DuelOptions.DUEL_MODE_MR1
+		elif self.rules == 2:
+			rules = DuelOptions.DUEL_MODE_MR2
+		elif self.rules == 3:
+			rules = DuelOptions.DUEL_MODE_MR3
+		elif self.rules == 4:
+			rules = DuelOptions.DUEL_MODE_MR4
+		elif self.rules == 5:
+			rules = DuelOptions.DUEL_MODE_MR5
+		else:
+			rules = DuelOptions.DUEL_MODE_MR5
+		return rules
 
 	# restore this room to a specific player
 	# called by every duel after the duel finished
