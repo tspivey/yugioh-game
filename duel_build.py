@@ -7,7 +7,7 @@ ffibuilder.set_source("_duel",
 #include "duel.h"
 #include "field.h"
 extern "C" int32_t declarable(card_data *cd, int32_t size, uint32_t *array);
-uint32_t query_linked_zone(OCG_Duel pduel, uint8_t playerid, uint8_t location, uint8_t sequence);
+extern "C" uint32_t query_linked_zone(OCG_Duel pduel, uint8_t playerid, uint8_t location, uint8_t sequence);
 """,
 libraries = ['ocgcore'],
 library_dirs=['.'],
@@ -100,6 +100,7 @@ void* OCG_DuelQuery(OCG_Duel ocg_duel, uint32_t* length, OCG_QueryInfo info);
 void* OCG_DuelQueryLocation(OCG_Duel ocg_duel, uint32_t* length, OCG_QueryInfo info);
 void* OCG_DuelQueryField(OCG_Duel ocg_duel, uint32_t* length);
 int32 declarable(struct card_data *cd, int32 size, uint32 *array);
+uint32_t query_linked_zone(OCG_Duel pduel, uint8_t playerid, uint8_t location, uint8_t sequence);
 """)
 
 if __name__ == "__main__":
