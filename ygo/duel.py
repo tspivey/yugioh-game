@@ -732,14 +732,14 @@ class Duel(Joinable):
 
 	def show_score(self, pl):
 		player = pl.duel_player
-		deck = lib.query_field_count(self.duel, player, LOCATION.DECK.value)
-		odeck = lib.query_field_count(self.duel, 1 - player, LOCATION.DECK.value)
-		grave = lib.query_field_count(self.duel, player, LOCATION.GRAVE.value)
-		ograve = lib.query_field_count(self.duel, 1 - player, LOCATION.GRAVE.value)
-		hand = lib.query_field_count(self.duel, player, LOCATION.HAND.value)
-		ohand = lib.query_field_count(self.duel, 1 - player, LOCATION.HAND.value)
-		removed = lib.query_field_count(self.duel, player, LOCATION.REMOVED.value)
-		oremoved = lib.query_field_count(self.duel, 1 - player, LOCATION.REMOVED.value)
+		deck = lib.OCG_DuelQueryCount(self.duel, player, LOCATION.DECK.value)
+		odeck = lib.OCG_DuelQueryCount(self.duel, 1 - player, LOCATION.DECK.value)
+		grave = lib.OCG_DuelQueryCount(self.duel, player, LOCATION.GRAVE.value)
+		ograve = lib.OCG_DuelQueryCount(self.duel, 1 - player, LOCATION.GRAVE.value)
+		hand = lib.OCG_DuelQueryCount(self.duel, player, LOCATION.HAND.value)
+		ohand = lib.OCG_DuelQueryCount(self.duel, 1 - player, LOCATION.HAND.value)
+		removed = lib.OCG_DuelQueryCount(self.duel, player, LOCATION.REMOVED.value)
+		oremoved = lib.OCG_DuelQueryCount(self.duel, 1 - player, LOCATION.REMOVED.value)
 		if pl.watching:
 			if self.tag is True:
 				nick0 = pl._("team %s")%(self.players[player].nickname+", "+self.tag_players[player].nickname)
