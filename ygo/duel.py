@@ -44,6 +44,7 @@ if DUEL_AVAILABLE:
 			setcode >>= 16
 			i += 1
 		setcodes[i] = 0
+		cd.setcodes = setcodes
 		cd.type = row['type']
 		cd.level = row['level'] & 0xff
 		cd.lscale = (row['level'] >> 24) & 0xff

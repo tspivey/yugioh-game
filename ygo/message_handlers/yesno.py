@@ -8,7 +8,7 @@ from ygo.utils import process_duel
 def msg_yesno(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
-	desc = self.read_u32(data)
+	desc = self.read_u64(data)
 	self.cm.call_callbacks('yesno', player, desc)
 	return data.read()
 
