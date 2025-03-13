@@ -40,7 +40,7 @@ if DUEL_AVAILABLE:
 		setcode = row['setcode']
 		i = 0
 		while setcode != 0:
-			setcodes[i] = setcode & 0xff
+			setcodes[i] = setcode & 0xffff
 			setcode >>= 16
 			i += 1
 		setcodes[i] = 0
