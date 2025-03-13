@@ -103,7 +103,7 @@ class Duel(Joinable):
 		self.seed = seed
 		options = ffi.new("OCG_DuelOptions  *")
 		options.seed[0] = 1
-		options.flags = 0
+		options.flags = DuelOptions.DUEL_MODE_MR5
 		options.team1.startingLP = 8000
 		options.team1.startingDrawCount = 5
 		options.team1.drawCountPerTurn = 1
