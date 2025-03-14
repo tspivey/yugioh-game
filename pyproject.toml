@@ -1,0 +1,26 @@
+[project]
+name = "yugioh-game"
+version = "0.1.0"
+description = "Add your description here"
+readme = "readme.md"
+requires-python = "~=3.10"
+dependencies = [
+    "aenum==2.2.1 ; python_full_version < '3.6'",
+    "alembic==1.0.10",
+    "attrs==17.2.0",
+    "autobahn==17.9.2",
+    "babel>=2.17.0",
+    "cffi>=1.17.1",
+    "gsb",
+    "mailchecker>=6.0.16",
+    "natsort==5.1.0",
+    "passlib==1.7.1",
+    "pyopenssl>=25.0.0",
+    "sqlalchemy==1.3.4",
+    "twisted==18.4.0",
+]
+
+[tool.uv.sources]
+gsb = { git = "https://github.com/chrisnorman7/game-server-base.git", rev = "e2d0f12912bea56796e9b7fe7ab7ac8d2bae1311" }
+[tool.setuptools]
+py-modules = []
