@@ -186,6 +186,7 @@ class DECK(Flag):
 
 @unique
 class DuelOptions(IntFlag):
+	DUEL_RELAY = 0x80
 	DUEL_PZONE = 0x800
 	DUEL_EMZONE = 0x2000
 	DUEL_FSX_MMZONE = 0x4000
