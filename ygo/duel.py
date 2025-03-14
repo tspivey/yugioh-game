@@ -197,7 +197,8 @@ class Duel(Joinable):
 			info = ffi.new("OCG_NewCardInfo *")
 			info.team = player.duel_player
 			info.con = player.duel_player
-			info.duelist = 0
+			if tag:
+				info.duelist = 1 - player.duel_player
 			info.code = sc
 			info.pos = POSITION.FACEDOWN_DEFENSE.value
 			if tag is True:

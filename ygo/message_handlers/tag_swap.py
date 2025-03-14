@@ -5,16 +5,18 @@ from ygo.card import Card
 def msg_tag_swap(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
-	main_deck_count = self.read_u8(data)
-	extra_deck_count = self.read_u8(data)
-	extra_p_count = self.read_u8(data)
-	hand_count = self.read_u8(data)
+	main_deck_count = self.read_u32(data)
+	extra_deck_count = self.read_u32(data)
+	extra_p_count = self.read_u32(data)
+	hand_count = self.read_u32(data)
 	top_card = self.read_u32(data)
 	# we don't need the following information, so we trash it
 	# that allows us to process all following messages too (if any)
 	for i in range(hand_count):
 		self.read_u32(data)
+		self.read_u32(data)
 	for i in range(extra_deck_count):
+		self.read_u32(data)
 		self.read_u32(data)
 	self.cm.call_callbacks('tag_swap', player)
 	if top_card > 0:
