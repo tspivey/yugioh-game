@@ -104,7 +104,7 @@ class Duel(Joinable):
 		options = ffi.new("OCG_DuelOptions  *")
 		for i in range(4):
 			options.seed[i] = seed[i]
-		options.flags = DuelOptions.DUEL_MODE_MR5 | DuelOptions.DUEL_RELAY
+		options.flags = DuelOptions.DUEL_MODE_MR5
 		options.team1.startingLP = 8000
 		options.team1.startingDrawCount = 5
 		options.team1.drawCountPerTurn = 1
@@ -193,12 +193,16 @@ class Duel(Joinable):
 			self.tag_cards[player.duel_player] = c
 		else:
 			self.cards[player.duel_player] = c
+		team = player.duel_player
+		if tag:
+			duelist = 1
+		else:
+			duelist = 0
 		for sc in c[::-1]:
 			info = ffi.new("OCG_NewCardInfo *")
-			info.team = player.duel_player
+			info.team = team
 			info.con = player.duel_player
-			if tag:
-				info.duelist = 1 - player.duel_player
+			info.duelist = duelist
 			info.code = sc
 			info.pos = POSITION.FACEDOWN_DEFENSE.value
 			if tag is True:
