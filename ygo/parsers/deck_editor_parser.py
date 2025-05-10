@@ -192,7 +192,13 @@ def quit(caller):
 
 	pl = caller.connection.player
 	editor = pl.deck_editor
-	
+	banlist = list(globals.banlists.keys())[0]
+	cards = pl.deck.get('cards', []) + pl.deck.get('side', [])
+	errors = globals.banlists[banlist].check_and_resolve(cards)
+	if errors:
+		pl.notify(pl._("Warning: deck not compatible with the %s banlist.") % banlist)
+	for err in errors:
+		pl.notify(pl._("%s: limit %d, found %d.") % (err[0].get_name(pl), err[1], err[2]))
 	pl.notify(pl._("Quit."))
 	editor.deck_name = ''
 	editor.deck_key = 'cards'
