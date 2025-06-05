@@ -12,7 +12,7 @@ def msg_select_option(self, data):
 	size = self.read_u8(data)
 	options = []
 	for i in range(size):
-		options.append(self.read_u32(data))
+		options.append(self.read_u64(data))
 	self.cm.call_callbacks("select_option", player, options)
 	return data.read()
 
@@ -42,9 +42,9 @@ def select_option(self, player, options):
 	opts = []
 	for opt in options:
 		if opt > 10000:
-			code = opt >> 4
+			code = opt >> 20
 			card = Card(code)
-			string = card.get_strings(pl)[opt & 0xf]
+			string = card.get_strings(pl)[opt & 0xfffff]
 		else:
 			string = pl._("Unknown option %d" % opt)
 			string = pl.strings['system'].get(opt, string)
