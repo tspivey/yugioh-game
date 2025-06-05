@@ -212,7 +212,7 @@ class Duel(Joinable):
 					info.loc = LOCATION.DECK.value
 			else:
 				info.loc = LOCATION.DECK.value
-			lib.OCG_DuelNewCard(self.duel, info[0])
+			lib.OCG_DuelNewCard(self.duel, info)
 
 	def add_players(self, players, shuffle_players=True, shuffle_decks = True):
 		if len(players) == 4:
@@ -249,7 +249,7 @@ class Duel(Joinable):
 
 	def create(self, rules):
 		duel_ptr = ffi.new("OCG_Duel*")
-		res = lib.OCG_CreateDuel(duel_ptr, self.options[0])
+		res = lib.OCG_CreateDuel(duel_ptr, self.options)
 		self.duel = duel_ptr[0]
 		load_script(self.duel, "script/constant.lua", "constant.lua")
 		load_script(self.duel, "script/utility.lua", "utility.lua")
@@ -426,7 +426,7 @@ class Duel(Joinable):
 		info.con = player
 		info.loc = location.value
 		length = ffi.new('uint32_t *')
-		data = lib.OCG_DuelQueryLocation(self.duel, length, info[0])
+		data = lib.OCG_DuelQueryLocation(self.duel, length, info)
 		buf = io.BytesIO(ffi.unpack(ffi.cast('char *', data), length[0]))
 		size = self.read_u32(buf)
 		begin = buf.tell()
@@ -491,7 +491,7 @@ class Duel(Joinable):
 		info.loc = loc.value
 		info.seq = seq
 		length = ffi.new('uint32_t *')
-		data = lib.OCG_DuelQuery(self.duel, length, info[0])
+		data = lib.OCG_DuelQuery(self.duel, length, info)
 		if length[0] == 0:
 			return
 		buf = io.BytesIO(ffi.unpack(ffi.cast('char *', data), length[0]))
