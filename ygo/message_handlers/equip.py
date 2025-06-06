@@ -2,12 +2,10 @@ import io
 
 def msg_equip(self, data):
 	data = io.BytesIO(data[1:])
-	loc = self.read_u32(data)
-	target = self.read_u32(data)
-	u = self.unpack_location(loc)
-	card = self.get_card(u[0], u[1], u[2])
-	u = self.unpack_location(target)
-	target = self.get_card(u[0], u[1], u[2])
+	loc = self.read_location(data)
+	target = self.read_location(data)
+	card = self.get_card(loc.controller, loc.location, loc.sequence)
+	target = self.get_card(target.controller, target.location, target.sequence)
 	self.cm.call_callbacks('equip', card, target)
 	return data.read()
 
