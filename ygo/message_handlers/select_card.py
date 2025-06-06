@@ -75,7 +75,7 @@ def select_card(self, player, cancelable, min_cards, max_cards, cards, is_tribut
 		tribute_value = 0
 		for i in cds:
 			tribute_value += (cards[i].release_param if is_tribute else 0)
-			buf += struct.pack('i', i)
+			buf += struct.pack('b', i)
 		if is_tribute and tribute_value < min_cards:
 			return error(pl._("Not enough tributes."))
 		self.set_responseb(buf)
