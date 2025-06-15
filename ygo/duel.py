@@ -457,7 +457,7 @@ class Duel(Joinable):
 
 			ec, el, es, ep = queries[QUERY.EQUIP_CARD]
 			if el > 0:
-				card.equip_target = self.get_card(ec, el, es)
+				card.equip_target = self.get_card(ec, LOCATION(el), es)
 
 			card.xyz_materials = []
 
