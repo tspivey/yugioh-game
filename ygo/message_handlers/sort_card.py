@@ -10,13 +10,13 @@ from ygo.utils import process_duel, parse_ints
 def msg_sort_card(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
-	size = self.read_u8(data)
+	size = self.read_u32(data)
 	cards = []
 	for i in range(size):
 		card = Card(self.read_u32(data))
 		card.controller = self.read_u8(data)
-		card.location = LOCATION(self.read_u8(data))
-		card.sequence = self.read_u8(data)
+		card.location = LOCATION(self.read_u32(data))
+		card.sequence = self.read_u32(data)
 		cards.append(card)
 	self.cm.call_callbacks('sort_card', player, cards)
 	return data.read()
