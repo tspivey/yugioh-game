@@ -1,4 +1,5 @@
 import io
+import struct
 from twisted.internet import reactor
 
 from ygo.card import Card
@@ -9,30 +10,32 @@ from ygo.utils import parse_ints, process_duel, check_sum, handle_error
 
 def msg_select_sum(self, data):
 	data = io.BytesIO(data[1:])
-	mode = self.read_u8(data)
 	player = self.read_u8(data)
+	mode = self.read_u8(data)
 	val = self.read_u32(data)
-	select_min = self.read_u8(data)
-	select_max = self.read_u8(data)
-	count = self.read_u8(data)
+	select_min = self.read_u32(data)
+	select_max = self.read_u32(data)
+	count = self.read_u32(data)
 	must_select = []
 	for i in range(count):
 		code = self.read_u32(data)
 		card = Card(code)
-		card.controller = self.read_u8(data)
-		card.location = LOCATION(self.read_u8(data))
-		card.sequence = self.read_u8(data)
+		location = self.read_location(data)
+		card.controller = location.controller
+		card.location = location.location
+		card.sequence = location.sequence
 		param = self.read_u32(data)
 		card.param = (param&0xff, param>>16, )
 		must_select.append(card)
-	count = self.read_u8(data)
+	count = self.read_u32(data)
 	select_some = []
 	for i in range(count):
 		code = self.read_u32(data)
 		card = Card(code)
-		card.controller = self.read_u8(data)
-		card.location = LOCATION(self.read_u8(data))
-		card.sequence = self.read_u8(data)
+		location = self.read_location(data)
+		card.controller = location.controller
+		card.location = location.location
+		card.sequence = location.sequence
 		param = self.read_u32(data)
 		card.param = (param&0xff, param>>16, )
 		select_some.append(card)
@@ -106,10 +109,11 @@ def select_sum(self, mode, player, val, select_min, select_max, must_select, sel
 			return error(pl._("Levels out of range."))
 		if mode == 0 and not any([check_sum(selected, val - m) for m in must_select_levels]):
 			return error(pl._("Selected value does not equal %d.") % (val,))
-		lst = [len(ints) + len(must_select)]
+		lst = []
 		lst.extend([0] * len(must_select))
 		lst.extend(ints)
 		b = bytes(lst)
+		b = struct.pack('ii', 2, len(b)) + b
 		self.set_responseb(b)
 		reactor.callLater(0, process_duel, self)
 	prompt()
