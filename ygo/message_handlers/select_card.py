@@ -22,7 +22,6 @@ def msg_select_tribute(self, data):
 		card.controller = self.read_u8(data)
 		card.location = LOCATION(self.read_u8(data))
 		card.sequence = self.read_u32(data)
-		card.position = POSITION(self.read_u32(data))
 		card.release_param = self.read_u8(data)
 		cards.append(card)
 	self.cm.call_callbacks('select_tribute', player, cancelable, min, max, cards)
@@ -39,10 +38,11 @@ def msg_select_card(self, data):
 	for i in range(size):
 		code = self.read_u32(data)
 		card = Card(code)
-		card.controller = self.read_u8(data)
-		card.location = LOCATION(self.read_u8(data))
-		card.sequence = self.read_u32(data)
-		card.position = POSITION(self.read_u32(data))
+		loc = self.read_location(data)
+		card.controller = loc.controller
+		card.location = loc.location
+		card.sequence = loc.sequence
+		card.position = loc.position
 		cards.append(card)
 	self.cm.call_callbacks('select_card', player, cancelable, min, max, cards)
 	return data.read()
