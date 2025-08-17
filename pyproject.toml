@@ -3,7 +3,7 @@ name = "yugioh-game"
 version = "0.1.0"
 description = "Add your description here"
 readme = "readme.md"
-requires-python = "~=3.10"
+requires-python = "~=3.10.0"
 dependencies = [
     "aenum==2.2.1 ; python_full_version < '3.6'",
     "alembic==1.0.10",
