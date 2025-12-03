@@ -6,7 +6,7 @@ ffibuilder.set_source("_duel",
 #include "card.h"
 #include "duel.h"
 #include "field.h"
-extern "C" int32_t declarable(card_data *cd, int32_t size, uint32_t *array);
+extern "C" int32_t declarable(OCG_CardData *cd, int32_t size, uint64_t *array);
 extern "C" uint32_t query_linked_zone(OCG_Duel pduel, uint8_t playerid, uint8_t location, uint8_t sequence);
 """,
 libraries = ['ocgcore'],
@@ -99,7 +99,7 @@ uint32_t OCG_DuelQueryCount(OCG_Duel ocg_duel, uint8_t team, uint32_t loc);
 void* OCG_DuelQuery(OCG_Duel ocg_duel, uint32_t* length, OCG_QueryInfo *info);
 void* OCG_DuelQueryLocation(OCG_Duel ocg_duel, uint32_t* length, OCG_QueryInfo *info);
 void* OCG_DuelQueryField(OCG_Duel ocg_duel, uint32_t* length);
-int32 declarable(struct card_data *cd, int32 size, uint32 *array);
+int32 declarable(struct OCG_CardData *cd, int32 size, uint64 *array);
 uint32_t query_linked_zone(OCG_Duel pduel, uint8_t playerid, uint8_t location, uint8_t sequence);
 """)
 
