@@ -7,7 +7,7 @@ def msg_confirm_decktop(self, data):
 	cards = []
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
-	count = self.read_u8(data)
+	count = self.read_u32(data)
 	for i in range(count):
 		code = self.read_u32(data)
 		if code & 0x80000000:
@@ -15,7 +15,7 @@ def msg_confirm_decktop(self, data):
 		card = Card(code)
 		card.controller = self.read_u8(data)
 		card.location = LOCATION(self.read_u8(data))
-		card.sequence = self.read_u8(data)
+		card.sequence = self.read_u32(data)
 		cards.append(card)
 		
 	self.cm.call_callbacks('confirm_decktop', player, cards)
