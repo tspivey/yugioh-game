@@ -9,7 +9,7 @@ def msg_announce_number(self, data):
 	data = io.BytesIO(data[1:])
 	player = self.read_u8(data)
 	size = self.read_u8(data)
-	opts = [self.read_u32(data) for i in range(size)]
+	opts = [self.read_u64(data) for i in range(size)]
 	self.cm.call_callbacks('announce_number', player, opts)
 	return data.read()
 
