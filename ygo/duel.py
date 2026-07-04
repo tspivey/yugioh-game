@@ -380,7 +380,7 @@ class Duel(Joinable):
 			data = (counters,)
 		elif type == QUERY.LINK:
 			data = (self.read_u32(buf), self.read_u32(buf))
-		elif type == QUERY.PUBLIC:
+		elif type == QUERY.IS_PUBLIC:
 			data = (self.read_u8(buf),)
 		elif type == QUERY.END:
 			data = ()
